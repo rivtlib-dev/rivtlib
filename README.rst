@@ -1,2 +1,4 @@
-# rivtlib
+rivtlib
+========
+
 rivtlib source code

@@ -5,21 +5,14 @@ file folder:
 
     python -m rivtlib rivtnn-filename.py
 
-where *rivtnn-* is a rquired prefix for report organization and *nn* is an
-integer. See **rivt User Manual** at https://rivt.info for details.
+where *rivtnn-* is a required prefix (used for report organization) and *nn* is
+an integer. See the rivt User Manual at https://rivt.info for details.
 
-The code base uses a last letter naming convention for indicating variable
-types where: 
+The code base uses a last letter naming convention for indicating variable types
+where: 
 
-A = array 
-B = boolean 
-C = class instance 
-D = dictionary 
-F = float 
-I = integer 
-L = list 
-P = path 
-S = string
+A = array B = boolean C = class instance D = dictionary F = float I = integer L
+= list P = path S = string
 
 """
 __version__ = "a.b.c"
@@ -54,7 +47,7 @@ def main(argv):
     print('Output file is ', outputfile)
 
 
-def cmdlinehelp():
+def cmdhelp():
     """command line help"""
 
     print()
@@ -76,4 +69,4 @@ if __name__ == "__main__":
         argfileS = sys.argv[1]
         import rivtlib.rivtapi
     except:
-        cmdlinehelp()
+        cmdhelp()
