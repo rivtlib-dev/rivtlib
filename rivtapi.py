@@ -8,11 +8,11 @@ rv.I(rS) - (Insert) Insert static text, math, images and tables
 rv.V(rS) - (Values) Evaluate values and equations 
 rv.T(rS) - (Tools) Execute Python functions and scripts 
 rv.X(rS) - (eXclude) Skip string processing 
-rv.W(rS) - (Write) Write formatted document 
+rv.W(rS) - (Write) Write formatted documents 
 
-where rS is a triple quoted Python string (rivt string)
+where rS is a triple quoted Python rivt-string 
 
-In the rivtlib code base the variable types are identified by the last letter
+Note: In the rivtlib code base variable types are identified by the last letter
 of the variable name using the following convention:
 
 A = array

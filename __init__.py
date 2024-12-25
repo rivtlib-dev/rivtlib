@@ -27,9 +27,10 @@ and exposes 6 API functions ::
     rv.W(rS) - (Write) Write formatted rivt documents 
 
     
-where **rS** is a triple quoted string that follows rivt markup syntax. A
-**rivt** doc (document) is a text, HTML or PDF ouput file from a processed rivt
-file. A **rivt report** (report) is a collated collection of rivt docs.
+where **rS** is a triple quoted string that follows rivt markup syntax (wraps
+restructured text). A **rivt** document (doc) is a text, HTML or PDF ouput file
+from a processed rivt file. It represents a subdivision in a **rivt report**. A
+**rivt report** (report) is a collated collection of rivt docs.
 
 
 rivt directory
