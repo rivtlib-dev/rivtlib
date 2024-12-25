@@ -1,5 +1,18 @@
 {
     "cSpell.words": [
-        "rivtlib"
-    ]
+        "rivtlib",
+        "rivt",
+        "rivtzip"
+    ],
+    "fsdeploy.nodes": [
+        {
+            "source": "c:/git/rivtlib/",
+            "target": "C:/Python313/Lib/site-packages/rivtlib",
+            "include": "**/*.*",
+            "exclude": "**/.vscode/*.*",
+            "deleteTargetOnDeploy": true,
+        }
+    ],
+    "fsdeploy.deployOnSave": true,
+    "fsdeploy.deployWorkspaceOnSave": false
 }
