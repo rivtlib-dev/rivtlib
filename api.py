@@ -1,7 +1,7 @@
 #! python
 """rivt API
 
-import rivtlib.rivtapi as rv 
+import rivtlib.api as rv 
 
 rv.R(rS) - (Run) Execute shell scripts 
 rv.I(rS) - (Insert) Insert static text, math, images and tables
