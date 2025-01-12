@@ -1,16 +1,23 @@
 """rivtlib
 
-rivtlib is generally run in an IDE. If run from the command line within the
-file folder:
+rivtlib is generally run in an IDE. If run from the command line the command
+takes one of two forms depending on whether the file is part of a report. If
+part of a report the form is:
 
     python -m rivtlib rddnn-filename.py
 
-where *rddnn-* is a required prefix (used for report organization) and *dd* and
-*nn* are integers identifying the division and subdivision respectively. See
-the rivt User Manual at https://rivt.info for details.
+where *rddnn-* and *dd* and *nn* are integers identifying the report division
+and subdivision respectively. If the file is a standalone document then
+resource files are assumed to be in the current folder or subfolder and the
+command is:
 
-The code base uses a last-letter naming convention for indicating variable types
-where: 
+    python -m rivtlib filename.py
+
+In this case output files will also be in the current file folder. See the
+**rivt User Manual** at https://rivt.info for details.
+
+This code base uses a last-letter naming convention for indicating variable
+types where:
 
 A = array 
 B = boolean 
@@ -29,30 +36,8 @@ __author__ = "rhholand"
 import sys
 import getopt
 
-if sys.version_info < (3, 8):
-    sys.exit("rivtlib requires Python version 3.8 or later")
-
-
-def main(argv):
-    """process command line arguments"""
-
-    inputfile = ''
-    outputfile = ''
-    try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
-    except getopt.GetoptError:
-        print('test.py -i <inputfile> -o <outputfile>')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print('test.py -i <inputfile> -o <outputfile>')
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
-        elif opt in ("-o", "--ofile"):
-            outputfile = arg
-    print('Input file is ', inputfile)
-    print('Output file is ', outputfile)
+if sys.version_info < (3, 11):
+    sys.exit("rivtlib requires Python version 3.11 or later")
 
 
 def cmdhelp():
@@ -75,6 +60,6 @@ def cmdhelp():
 if __name__ == "__main__":
     try:
         argfileS = sys.argv[1]
-        import rivtlib.rivtapi
+        import rivtlib.api
     except:
         cmdhelp()

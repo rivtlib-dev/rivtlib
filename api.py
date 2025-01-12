@@ -45,7 +45,7 @@ from rivtlib import folders
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
-# rivt file path
+# get rivt file path
 curP = Path(os.getcwd())
 if __name__ == "rivtlib.rivtapi":
     argfileS = Path(__main__.__file__)
@@ -72,7 +72,7 @@ labelD = folderD = rivtD = {}  # label, folder and rivt dictionaries
 def rivt_parse(mS, rS):
     """call parsing class for specified API function
 
-    :param mS: rivt string method - R,I,V,T or X
+    :param mS: rivt string method - R,I,V,T,W or X
     :param rS: rivt string
     :param utfS: utf output string
     :param rstS: rst output string

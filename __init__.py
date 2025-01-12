@@ -2,10 +2,10 @@
 rivtlib
 =======
 
-**rivtlib** is a Python library that generates rivt docs and reports. **rivt**
-is a lightweight markup language for writing engineering documents based on
-restructured text Python libraries. **rivt** is designed to make it easy to
-share and reuse engineering document templates.
+**rivtlib** is a Python library that produces rivt docs and reports. **rivt**
+is a lightweight markup language used by **rivtlib** for writing engineering
+documents. It wraps parts of the restructuredtext markup language. **rivt** is
+designed to make it easy to share and reuse engineering document templates.
 
 
 rivt API
@@ -27,52 +27,55 @@ and exposes 6 API functions ::
     rv.W(rS) - (Write) Write formatted rivt documents 
 
     
-where **rS** is a triple quoted string that follows rivt markup syntax (wraps
-restructured text). A **rivt** document (doc) is a text, HTML or PDF ouput file
-from a processed rivt file. It represents a subdivision in a **rivt report**. A
-**rivt report** (report) is a collated collection of rivt docs.
+where **rS** is a triple quoted string that follows rivt markup syntax. The
+syntax wraps and extends reStructuredText. A **rivt** document (doc) is a text,
+HTML or PDF ouput file from a processed rivt file. Each doc is also a
+subdivision in a **rivt report** - a collated collection of rivt docs.
 
 
 rivt directory
 --------------
 
-rivt_Report-Label/
-    ├── div01_div-label/            
-        ├── dat01_source/          
-            ├── data.csv
-            ├── attachment1.pdf
-            ├── fig.png
-            └── functions.py
-        ├── riv01_label1.py        
-        └── riv02_label2.py
-    ├── [div02_div-label/          
-        ├── dat02_source/          
-            ├── data.csv
-            └── fig.png
-        └── riv01_label3.py      
-    ├── rivtdocs_/                 
-        ├── pdf_/
-            ├── doc0101_label1.pdf
-            ├── doc0102_label2.pdf
-            ├── doc0201_label3.pdf
-            └── Report-Label.pdf
-        ├── text_/
-            ├── doc0101_label1.txt
-            ├── doc0102_label2.txt
-            └── doc0201_label3.txt
-        ├── md_/
-            ├── doc0101_label1.md
-            ├── doc0102_label2.md
-            └── doc0201_label3.md
-        ├── html_/
-            ├── doc0101_label1.html
-            ├── doc0102_label2.html
-            └── doc0201_label3.html
-        ├── temp_/
-            └── doc0201_label3.tex
-    ├── config.ini                  
-    ├── cover-page.pdf              
-    └── README.txt                  
+rivt-Report-Label/               
+    ├── d01-div-label/                  (division 1 files)
+        ├── r0101-label1.py             (rivt subdivsion file)
+        └── r0102-label2.py             (rivt subdivsion file)
+    ├── d02-div-label/                  (division 2 files)
+        └── r0201-label3.py             (rivt subdivision file)
+    ├── rivt-docs/                      (document output)
+        ├── rivt-pdf_/                      
+            ├── rivt0101-label1.pdf      
+            ├── rivt0102-label2.pdf
+            ├── rivt201-label3.pdf
+            └── Report-Label.pdf 
+        ├── rivt-text_/                    
+            ├── rivt0101-label1.txt      
+            ├── rivt0102-label2.txt
+            └── rivt0201-label3.txt          
+        ├── rivt-html_/                    
+            ├── rivt0101-label1.html
+            ├── rivt0102-label2.html
+            └── rivt0201-label3.html        
+        ├── rivt-temp_/
+            └── d0201-label3.tex
+    ├── r01/                            (source files)         
+        ├── ins
+            ├── fig1.png            
+            └── attach1.pdf
+        ├── run
+            └── sap.cmd
+        ├── tool
+            ├── func1.py                   
+            └── func2.py
+        └── val
+            └── val0101.csv
+    ├── r02/                    
+        ├── data1.csv                   
+        └── standards.txt
+    ├── config.ini                      (report config file)
+    ├── cover-page.pdf                  (report cover page)
+    └── README.txt                      (GitHub searchable report) 
+
 
 
 rivtpub directory
@@ -95,24 +98,23 @@ rivtpub_Report-Label/
     └── README.txt                 
 
 
-rivtzip
--------
+rivtzip files
+-------------
 
 **rivt** is part of the open source **rivtzip** framework and is distributed
 under the MIT license. **rivtzip** is an open source framework for publishing
 rivt documents. The framework can be downloaded as a portable Windows zip file,
-or installed through OS specific shell scripts (https://rivt.zip). It includes
-five established technologies::
+or installed through OS specific shell scripts (https://rivt.zip). It includes::
 
-    VSCode - document editing and processing
+    **VSCode** - document editing and processing
 
-    Python - analysis and formatting
+    **Python** - analysis and formatting
         
-    Latex - typesetting
+    **Latex** - typesetting
         
-    GitHub - version control
+    **GitHub** - version control
 
-    QCAD - diagramming
+    **QCAD** - diagramming
 
 
 '''
