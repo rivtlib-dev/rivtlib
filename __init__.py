@@ -24,7 +24,7 @@ and exposes 6 API functions ::
     rv.V(rS) - (Values) Evaluate tables, values and equations 
     rv.T(rS) - (Tools) Execute Python functions 
     rv.X(rS) - (eXclude) Skip rivt-string processing 
-    rv.W(rS) - (Write) Write formatted rivt documents 
+    rv.W(rS) - (Write) Write formatted documents and reports
 
     
 where **rS** is a triple quoted string that follows rivt markup syntax. The
