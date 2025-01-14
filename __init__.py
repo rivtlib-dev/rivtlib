@@ -58,7 +58,7 @@ rivt-Report-Label/
             └── rivt0201-label3.html        
         ├── rivt-temp_/
             └── d0201-label3.tex
-    ├── r01/                            (source files)         
+    ├── s01/                            (source files)         
         ├── ins
             ├── fig1.png            
             └── attach1.pdf
@@ -69,7 +69,7 @@ rivt-Report-Label/
             └── func2.py
         └── val
             └── val0101.csv
-    ├── r02/                    
+    ├── s02/                    
         ├── data1.csv                   
         └── standards.txt
     ├── config.ini                      (report config file)
