@@ -3,14 +3,13 @@ import logging
 import re
 import sys
 import warnings
-from io import StringIO
-from pathlib import Path
-
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy.linalg as la
 import pandas as pd
 import sympy as sp
+from io import StringIO
+from pathlib import Path
 from IPython.display import Image as _Image
 from IPython.display import display as _display
 from numpy import *

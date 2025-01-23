@@ -25,7 +25,8 @@ C = class instance
 D = dictionary 
 F = float 
 I = integer 
-L = list 
+L = list
+N = file name 
 P = path 
 S = string
 
