@@ -31,6 +31,17 @@ else:
     print(f"INFO  file path does not include a rivt file  - {curP}")
     sys.exit()
 
+modnameS = __name__.split(".")[1]
+# print(f"{modnameS=}")
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)-8s  " + modnameS +
+    "   %(levelname)-8s %(message)s",
+    datefmt="%m-%d %H:%M",
+    filename=self.errlogP,
+    filemode="w",
+)
+warnings.filterwarnings("ignore")
 
 # files and paths
 baseS = rivN.split(".py")[0]

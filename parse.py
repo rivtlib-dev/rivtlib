@@ -29,34 +29,42 @@ from rivtlib import tag_rst
 class RivtParse:
     """format rivt-strings as utf and rst files"""
 
-    def __init__(self, methS, folderD, labelD,  rivtD):
-        """ rivt-strings as utf and reST line by line
+    def __init__(self, hS, tS, folderD, labelD,  rivtD):
+        """process header string
 
-            :param dict folderD: folder paths
-            :param dict labelD: numbers that increment
-            :param dict outputS: output type
-            :param dict outputS: output type
+        Args:
+            hS (str)): header string
+            tS (str): section type
+            folderD (dict): _description_
+            labelD (dict): _description_
+            rivtD (dict): _description_
+
+        Returns:
+            folderD (dict): _description_
+            labelD (dict): 
+            rivtD (dict): local dictionary
+            cmdL (list): list of valid commands
+            tagsL (list): list of valid tags
         """
 
         self.rivtD = rivtD
-        self.folderD = folderD  # folder paths
-        self.labelD = labelD      # incrementing formats
+        self.folderD = folderD
+        self.labelD = labelD
         self.errlogP = folderD["errlogP"]
-        self.methS = methS
+        self.tS = tS
 
         hdrstS = """"""
         hdreadS = """"""
         hdutfS = """"""""
+        xrstS = xutfS = ""
 
         # section headings
-        xmdS = xrstS = xutfS = ""
-        rL = rS.split("\n")
-
-        rsL = rS.split("|")              # function string as list
-        titleS = rsL[0].strip()          #
-        labelD["tocS"] = rsL[1].strip()  # set redaction
-        labelD["pageI"] = int(rsL[2])    # set background color
-        if rS.strip()[0:2] == "--":         # omit section heading
+        # initialize return strings
+        hL = hS.split("|")               # section string as list
+        titleS = hL[0].strip()           # sectiobn title
+        labelD["xch"] = hL[1].strip()    # set xchange
+        labelD["color"] = hL[2].strip()  # set background color
+        if rS.strip()[0:2] == "--":      # omit section heading
             return "\n", "\n", "\n"
 
         headS = datetime.now().strftime("%Y-%m-%d | %I:%M%p") + "\n"
@@ -84,66 +92,40 @@ class RivtParse:
             + "   \n" + "   ?x?newline" + "   ?x?vspace{.05in}"
             + "\n\n")
 
-#        print(hdutfS)
-#        return hdutfS, hdmdS, hdrstS
+        # print(hdutfS)
+        # return hdutfS, hdmdS, hdrstS
 
-        utfS += hutfS
-        rstS += hrstS
-
-        # valid commands and tags
-        if methS == "R":
-            self.cmdL = ["run", "process"]
-
-            self.tagsD = {"link]": "link", "line]": "line", "page]": "page"}
-
-        elif methS == "I":
-            self.cmdL = ["image", "table", "text"]
-
-            self.tagsD = {"b]": "bold", "i]": "italic", "u]": "underline",
-                          "c]": "center", "r]": "right",
+        if methS == "I":
+            self.cmdL = ["append", "image", "table", "text"]
+            self.tagsD = {"u]": "underline", "c]": "center", "r]": "right",
                           "e]": "equation", "f]": "figure", "t]": "table",
-                          "#]": "foot", "d]": "description",
-                          "l]": "latex", "s]": "sympy",
+                          "#]": "foot", "d]": "description", "s]": "sympy",
                           "link]": "link", "line]": "line", "page]": "page",
                           "[c]]": "centerblk",  "[p]]": "plainblk",
-                          "[l]]": "latexblk", "[m]]": "mathblk",
-                          "[o]]": "codeblk", "[q]]": "quitblk"}
+                          "[l]]": "latexblk", "[o]]": "codeblk", "[q]]": "quitblk"}
 
         elif methS == "V":
-            self.cmdL = ["image", "table", "text", "assign", "declare"]
-
+            self.cmdL = ["image", "table", "assign", "eval"]
             self.tagsD = {"e]": "equation", "f]": "figure", "t]": "table",
                           "#]": "foot", "d]": "description",
-                          "l]": "latex", "s]": "sympy",
-                          ":=": "declare",  "=": "assign"}
+                          "s]": "sympy", "=": "eval"}
+
+        elif methS == "R":
+            self.cmdL = ["run", "process"]
+            self.tagsD = {}
 
         elif methS == "T":
-            self.cmdL = []
-
+            self.cmdL = ["python"]
             self.tagsD = {}
 
         elif methS == "W":
-            self.cmdL = []
-
+            self.cmdL = ["pdf", "utf", "html"]
             self.tagsD = {}
         else:
             pass
 
-        modnameS = __name__.split(".")[1]
-        # print(f"{modnameS=}")
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS +
-            "   %(levelname)-8s %(message)s",
-            datefmt="%m-%d %H:%M",
-            filename=self.errlogP,
-            filemode="w",
-        )
-        warnings.filterwarnings("ignore")
-        # self.rivtD.update(locals())
-
     def str_parse(self, strL):
-        """parse method string line by line starting with second line
+        """parse section string line by line 
 
             :param list strL: split method string
             :return mdS: md formatted string
@@ -289,7 +271,7 @@ class RivtParse:
             writecsv.writerow(hdraL)
             writecsv.writerows(vtableL)
 
-        return (xutfS, xmdS, xrstS,  self.labelD, self.folderD, self.rivtD)
+        return (xutfS, xrstS,  self.labelD, self.folderD, self.rivtD)
 
     def atable(self, tblL, hdreL, tblfmt, alignaL):
         """write assign values table"""

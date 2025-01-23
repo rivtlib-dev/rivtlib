@@ -1,9 +1,7 @@
 #! python
 """rivt API
 
-import rivtlib.api as rv 
 
-rS is a triple quoted utf-8 string 
 rv.R(rS) - (Run) Execute shell scripts 
 rv.I(rS) - (Insert) Insert static text, math, images and tables
 rv.V(rS) - (Values) Evaluate values and equations 
@@ -11,8 +9,12 @@ rv.T(rS) - (Tools) Execute Python functions and scripts
 rv.W(rS) - (Write) Write formatted documents 
 rv.X(rS) - (eXclude) Skip string processing 
 
-The rivtlib code base uses variable types identified by the last letter
-of the variable name:
+The API is intialized with 
+
+             import rivtlib.api as rv 
+
+and rS is a triple quoted utf-8 string. The rivtlib code base uses variable
+types identified with the last letter of a variable name:
 
 A = array
 B = boolean
@@ -35,33 +37,37 @@ import time
 import warnings
 import IPython
 from pathlib import Path
-from pathlib import Path
 from datetime import datetime, time
 from rivtlib import folders
 from rivtlib import parse
+# from rivtlib import write
 
-
+rstS = utfS = """"""  # initialize rst and utf doc strings
+labelD = folderD = rivtD = {}  # initialize dictionaries
 warnings.simplefilter(action="ignore", category=FutureWarning)
-rstS = utfS = """"""  # initialize rst and utf output strings
-labelD = folderD = rivtD = {}  # initialize label, folder and rivt dictionaries
 
 
-def rivt_parse(mS, rS):
-    """call parsing class for specified API function
+def rivt_parse(tS, rS):
+    """call parsing class with specified API function
 
-    :param mS: rivt string method - R,I,V,T,W or X
-    :param rS: rivt string
-    :param utfS: utf output string
-    :param rstS: rst output string
-    :param labelD: label dictionary
-    :param folderD: folder dictionary
-    :param rivtD: rivt values dictionary      
+    Globals:
+        utfS
+        rstS
+        labelD (dict): label dictionary
+        folderD: folder dictionary
+        rivtD: rivt values dictionary 
+
+    Args:
+        tS (str): section type R,I,V,T,W or X
+        rS (str): rivt string
     """
-
     global utfS, rstS, labelD, folderD, rivtD
-    rL = rS.split()
-    parseC = parse.RivtParse(mS, rL[0], folderD, labelD,  rivtD)
+    rL = rS.split("\n")
+    # parse header string
+    parseC = parse.RivtParse(rL[0], tS, folderD, labelD,  rivtD)
+    # parse section string
     xutfS, xrstS, labelD, folderD, rivtD = parseC.str_parse(rL[1:])
+    print(xutfS)
     utfS += xutfS  # accumulate utf output strings
     rstS += xrstS  # accumulate rst output strings
 
@@ -69,11 +75,11 @@ def rivt_parse(mS, rS):
 def R(rS):
     """process Run string
 
-        : param rS: rivt string - run 
+        Args:
+            rS (str): rivt string - run 
     """
     global utfS, rstS, labelD, folderD
-    rivttxt = rivt_parse("R", rS)
-    print(rivttxt)
+    rivt_parse("R", rS)
 
 
 def I(rS):
@@ -82,8 +88,7 @@ def I(rS):
         : param rS: rivt string - insert 
     """
     global utfS, rstS, labelD, folderD
-    rivttxt = rivt_parse("I", rS)
-    print(rivttxt)
+    rivt_parse("I", rS)
 
 
 def V(rS):
@@ -93,9 +98,8 @@ def V(rS):
     """
     global utfS, rstS, labelD, folderD, rivtD
     locals().update(rivtD)
-    rivttxt = rivt_parse("V", rS)
+    rivt_parse("V", rS)
     rivtD.update(locals())
-    print(rivttxt)
 
 
 def T(rS):
@@ -105,23 +109,21 @@ def T(rS):
     """
     global utfS, rstS, labelD, folderD, rivtD
     locals().update(rivtD)
-    rvttxt = rivt_parse("T", rS)
+    rivt_parse("T", rS)
     rivtD.update(locals())
-    print(rivttxt)
 
 
 def W(rS):
     """write output files
 
-    :param rS: write string
+    :param rS: rivt string - write 
     """
-    rivt_parse("W", rS)
+    pass
 
 
 def X(rS):
-    """skip string - do not format
+    """skip rivt string - do not process or format
     """
 
     rL = rS.split("\n")
-    print("\n skip section: " + rL[0] + "\n")
-    pass
+    print("\n X func - skip section: " + rL[0] + "\n")
