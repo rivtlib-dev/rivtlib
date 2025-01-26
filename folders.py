@@ -1,16 +1,19 @@
-"""register folder structure"""
+"""folders and global dicts"""
 
 import __main__
 import os
 import sys
 import fnmatch
-from configparser import ConfigParser
 from pathlib import Path
 
+# initialize strings and dicts
+rstS = utfS = xrstS = xutfS = """"""
+labelD = folderD = rivtD = {}
+# print(f"{Path(projP, 'rivt-config.ini')=}")
 docS = "x.py"
 docP = "/"
 
-# check rivt file coming from IDE
+# rivt file in IDE
 curP = Path(os.getcwd())
 rivtP = curP
 print(f"{__name__=}")
@@ -31,28 +34,19 @@ else:
     print(f"INFO  file path does not include a rivt file  - {curP}")
     sys.exit()
 
-modnameS = __name__.split(".")[1]
-# print(f"{modnameS=}")
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)-8s  " + modnameS +
-    "   %(levelname)-8s %(message)s",
-    datefmt="%m-%d %H:%M",
-    filename=self.errlogP,
-    filemode="w",
-)
-warnings.filterwarnings("ignore")
-
-# files and paths
+# input paths
 baseS = rivN.split(".py")[0]
 titleS = baseS.split("-")[1]
-projP = os.path.dirname(curP)
-bakP = curP / ".".join((baseS, "bak"))
+dnumS = baseS.split("-")[0][1:3]
+projP = Path(os.path.dirname(curP))
+bakP = Path(curP / ".".join((baseS, "bak")))
 prfxS = baseS[0:7]
-toolsP = Path(projP, "data")
+toolsP = Path(projP, "tools")
 docsP = Path(projP, "docs")
-print(f"{projP=}")
-
+insP = Path(curP / ("ins" + dnumS))
+valsP = Path(curP / ("vals" + dnumS))
+print(f"{insP=}")
+print(f"{valsP=}")
 # output paths
 reportP = Path(projP, "reports")
 xrivtP = Path(projP, "xrivt")
@@ -63,28 +57,17 @@ errlogP = Path(tempP, "rivt-log.txt")
 styleP = Path(projP, "reports", "pdf")
 valfileS = baseS.replace("riv", "val") + ".csv"
 readmeP = Path(projP, "README.txt")
+print(f"{projP=}")
+print(f"{rivtP=}")
 
-# config file
-print(f"{Path(projP, 'rivt-config.ini')=}")
-config = ConfigParser()
-config.read(Path(projP, "rivt-config.ini"))
-headS = config.get('report', 'title')
-footS = config.get('utf', 'foot1')
-
-# global dictionaries and strings
-rivtS = """"""                              # rivt input string
-utfS = """"""                               # utf-8 output string
-rmeS = """"""                               # readme output string
-xremS = """"""                              # redacted readme string
-rstS = """"""                               # reST output string
-declareS = """"""                           # declares output string
-assignS = """"""                            # assigns output string
-rivtD = {}                                  # rivt object dictionary
-folderD = {}                                # folder dictionary
+# folder dict
 for item in ["rivtP", "docsP", "readmeP", "reportP",
-             "valfileS", "errlogP", "styleP", "tempP"]:
+             "valsP", "insP", "errlogP", "styleP", "tempP"]:
     folderD[item] = eval(item)
+
+# label dict
 labelD = {
+    "baseS": baseS,                         # file base name
     "titleS": titleS,                       # document title
     "docnumS": prfxS,                       # doc number
     "sectS": "",                            # section title

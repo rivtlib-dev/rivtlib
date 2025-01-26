@@ -14,5 +14,6 @@
         }
     ],
     "fsdeploy.deployOnSave": true,
-    "fsdeploy.deployWorkspaceOnSave": false
+    "fsdeploy.deployWorkspaceOnSave": false,
+    "autoDocstring.includeName": true
 }

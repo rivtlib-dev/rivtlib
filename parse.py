@@ -3,6 +3,7 @@ import logging
 import re
 import sys
 import warnings
+from datetime import datetime, time
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy.linalg as la
@@ -40,11 +41,12 @@ class RivtParse:
             rivtD (dict): _description_
 
         Returns:
+            cmdL (list): list of valid commands
+            tagsL (list): list of valid tags
             folderD (dict): _description_
             labelD (dict): 
             rivtD (dict): local dictionary
-            cmdL (list): list of valid commands
-            tagsL (list): list of valid tags
+
         """
 
         self.rivtD = rivtD
@@ -57,6 +59,13 @@ class RivtParse:
         hdreadS = """"""
         hdutfS = """"""""
         xrstS = xutfS = ""
+        rivtS = """"""                              # rivt input string
+        utfS = """"""                               # utf-8 output string
+        rmeS = """"""                               # readme output string
+        xremS = """"""                              # redacted readme string
+        rstS = """"""                               # reST output string
+        declareS = """"""                           # declares output string
+        assignS = """"""                            # assigns output string
 
         # section headings
         # initialize return strings
@@ -64,7 +73,7 @@ class RivtParse:
         titleS = hL[0].strip()           # sectiobn title
         labelD["xch"] = hL[1].strip()    # set xchange
         labelD["color"] = hL[2].strip()  # set background color
-        if rS.strip()[0:2] == "--":      # omit section heading
+        if hS.strip()[0:2] == "--":      # omit section heading
             return "\n", "\n", "\n"
 
         headS = datetime.now().strftime("%Y-%m-%d | %I:%M%p") + "\n"
@@ -95,7 +104,7 @@ class RivtParse:
         # print(hdutfS)
         # return hdutfS, hdmdS, hdrstS
 
-        if methS == "I":
+        if tS == "I":
             self.cmdL = ["append", "image", "table", "text"]
             self.tagsD = {"u]": "underline", "c]": "center", "r]": "right",
                           "e]": "equation", "f]": "figure", "t]": "table",
@@ -104,51 +113,46 @@ class RivtParse:
                           "[c]]": "centerblk",  "[p]]": "plainblk",
                           "[l]]": "latexblk", "[o]]": "codeblk", "[q]]": "quitblk"}
 
-        elif methS == "V":
+        elif tS == "V":
             self.cmdL = ["image", "table", "assign", "eval"]
             self.tagsD = {"e]": "equation", "f]": "figure", "t]": "table",
                           "#]": "foot", "d]": "description",
                           "s]": "sympy", "=": "eval"}
 
-        elif methS == "R":
+        elif tS == "R":
             self.cmdL = ["run", "process"]
             self.tagsD = {}
 
-        elif methS == "T":
+        elif tS == "T":
             self.cmdL = ["python"]
             self.tagsD = {}
 
-        elif methS == "W":
-            self.cmdL = ["pdf", "utf", "html"]
+        elif tS == "W":
+            self.cmdL = ["write"]
             self.tagsD = {}
         else:
             pass
 
     def str_parse(self, strL):
-        """parse section string line by line 
+        """str_parse _summary_
 
-            :param list strL: split method string
-            :return mdS: md formatted string
-            :return rstS: reST formatted string
-            :return labelD: increment references
-            :return folderD: folder paths
-            :rtype mdS: string
-            :rtype rstS: string
-            :rtype folderD: dictionary
-            :rtype labelD: dictionary
+        Args:
+            strL (_type_): _description_
+
+        Returns:
+            _type_: _description_
         """
 
-        xutfS = """"""      # utfS local string
-        xmdS = """"""       # mdS local string
-        xrstS = """"""      # rstS local string
-        uS = """"""         # raw local line
+        xutfS = """"""      # cumulative utf local string
+        xrstS = """"""      # cumulative rst local string
+        uS = """"""         # local line
         blockB = False
 
-        # table alignment
-        hdrdL = ["variable", "value", "[value]", "description"]
-        aligndL = ["left", "right", "right", "left"]
-        hdraL = ["variable", "value", "[value]", "description [eq. number]"]
+        # value table alignment
+        hdraL = ["variable", "value", "[value]", "description"]
         alignaL = ["left", "right", "right", "left"]
+        hdreL = ["variable", "value", "[value]", "description [eq. number]"]
+        aligneL = ["left", "right", "right", "left"]
 
         blockevalL = []     # current value table
         blockevalB = False  # stop accumulation of values
@@ -158,7 +162,6 @@ class RivtParse:
         for uS in strL:
             # print(f"{blockassignB=}")
             # print(f"{uS=}")
-            uS = uS[4:]                                # remove indent
             if blockB:                                 # accumulate block
                 lineS += uS
                 continue

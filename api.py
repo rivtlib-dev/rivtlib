@@ -29,7 +29,6 @@ S = string
 """
 
 import fnmatch
-import logging
 import os
 import shutil
 import sys
@@ -37,18 +36,66 @@ import time
 import warnings
 import IPython
 from pathlib import Path
-from datetime import datetime, time
-from rivtlib import folders
+from configparser import ConfigParser
+import logging
+import warnings
+from rivtlib.folders import *
 from rivtlib import parse
 # from rivtlib import write
 
-rstS = utfS = """"""  # initialize rst and utf doc strings
-labelD = folderD = rivtD = {}  # initialize dictionaries
-warnings.simplefilter(action="ignore", category=FutureWarning)
+# read config file
+config = ConfigParser()
+config.read(Path(projP, "rivt-config.ini"))
+headS = config.get('report', 'title')
+footS = config.get('utf', 'foot1')
+
+modnameS = __name__.split(".")[1]
+# print(f"{modnameS=}")
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)-8s  " + modnameS +
+    "   %(levelname)-8s %(message)s",
+    datefmt="%m-%d %H:%M",
+    filename=errlogP,
+    filemode="w",
+)
+warnings.filterwarnings("ignore")
+# warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
-def rivt_parse(tS, rS):
-    """call parsing class with specified API function
+def rivt_parse(rS, tS):
+    """parse rivt string and print doc text
+
+    Globals:
+        utfS (str): accumulating utf text string 
+        rstS (str): acculating restr text string
+        labelD (dict): label dictionary
+        folderD (dict): folder dictionary
+        rivtD (dict): rivt values dictionary 
+
+    Args:
+        tS (str): section type R,I,V,T,W or X
+        rS (str): rivt string
+    """
+    global utfS, rstS, labelD, folderD, rivtD
+    rL = rS.split("\n")
+
+    # pass header and initialize class
+    parseC = parse.RivtParse(rL[0], tS, folderD, labelD,  rivtD)
+
+    # parse section string
+    xutfS, xrstS, labelD, folderD, rivtD = parseC.str_parse(rL[1:])
+
+    # print doc text
+    print(xutfS)
+
+    # accumulate output strings
+    utfS += xutfS
+    rstS += xrstS
+
+
+def R(rS):
+    """process Run string
 
     Globals:
         utfS
@@ -57,29 +104,11 @@ def rivt_parse(tS, rS):
         folderD: folder dictionary
         rivtD: rivt values dictionary 
 
-    Args:
-        tS (str): section type R,I,V,T,W or X
-        rS (str): rivt string
-    """
-    global utfS, rstS, labelD, folderD, rivtD
-    rL = rS.split("\n")
-    # parse header string
-    parseC = parse.RivtParse(rL[0], tS, folderD, labelD,  rivtD)
-    # parse section string
-    xutfS, xrstS, labelD, folderD, rivtD = parseC.str_parse(rL[1:])
-    print(xutfS)
-    utfS += xutfS  # accumulate utf output strings
-    rstS += xrstS  # accumulate rst output strings
-
-
-def R(rS):
-    """process Run string
-
         Args:
             rS (str): rivt string - run 
     """
-    global utfS, rstS, labelD, folderD
-    rivt_parse("R", rS)
+    global utfS, rstS, labelD, folderD, rivtD
+    rivt_parse(rS, "R")
 
 
 def I(rS):
@@ -88,7 +117,7 @@ def I(rS):
         : param rS: rivt string - insert 
     """
     global utfS, rstS, labelD, folderD
-    rivt_parse("I", rS)
+    rivt_parse(rS, "I")
 
 
 def V(rS):
@@ -98,7 +127,7 @@ def V(rS):
     """
     global utfS, rstS, labelD, folderD, rivtD
     locals().update(rivtD)
-    rivt_parse("V", rS)
+    rivt_parse(rS, "V")
     rivtD.update(locals())
 
 
