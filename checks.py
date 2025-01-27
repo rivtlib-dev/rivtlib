@@ -1,4 +1,5 @@
-# logging
+# this module is not used yet
+
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)-8s  " + baseS + "   %(levelname)-8s %(message)s",
