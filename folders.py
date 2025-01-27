@@ -1,10 +1,11 @@
 """folders and global dicts"""
 
-import __main__
+import fnmatch
 import os
 import sys
-import fnmatch
 from pathlib import Path
+
+import __main__
 
 # initialize strings and dicts
 rstS = utfS = xrstS = xutfS = """"""
@@ -61,6 +62,7 @@ print(f"{projP=}")
 print(f"{rivtP=}")
 
 # folder dict
+folderD = {}
 for item in ["rivtP", "docsP", "readmeP", "reportP",
              "valsP", "insP", "errlogP", "styleP", "tempP"]:
     folderD[item] = eval(item)

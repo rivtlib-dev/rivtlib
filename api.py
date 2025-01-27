@@ -28,19 +28,14 @@ P = path
 S = string
 """
 
-import fnmatch
-import os
-import shutil
-import sys
-import time
-import warnings
-import IPython
-from pathlib import Path
-from configparser import ConfigParser
 import logging
 import warnings
-from rivtlib.folders import *
+from configparser import ConfigParser
+from pathlib import Path
+
 from rivtlib import parse
+from rivtlib.folders import *
+
 # from rivtlib import write
 
 # read config file

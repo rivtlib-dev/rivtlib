@@ -16,7 +16,7 @@ A rivt file is a Python file (*.py) that imports **rivtlib**::
     **import rivtlib.rivtapi as rv**
 
 
-and exposes 6 API functions ::
+and exposes 6 functions::
 
 
     rv.R(rS) - (Run) Run shell scripts 
@@ -29,8 +29,8 @@ and exposes 6 API functions ::
     
 where **rS** is a triple quoted string that follows rivt markup syntax. The
 syntax wraps and extends reStructuredText. A **rivt** document (doc) is a text,
-HTML or PDF ouput file from a processed rivt file. Each doc is also a
-subdivision in a **rivt report** - a collated collection of rivt docs.
+HTML or PDF ouput file from a processed rivt file. Each doc can also be a
+subdivision in a collated collection of rivt docs -  a **rivt report**.
 
 
 rivt directory
@@ -38,64 +38,47 @@ rivt directory
 
 rivt-Report-Label/               
     ├── d01-div-label/                  (division 1 files)
-        ├── r0101-label1.py             (rivt subdivsion file)
-        └── r0102-label2.py             (rivt subdivsion file)
+        ├── ins01/                      (insert files)
+            ├── fig1.png            
+            └── attach1.pdf
+        └── val01/                      (values files)
+            └── val0101.csv
+        ├── r0101-label1.py             (rivt file)
+        └── r0102-label2.py             (rivt file)
     ├── d02-div-label/                  (division 2 files)
-        └── r0201-label3.py             (rivt subdivision file)
+        ├── ins01/      
+            ├── data1.csv                   
+            └── standards.txt
+        └── r0201-label3.py             (rivt file)
     ├── rivt-docs/                      (document output)
-        ├── rivt-pdf_/                      
+        ├── rivt-pdf/                      
             ├── rivt0101-label1.pdf      
             ├── rivt0102-label2.pdf
             ├── rivt201-label3.pdf
             └── Report-Label.pdf 
-        ├── rivt-text_/                    
+        ├── rivt-xpdf/                      
+            ├── rivt0101-label1.pdf      
+            ├── rivt0102-label2.pdf
+            ├── rivt201-label3.pdf
+            └── Report-Label.pdf 
+        ├── rivt-text/                    
             ├── rivt0101-label1.txt      
             ├── rivt0102-label2.txt
             └── rivt0201-label3.txt          
-        ├── rivt-html_/                    
+        ├── rivt-html/                    
             ├── rivt0101-label1.html
             ├── rivt0102-label2.html
             └── rivt0201-label3.html        
-        ├── rivt-temp_/
-            └── d0201-label3.tex
-    ├── s01/                            (source files)         
-        ├── ins
-            ├── fig1.png            
-            └── attach1.pdf
-        ├── run
-            └── sap.cmd
-        ├── tool
-            ├── func1.py                   
-            └── func2.py
-        └── val
-            └── val0101.csv
-    ├── s02/                    
-        ├── data1.csv                   
-        └── standards.txt
-    ├── config.ini                      (report config file)
+        ├── rivt-temp/
+            └── d0201-label3.tex             
+    ├── tools/                           (functions and terminal files)
+        ├── func1.py                   
+        └── sap.cmd
+        └── func2.py                  
+    ├── rivt-config.ini                 (report config file)
     ├── cover-page.pdf                  (report cover page)
-    └── README.txt                      (GitHub searchable report) 
-
-
-
-rivtpub directory
------------------
-
-rivtpub_Report-Label/
-    ├── div01_div-label/           
-        ├── dat01_source/          
-            ├── data.csv
-            ├── attachment1.pdf
-            ├── fig.png
-            └── functions.py
-        ├── riv01_label1.py        
-        └── riv02_label2.py
-    ├── [div02_div-label/          
-        ├── dat02_source/           
-            ├── data.csv
-            └── fig.png
-        └── riv01_label3.py        
-    └── README.txt                 
+    └── README.txt                      (report - GitHub searchable) 
+               
 
 
 rivtzip files
