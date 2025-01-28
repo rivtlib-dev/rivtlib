@@ -22,8 +22,9 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib import cmds, tags
-from rivtlib.units import *
+from rivtlib.unit import *
+from rivtlib import cmd
+
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -365,21 +366,21 @@ class Tag():
         return rstS
 
 
-class TagUTF(Tags):
+class TagUTF(Tag):
     """TagsUTF _summary_
 
     Args:
         Tags (_type_): _description_
     """
 
-    def __init__(self, lineS, labelD, folderD, tagsD, localD):
+    def __init__(self, lineS, tagsD, folderD, labelD, rivtD):
         """convert rivt tags to md or reST
 
         """
 
         self.lineS = lineS
         self.tagsD = tagsD
-        self.localD = localD
+        self.localD = rivtD
         self.folderD = folderD
         self.labelD = labelD
         self.lineS = lineS
@@ -387,7 +388,7 @@ class TagUTF(Tags):
         self.errlogP = folderD["errlogP"]
         self.valL = []                         # accumulate values in list
 
-        modnameS = self.labelD["modnameS"]
+        modnameS = self.labelD["rivN"]
         # print(f"{modnameS=}")
         logging.basicConfig(
             level=logging.DEBUG,
@@ -676,18 +677,18 @@ class TagUTF(Tags):
         pass
 
 
-class TagRST(Tags):
+class TagRST(Tag):
     """convert rivt tags to reST
 
     """
 
-    def __init__(self, lineS, labelD, folderD,  tagsD, localD):
+    def __init__(self, lineS, tagsD, folderD, labelD, rivtD):
         """convert rivt tags to md or reST
 
         """
 
         self.tagsD = tagsD
-        self.localD = localD
+        self.localD = rivtD
         self.folderD = folderD
         self.labelD = labelD
         self.lineS = lineS
@@ -696,7 +697,7 @@ class TagRST(Tags):
         self.errlogP = folderD["errlogP"]
         self.valL = []                         # accumulate values in list
 
-        modnameS = self.labelD["modnameS"]
+        modnameS = self.labelD["rivN"]
         # print(f"{modnameS=}")
         logging.basicConfig(
             level=logging.DEBUG,

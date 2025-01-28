@@ -28,22 +28,51 @@ P = path
 S = string
 """
 
+
+import fnmatch
 import logging
+import os
+import sys
 import warnings
 from configparser import ConfigParser
+from datetime import datetime, time
 from pathlib import Path
 
-from rivtlib import parse
-from rivtlib.folders import *
-
+import __main__
+from rivtlib import lookup, parse
+from rivtlib.unit import *
 # from rivtlib import write
 
-# read config file
+global utfS, rstS, folderD, labelD, rivtD
+
+curP = Path(os.getcwd())
+rivP = curP
+
+if __name__ == "rivtlib.api":
+    rivtP = Path(__main__.__file__)
+    rivN = rivtP.name
+    if fnmatch.fnmatch(rivN, "r????-*.py"):
+        rivtP = Path(curP, rivN)
+    folderD, labelD, rivtD = lookup.look(rivN, curP, rivtP)
+else:
+    print(f"INFO     rivt file - {rivN}")
+    print(f"INFO     The name must match 'rddss-filename.py' where")
+    print(f"INFO     dd and ss are two digit integers")
+    sys.exit()
+
+# print(f"{rivtP=}")
+# print(f"{curP=}")
+# print(f"{rivN=}")
+# print(f"{__name__=}")
+
+# initialize strings, config, logging
+rstS = utfS = xrstS = xutfS = """"""
+timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p") + "\n"
+utfS += timeS
 config = ConfigParser()
-config.read(Path(projP, "rivt-config.ini"))
+config.read(Path(folderD["projP"], "rivt-config.ini"))
 headS = config.get('report', 'title')
 footS = config.get('utf', 'foot1')
-
 modnameS = __name__.split(".")[1]
 # print(f"{modnameS=}")
 logging.basicConfig(
@@ -51,7 +80,7 @@ logging.basicConfig(
     format="%(asctime)-8s  " + modnameS +
     "   %(levelname)-8s %(message)s",
     datefmt="%m-%d %H:%M",
-    filename=errlogP,
+    filename=folderD["errlogP"],
     filemode="w",
 )
 warnings.filterwarnings("ignore")
@@ -72,46 +101,55 @@ def rivt_parse(rS, tS):
         tS (str): section type R,I,V,T,W or X
         rS (str): rivt string
     """
-    global utfS, rstS, labelD, folderD, rivtD
+    global utfS, rstS, folderD, labelD, rivtD
+
     rL = rS.split("\n")
 
-    # pass header and initialize class
-    parseC = parse.RivtParse(rL[0], tS, folderD, labelD,  rivtD)
+    parseC = parse.RivtParse(tS)
 
-    # parse section string
-    xutfS, xrstS, labelD, folderD, rivtD = parseC.str_parse(rL[1:])
-
-    # print doc text
-    print(xutfS)
+    xutfS, xrstS, folderD, labelD, rivtD = parseC.str_parse(
+        tS, rL, folderD, labelD, rivtD)
 
     # accumulate output strings
     utfS += xutfS
     rstS += xrstS
 
+    print(xutfS)
+
 
 def R(rS):
     """process Run string
 
-    Globals:
-        utfS
-        rstS
-        labelD (dict): label dictionary
-        folderD: folder dictionary
-        rivtD: rivt values dictionary 
-
         Args:
-            rS (str): rivt string - run 
+            strL (_type_): _description_
+
+        Returns:
+            cmdL (list): list of valid commands
+            tagsL (list): list of valid tags
+            folderD (dict): _description_
+            labelD (dict):
+            rivtD (dict): local dictionary
     """
-    global utfS, rstS, labelD, folderD, rivtD
+    global utfS, rstS, folderD, labelD, rivtD
+
     rivt_parse(rS, "R")
 
 
 def I(rS):
     """format Insert string
 
-        : param rS: rivt string - insert 
+        Args:
+            strL (_type_): _description_
+
+        Returns:
+            cmdL (list): list of valid commands
+            tagsL (list): list of valid tags
+            folderD (dict): _description_
+            labelD (dict):
+            rivtD (dict): local dictionary
     """
-    global utfS, rstS, labelD, folderD
+    global utfS, rstS, folderD, labelD, rivtD
+
     rivt_parse(rS, "I")
 
 
@@ -120,7 +158,8 @@ def V(rS):
 
         :param rS: rivt string - value
     """
-    global utfS, rstS, labelD, folderD, rivtD
+    global utfS, rstS, folderD, labelD, rivtD
+
     locals().update(rivtD)
     rivt_parse(rS, "V")
     rivtD.update(locals())
@@ -131,7 +170,8 @@ def T(rS):
 
         : param rS: rivt string - tools
     """
-    global utfS, rstS, labelD, folderD, rivtD
+    global utfS, rstS, folderD, labelD, rivtD
+
     locals().update(rivtD)
     rivt_parse("T", rS)
     rivtD.update(locals())
@@ -151,3 +191,9 @@ def X(rS):
 
     rL = rS.split("\n")
     print("\n X func - skip section: " + rL[0] + "\n")
+
+
+def Q():
+    print(">>>>>>>>>>>>")
+    print(utfS)
+    sys.exit()
