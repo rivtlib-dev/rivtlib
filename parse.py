@@ -1,4 +1,5 @@
 from rivtlib import tag, cmd
+from pathlib import Path
 
 
 class RivtParse:
@@ -68,11 +69,11 @@ class RivtParse:
         hdrstS = """"""
         hdreadS = """"""
         hdutfS = """"""""
-        rivtS = """"""                        # rivt input string
-        rmeS = """"""                         # readme output string
-        xremS = """"""                        # redacted readme string
-        evalS = """"""                        # eval output string
-        assignS = """"""                      # assign output string
+        rivtS = """"""      # rivt input string
+        rmeS = """"""       # readme output string
+        xremS = """"""      # redacted readme string
+        evalS = """"""      # eval output string
+        assignS = """"""    # assign output string
         parL = []
 
         # value table
@@ -83,29 +84,30 @@ class RivtParse:
 
         # section header
         hS = strL[0]
-        if hS.strip()[0:2] == "--":           # omit section heading
-            return "\n", "\n", "\n"
-        hL = hS.split("|")                    # section string as list
-        titleS = hL[0].strip()                # section title
-        labelD["xch"] = hL[1].strip()         # set xchange
-        labelD["color"] = hL[2].strip()       # set background color
-        labelD["docS"] = titleS
-        snumI = labelD["secnumI"] + 1         # increment section number
-        labelD["secnumI"] = snumI
-        docnumS = labelD["docnumS"]
-        dnumS = docnumS + "-[" + str(snumI) + "]"
-        headS = dnumS + " " + titleS
-        bordrS = labelD["widthI"] * "-"
-        hdutfS = bordrS + "\n" + headS + "\n" + bordrS + "\n"
-        hdrstS = (
-            ".. raw:: latex"
-            + "   \n\n ?x?vspace{.2in} "
-            + "   ?x?begin{tcolorbox} "
-            + "   ?x?textbf{ " + titleS + "}"
-            + "   ?x?hfill?x?textbf{SECTION " + dnumS + " }"
-            + "   ?x?end{tcolorbox}"
-            + "   \n" + "   ?x?newline" + "   ?x?vspace{.05in}"
-            + "\n\n")
+        if hS.strip()[0:2] == "--":
+            hdutfS = hdrstS = "\n", "\n", "\n"
+        else:
+            hL = hS.split("|")                    # section string as list
+            titleS = hL[0].strip()                # section title
+            labelD["xch"] = hL[1].strip()         # set xchange
+            labelD["color"] = hL[2].strip()       # set background color
+            labelD["docS"] = titleS
+            snumI = labelD["secnumI"] + 1         # increment section number
+            labelD["secnumI"] = snumI
+            docnumS = labelD["docnumS"]
+            dnumS = docnumS + "-[" + str(snumI) + "]"
+            headS = dnumS + " " + titleS
+            bordrS = labelD["widthI"] * "-"
+            hdutfS = bordrS + "\n" + headS + "\n" + bordrS + "\n"
+            hdrstS = (
+                ".. raw:: latex"
+                + "   \n\n ?x?vspace{.2in} "
+                + "   ?x?begin{tcolorbox} "
+                + "   ?x?textbf{ " + titleS + "}"
+                + "   ?x?hfill?x?textbf{SECTION " + dnumS + " }"
+                + "   ?x?end{tcolorbox}"
+                + "   \n" + "   ?x?newline" + "   ?x?vspace{.05in}"
+                + "\n\n")
         xutfS += hdutfS
         xrstS += hdrstS
 
@@ -114,8 +116,10 @@ class RivtParse:
             try:
                 if uS[0] == "#":                      # skip comment lines
                     continue
+                elif len(uS) < 1:
+                    continue
             except:
-                continue
+                pass
             # print(f"{uS=}")
             if blockB:                                 # accum block
                 blockS += uS
@@ -124,14 +128,15 @@ class RivtParse:
                     blockB = False
                     continue
             elif uS[0:2] == "||":                      # commands
+                parL = uS[2:].split("|")
                 cmdS = parL[0].strip()
                 pthP = Path(parL[1].strip())
                 pars = parL[2].strip()
                 parL = pars.split(",")
                 if cmdS in self.cmdL:
-                    rvtC = cmds.CmdUTF(labelD, folderD, rivtD)
+                    rvtC = cmd.CmdUTF(labelD, folderD, rivtD)
                     utfS = rvtC.cmd_parse(cmdS, pthP, parL)
-                    rvtC = cmds.CmdRST(parL, labelD, folderD, rivtD)
+                    rvtC = cmd.CmdRST(parL, labelD, folderD, rivtD)
                     reS = rvtC.cmd_parse(cmdS)
                     xutfS += utfS
                     xrstS += reS

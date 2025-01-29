@@ -1,4 +1,5 @@
 #
+import fnmatch
 import csv
 import logging
 import re
@@ -25,65 +26,21 @@ from sympy.parsing.latex import parse_latex
 from rivtlib.unit import *
 from rivtlib import cmd
 
-
 tabulate.PRESERVE_WHITESPACE = True
 
 
-class Tag():
-    """subclass - convert rivt tags to MD or reST
+class TagEQ():
+    """
 
-            ============================ =======================================
-            tags                                   description 
-            ============================ =======================================
+    Args:
+        tags (str): 
 
-            I,V line format:
-            text _[h1-h6]                     heading type        
-            text _[b]                       bold 
-            text _[i]                       italic
-            text _[c]                       center
-            text _[bic]                     combined formatting
-            text _[u]                       underline   
-            text _[r]                       right justify
-            text _[l]                       LaTeX math
-            text _[s]                       sympy math
-            text _[l,s;bic]                 combined formatting
-            text _[e]                       equation label and autonumber
-            text _[f]                       figure caption and autonumber
-            text _[t]                       table title and autonumber
-            text _[#]                       footnote and autonumber
-            text _[d]                       footnote description 
-            _[line]                         horizontal line
-            _[page]                         new page
-            _[address, label]               url, internal reference
-            I,V  block format:          
-            _[[b]]                          bold
-            _[[c]]                          center
-            _[[i]]                          italic
-            _[[p]]                          plain  
-            _[[bcip]]                       combined formatting
-            _[[l]]                          LaTeX
-            _[[h]]                          HTML 
-            _[[q]]                          quit block
+        = (str): evaluate expression
+
 
         """
 
-    def tag_parse(self, tagS):
-        """convert rivt tags to md
-
-        """
-
-        if tagS in self.tagsD:
-            return eval("self." + self.tagsD[tagS] + "()")
-        if "b" in tagS and "c" in tagS:
-            return self.boldcenter()
-        if "b" in tagS and "i" in tagS:
-            return self.bolditalic()
-        if "b" in tagS and "i" in tagS and "c" in tagS:
-            return self.bolditaliccenter()
-        if "i" in tagS and "c" in tagS:
-            return self.italiccenter()
-
-    def declare(self):
+    def assign(self):
         """declare variable values
 
         :return: _description_
@@ -104,7 +61,7 @@ class Tag():
         self.localD.update(locals())
         return [varS, valS, unit1S, unit2S, descripS]
 
-    def assign(self):
+    def evalmds(self):
         """assign value to equation
 
         :return: _description_
@@ -228,32 +185,7 @@ class Tag():
 
         return mdS
 
-    def declare(self):
-        """ := declare variable value
-
-        :return assignL: assign results
-        :rtype: list
-        :return rstS: restruct string 
-        :rtype: string
-        """
-        locals().update(self.localD)
-        varS = str(self.lineS).split(":=")[0].strip()
-        valS = str(self.lineS).split(":=")[1].strip()
-        unit1S = str(self.labelD["unitS"]).split(",")[0]
-        unit2S = str(self.labelD["unitS"]).split(",")[1]
-        descripS = str(self.labelD["descS"])
-        if unit1S.strip() != "-":
-            cmdS = varS + "= " + valS + "*" + unit1S
-        else:
-            cmdS = varS + "= as_unum(" + valS + ")"
-
-        exec(cmdS, globals(), locals())
-
-        self.localD.update(locals())
-
-        return [varS, valS, unit1S, unit2S, descripS]
-
-    def assign(self):
+    def evalrst(self):
         """ = assign result to equation
 
         :return assignL: assign results
@@ -303,7 +235,7 @@ class Tag():
         assignL = [varS, str(val1U), unit1S, unit2S, descS]
         return [assignL, rstS + subS]
 
-    def vsub(self, eqL, precI, varS, val1U):
+    def vsub2(self, eqL, precI, varS, val1U):
         """substitute numbers for variables in printed output
 
         :return assignL: assign results
@@ -365,13 +297,150 @@ class Tag():
 
         return rstS
 
+    def vtable(self, tbL, hdrL, tblfmt, alignL):
+        """write value table"""
 
-class TagUTF(Tag):
-    """TagsUTF _summary_
+        # locals().update(self.rivtD)
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate(
+                tbL, headers=hdrL, tablefmt=tblfmt,
+                showindex=False, colalign=alignL
+            )
+        )
+        mdS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
 
+        return mdS
+
+        # self.calcS += mdS + "\n"
+        # self.rivtD.update(locals())
+
+    def atable2(self, tblL, hdreL, tblfmt, alignaL):
+        """write assign table"""
+
+        locals().update(self.rivtD)
+
+        valL = []
+        for vaL in tblL:
+            varS = vaL[0].strip()
+            valS = vaL[1].strip()
+            unit1S, unit2S = vaL[2], vaL[3]
+            descripS = vaL[4].strip()
+            if unit1S != "-":
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                else:
+                    cmdS = varS + "= " + valS
+                    exec(cmdS, globals(), locals())
+                    valU = eval(varS)
+                    val1U = str(valU.cast_unit(eval(unit1S)))
+                    val2U = str(valU.cast_unit(eval(unit2S)))
+            else:
+                cmdS = varS + "= " + valS
+                exec(cmdS, globals(), locals())
+                valU = eval(varS)
+                val1U = str(valU)
+                val2U = str(valU)
+            valL.append([varS, val1U, val2U, descripS])
+
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate(
+                valL, tablefmt=tblfmt, headers=hdreL,
+                showindex=False,  colalign=alignaL))
+        utfS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+
+        self.localD.update(locals())
+        print("\n" + mdS+"\n")
+        return mdS
+
+    def etable2(self, tblL, hdrvL, tblfmt, aligneL):
+        """write eval table"""
+
+        locals().update(self.rivtD)
+
+        valL = []
+        for vaL in tblL:
+            varS = vaL[0].strip()
+            valS = vaL[1].strip()
+            unit1S, unit2S = vaL[2], vaL[3]
+            descripS = vaL[4].strip()
+            if unit1S != "-":
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                else:
+                    cmdS = varS + "= " + valS + " * " + unit1S
+                    exec(cmdS, globals(), locals())
+                    valU = eval(varS)
+                    val1U = str(valU.cast_unit(eval(unit1S)))
+                    val2U = str(valU.cast_unit(eval(unit2S)))
+            else:
+                cmdS = varS + "= " + valS
+                exec(cmdS, globals(), locals())
+                valU = eval(varS)
+                val1U = str(valU)
+                val2U = str(valU)
+            valL.append([varS, val1U, val2U, descripS])
+
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate(
+                valL, tablefmt=tblfmt, headers=hdrvL,
+                showindex=False,  colalign=alignvL))
+        utfS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+
+        self.rivtD.update(locals())
+
+        print("\n" + mdS+"\n")
+        return utfS
+
+
+class TagUTF():
+    """convert tags to formatted text
     Args:
-        Tags (_type_): _description_
+        tags (str): 
+            ============================ =======================================
+            tags                                   description 
+            ============================ =======================================
+            lines:
+             _[h1-h6]                   heading type        
+             _[c]                       center
+             _[u]                       underline (only rst)  
+             _[s]                       sympy math
+             _[e]                       equation label and autonumber
+             _[f]                       figure caption and autonumber
+             _[t]                       table title and autonumber
+             _[#]                       footnote and autonumber
+             _[d]                       footnote description 
+             _[hline]                   horizontal line
+             _[page]                    new page
+             _[address, label]          url, internal reference
+            blocks:          
+             _[[b]]                     bold
+             _[[i]]                     italic
+             _[[n]]                     indent
+             _[[w]]                     italic indent
+             _[[x]]                     bold indent
+             _[[p]]                     plain  
+             _[[l]]                     LaTeX
+             _[[q]]                     quit block
     """
+
+# \*[a-zA-Z0-9_]*\*
 
     def __init__(self, lineS, tagsD, folderD, labelD, rivtD):
         """convert rivt tags to md or reST
@@ -400,70 +469,23 @@ class TagUTF(Tag):
         )
         warnings.filterwarnings("ignore")
 
-    def bold(self):
-        """bold text _[b]
+    def tag_parse(self, tagS):
+        """convert rivt tags to md
 
-        :return lineS: bold line
-        :rtype: str
         """
-        print(self.lineS)
-        return self.lineS
+
+        if tagS in self.tagsD:
+            return eval("self." + self.tagsD[tagS] + "()")
+        if "b" in tagS and "c" in tagS:
+            return self.boldcenter()
+        if "b" in tagS and "i" in tagS:
+            return self.bolditalic()
+        if "b" in tagS and "i" in tagS and "c" in tagS:
+            return self.bolditaliccenter()
+        if "i" in tagS and "c" in tagS:
+            return self.italiccenter()
 
     def center(self):
-        """center text _[c]
-
-        :return lineS: centered line
-        :rtype: str
-        """
-        lineS = self.lineS.center(int(self.widthI))
-        print(lineS)
-        return lineS
-
-    def italic(self):
-        """italicize text _[i]
-
-        :return lineS: centered line
-        :rtype: str
-        """
-        print(self.lineS)
-        return self.lineS
-
-    def boldcenter(self):
-        """center text _[bc]
-
-        :return lineS: centered line
-        :rtype: str
-        """
-
-        lineS = self.lineS.center(int(self.widthI))
-
-        print(lineS)
-
-    def bolditalic(self):
-        """center text _[bc]
-
-        :return lineS: centered line
-        :rtype: str
-        """
-
-        lineS = self.lineS.center(int(self.widthI))
-
-        print(lineS)
-        return lineS
-
-    def bolditaliccenter(self):
-        """center text _[c]
-
-        :return lineS: centered line
-        :rtype: str
-        """
-
-        lineS = self.lineS.rjust(int(self.widthI))
-
-        print(lineS)
-        return lineS
-
-    def italiccenter(self):
         """center text _[c]
 
         :return lineS: centered line
@@ -484,31 +506,8 @@ class TagUTF(Tag):
 
         return lineS
 
-    def label(self, labelS, numS):
-        """format labels for equations, tables and figures
-
-            :return labelS: formatted label
-            :rtype: str
-        """
-        secS = str(self.labelD["secnumI"]).zfill(2)
-        labelS = secS + " - " + labelS + numS
-        # store for equation table
-        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
-        return labelS
-
-    def description(self):
-        """footnote description _[d]
-
-        :return lineS: footnote
-        :rtype: str
-        """
-        ftnumI = self.labelD["noteL"].pop(0)
-        lineS = "[" + str(ftnumI) + "] " + self.lineS
-        print(lineS)
-        return lineS
-
     def equation(self):
-        """md equation label _[e]
+        """equation label _[e]
 
         :return lineS: md equation label
         :rtype: str
@@ -539,31 +538,6 @@ class TagUTF(Tag):
 
         print(lineS + "\n")
         return lineS + "\n"
-
-    def foot(self):
-        """footnote number _[#]
-
-
-        """
-        ftnumI = self.labelD["footL"].pop(0)
-        self.labelD["noteL"].append(ftnumI + 1)
-        self.labelD["footL"].append(ftnumI + 1)
-        lineS = self.lineS.replace("*]", "[" + str(ftnumI) + "]")
-        print(lineS)
-        return lineS
-
-    def latex(self):
-        """format latex
-
-        :return lineS: formatted latex
-        :rtype: str
-        """
-        txS = self.lineS
-        # txS = txs.encode('unicode-escape').decode()
-        ptxS = sp.parse_latex(txS)
-        lineS = sp.pretty(sp.sympify(ptxS, _clash2, evaluate=False))
-        print(lineS)
-        return lineS
 
     def plain(self):
         """format plain literal text _[p]
@@ -603,6 +577,40 @@ class TagUTF(Tag):
         print(lineS)
         return lineS
 
+    def labels(self, labelS, numS):
+        """format labels for equations, tables and figures
+
+            :return labelS: formatted label
+            :rtype: str
+        """
+        secS = str(self.labelD["secnumI"]).zfill(2)
+        labelS = secS + " - " + labelS + numS
+        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
+        return labelS
+
+    def foot(self):
+        """footnote number _[#]
+
+
+        """
+        ftnumI = self.labelD["footL"].pop(0)
+        self.labelD["noteL"].append(ftnumI + 1)
+        self.labelD["footL"].append(ftnumI + 1)
+        lineS = self.lineS.replace("*]", "[" + str(ftnumI) + "]")
+        print(lineS)
+        return lineS
+
+    def description(self):
+        """footnote description _[d]
+
+        :return lineS: footnote
+        :rtype: str
+        """
+        ftnumI = self.labelD["noteL"].pop(0)
+        lineS = "[" + str(ftnumI) + "] " + self.lineS
+        print(lineS)
+        return lineS
+
     def link(self):
         """format url or internal link _[link]
 
@@ -613,6 +621,14 @@ class TagUTF(Tag):
         lineS = ".. _" + lineL[0] + ": " + lineL[1]
         print(lineS)
         return lineS
+
+    def hline(self):
+        """underline _[u]
+
+        :return lineS: underline
+        :rtype: str
+        """
+        return self.lineS
 
     def page(self):
         """insert new page header _[page]
@@ -627,60 +643,74 @@ class TagUTF(Tag):
                 "\n"+"_" * self.labelD["widthI"] + "\n"
         return "\n" + rvtS
 
-    def underline(self):
-        """underline _[u]
+    def block_parse(self, blockS):
+        """block_parse
 
-        :return lineS: underline
-        :rtype: str
+        Args:
+            self (_type_): _description_
         """
-        return self.lineS
+        print(f"{blockS=}")
 
-    def centerblk(self):
-        """
+        if blevalB and len(uS.strip()) < 2:    # value tables
+            vtableL += blevalL
+            if tfS == "declare":
+                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
+                xutfS += vutfS
+                xrstS += vutfS
+            if tfS == "assign":
+                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
+                xutfS += vutfS
+                xmdS += vmdS
+                xrstS += vutfS
+            blevalL = []
 
-        """
-        lineS = ""
-        for i in self.lineS:
-            lineS += i.center(int(self.widthI))
+            # export values
+            valP = Path(self.folderD["valsP"], self.folderD["valfileS"])
+            with open(valP, "w", newline="") as f:
+                writecsv = csv.writer(f)
+                writecsv.writerow(hdraL)
+                writecsv.writerows(vtableL)
 
-        return lineS
-
-    def latexblk(self):
-        pass
-
-    def mathblk(self):
-        pass
-
-    def codeblk(self):
-        pass
-
-    def rightblk(self):
-        pass
-
-    def shadeblk(self):
-        """ start shade block _[[s]]
-
-        :param lineS: _description_
-        :type lineS: _type_
-        """
-        pass
-
-    def quitblock(self):
-        """ quit shade block _[[q]]
-
-        :param lineS: _description_
-        :type lineS: _type_
-        """
-        pass
-
-    def tagblk(self):
-        pass
+            tagS = self.tagsD["[q]"]
+            rvtS = tag.TagUTF(lineS, tagS, labelD, folderD, rivtD)
+            xutfS += rvtS + "\n"
+            rvtS = tag.TagRST(lineS, tagS, labelD, folderD, rivtD)
+            xrstS += rvtS + "\n"
 
 
-class TagRST(Tag):
-    """convert rivt tags to reST
+class TagRST():
+    """convert rivt tags to restructured text
 
+    Args:
+        tags (str): 
+            ============================ =======================================
+            tags                                   description 
+            ============================ =======================================
+            lines:
+             _[h1-h6]                   heading type        
+             _[c]                       center
+             _[u]                       underline (only rst)  
+             _[s]                       sympy math
+             _[e]                       equation label and autonumber
+             _[f]                       figure caption and autonumber
+             _[t]                       table title and autonumber
+             _[#]                       footnote and autonumber
+             _[d]                       footnote description 
+             _[hline]                   horizontal line
+             _[page]                    new page
+             _[address, label]          url, internal reference
+            blocks:          
+             _[[b]]                     bold
+             _[[i]]                     italic
+             _[[n]]                     indent
+             _[[w]]                     italic indent
+             _[[x]]                     bold indent
+             _[[p]]                     plain  
+             _[[l]]                     LaTeX
+             _[[q]]                     quit block
     """
+
+    warnings.filterwarnings("ignore")
 
     def __init__(self, lineS, tagsD, folderD, labelD, rivtD):
         """convert rivt tags to md or reST
@@ -707,7 +737,22 @@ class TagRST(Tag):
             filename=self.errlogP,
             filemode="w",
         )
-    warnings.filterwarnings("ignore")
+
+    def tag_parse(self, tagS):
+        """convert rivt tags to md
+
+        """
+
+        if tagS in self.tagsD:
+            return eval("self." + self.tagsD[tagS] + "()")
+        if "b" in tagS and "c" in tagS:
+            return self.boldcenter()
+        if "b" in tagS and "i" in tagS:
+            return self.bolditalic()
+        if "b" in tagS and "i" in tagS and "c" in tagS:
+            return self.bolditaliccenter()
+        if "i" in tagS and "c" in tagS:
+            return self.italiccenter()
 
     def bold(self):
         """bold text _[b]
@@ -737,14 +782,6 @@ class TagRST(Tag):
         """
         return "*" + self.lineS.strip() + "*"
 
-    def right(self):
-        """right justify text _[r]
-
-        :return lineS: right justified text
-        :rtype: str
-        """
-        return "?x?hfill " + self.lineS
-
     def boldcenter(self):
         """bold center text _[c]
 
@@ -754,17 +791,6 @@ class TagRST(Tag):
         lineS = ".. raw:: latex \n\n" \
             + "   ?x?begin{center} ?x?textbf{" + self.lineS +  \
             "} ?x?end{center}" + "\n"
-        return lineS
-
-    def boldright(self):
-        """bold right text _[c]
-
-        :return lineS: centered line
-        :rtype: str
-        """
-        lineS = ".. raw:: latex \n\n" \
-            + "?x?hfill ?x?textbf{" + self.lineS + "}" \
-            + "\n"
         return lineS
 
     def italiccenter(self):
@@ -778,19 +804,7 @@ class TagRST(Tag):
             "} ?x?end{center}" + "\n"
         return lineS
 
-    def italicright(self):
-        """italic right text _[c]
-
-        :return lineS: centered line
-        :rtype: str
-        """
-
-        lineS = ".. raw:: latex \n\n" \
-            + "?x?hfill ?x?textit{" + self.lineS + "}" \
-            + "\n"
-        return lineS
-
-    def label(self, labelS, numS):
+    def labels(self, labelS, numS):
         """format labels for equations, tables and figures
 
             : return labelS: formatted label
@@ -798,14 +812,6 @@ class TagRST(Tag):
         """
         secS = str(self.labelD["secnumI"]).zfill(2)
         return secS + " - " + labelS + numS
-
-    def description(self):
-        """footnote description _[d]
-
-        : return lineS: footnote
-        : rtype: str
-        """
-        return ".. [*] " + self.lineS
 
     def equation(self):
         """reST equation label _[e]
@@ -833,42 +839,6 @@ class TagRST(Tag):
                 self.lineS.strip() + "** " + " ?x?hfill " + refS + "\n \n"
         return self.vgap + lineS + self.vgap + " ?x?nopagebreak \n"
 
-    def footnumber(self):
-        """insert footnote number _[#]
-
-        :return: _description_
-        :rtype: _type_
-        """
-        lineS = "".join(self.lineS)
-        return lineS.replace("*]", "[*]_ ")
-
-    def latex(self):
-        """format latex _[l]
-
-        :return lineS: reST formatted latex
-        :rtype: str
-        """
-        return ".. raw:: math\n\n   " + self.lineS + "\n"
-
-    def link(self):
-        """url or internal link
-
-        :return: _description_
-        :rtype: _type_
-        """
-        lineL = lineS.split(",")
-        lineS = ".. _" + lineL[0] + ": " + lineL[1]
-
-        return lineS
-
-    def line(self):
-        """insert line _[line]:
-
-        param lineS: _description_
-        :type lineS: _type_
-        """
-        return self.widthI * "-"
-
     def plain(self):
         """format plain literal _[p]
 
@@ -887,22 +857,6 @@ class TagRST(Tag):
         txS = sp.latex(S(spS))
         return ".. raw:: math\n\n   " + txS + "\n"
 
-    def underline(self):
-        """underline _[u]
-
-        :return lineS: underline
-        :rtype: str
-        """
-        return ":math: `?x?text?x?underline{" + self.lineS.strip() + "}"
-
-    def page(self):
-        """insert page break _[page]
-
-        :return lineS: page break line
-        :rtype: str
-        """
-        return ".. raw:: latex \n\n ?x?newpage \n"
-
     def table(self):
         """table label _[t]
 
@@ -916,7 +870,59 @@ class TagRST(Tag):
                 "** " + " ?x?hfill " + refS + "\n"
         return self.vgap + lineS + self.vgap + " ?x?nopagebreak \n"
 
-    def centerblk(self):
+    def underline(self):
+        """underline _[u]
+
+        :return lineS: underline
+        :rtype: str
+        """
+        return ":math: `?x?text?x?underline{" + self.lineS.strip() + "}"
+
+    def description(self):
+        """footnote description _[d]
+
+        : return lineS: footnote
+        : rtype: str
+        """
+        return ".. [*] " + self.lineS
+
+    def foot(self):
+        """insert footnote number _[#]
+
+        :return: _description_
+        :rtype: _type_
+        """
+        lineS = "".join(self.lineS)
+        return lineS.replace("*]", "[*]_ ")
+
+    def link(self):
+        """url or internal link
+
+        :return: _description_
+        :rtype: _type_
+        """
+        lineL = lineS.split(",")
+        lineS = ".. _" + lineL[0] + ": " + lineL[1]
+
+        return lineS
+
+    def hline(self):
+        """insert line _[line]:
+
+        param lineS: _description_
+        :type lineS: _type_
+        """
+        return self.widthI * "-"
+
+    def page(self):
+        """insert page break _[page]
+
+        :return lineS: page break line
+        :rtype: str
+        """
+        return ".. raw:: latex \n\n ?x?newpage \n"
+
+    def indentblk(self):
         """_summary_
         """
         lineS = ".. raw:: latex \n\n" \
@@ -932,9 +938,6 @@ class TagRST(Tag):
         pass
 
     def codeblk(self):
-        pass
-
-    def rightblk(self):
         pass
 
     def tagblk(self):

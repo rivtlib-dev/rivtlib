@@ -1,4 +1,5 @@
 #
+import fnmatch
 import csv
 import logging
 import re
@@ -67,25 +68,25 @@ class CmdUTF():
         """
 
         if apicmdS == "append":
-            cmd_append(pthP, parL)
+            self.cmd_append(pthP, parL)
         elif apicmdS == "assign":
-            cmd_assign(pthP, parL)
+            self.cmd_assign(pthP, parL)
         elif apicmdS == "eval":
-            cmd_eval(pthP, parL)
+            self.cmd_eval(pthP, parL)
         elif apicmdS == "image":
-            cmd_image(pthP, parL)
+            self.cmd_image(pthP, parL)
         elif apicmdS == "img2":
-            cmd_img2(pthP, parL)
+            self.cmd_img2(pthP, parL)
         elif apicmdS == "project":
-            cmd_project(pthP, parL)
+            self.cmd_project(pthP, parL)
         elif apicmdS == "report":
-            cmd_report(pthP, parL)
+            self.cmd_report(pthP, parL)
         elif apicmdS == "table":
-            cmd_table(pthP, parL)
+            self.cmd_table(pthP, parL)
         elif apicmdS == "text":
-            cmd_text(pthP, parL)
+            self.cmd_text(pthP, parL)
         elif apicmdS == "write":
-            cmd_write(pthP, parL)
+            self.cmd_write(pthP, parL)
         else:
             pass
 
@@ -137,123 +138,12 @@ class CmdUTF():
 
         return soupS
 
-    def vtable(self, tbL, hdrL, tblfmt, alignL):
-        """write value table"""
-
-        # locals().update(self.rivtD)
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate(
-                tbL, headers=hdrL, tablefmt=tblfmt,
-                showindex=False, colalign=alignL
-            )
-        )
-        mdS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-
-        return mdS
-
-        # self.calcS += mdS + "\n"
-        # self.rivtD.update(locals())
-
-    def atable2(self, tblL, hdreL, tblfmt, alignaL):
-        """write assign table"""
-
-        locals().update(self.rivtD)
-
-        valL = []
-        for vaL in tblL:
-            varS = vaL[0].strip()
-            valS = vaL[1].strip()
-            unit1S, unit2S = vaL[2], vaL[3]
-            descripS = vaL[4].strip()
-            if unit1S != "-":
-                if type(eval(valS)) == list:
-                    val1U = array(eval(valS)) * eval(unit1S)
-                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-                else:
-                    cmdS = varS + "= " + valS
-                    exec(cmdS, globals(), locals())
-                    valU = eval(varS)
-                    val1U = str(valU.cast_unit(eval(unit1S)))
-                    val2U = str(valU.cast_unit(eval(unit2S)))
-            else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-                valU = eval(varS)
-                val1U = str(valU)
-                val2U = str(valU)
-            valL.append([varS, val1U, val2U, descripS])
-
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate(
-                valL, tablefmt=tblfmt, headers=hdreL,
-                showindex=False,  colalign=alignaL))
-        utfS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-
-        self.localD.update(locals())
-        print("\n" + mdS+"\n")
-        return mdS
-
-    def etable2(self, tblL, hdrvL, tblfmt, aligneL):
-        """write eval table"""
-
-        locals().update(self.rivtD)
-
-        valL = []
-        for vaL in tblL:
-            varS = vaL[0].strip()
-            valS = vaL[1].strip()
-            unit1S, unit2S = vaL[2], vaL[3]
-            descripS = vaL[4].strip()
-            if unit1S != "-":
-                if type(eval(valS)) == list:
-                    val1U = array(eval(valS)) * eval(unit1S)
-                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-                else:
-                    cmdS = varS + "= " + valS + " * " + unit1S
-                    exec(cmdS, globals(), locals())
-                    valU = eval(varS)
-                    val1U = str(valU.cast_unit(eval(unit1S)))
-                    val2U = str(valU.cast_unit(eval(unit2S)))
-            else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-                valU = eval(varS)
-                val1U = str(valU)
-                val2U = str(valU)
-            valL.append([varS, val1U, val2U, descripS])
-
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate(
-                valL, tablefmt=tblfmt, headers=hdrvL,
-                showindex=False,  colalign=alignvL))
-        utfS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-
-        self.rivtD.update(locals())
-
-        print("\n" + mdS+"\n")
-        return utfS
-
-    def append(self):
+    def cmd_append(self):
         """_summary_
         """
         pass
 
-    def assign(self):
+    def cmd_assign(self):
         """import values from files
 
         """
@@ -304,20 +194,25 @@ class CmdUTF():
         # print(mdS + "\n")
         return rstS
 
-    def image(self):
+    def cmd_image(self, pthP, parL):
         """insert image from file
 
         """
-        utfS = ""
-        iL = self.paramL
-        file1S = iL[0].strip()
-        #  file1S = file1S.replace("/", "|")
-        utfS = "< Figure path: " + file1S + "> \n"
-
-        print(utfS)
+        print(f"{parL=}")
+        sizeF = float(parL[1])
+        capS = parL[0].split("_[")[0]
+        file1S = str(pthP)
+        fnumI = 1
+        utfS = "< Figure " + str(fnumI) + ":  " + \
+            capS + " path: " + file1S + "> \n"
+        try:
+            image = mpimage.imread(file)
+            plt.imshow(image)
+        except:
+            pass
         return utfS
 
-    def img2(self):
+    def cmd_img2(self):
         """insert images from files
 
         """
@@ -330,7 +225,7 @@ class CmdUTF():
         print(utfS)
         return utfS
 
-    def project(self):
+    def cmd_project(self):
         """insert project information from txt
 
             :return lineS: utf text
@@ -340,7 +235,7 @@ class CmdUTF():
         print("< for project data see PDF output >")
         return "(... for project data - see PDF report output ...)"
 
-    def table(self):
+    def cmd_table(self):
         """insert table from csv or xlsx file
 
             :return lineS: md table
@@ -394,13 +289,19 @@ class CmdUTF():
         tableS = output.getvalue()
         sys.stdout = old_stdout
 
+        # valP = Path(folderD["valsP"], folderD["valfileS"])
+        # with open(valP, "w", newline="") as f:
+        #     writecsv = csv.writer(f)
+        #     writecsv.writerow(hdraL)
+        #     writecsv.writerows(vtableL)
+
         print(tableS)
         return tableS
 
-    def text(self):
+    def cmd_text(self):
         """insert text from file
 
-        || text | folder | file | type 
+        || text | folder | file | type
 
         :param lineS: string block
 
@@ -448,7 +349,7 @@ class CmdUTF():
         elif extS == ".py":
             pass
 
-    def eval(self):
+    def cmd_eval(self):
         """import data from files
 
 
@@ -484,33 +385,26 @@ class CmdUTF():
 
 class CmdRST():
 
-    def __init__(self, paramL, labelD, folderD,  localD):
-        """_summary_
+    def __init__(self, paramL, labelD, folderD,  rivtD):
+        """commands that format a utf doc
 
-        :param paramL: _description_
-        :type paramL: _type_
-        :param labelD: _description_
-        :type labelD: _type_
-        :param folderD: _description_
-        :type folderD: _type_
-        :param localD: _description_
-        :type localD: _type_
-        :return: _description_
-        :rtype: _type_
+        Args:
+            paramL (list): _description_
+            labelD (dict): _description_
+            folderD (dict): _description_
+            localD (dict): _description_
         """
 
-        self.localD = localD
+        self.localD = rivtD
         self.folderD = folderD
         self.labelD = labelD
-        self.widthII = labelD["widthI"] - 1
-        self.paramL = paramL
         self.errlogP = folderD["errlogP"]
 
-        modnameS = self.labelD["modnameS"]
+        baseS = self.labelD["baseS"]
         # print(f"{modnameS=}")
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS +
+            format="%(asctime)-8s  " + baseS +
             "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
             filename=self.errlogP,
@@ -518,16 +412,39 @@ class CmdRST():
         )
         warnings.filterwarnings("ignore")
 
-        fileS = paramL[0].strip()
-        if fileS[0:4] == "data":
-            self.currP = folderD["docpathP"]
-            self.relP = fileS
-        elif fnmatch.fnmatch(fileS[0:5], "r[0-9]"):
-            self.currP = Path(folderD["pubP"])
-        else:
-            self.currP = Path(folderD["prvP"])
+    def cmd_parse(self, apicmdS, pthP, parL):
+        """cmd_parse _summary_
 
-    def project(self):
+        Args:
+            apicmdS (_type_): _description_
+            pthP (_type_): _description_
+            parL (_type_): _description_
+        """
+
+        if apicmdS == "append":
+            self.cmd_append(pthP, parL)
+        elif apicmdS == "assign":
+            self.cmd_assign(pthP, parL)
+        elif apicmdS == "eval":
+            self.cmd_eval(pthP, parL)
+        elif apicmdS == "image":
+            self.cmd_image(pthP, parL)
+        elif apicmdS == "img2":
+            self.cmd_img2(pthP, parL)
+        elif apicmdS == "project":
+            self.cmd_project(pthP, parL)
+        elif apicmdS == "report":
+            self.cmd_report(pthP, parL)
+        elif apicmdS == "table":
+            self.cmd_table(pthP, parL)
+        elif apicmdS == "text":
+            self.cmd_text(pthP, parL)
+        elif apicmdS == "write":
+            self.cmd_write(pthP, parL)
+        else:
+            pass
+
+    def cmd_project(self):
         """insert project information from csv, xlsx or syk
 
             :return lineS: md table
@@ -571,53 +488,75 @@ class CmdRST():
                 f"{self.cmdS} not evaluated: {extS} file not processed")
             return
 
-    def image(self):
+    def cmd_image(self, pthP, parL):
         """insert image from file
 
         Args:
             il (list): image parameters
         """
+
+        print(f"{parL=}")
+        sizeF = float(parL[1])
+        capS = parL[0].split("_[")[0]
+        file1S = str(pthP)
+        fnumI = 1
         rstS = ""
         iL = self.paramL
+        scale1S = str(sizeF)
+        file1S = iL[0].strip()
+        img1S = file1S
+        img1S = img1S.replace("\\", "/")
+        rstS = ("\n.. image:: "
+                + img1S + "\n"
+                + "   :scale: "
+                + scale1S + "%" + "\n"
+                + "   :align: center"
+                + "\n\n"
+                )
+
+        return rstS
+
+    def cmd_img2(self, pthP, parL):
+
+        utfS = ""
+        iL = self.paramL
         if len(iL[0].split(",")) == 1:
-            scale1S = iL[1].strip()
             file1S = iL[0].strip()
-            img1S = str(Path(self.currP, file1S))
-            img1S = img1S.replace("\\", "/")
-            rstS = ("\n.. image:: "
-                    + img1S + "\n"
-                    + "   :scale: "
-                    + scale1S + "%" + "\n"
-                    + "   :align: center"
-                    + "\n\n"
-                    )
+            #  file1S = file1S.replace("/", "|")
+            utfS = "< Figure path: " + file1S + "> \n"
         elif len(iL[0].split(",")) == 2:
             iL = iL[0].split(",")
             file1S = iL[0].strip()
             file2S = iL[1].strip()
-            iL = iL[1].split(",")
-            scale1S = iL[0]
-            scale2S = iL[1]
-            img1S = str(Path(self.currP, file1S))
-            img2S = str(Path(self.currP, file1S))
-            img1S = img1S.replace("\\", "/")
-            img2S = img2S.replace("\\", "/")
-            rstS = ("|L| . |R|"
-                    + "\n\n"
-                    + ".. |L| image:: "
-                    + img1S + "\n"
-                    + "   :width: "
-                    + scale1S + "%"
-                    + "\n\n"
-                    + ".. |R| image:: "
-                    + img2S + "\n"
-                    + "   :width: "
-                    + scale2S + "%"
-                    + "\n\n"
-                    )
-        return rstS
+            utfS = "Figure path: " + file1S + "\n" + "Figure path: " + file2S + "\n"
+        print(utfS)
 
-    def table(self):
+        len(iL[0].split(",")) == 2:
+        iL = iL[0].split(",")
+        file1S = iL[0].strip()
+        file2S = iL[1].strip()
+        iL = iL[1].split(",")
+        scale1S = iL[0]
+        scale2S = iL[1]
+        img1S = str(Path(self.currP, file1S))
+        img2S = str(Path(self.currP, file1S))
+        img1S = img1S.replace("\\", "/")
+        img2S = img2S.replace("\\", "/")
+        rstS = ("|L| . |R|"
+                + "\n\n"
+                + ".. |L| image:: "
+                + img1S + "\n"
+                + "   :width: "
+                + scale1S + "%"
+                + "\n\n"
+                + ".. |R| image:: "
+                + img2S + "\n"
+                + "   :width: "
+                + scale2S + "%"
+                + "\n\n"
+                )
+
+    def cmd_table(self):
         """insert table from csv or xlsx file
 
         Args:
@@ -679,7 +618,7 @@ class CmdRST():
         restS = "\n" + rstS + "\n\n"
         return restS
 
-    def text(self):
+    def cmd_text(self):
         """insert text from file
 
         || text | folder | file | type | shade

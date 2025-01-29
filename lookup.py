@@ -30,6 +30,7 @@ def look(rivN, curP, rivtP):
     styleP = Path(projP, "docs", "pdf")
     valfileS = baseS.replace("riv", "val") + ".csv"
     readmeP = Path(projP, "README.txt")
+    xchP = Path(projP, xchP)
 
     # global dicts
     rivtD = {}
