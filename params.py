@@ -5,7 +5,19 @@ import sys
 from pathlib import Path
 
 
-def look(rivN, curP, rivtP):
+def dictions(rivN, curP, rivtP):
+    """dictionaries of parameters
+
+    Args:
+        rivN (_type_): _description_
+        curP (_type_): _description_
+        rivtP (_type_): _description_
+
+    Returns:
+        folderD (dict): dictionary of paths
+        folderD (dict): dictionary of paths
+        folderD (dict): dictionary of paths
+    """
 
     # input paths
     rivP = curP

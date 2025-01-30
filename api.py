@@ -1,20 +1,21 @@
 #! python
 """rivt API
-
-
-rv.R(rS) - (Run) Execute shell scripts 
-rv.I(rS) - (Insert) Insert static text, math, images and tables
-rv.V(rS) - (Values) Evaluate values and equations 
-rv.T(rS) - (Tools) Execute Python functions and scripts 
-rv.W(rS) - (Write) Write formatted documents 
-rv.X(rS) - (eXclude) Skip string processing 
-
 The API is intialized with 
 
              import rivtlib.api as rv 
 
-and rS is a triple quoted utf-8 string. The rivtlib code base uses variable
-types identified with the last letter of a variable name:
+API Functions:
+
+    rv.R(rS) - (Run) Execute shell scripts 
+    rv.I(rS) - (Insert) Insert static text, math, images and tables
+    rv.V(rS) - (Values) Evaluate values and equations 
+    rv.T(rS) - (Tools) Execute Python functions and scripts 
+    rv.X(rS) - (eXclude) Skip string processing 
+    rv.W(rS) - (Write) Write formatted documents 
+    rv.Q(rS) - (Quit) Exit rivt processing
+    
+    where rS is a triple quoted utf-8 string. The rivtlib code base uses
+    variable types identified with the last letter of a variable name:
 
 A = array
 B = boolean
@@ -28,7 +29,6 @@ P = path
 S = string
 """
 
-
 import fnmatch
 import logging
 import os
@@ -39,7 +39,7 @@ from datetime import datetime, time
 from pathlib import Path
 
 import __main__
-from rivtlib import lookup, parse
+from rivtlib import params, parse
 from rivtlib.unit import *
 # from rivtlib import write
 
@@ -186,11 +186,12 @@ def W(rS):
 
 
 def X(rS):
-    """skip rivt string - do not process or format
+    """skip rivt string - no processing
+
     """
 
     rL = rS.split("\n")
-    print("\n X func - skip section: " + rL[0] + "\n")
+    print("\n X func - section skipped: " + rL[0] + "\n")
 
 
 def Q():
