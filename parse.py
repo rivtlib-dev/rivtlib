@@ -88,15 +88,16 @@ class RivtParse:
         hS = strL[0]
         hL = hS.split("|")
         if hS.strip()[0:2] == "--":
-            labelD["docS"] = hL[0].strip()             # set section title
+            labelD["docS"] = hL[0].strip()    # set section title
             labelD["xch"] = hL[1].strip()              # set xchange flag
             labelD["color"] = hL[2].strip()            # set background color
             hdutfS = hdrstS = "\n"
         else:
-            labelD["docS"] = hL[0].strip()             # set section title
+            # set section title
+            titleS = labelD["docS"] = hL[0].strip()
             labelD["xch"] = hL[1].strip()              # set xchange flag
             labelD["color"] = hL[2].strip()            # set background color
-            labelD["secnumI"] = labelD["secnumI"] + 1  # increment section
+            snumI = labelD["secnumI"] = labelD["secnumI"] + 1
             dnumS = labelD["docnumS"] + "-[" + str(snumI) + "]"
             headS = dnumS + " " + hL[0].strip()
             bordrS = labelD["widthI"] * "-"
@@ -113,6 +114,7 @@ class RivtParse:
         xutfS += hdutfS                                # add to local rivt str
         xrstS += hdrstS
 
+        # print(strL)
         for uS in strL[1:]:                            # section body
             # print(f"{uS=}")
             try:
@@ -145,7 +147,6 @@ class RivtParse:
                     reS = rvtC.cmd_parse(cmdS)
                     xutfS += utS
                     xrstS += reS
-                    continue
             elif "_[" in uS:                              # tags
                 usL = uS.split("_[")                      # line, tag list
                 lineS = usL[0]
@@ -153,12 +154,14 @@ class RivtParse:
                 tagcmd = self.tagsD[tagS]                 # get tag name
                 if tagS in self.tagsD:
                     if len(lineS) > 0:                    # line empty in block
-                        rvtuC = tag.TagUTF(tagcmd, folderD, labelD, rivtD)
-                        utS = rvtuC.tag_parse(lineS)      # format lines
+                        rvtuC = tag.TagUTF()
+                        utS = rvtuC.tag_parse(
+                            tagcmd, lineS, folderD, labelD, rivtD)
                         xutfS += utS + "\n"
                     else:                                 # flag for block
                         blockB = True
-                        rvtrC = tag.TagRST(tagcmd, folderD, labelD, rivtD)
+                        rvtrC = tag.TagRST(
+                            tagcmd, lineS, folderD, labelD, rivtD)
                         reS = rvtrC.tag_parse(lineS)
                         xrstS += reS + "\n"
             else:
@@ -184,17 +187,17 @@ class RivtParse:
                 xutfS += vutfS
                 xmdS += vmdS
                 xrstS += vutfS
-            blevalL = []
+        blevalL = []
 
-            # export values
-            valP = Path(self.folderD["valsP"], self.folderD["valfileS"])
-            with open(valP, "w", newline="") as f:
-                writecsv = csv.writer(f)
-                writecsv.writerow(hdraL)
-                writecsv.writerows(vtableL)
+        # export values
+        valP = Path(self.folderD["valsP"], self.folderD["valfileS"])
+        with open(valP, "w", newline="") as f:
+            writecsv = csv.writer(f)
+            writecsv.writerow(hdraL)
+            writecsv.writerows(vtableL)
 
-            tagS = self.tagsD["[q]"]
-            rvtS = tag.TagUTF(lineS, tagS, labelD, folderD, rivtD)
-            xutfS += rvtS + "\n"
-            rvtS = tag.TagRST(lineS, tagS, labelD, folderD, rivtD)
-            xrstS += rvtS + "\n"
+        tagS = self.tagsD["[q]"]
+        rvtS = tag.TagUTF(lineS, tagS, labelD, folderD, rivtD)
+        xutfS += rvtS + "\n"
+        rvtS = tag.TagRST(lineS, tagS, labelD, folderD, rivtD)
+        xrstS += rvtS + "\n"

@@ -458,14 +458,15 @@ class TagUTF:
             utS: formatted utf string
         """
 
-        modnameS = self.labelD["rivN"]
+        errlogP = folderD["errlogP"]
+        modnameS = labelD["rivN"]
         # print(f"{modnameS=}")
         logging.basicConfig(
             level=logging.DEBUG,
             format="%(asctime)-8s  " + modnameS +
             "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
-            filename=self.errlogP,
+            filename=errlogP,
             filemode="w",
         )
         warnings.filterwarnings("ignore")
@@ -729,17 +730,6 @@ class TagRST:
         """convert rivt tags to md
 
         """
-
-        if tagS in self.tagsD:
-            return eval("self." + self.tagsD[tagS] + "()")
-        if "b" in tagS and "c" in tagS:
-            return self.boldcenter()
-        if "b" in tagS and "i" in tagS:
-            return self.bolditalic()
-        if "b" in tagS and "i" in tagS and "c" in tagS:
-            return self.bolditaliccenter()
-        if "i" in tagS and "c" in tagS:
-            return self.italiccenter()
 
     def bold(self):
         """bold text _[b]
