@@ -31,7 +31,7 @@ tabulate.PRESERVE_WHITESPACE = True
 
 class CmdUTF():
 
-    def __init__(self, labelD, folderD,  localD):
+    def __init__(self, labelD, folderD,  rivtD):
         """commands that format a utf doc
 
         Args:
@@ -41,7 +41,7 @@ class CmdUTF():
             localD (dict): _description_
         """
 
-        self.localD = localD
+        self.rivtD = rivtD
         self.folderD = folderD
         self.labelD = labelD
         self.errlogP = folderD["errlogP"]

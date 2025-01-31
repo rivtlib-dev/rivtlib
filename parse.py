@@ -13,6 +13,8 @@ class RivtParse:
 
         """
 
+        self.tS = tS
+
         if tS == "I":
             self.cmdL = ["append", "image", "table", "text"]
             self.tagsD = {"u]": "underline", "c]": "center", "r]": "right",
@@ -28,7 +30,7 @@ class RivtParse:
             self.cmdL = ["image", "table", "assign", "eval"]
             self.tagsD = {"e]": "equation", "f]": "figure", "t]": "table",
                           "#]": "foot", "d]": "description", "v]": "value",
-                          "s]": "sympy", "=": "eval"}
+                          "s]": "sympy", "=": "eval", "[V]]": "values"}
 
         elif tS == "R":
             self.cmdL = ["run", "process"]
@@ -44,7 +46,7 @@ class RivtParse:
         else:
             pass
 
-    def str_parse(self, tS, strL, folderD, labelD, rivtD):
+    def str_parse(self, strL, folderD, labelD, rivtD):
         """str_parse _summary_
 
         Args:
@@ -84,19 +86,19 @@ class RivtParse:
 
         # section header
         hS = strL[0]
+        hL = hS.split("|")
         if hS.strip()[0:2] == "--":
-            hdutfS = hdrstS = "\n", "\n", "\n"
+            labelD["docS"] = hL[0].strip()             # set section title
+            labelD["xch"] = hL[1].strip()              # set xchange flag
+            labelD["color"] = hL[2].strip()            # set background color
+            hdutfS = hdrstS = "\n"
         else:
-            hL = hS.split("|")                    # section string as list
-            titleS = hL[0].strip()                # section title
-            labelD["xch"] = hL[1].strip()         # set xchange
-            labelD["color"] = hL[2].strip()       # set background color
-            labelD["docS"] = titleS
-            snumI = labelD["secnumI"] + 1         # increment section number
-            labelD["secnumI"] = snumI
-            docnumS = labelD["docnumS"]
-            dnumS = docnumS + "-[" + str(snumI) + "]"
-            headS = dnumS + " " + titleS
+            labelD["docS"] = hL[0].strip()             # set section title
+            labelD["xch"] = hL[1].strip()              # set xchange flag
+            labelD["color"] = hL[2].strip()            # set background color
+            labelD["secnumI"] = labelD["secnumI"] + 1  # increment section
+            dnumS = labelD["docnumS"] + "-[" + str(snumI) + "]"
+            headS = dnumS + " " + hL[0].strip()
             bordrS = labelD["widthI"] * "-"
             hdutfS = bordrS + "\n" + headS + "\n" + bordrS + "\n"
             hdrstS = (
@@ -108,26 +110,29 @@ class RivtParse:
                 + "   ?x?end{tcolorbox}"
                 + "   \n" + "   ?x?newline" + "   ?x?vspace{.05in}"
                 + "\n\n")
-        xutfS += hdutfS
+        xutfS += hdutfS                                # add to local rivt str
         xrstS += hdrstS
 
-        # section body
-        for uS in strL[1:]:
+        for uS in strL[1:]:                            # section body
+            # print(f"{uS=}")
             try:
-                if uS[0] == "#":                      # skip comment lines
+                if uS[0] == "#":                       # skip comment lines
                     continue
                 elif len(uS) < 1:
                     continue
             except:
                 pass
-            # print(f"{uS=}")
-            if blockB:                                 # accum block
+            if blockB:                                 # accumulate block
                 blockS += uS
                 if blockB and uS.strip() == "_[[q]]":
-                    parse_block(blockS)
                     blockB = False
+                    parse_block(blockS)
+                    taguS = rvtuC.tag_parse(tagS, lineS)  # format blocks
+                    tagrS = rvtrC.tag_parse(tagS, lineS)
+                    xutfS += taguS + "\n"
+                    xrstS += tagrS + "\n"
                     continue
-            elif uS[0:2] == "||":                      # commands
+            elif uS[0:2] == "||":                       # commands
                 parL = uS[2:].split("|")
                 cmdS = parL[0].strip()
                 pthP = Path(parL[1].strip())
@@ -135,57 +140,30 @@ class RivtParse:
                 parL = pars.split(",")
                 if cmdS in self.cmdL:
                     rvtC = cmd.CmdUTF(labelD, folderD, rivtD)
-                    utfS = rvtC.cmd_parse(cmdS, pthP, parL)
+                    utS = rvtC.cmd_parse(cmdS, pthP, parL)
                     rvtC = cmd.CmdRST(parL, labelD, folderD, rivtD)
                     reS = rvtC.cmd_parse(cmdS)
-                    xutfS += utfS
+                    xutfS += utS
                     xrstS += reS
-            elif "_[" in uS:                           # line tag
-                usL = uS.split("_[")
+                    continue
+            elif "_[" in uS:                              # tags
+                usL = uS.split("_[")                      # line, tag list
                 lineS = usL[0]
                 tagS = usL[1].strip()
-                if tagS[0] == "[":                     # block tag
-                    blockB = True
-                    continue
+                tagcmd = self.tagsD[tagS]                 # get tag name
                 if tagS in self.tagsD:
-                    rvtC = tag.TagUTF(lineS, self.tagsD,
-                                      folderD, labelD, rivtD)
-                    utfxS = rvtC.tag_parse(tagS)
-                    xutfS += utfxS + "\n"
-                    rvtC = tag.TagRST(lineS, self.tagsD,
-                                      folderD, labelD, rivtD)
-                    reS = rvtC.tag_parse(tagS)
-                    xrstS += reS + "\n"
-            elif "=" in uS and self.tS == "V":      # equation tag
-                # print(f"{uS=}")
-                usL = uS.split("|")
-                lineS = usL[0]
-                labelD["unitS"] = usL[1].strip()
-                labelD["descS"] = usL[2].strip()
-                if "=" in uS:                          # declare tag
-                    tfS = "assign"
-                    blockevalL.append(rvtC.tag_parse("="))
-                    rvtC = tag.TagsRST(lineS, labelD, folderD, localD)
-                    eqL = rvtC.tag_parse(":=")
-                    blockB = True
-                    continue
-                else:
-                    tfS = "eval"                       # assign tag
-                    eqL = rvtC.tag_parse("=")
-                    rvtC = tag.TagsRST(lineS, labelD, folderD, localD)
-                    eqL = rvtC.tag_parse("=")
-                    rstS += eqL[1]
-                    blockB = True
-                    continue
-                    # export values
-
-                valP = Path(folderD["valsP"], folderD["valfileS"])
-                with open(valP, "w", newline="") as f:
-                    writecsv = csv.writer(f)
-                    writecsv.writerow(hdraL)
-                    writecsv.writerows(vtableL)
+                    if len(lineS) > 0:                    # line empty in block
+                        rvtuC = tag.TagUTF(tagcmd, folderD, labelD, rivtD)
+                        utS = rvtuC.tag_parse(lineS)      # format lines
+                        xutfS += utS + "\n"
+                    else:                                 # flag for block
+                        blockB = True
+                        rvtrC = tag.TagRST(tagcmd, folderD, labelD, rivtD)
+                        reS = rvtrC.tag_parse(lineS)
+                        xrstS += reS + "\n"
             else:
-                xutfS += uS + "\n"
+                xutfS += uS + "\n"                        # return other
+                xrstS += uS + "\n"
 
         return (xutfS, xrstS, folderD, labelD, rivtD)
 

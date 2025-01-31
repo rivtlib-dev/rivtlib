@@ -409,7 +409,7 @@ class TagEQ():
         return utfS
 
 
-class TagUTF():
+class TagUTF:
     """convert tags to formatted text
     Args:
         tags (str): 
@@ -442,20 +442,21 @@ class TagUTF():
 
 # \*[a-zA-Z0-9_]*\*
 
-    def __init__(self, lineS, tagsD, folderD, labelD, rivtD):
-        """convert rivt tags to md or reST
+    def __init__(self):
+        """convert rivt tags to utf
 
         """
 
-        self.lineS = lineS
-        self.tagsD = tagsD
-        self.localD = rivtD
-        self.folderD = folderD
-        self.labelD = labelD
-        self.lineS = lineS
-        self.widthI = labelD["widthI"]
-        self.errlogP = folderD["errlogP"]
-        self.valL = []                         # accumulate values in list
+    def tag_parse(self, tagcmd, lineS, folderD, labelD,  rivtD):
+        """call line format function
+
+        Args:
+            tagcmd (_type_): _description_
+            lineS (_type_): _description_
+
+        Returns:
+            utS: formatted utf string
+        """
 
         modnameS = self.labelD["rivN"]
         # print(f"{modnameS=}")
@@ -469,40 +470,27 @@ class TagUTF():
         )
         warnings.filterwarnings("ignore")
 
-    def tag_parse(self, tagS):
-        """convert rivt tags to md
+        m = globals()['TagUTF']()
+        self.lineS = lineS
+        print(f"{tagcmd=}")
+        print(f"{lineS=}")
+        ucmdS = str(tagcmd)
+        print(f"{ucmdS=}")
+        functag = getattr(m, ucmdS)
+        utS = functag(lineS, labelD)
+        print("------------", utS)
 
-        """
+        return utS
 
-        if tagS in self.tagsD:
-            return eval("self." + self.tagsD[tagS] + "()")
-        if "b" in tagS and "c" in tagS:
-            return self.boldcenter()
-        if "b" in tagS and "i" in tagS:
-            return self.bolditalic()
-        if "b" in tagS and "i" in tagS and "c" in tagS:
-            return self.bolditaliccenter()
-        if "i" in tagS and "c" in tagS:
-            return self.italiccenter()
-
-    def center(self):
+    def center(self, lineS, labelD):
         """center text _[c]
 
         :return lineS: centered line
         :rtype: str
         """
-        lineS = self.lineS.center(int(self.widthI))
-        print(lineS)
-        return lineS
 
-    def right(self):
-        """right justify text _[r]
-
-        :return lineS: right justified text
-        :rtype: str
-        """
-
-        lineS = self.lineS.rjust(int(self.widthI))
+        lineS = lineS.center(int(labelD["widthI"]))
+        print("*******", lineS)
 
         return lineS
 
@@ -526,7 +514,7 @@ class TagUTF():
         return lineS
 
     def figure(self):
-        """md figure caption _[f]
+        """utf figure caption _[f]
 
         :return lineS: figure label
         :rtype: str
@@ -536,7 +524,6 @@ class TagUTF():
         self.labelD["figI"] = fnumI + 1
         lineS = "Fig. " + str(fnumI) + " - " + self.lineS
 
-        print(lineS + "\n")
         return lineS + "\n"
 
     def plain(self):
@@ -678,7 +665,7 @@ class TagUTF():
             xrstS += rvtS + "\n"
 
 
-class TagRST():
+class TagRST:
     """convert rivt tags to restructured text
 
     Args:

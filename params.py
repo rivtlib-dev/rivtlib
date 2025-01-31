@@ -1,4 +1,4 @@
-"""dictionaries and lists"""
+"""parameter dictionaries and lists"""
 
 import os
 import sys

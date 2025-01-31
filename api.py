@@ -67,8 +67,8 @@ else:
 
 # initialize strings, config, logging
 rstS = utfS = xrstS = xutfS = """"""
-timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p") + "\n"
-utfS += timeS
+timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p") + 2*"\n"
+print(timeS)
 config = ConfigParser()
 config.read(Path(folderD["projP"], "rivt-config.ini"))
 headS = config.get('report', 'title')
@@ -108,7 +108,7 @@ def rivt_parse(rS, tS):
     parseC = parse.RivtParse(tS)
 
     xutfS, xrstS, folderD, labelD, rivtD = parseC.str_parse(
-        tS, rL, folderD, labelD, rivtD)
+        rL, folderD, labelD, rivtD)
 
     # accumulate output strings
     utfS += xutfS
@@ -195,6 +195,5 @@ def X(rS):
 
 
 def Q():
-    print(">>>>>>>>>>>>")
-    print(utfS)
+    print("<<<<<<<< exit rivtlib >>>>>>>>>")
     sys.exit()
