@@ -29,7 +29,6 @@ P = path
 S = string
 """
 
-import rivtlib.test
 from rivtlib.unit import *
 from rivtlib import params, parse
 import __main__
@@ -40,7 +39,6 @@ import warnings
 import os
 import logging
 import fnmatch
-import rivtlib.test
 import sys
 
 # from rivtlib import write
