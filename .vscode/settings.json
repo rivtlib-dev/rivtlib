@@ -6,14 +6,15 @@
     ],
     "fsdeploy.nodes": [
         {
-            "source": "c:/git/rivtlib/",
-            "target": "C:/Python313/Lib/site-packages/rivtlib",
+            "source": "C:/Python313/Lib/site-packages/rivtlib",
+            "target": "c:/git/rivtlib/",
             "include": "**/*.*",
-            "exclude": "**/.vscode/*.*",
+            "exclude": "",
             "deleteTargetOnDeploy": true,
         }
     ],
     "fsdeploy.deployOnSave": true,
     "fsdeploy.deployWorkspaceOnSave": false,
-    "autoDocstring.includeName": true
+    "autoDocstring.includeName": true,
+    "editor.formatOnSave": true
 }
