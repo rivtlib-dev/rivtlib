@@ -1,23 +1,11 @@
-"""parameter dictionaries and lists"""
+"""dictionaries and lists"""
 
 import os
 import sys
 from pathlib import Path
 
 
-def dictions(rivN, curP, rivtP):
-    """dictionaries of parameters
-
-    Args:
-        rivN (_type_): _description_
-        curP (_type_): _description_
-        rivtP (_type_): _description_
-
-    Returns:
-        folderD (dict): dictionary of paths
-        folderD (dict): dictionary of paths
-        folderD (dict): dictionary of paths
-    """
+def look(rivN, curP, rivtP):
 
     # input paths
     rivP = curP
@@ -48,7 +36,7 @@ def dictions(rivN, curP, rivtP):
     rivtD = {}
 
     folderD = {}
-    for item in ["rivtP", "docsP", "readmeP", "reportP", "projP",
+    for item in ["rivtP", "docsP", "readmeP", "reportP", "projP", "xchP",
                  "valsP", "insP", "errlogP", "styleP", "tempP"]:
         folderD[item] = eval(item)
 

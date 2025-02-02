@@ -29,18 +29,20 @@ P = path
 S = string
 """
 
-import fnmatch
-import logging
-import os
-import sys
-import warnings
-from configparser import ConfigParser
-from datetime import datetime, time
-from pathlib import Path
-
-import __main__
-from rivtlib import params, parse
+import rivtlib.test
 from rivtlib.unit import *
+from rivtlib import params, parse
+import __main__
+from pathlib import Path
+from datetime import datetime, time
+from configparser import ConfigParser
+import warnings
+import os
+import logging
+import fnmatch
+import rivtlib.test
+import sys
+
 # from rivtlib import write
 
 global utfS, rstS, folderD, labelD, rivtD

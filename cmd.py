@@ -531,7 +531,6 @@ class CmdRST():
             utfS = "Figure path: " + file1S + "\n" + "Figure path: " + file2S + "\n"
         print(utfS)
 
-        len(iL[0].split(",")) == 2:
         iL = iL[0].split(",")
         file1S = iL[0].strip()
         file2S = iL[1].strip()
