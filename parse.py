@@ -1,4 +1,4 @@
-from rivtlib import tag, cmd
+from rivtlib import tags, cmds
 from pathlib import Path
 
 
@@ -45,6 +45,39 @@ class RivtParse:
             self.tagsD = {}
         else:
             pass
+
+
+    def parse_block(self, blockS):
+        """block_parse
+
+        Args:
+            self (_type_): _description_
+        """
+        if blevalB and len(uS.strip()) < 2:    # value tables
+            vtableL += blevalL
+            if tfS == "declare":
+                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
+                xutfS += vutfS
+                xrstS += vutfS
+            if tfS == "assign":
+                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
+                xutfS += vutfS
+                xmdS += vmdS
+                xrstS += vutfS
+        blevalL = []
+
+        # export values
+        valP = Path(self.folderD["valsP"], self.folderD["valfileS"])
+        with open(valP, "w", newline="") as f:
+            writecsv = csv.writer(f)
+            writecsv.writerow(hdraL)
+            writecsv.writerows(vtableL)
+
+        tagS = self.tagsD["[q]"]
+        rvtS = tags.TagUTF(lineS, tagS, labelD, folderD, rivtD)
+        xutfS += rvtS + "\n"
+        rvtS = tags.TagRST(lineS, tagS, labelD, folderD, rivtD)
+        xrstS += rvtS + "\n"
 
     def str_parse(self, strL, folderD, labelD, rivtD):
         """str_parse _summary_
@@ -128,7 +161,7 @@ class RivtParse:
                 blockS += uS
                 if blockB and uS.strip() == "_[[q]]":
                     blockB = False
-                    parse_block(blockS)
+                    self.parse_block(blockS)
                     taguS = rvtuC.tag_parse(tagS, lineS)  # format blocks
                     tagrS = rvtrC.tag_parse(tagS, lineS)
                     xutfS += taguS + "\n"
@@ -141,9 +174,9 @@ class RivtParse:
                 pars = parL[2].strip()
                 parL = pars.split(",")
                 if cmdS in self.cmdL:
-                    rvtC = cmd.CmdUTF(labelD, folderD, rivtD)
+                    rvtC = cmds.CmdUTF(labelD, folderD, rivtD)
                     utS = rvtC.cmd_parse(cmdS, pthP, parL)
-                    rvtC = cmd.CmdRST(parL, labelD, folderD, rivtD)
+                    rvtC = cmds.CmdRST(parL, labelD, folderD, rivtD)
                     reS = rvtC.cmd_parse(cmdS)
                     xutfS += utS
                     xrstS += reS
@@ -170,34 +203,4 @@ class RivtParse:
 
         return (xutfS, xrstS, folderD, labelD, rivtD)
 
-    def block_parse(self, blockS):
-        """block_parse
 
-        Args:
-            self (_type_): _description_
-        """
-        if blevalB and len(uS.strip()) < 2:    # value tables
-            vtableL += blevalL
-            if tfS == "declare":
-                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
-                xutfS += vutfS
-                xrstS += vutfS
-            if tfS == "assign":
-                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
-                xutfS += vutfS
-                xmdS += vmdS
-                xrstS += vutfS
-        blevalL = []
-
-        # export values
-        valP = Path(self.folderD["valsP"], self.folderD["valfileS"])
-        with open(valP, "w", newline="") as f:
-            writecsv = csv.writer(f)
-            writecsv.writerow(hdraL)
-            writecsv.writerows(vtableL)
-
-        tagS = self.tagsD["[q]"]
-        rvtS = tag.TagUTF(lineS, tagS, labelD, folderD, rivtD)
-        xutfS += rvtS + "\n"
-        rvtS = tag.TagRST(lineS, tagS, labelD, folderD, rivtD)
-        xrstS += rvtS + "\n"
