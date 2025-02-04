@@ -29,7 +29,7 @@ from rivtlib import cmd
 tabulate.PRESERVE_WHITESPACE = True
 
 
-class TagEQ:
+class TagValues:
     """
 
     Args:
@@ -433,39 +433,39 @@ class Tag:
     """convert tags to formatted text or reSt
     Args:
         tags (str): 
-            ============================ =======================================
+            ====================== =======================================
             tags                                   description 
-            ============================ =======================================
+            ====================== =======================================
             lines:
-             _[h1-h6]                   heading type        
-             _[c]                       center
-             _[u]                       underline (only rst)  
-             _[s]                       sympy math
-             _[e]                       equation label and autonumber
-             _[f]                       figure caption and autonumber
-             _[t]                       table title and autonumber
-             _[#]                       footnote and autonumber
-             _[d]                       footnote description 
-             _[hline]                   horizontal line
-             _[page]                    new page
-             _[address, label]          url, internal reference
+             _[h1-h6]                heading type        
+             _[C]                    center
+             _[S]                    sympy math
+             _[E]                    equation label and autonumber
+             _[F]                    figure caption and autonumber
+             _[T]                    table title and autonumber
+             _[#]                    footnote and autonumber
+             _[D]                    footnote description 
+             _[HLINE]                horizontal line
+             _[PAGE]                 new page
+             _[address, label]       url, internal reference
             blocks:          
-             _[[b]]                     bold
-             _[[i]]                     italic
-             _[[n]]                     indent
-             _[[w]]                     italic indent
-             _[[x]]                     bold indent
-             _[[p]]                     plain  
-             _[[l]]                     LaTeX
-             _[[q]]                     quit block
+             _[[Q]]                  end block
+             _[[V]]                  start values block               
+             _[[P]]                  start plain text block  
+             _[[N]]                  start indent text block
+             _[[B]]                  start bold text block (latex pdf)
+             _[[I]]                  start italic text block (latex pdf)
+             _[[O]]                  start indent bold block (latex pdf)
+             _[[T]]                  start indent italic block (latex pdf)
+             _[[L]]                  start LaTeX block (latex pdf)
+    
+    
+    # \*[a-zA-Z0-9_]*\*
+    
     """
 
-
-
-# \*[a-zA-Z0-9_]*\*
-
     def __init__(self,  folderD, labelD,  rivtD):
-        """convert rivt tags to utf and reSt
+        """tag formatting to utf and reSt
 
         """
         self.rivtD = rivtD
@@ -485,7 +485,7 @@ class Tag:
         warnings.filterwarnings("ignore")
 
     def tag_parse(self, tagcmdS, lineS):
-        """call line format function
+        """parse a tagged line
 
         Args:
             tagcmd (_type_): _description_
@@ -494,18 +494,17 @@ class Tag:
         Returns:
             utS: formatted utf string
         """
-
         tC = globals()['Tag']("folderD, labelD,  rivtD")
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
-        utS, reS = functag(lineS, self.labelD, self.folderD)
+        utS, reS = functag(lineS, self.folderD, self.labelD)
+        
         print(f"{tcmdS=}")
         print(f"{lineS=}")
-
         return utS, reS
 
     def center(self, lineS, labelD, folderD):
-        """center text _[c]
+        """center text _[C]
 
         Args:
             lineS (_type_): _description_
@@ -515,67 +514,68 @@ class Tag:
         Returns:
             _type_: _description_
         """        
-        
-        
+        # utf
         luS = lineS.center(int(labelD["widthI"])) + "\n"
+        # rst
         lrS = "\n::\n\n" +  lineS.center(int(labelD['widthI'])) + "\n"
-        print("***center***", f"{luS=}", f"{lrS=}")
 
+        print("***center***", f"{luS=}", f"{lrS=}")
         return luS, lrS
         
-        
-        
+    def sympy(self, lineS, folderD, labelD):
+        """format sympy math _[S]
 
-    def figure(self):
-        """utf figure caption _[f]
+        Args:
+            lineS (_type_): _description_
+            labelD (_type_): _description_
+            folderD (_type_): _description_
 
-        :return lineS: figure label
-        :rtype: str
-        """
-
-        fnumI = int(self.labelD["figI"])
-        self.labelD["figI"] = fnumI + 1
-        lineS = "Fig. " + str(fnumI) + " - " + self.lineS
-
-        return lineS + "\n"
-
-    def plain(self):
-        """format plain literal text _[p]
-
-        :param lineS: _description_
-        :type lineS: _type_
-        """
-        print(self.lineS)
-        return self.lineS
-
-    def sympy(self):
-        """format line of sympy _[s]
-
-        :return lineS: formatted sympy
-        :rtype: str
-        """
-
+        Returns:
+            _type_: _description_
+        """        
         spS = self.lineS.strip()
-        # try:
-        #     spL = spS.split("=")
-        #     spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-        #     # sps = sp.encode('unicode-escape').decode()
-        # except:
+        try:
+            spL = spS.split("=")
+            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            # sps = sp.encode('unicode-escape').decode()
+        except:
+            pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        print(lineS)
-        return lineS
+        # utf
+        luS = lineS.center(int(labelD["widthI"])) + "\n"
+        # rst
+        lrS = ".. raw:: math\n\n   " + lineS + "\n"
 
-    def table(self):
-        """format table title  _[t]
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def table(self, lineS, folderD, labelD):
+        """format table title _[T]
 
         :return lineS: md table title
         :rtype: str
         """
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
-        lineS = "Table " + str(tnumI) + " - " + self.lineS
-        print(lineS)
-        return lineS
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def figure(self, lineS, folderD, labelD):
+        """utf figure caption _[F]
+
+        :return lineS: figure label
+        :rtype: str
+        """
+        fnumI = int(self.labelD["figI"])
+        self.labelD["figI"] = fnumI + 1
+        lineS = "Fig. " + str(fnumI) + " - " + self.lineS
+
+        return lineS + "\n"
 
     def labels(self, labelS, numS):
         """format labels for equations, tables and figures
@@ -588,7 +588,16 @@ class Tag:
         self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
         return labelS
 
-    def foot(self):
+    def plain(self, lineS, folderD, labelD):
+        """format plain literal text _[P]
+
+        :param lineS: _description_
+        :type lineS: _type_
+        """
+        print(self.lineS)
+        return self.lineS
+
+    def foot(self, lineS, folderD, labelD):
         """footnote number _[#]
 
 
@@ -600,8 +609,8 @@ class Tag:
         print(lineS)
         return lineS
 
-    def description(self):
-        """footnote description _[d]
+    def description(self, lineS, folderD, labelD):
+        """footnote description _[D]
 
         :return lineS: footnote
         :rtype: str
@@ -611,8 +620,8 @@ class Tag:
         print(lineS)
         return lineS
 
-    def link(self):
-        """format url or internal link _[link]
+    def link(self, lineS, folderD, labelD):
+        """format url or internal link _[LINK]
 
         :return: _description_
         :rtype: _type_
@@ -622,16 +631,16 @@ class Tag:
         print(lineS)
         return lineS
 
-    def hline(self):
-        """underline _[u]
+    def hline(self, lineS, folderD, labelD):
+        """horizontal line _[H]
 
         :return lineS: underline
         :rtype: str
         """
         return self.lineS
 
-    def page(self):
-        """insert new page header _[page]
+    def page(self, lineS, folderD, labelD):
+        """insert new page header _[PAGE]
 
         :return lineS: page header
         :rtype: str

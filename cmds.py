@@ -28,8 +28,42 @@ from rivtlib.unit import *
 
 tabulate.PRESERVE_WHITESPACE = True
 
+class CmdValues:
+    """
+    
+    """
+    def __init__(self, labelD, folderD,  rivtD):
+        """commands that format a utf doc
 
-class CmdUTF():
+        Args:
+            paramL (list): _description_
+            labelD (dict): _description_
+            folderD (dict): _description_
+            localD (dict): _description_
+        """
+
+        self.rivtD = rivtD
+        self.folderD = folderD
+        self.labelD = labelD
+        self.errlogP = folderD["errlogP"]
+
+        baseS = self.labelD["baseS"]
+        # print(f"{modnameS=}")
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)-8s  " + baseS +
+            "   %(levelname)-8s %(message)s",
+            datefmt="%m-%d %H:%M",
+            filename=self.errlogP,
+            filemode="w",
+        )
+        warnings.filterwarnings("ignore")
+
+
+class Cmd:
+    """
+    
+    """
 
     def __init__(self, labelD, folderD,  rivtD):
         """commands that format a utf doc
@@ -383,292 +417,3 @@ class CmdUTF():
         return
 
 
-class CmdRST():
-
-    def __init__(self, paramL, labelD, folderD,  rivtD):
-        """commands that format a utf doc
-
-        Args:
-            paramL (list): _description_
-            labelD (dict): _description_
-            folderD (dict): _description_
-            localD (dict): _description_
-        """
-
-        self.localD = rivtD
-        self.folderD = folderD
-        self.labelD = labelD
-        self.errlogP = folderD["errlogP"]
-
-        baseS = self.labelD["baseS"]
-        # print(f"{modnameS=}")
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)-8s  " + baseS +
-            "   %(levelname)-8s %(message)s",
-            datefmt="%m-%d %H:%M",
-            filename=self.errlogP,
-            filemode="w",
-        )
-        warnings.filterwarnings("ignore")
-
-    def cmd_parse(self, apicmdS, pthP, parL):
-        """cmd_parse _summary_
-
-        Args:
-            apicmdS (_type_): _description_
-            pthP (_type_): _description_
-            parL (_type_): _description_
-        """
-
-        if apicmdS == "append":
-            self.cmd_append(pthP, parL)
-        elif apicmdS == "assign":
-            self.cmd_assign(pthP, parL)
-        elif apicmdS == "eval":
-            self.cmd_eval(pthP, parL)
-        elif apicmdS == "image":
-            self.cmd_image(pthP, parL)
-        elif apicmdS == "img2":
-            self.cmd_img2(pthP, parL)
-        elif apicmdS == "project":
-            self.cmd_project(pthP, parL)
-        elif apicmdS == "report":
-            self.cmd_report(pthP, parL)
-        elif apicmdS == "table":
-            self.cmd_table(pthP, parL)
-        elif apicmdS == "text":
-            self.cmd_text(pthP, parL)
-        elif apicmdS == "write":
-            self.cmd_write(pthP, parL)
-        else:
-            pass
-
-    def cmd_project(self):
-        """insert project information from csv, xlsx or syk
-
-            :return lineS: md table
-            :rtype: str
-        """
-
-        alignD = {"s": "", "d": "decimal",
-                  "c": "center", "r": "right", "l": "left"}
-
-        tableS = ""
-        plenI = 2
-        if len(self.paramL) != plenI:
-            logging.info(
-                f"{self.cmdS} not evaluated: {plenI} parameters required")
-            return
-
-        folderP = Path(self.folderD["prvP"])
-        fileP = Path(self.paramL[0].strip())
-        pathP = Path(folderP, fileP)                    # file path
-        extS = (pathP.suffix).strip()
-        txttypeS = self.paramL[1].strip()
-        with open(pathP, "r", encoding="utf-8") as f2:
-            txtfileL = f2.readlines()
-        j = ""
-        if extS == ".txt":
-            # print(f"{txttypeS=}")
-            if txttypeS == "plain":
-                for iS in txtfileL:
-                    j += "   " + iS
-                return "\n\n::\n\n" + j + "\n\n"
-            elif txttypeS == "code":
-                pass
-            elif txttypeS == "tags":
-                xtagC = parse.RivtParseTag(
-                    self.folderD, self.labelD,  self.localD)
-                xrstS, self.labelD, self.folderD, self.localD = xtagC.rst_parse(
-                    txtfileL)
-                return xrstS
-        else:
-            logging.info(
-                f"{self.cmdS} not evaluated: {extS} file not processed")
-            return
-
-    def cmd_image(self, pthP, parL):
-        """insert image from file
-
-        Args:
-            il (list): image parameters
-        """
-
-        print(f"{parL=}")
-        sizeF = float(parL[1])
-        capS = parL[0].split("_[")[0]
-        file1S = str(pthP)
-        fnumI = 1
-        rstS = ""
-        iL = self.paramL
-        scale1S = str(sizeF)
-        file1S = iL[0].strip()
-        img1S = file1S
-        img1S = img1S.replace("\\", "/")
-        rstS = ("\n.. image:: "
-                + img1S + "\n"
-                + "   :scale: "
-                + scale1S + "%" + "\n"
-                + "   :align: center"
-                + "\n\n"
-                )
-
-        return rstS
-
-    def cmd_img2(self, pthP, parL):
-
-        utfS = ""
-        iL = self.paramL
-        if len(iL[0].split(",")) == 1:
-            file1S = iL[0].strip()
-            #  file1S = file1S.replace("/", "|")
-            utfS = "< Figure path: " + file1S + "> \n"
-        elif len(iL[0].split(",")) == 2:
-            iL = iL[0].split(",")
-            file1S = iL[0].strip()
-            file2S = iL[1].strip()
-            utfS = "Figure path: " + file1S + "\n" + "Figure path: " + file2S + "\n"
-        print(utfS)
-
-        iL = iL[0].split(",")
-        file1S = iL[0].strip()
-        file2S = iL[1].strip()
-        iL = iL[1].split(",")
-        scale1S = iL[0]
-        scale2S = iL[1]
-        img1S = str(Path(self.currP, file1S))
-        img2S = str(Path(self.currP, file1S))
-        img1S = img1S.replace("\\", "/")
-        img2S = img2S.replace("\\", "/")
-        rstS = ("|L| . |R|"
-                + "\n\n"
-                + ".. |L| image:: "
-                + img1S + "\n"
-                + "   :width: "
-                + scale1S + "%"
-                + "\n\n"
-                + ".. |R| image:: "
-                + img2S + "\n"
-                + "   :width: "
-                + scale2S + "%"
-                + "\n\n"
-                )
-
-    def cmd_table(self):
-        """insert table from csv or xlsx file
-
-        Args:
-            ipl (list): parameter list
-        """
-        alignD = {"s": "", "d": "decimal",
-                  "c": "center", "r": "right", "l": "left"}
-
-        tableS = ""
-        plenI = 4
-        if len(self.paramL) != plenI:
-            logging.info(
-                f"{self.cmdS} command not evaluated: {plenI} parameters required")
-            return
-        if self.paramL[0] == "data":
-            folderP = Path(self.folderD["dataP"])
-        else:
-            folderP = Path(self.folderD["dataP"])
-        fileP = Path(self.paramL[1].strip())
-        pathP = Path(folderP / fileP)                    # file path
-        maxwI = int(self.paramL[2].split(",")[0])        # max column width
-        alignS = alignD[self.paramL[2].split(",")[1].strip()]
-        align2S = self.paramL[2].split(",")[1].strip()
-        colS = self.paramL[3].strip()                    # rows read
-        extS = (pathP.suffix).strip()                    # file suffix
-        if extS == ".csv":                               # read csv file
-            with open(pathP, "r") as csvfile:
-                readL = list(csv.reader(csvfile))
-        elif extS == ".xlsx":                            # read xls file
-            pdfO = pd.read_excel(pathP, header=None)
-            readL = pdfO.values.tolist()
-        else:
-            logging.info(
-                f"{self.cmdS} command not evaluated: {extS} files not processed")
-            return
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-
-        output = StringIO()
-        output.write(tabulate(readL, tablefmt="rst", maxcolwidths=maxwI,
-                              headers="firstrow", numalign="decimal"))
-        rstS = output.getvalue()
-        sys.stdout = old_stdout
-
-        # restS = ".. raw:: latex" + "\n\n"       # align cells
-        # # for i in rstS.split("\n"):
-        # #     counter = i.count("&")
-        # #     if counter > 0:
-        # #         cS = "{|" + (align2S + "|") * (counter + 1) + "}"
-        # #         cS = "{" + align2S * (counter + 1) + "}"
-        # #         continue
-        # restS += "  \\vspace{.15in}" + "\n"
-        # inrstS = ""
-        # for i in rstS.split("\n"):
-        #     inrstS += "  " + i + "\n\n"
-        # restS = restS + inrstS
-        # restS += "  \\vspace{.15in}\n"
-
-        restS = "\n" + rstS + "\n\n"
-        return restS
-
-    def cmd_text(self):
-        """insert text from file
-
-        || text | folder | file | type | shade
-
-        """
-        plenI = 3
-        if len(self.paramL) != plenI:
-            logging.info(
-                f"{self.cmdS} command not evaluated:  \
-                                    {plenI} parameters required")
-            return
-        if self.paramL[0] == "data":
-            folderP = Path(self.folderD["dataP"])
-        else:
-            folderP = Path(self.folderD["dataP"])
-        fileP = Path(self.paramL[1].strip())
-        pathP = Path(folderP / fileP)
-        txttypeS = self.paramL[2].strip()
-        extS = pathP.suffix
-        with open(pathP, "r", encoding="md-8") as f1:
-            txtfileS = f1.read()
-        with open(pathP, "r", encoding="md-8") as f2:
-            txtfileL = f2.readlines()
-        j = ""
-        if extS == ".txt":
-            # print(f"{txttypeS=}")
-            if txttypeS == "plain":
-                for iS in txtfileL:
-                    j += "   " + iS
-                return "\n\n::\n\n" + j + "\n\n"
-            elif txttypeS == "code":
-                pass
-            elif txttypeS == "tags":
-                xtagC = parse.RivtParseTag(
-                    self.folderD, self.labelD,  self.localD)
-                xrstS, self.labelD, self.folderD, self.localD = xtagC.rst_parse(
-                    txtfileL)
-                return xrstS
-        elif extS == ".html":
-            txtS = ".. raw:: html" + "\n\n"
-            for iS in txtfileL:
-                j += "   " + iS
-            return txtS + j + "\n\n"
-        elif extS == ".tex":
-            if txttypeS == "plain":
-                txtS = ".. raw:: latex" + "\n\n"
-                for iS in txtfileL:
-                    j += "   " + iS
-                return txtS + j + "\n\n"
-            if txttypeS == "math":
-                txtS = ".. math:: " + "\n\n"
-                for iS in txtfileL:
-                    j += "   " + iS
-                return txtS + j + "\n\n"
