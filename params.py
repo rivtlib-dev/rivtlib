@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 
-def dictions(rivN, curP, rivtP):
+def dictions(rivN, rivP, rivtP):
     """dictionaries of parameters
 
     Args:
@@ -20,24 +20,23 @@ def dictions(rivN, curP, rivtP):
     """
 
     # input paths
-    rivP = curP
     baseS = rivN.split(".py")[0]
     titleS = baseS.split("-")[1]
     divnumS = baseS.split("-")[0][1:3]
-    projP = Path(os.path.dirname(curP))
-    bakP = Path(curP / ".".join((baseS, "bak")))
+    projP = Path(os.path.dirname(rivP))
+    bakP = Path(rivP / ".".join((baseS, "bak")))
     prfxS = baseS[1:5]
     toolsP = Path(projP, "tools")
     docsP = Path(projP, "docs")
-    insP = Path(curP / ("ins" + divnumS))
-    valsP = Path(curP / ("vals" + divnumS))
+    insP = Path(rivP / ("ins" + divnumS))
+    valsP = Path(rivP / ("vals" + divnumS))
 
     # output paths
+    pypath = os.path.dirname(sys.executable)  # rivt package path
+    rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
     reportP = Path(projP, "reports")
     xrivtP = Path(projP, "xrivt")
     tempP = Path(projP, "temp")
-    pypath = os.path.dirname(sys.executable)  # rivt package path
-    rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
     errlogP = Path(tempP, "rivt-log.txt")
     styleP = Path(projP, "docs", "pdf")
     valfileS = baseS.replace("riv", "val") + ".csv"

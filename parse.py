@@ -21,7 +21,7 @@ class RivtParse:
                           "E]": "equation", "F]": "figure", "T]": "table",
                           "#]": "foot", "D]": "descrip", "S]": "sympy",
                           "K]": "link", "PAGE]": "page", "URL]": "url",
-                          "[P]]": "plainblk","[N]]": "indblk", "[O]]": "codeblk",
+                          "[P]]": "plainblk", "[N]]": "indblk", "[O]]": "codeblk",
                           "[L]]": "latexblk",  "[I]]": "italblk", "[B]]": "boldblk",
                           "[T]]": "itinblk", "[Q]]": "quitblk", }
 
@@ -148,8 +148,9 @@ class RivtParse:
                 if tagS in self.tagsD:                   # filter tags
                     if len(tagS) < 3:                    # line tags
                         rvlC = tags.Tag(folderD, labelD)
-                        utS = rvlC.tag_parse(tagcmd, lineS)
+                        utS, reS = rvlC.tag_parse(tagcmd, lineS)
                         xutfS += utS + "\n"
+                        xrstS += reS + "\n"
                     else:                                # block tags
                         blockB = True
                         rvbC = tags.Tag(folderD, labelD)

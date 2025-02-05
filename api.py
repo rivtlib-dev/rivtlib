@@ -47,13 +47,12 @@ global utfS, rstS, folderD, labelD, rivtD
 
 curP = Path(os.getcwd())
 rivP = curP
-
 if __name__ == "rivtlib.api":
     rivtP = Path(__main__.__file__)
     rivN = rivtP.name
     if fnmatch.fnmatch(rivN, "r????-*.py"):
-        rivtP = Path(curP, rivN)
-        folderD, labelD, rivtD = params.dictions(rivN, curP, rivtP)
+        rivtP = Path(rivP, rivN)
+        folderD, labelD, rivtD = params.dictions(rivN, rivP, rivtP)
 else:
     print(f"INFO     rivt file - {rivN}")
     print(f"INFO     The name must match 'rddss-filename.py' where")
@@ -68,7 +67,8 @@ else:
 # initialize strings, config, logging
 rstS = utfS = xrstS = xutfS = """"""
 timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p") + 2*"\n"
-print(timeS)
+rstS += timeS
+utfS += timeS
 config = ConfigParser()
 config.read(Path(folderD["projP"], "rivt-config.ini"))
 headS = config.get('report', 'title')
@@ -106,7 +106,7 @@ def rivt_parse(rS, tS):
     rL = rS.split("\n")
     # print(rL)
     parseC = parse.RivtParse(tS)
-    xutfS, xrstS, folderD, labelD, rivtD = parseC.str_parse(
+    xutfS, xrstS, folderD, labelD, rivtD = parseC.parse_str(
         rL, folderD, labelD, rivtD)
 
     utfS += xutfS       # accumulate output strings

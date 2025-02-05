@@ -30,8 +30,10 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Tag:
-    """convert tags to formatted text or reSt
+    """
+        convert tags to formatted text or reSt
 
+        Functions:
              _[h1-h6]                heading
              _[#]                    foot
              _[D]                    descrip
@@ -62,8 +64,9 @@ class Tag:
         """
         self.folderD = folderD
         self.labelD = labelD
-        errlogP = self.folderD["errlogP"]
-        modnameS = self.labelD["rivN"]
+        # print(folderD)
+        errlogP = folderD["errlogP"]
+        modnameS = __name__.split(".")[1]
         logging.basicConfig(
             level=logging.DEBUG,
             format="%(asctime)-8s  " + modnameS +
@@ -84,7 +87,7 @@ class Tag:
         Returns:
             utS: formatted utf string
         """
-        tC = globals()['Tag']("folderD, labelD,  rivtD")
+        tC = globals()['Tag'](self.folderD, self.labelD)
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
         utS, reS = functag(lineS, self.folderD, self.labelD)
@@ -116,7 +119,7 @@ class Tag:
         print(lineS)
         return lineS
 
-    def center(self, lineS, labelD, folderD):
+    def center(self, lineS, folderD, labelD):
         """center text _[C]
 
         Args:
@@ -132,7 +135,7 @@ class Tag:
         # rst
         lrS = "\n::\n\n" + lineS.center(int(labelD['widthI'])) + "\n"
 
-        print("***center***", f"{luS=}", f"{lrS=}")
+        # print("***center***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def sympy(self, lineS, folderD, labelD):
