@@ -88,7 +88,7 @@ warnings.filterwarnings("ignore")
 
 
 def rivt_parse(rS, tS):
-    """parse rivt string and print doc text
+    """parse rivt string and write doc text to stdout
 
     Globals:
         utfS (str): accumulating utf text string 
@@ -104,16 +104,12 @@ def rivt_parse(rS, tS):
     global utfS, rstS, folderD, labelD, rivtD
 
     rL = rS.split("\n")
-
     # print(rL)
-
     parseC = parse.RivtParse(tS)
-
     xutfS, xrstS, folderD, labelD, rivtD = parseC.str_parse(
         rL, folderD, labelD, rivtD)
 
-    # accumulate output strings
-    utfS += xutfS
+    utfS += xutfS       # accumulate output strings
     rstS += xrstS
 
     print(xutfS)
@@ -123,14 +119,7 @@ def R(rS):
     """process Run string
 
         Args:
-            strL (_type_): _description_
-
-        Returns:
-            cmdL (list): list of valid commands
-            tagsL (list): list of valid tags
-            folderD (dict): _description_
-            labelD (dict):
-            rivtD (dict): local dictionary
+            rS (str): rivt string
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -141,14 +130,7 @@ def I(rS):
     """format Insert string
 
         Args:
-            strL (_type_): _description_
-
-        Returns:
-            cmdL (list): list of valid commands
-            tagsL (list): list of valid tags
-            folderD (dict): _description_
-            labelD (dict):
-            rivtD (dict): local dictionary
+            rS (str): rivt string
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -158,7 +140,8 @@ def I(rS):
 def V(rS):
     """format Value string
 
-        :param rS: rivt string - value
+        Args:
+            rS (str): rivt string
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -170,7 +153,8 @@ def V(rS):
 def T(rS):
     """process Tools string
 
-        : param rS: rivt string - tools
+        Args:
+            rS (str): rivt string
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -182,13 +166,17 @@ def T(rS):
 def W(rS):
     """write output files
 
-    :param rS: rivt string - write 
+        Args:
+            rS (str): rivt string
     """
     pass
 
 
 def X(rS):
     """skip rivt string - no processing
+
+        Args:
+            rS (str): rivt string
 
     """
 

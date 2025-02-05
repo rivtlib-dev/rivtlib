@@ -28,14 +28,13 @@ from rivtlib.unit import *
 
 tabulate.PRESERVE_WHITESPACE = True
 
+
 class CmdV:
     """
-
-    Args:
-        tags (str): 
-
-        = (str): evaluate expression
-
+        a **=** 1+1 | unit | reference (_[E])                = is command tag
+        || **EVAL** | default |  dec1                       .csv
+        || **VALS** | rel. pth |  dec1                      .csv
+        || **VCFG** | rel. pth | rel. pth | dec1, dec2      .csv
 
     """
 
@@ -452,10 +451,17 @@ class CmdV:
 
         print("\n" + mdS+"\n")
         return utfS
-        
+
+
 class Cmd:
     """
-    
+
+        || APPEND | rel. pth | num; nonum                      .pdf
+        || IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
+        || IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
+        || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
+        || TEXT | rel. pth |  plain; rivt                      .txt
+
     """
 
     def __init__(self, labelD, folderD,  rivtD):
@@ -808,5 +814,3 @@ class Cmd:
         self.rivtD.update(locals())
 
         return
-
-

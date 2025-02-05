@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "lintpy",
+        "type": "shell",
+        "command": "autopep8 -i ${fileBasename}",
+        "windows": {
+          "command": "autopep8 -i ${fileBasename}"
+        },
+        "presentation": {
+          "reveal": "silent",
+          "revealProblems": "onProblem",
+          "panel": "new",
+          "close": true
+        }
+      },
+    ],
+    "inputs": [
+      {
+        "id": "rvsearch",
+        "description": "rivt+search+terms:",
+        "default": "beam",
+        "type": "promptString"
+      },
+    ]
+  }

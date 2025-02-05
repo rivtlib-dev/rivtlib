@@ -27,43 +27,39 @@ from rivtlib.unit import *
 from rivtlib import cmds
 
 tabulate.PRESERVE_WHITESPACE = True
+
+
 class Tag:
     """convert tags to formatted text or reSt
-    Args:
-        tags (str): 
-            ====================== =======================================
-            tags                                   description 
-            ====================== =======================================
-             _[h1-h6]                heading type        
+
+             _[h1-h6]                heading
+             _[#]                    foot
+             _[D]                    descrip
              _[C]                    center
-             _[S]                    sympy math
-             _[E]                    equation label and autonumber
-             _[F]                    figure caption and autonumber
-             _[T]                    table title and autonumber
-             _[#]                    footnote and autonumber
-             _[D]                    footnote description 
-             _[HLINE]                horizontal line
-             _[PAGE]                 new page
-             _[address, label]       url, internal reference        
-             _[[Q]]                  end block              
-             _[[P]]                  start plain text block  
-             _[[N]]                  start indent text block
-             _[[B]]                  start bold text block (latex pdf)
-             _[[I]]                  start italic text block (latex pdf)
-             _[[O]]                  start indent bold block (latex pdf)
-             _[[T]]                  start indent italic block (latex pdf)
-             _[[L]]                  start LaTeX block (latex pdf)
-    
-    
-    # \*[a-zA-Z0-9_]*\*
-    
+             _[S]                    sympy
+             _[E]                    equation
+             _[F]                    figure
+             _[T]                    table
+             _[HLINE]                hline
+             _[PAGE]                 page
+             _[URL]                  url, reference
+             _[[P]]                  plainblk
+             _[[N]]                  indblk
+             _[[O]]                  codeblk 
+             _[[L]]                  latexblk (latex pdf)
+             _[[I]]                  italblk (latex pdf)
+             _[[B]]                  boldblk (latex pdf)
+             _[[T]]                  itinblk (latex pdf)
+             _[[Q]]                  quitblk
+
+        # \*[a-zA-Z0-9_]*\*
+
     """
 
-    def __init__(self,  folderD, labelD,  rivtD):
-        """tag formatting to utf and reSt
+    def __init__(self,  folderD, labelD):
+        """tags that format to utf and reSt
 
         """
-        self.rivtD = rivtD
         self.folderD = folderD
         self.labelD = labelD
         errlogP = self.folderD["errlogP"]
@@ -77,9 +73,6 @@ class Tag:
             filemode="w",
         )
         warnings.filterwarnings("ignore")
-
-
-
 
     def tag_parse(self, tagcmdS, lineS):
         """parse a tagged line
@@ -95,10 +88,34 @@ class Tag:
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
         utS, reS = functag(lineS, self.folderD, self.labelD)
-        
+
         print(f"{tcmdS=}")
         print(f"{lineS=}")
         return utS, reS
+
+    def foot(self, lineS, folderD, labelD):
+        """footnote number _[#]
+
+
+        """
+        ftnumI = self.labelD["footL"].pop(0)
+        self.labelD["noteL"].append(ftnumI + 1)
+        self.labelD["footL"].append(ftnumI + 1)
+        lineS = self.lineS.replace("*]", "[" + str(ftnumI) + "]")
+        print(lineS)
+        return lineS
+
+    def description(self, lineS, folderD, labelD):
+        """footnote description _[D]
+
+        :return lineS: footnote
+        :rtype: str
+        """
+        ftnumI = self.labelD["noteL"].pop(0)
+        lineS = "[" + str(ftnumI) + "] " + self.lineS
+        print(lineS)
+        return lineS
+
     def center(self, lineS, labelD, folderD):
         """center text _[C]
 
@@ -109,15 +126,15 @@ class Tag:
 
         Returns:
             _type_: _description_
-        """        
+        """
         # utf
         luS = lineS.center(int(labelD["widthI"])) + "\n"
         # rst
-        lrS = "\n::\n\n" +  lineS.center(int(labelD['widthI'])) + "\n"
+        lrS = "\n::\n\n" + lineS.center(int(labelD['widthI'])) + "\n"
 
         print("***center***", f"{luS=}", f"{lrS=}")
         return luS, lrS
-        
+
     def sympy(self, lineS, folderD, labelD):
         """format sympy math _[S]
 
@@ -128,7 +145,7 @@ class Tag:
 
         Returns:
             _type_: _description_
-        """        
+        """
         spS = self.lineS.strip()
         try:
             spL = spS.split("=")
@@ -157,7 +174,7 @@ class Tag:
         luS = "Table " + str(tnumI) + " - " + lineS
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
-        
+
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
@@ -193,29 +210,6 @@ class Tag:
         print(self.lineS)
         return self.lineS
 
-    def foot(self, lineS, folderD, labelD):
-        """footnote number _[#]
-
-
-        """
-        ftnumI = self.labelD["footL"].pop(0)
-        self.labelD["noteL"].append(ftnumI + 1)
-        self.labelD["footL"].append(ftnumI + 1)
-        lineS = self.lineS.replace("*]", "[" + str(ftnumI) + "]")
-        print(lineS)
-        return lineS
-
-    def description(self, lineS, folderD, labelD):
-        """footnote description _[D]
-
-        :return lineS: footnote
-        :rtype: str
-        """
-        ftnumI = self.labelD["noteL"].pop(0)
-        lineS = "[" + str(ftnumI) + "] " + self.lineS
-        print(lineS)
-        return lineS
-
     def link(self, lineS, folderD, labelD):
         """format url or internal link _[LINK]
 
@@ -248,3 +242,130 @@ class Tag:
                 "\n"+"_" * self.labelD["widthI"] + "\n"
         return "\n" + rvtS
 
+    def plainblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def indblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def codeblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def latexblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def italblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def boldblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def itindblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS
+
+    def quitblk(self, lineS, folderD, labelD):
+        """format table title _[T]
+
+        :return lineS: md table title
+        :rtype: str
+        """
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        # utf
+        luS = "Table " + str(tnumI) + " - " + lineS
+        # rst
+        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+
+        print("***sympy***", f"{luS=}", f"{lrS=}")
+        return luS, lrS

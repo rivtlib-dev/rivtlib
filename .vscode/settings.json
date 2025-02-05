@@ -14,9 +14,19 @@
             "deleteTargetOnDeploy": true,
         }
     ],
+    "fsdeploy.deployOnSave": true,
+    "fsdeploy.deployWorkspaceOnSave": false,
     "ShortcutMenuBar.navigateBack": false,
     "ShortcutMenuBar.navigateForward": false,
     "ShortcutMenuBar.beautify": false,
-    "fsdeploy.deployOnSave": true,
-    "fsdeploy.deployWorkspaceOnSave": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "editor.formatOnSave": false,
+    "editor.parameterHints.enabled": false,
+    "triggerTaskOnSave.tasks": {
+        "lintpy": [
+            "**/*.py"
+        ],
+    }
 }
