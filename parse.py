@@ -16,21 +16,19 @@ class RivtParse:
         self.tS = tS
 
         if tS == "I":
-            self.cmdL = ["append", "image", "table", "text"]
-            self.tagsD = {"u]": "underline", "c]": "center", "r]": "right",
-                          "e]": "equation", "f]": "figure", "t]": "table",
-                          "#]": "foot", "d]": "description", "s]": "sympy",
-                          "link]": "link", "line]": "line", "page]": "page",
-                          "[b]]": "bold", "[i]]": "italic", "[c]]": "centerblk",
-                          "[p]]": "plainblk", "[l]]": "latexblk",
-                          "[o]]": "codeblk", "[bi]]": "boldindent",
-                          "[ii]]": "italicindent", ",": "url", "[q]]": "quitblk"}
+            self.cmdL = ["append", "img","img2", "table", "text"]
+            self.tagsD = {"H]": "hline", "C]": "center","B]": "centerbold",
+                          "E]": "equation", "F]": "figure", "T]": "table",
+                          "#]": "foot", "D]": "description", "S]": "sympy",
+                          "K]": "link", "page]": "page",
+                          "[B]]": "bold", "[I]]": "italic", "[O]]": "codeblk", 
+                          "[P]]": "plainblk", "[L]]": "latexblk",  
+                          "[T]]": "iindentblk", "[Q]]": "quitblk"}
 
         elif tS == "V":
-            self.cmdL = ["image", "table", "assign", "eval"]
-            self.tagsD = {"e]": "equation", "f]": "figure", "t]": "table",
-                          "#]": "foot", "d]": "description", "v]": "value",
-                          "s]": "sympy", "=": "eval", "[V]]": "values"}
+            self.cmdL = ["img", "img2", "table", "eval", "vals", "="]
+            self.tagsD = {"E]": "equation", "F]": "figure", "T]": "table",
+                          "C]": "center"}
 
         elif tS == "R":
             self.cmdL = ["run", "process"]
@@ -44,42 +42,8 @@ class RivtParse:
             self.cmdL = ["write"]
             self.tagsD = {}
         else:
-            pass
-
-
-    def parse_block(self, blockS):
-        """block_parse
-
-        Args:
-            self (_type_): _description_
-        """
-        if blevalB and len(uS.strip()) < 2:    # value tables
-            vtableL += blevalL
-            if tfS == "declare":
-                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
-                xutfS += vutfS
-                xrstS += vutfS
-            if tfS == "assign":
-                vutfS = self.dtable(blevalL, hdrdL, "rst", aligndL) + "\n\n"
-                xutfS += vutfS
-                xmdS += vmdS
-                xrstS += vutfS
-        blevalL = []
-
-        # export values
-        valP = Path(self.folderD["valsP"], self.folderD["valfileS"])
-        with open(valP, "w", newline="") as f:
-            writecsv = csv.writer(f)
-            writecsv.writerow(hdraL)
-            writecsv.writerows(vtableL)
-
-        tagS = self.tagsD["[q]"]
-        rvtS = tags.TagUTF(lineS, tagS, labelD, folderD, rivtD)
-        xutfS += rvtS + "\n"
-        rvtS = tags.TagRST(lineS, tagS, labelD, folderD, rivtD)
-        xrstS += rvtS + "\n"
-
-    def str_parse(self, strL, folderD, labelD, rivtD):
+            pass        
+    def parse_str(self, strL, folderD, labelD, rivtD):
         """str_parse _summary_
 
         Args:
@@ -180,25 +144,25 @@ class RivtParse:
                     reS = rvtC.cmd_parse(cmdS)
                     xutfS += utS
                     xrstS += reS
-            elif "_[" in uS:                              # tags
-                usL = uS.split("_[")                      # line, tag list
+            elif "_[" in uS:                             # tags
+                usL = uS.split("_[")                     # line, tag list
                 lineS = usL[0]
                 tagS = usL[1].strip()
-                tagcmd = self.tagsD[tagS]                 # get tag name
+                tagcmd = self.tagsD[tagS]                # get tag name
                 if tagS in self.tagsD:
-                    if len(lineS) > 0:                    # line empty in block
-                        rvtuC = tag.TagUTF()
+                    if len(tagS) > 2:                    # line empty in block
+                        rvtuC = tags.Tag()
                         utS = rvtuC.tag_parse(
                             tagcmd, lineS, folderD, labelD, rivtD)
                         xutfS += utS + "\n"
-                    else:                                 # flag for block
+                    else:                                # flag for block
                         blockB = True
-                        rvtrC = tag.TagRST(
+                        rvtrC = tags.Tag(
                             tagcmd, lineS, folderD, labelD, rivtD)
                         reS = rvtrC.tag_parse(lineS)
                         xrstS += reS + "\n"
             else:
-                xutfS += uS + "\n"                        # return other
+                xutfS += uS + "\n"                       # return other
                 xrstS += uS + "\n"
 
         return (xutfS, xrstS, folderD, labelD, rivtD)

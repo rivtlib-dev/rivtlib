@@ -19,6 +19,4 @@
     "ShortcutMenuBar.beautify": false,
     "fsdeploy.deployOnSave": true,
     "fsdeploy.deployWorkspaceOnSave": false,
-    "autoDocstring.includeName": true,
-    "editor.formatOnSave": true
 }
