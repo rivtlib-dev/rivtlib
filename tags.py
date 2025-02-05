@@ -92,8 +92,8 @@ class Tag:
         functag = getattr(tC, tcmdS)
         utS, reS = functag(lineS, self.folderD, self.labelD)
 
-        print(f"{tcmdS=}")
-        print(f"{lineS=}")
+        # print(f"{tcmdS=}")
+        # print(f"{lineS=}")
         return utS, reS
 
     def foot(self, lineS, folderD, labelD):
@@ -135,7 +135,7 @@ class Tag:
         # rst
         lrS = "\n::\n\n" + lineS.center(int(labelD['widthI'])) + "\n"
 
-        # print("***center***", f"{luS=}", f"{lrS=}")
+        # print("***center***", f"{luS=}", f"{lrS=}", "\n")
         return luS, lrS
 
     def sympy(self, lineS, folderD, labelD):
@@ -162,7 +162,34 @@ class Tag:
         # rst
         lrS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}", "\n")
+        return luS, lrS
+
+    def deflabel(self, labelS, numS):
+        """format labels for equations, tables and figures
+
+            :return labelS: formatted label
+            :rtype: str
+        """
+        secS = str(self.labelD["secnumI"]).zfill(2)
+        labelS = secS + " - " + labelS + numS
+        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
+        return labelS
+
+    def equation(self, lineS, folderD, labelD):
+        """equation label _[e]
+
+        :return lineS: md equation label
+        :rtype: str
+        """
+
+        wI = labelD["widthI"]
+        enumI = int(self.labelD["equI"]) + 1
+        self.labelD["equI"] = enumI
+        fillS = "Equ. " + " - " + str(enumI).zfill(2)
+        luS = lrS = lineS + fillS.rjust(wI-len(lineS)) + "\n"
+
+        # print("***equation***", f"{luS=}", f"{lrS=}", "\n")
         return luS, lrS
 
     def table(self, lineS, folderD, labelD):
@@ -192,17 +219,6 @@ class Tag:
         lineS = "Fig. " + str(fnumI) + " - " + self.lineS
 
         return lineS + "\n"
-
-    def labels(self, labelS, numS):
-        """format labels for equations, tables and figures
-
-            :return labelS: formatted label
-            :rtype: str
-        """
-        secS = str(self.labelD["secnumI"]).zfill(2)
-        labelS = secS + " - " + labelS + numS
-        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
-        return labelS
 
     def plain(self, lineS, folderD, labelD):
         """format plain literal text _[P]

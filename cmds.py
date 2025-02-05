@@ -65,25 +65,6 @@ class CmdV:
         )
         warnings.filterwarnings("ignore")
 
-    def equation(self):
-        """equation label _[e]
-
-        :return lineS: md equation label
-        :rtype: str
-        """
-
-        enumI = int(self.labelD["equI"]) + 1
-        fillS = str(enumI).zfill(2)
-        wI = self.labelD["widthI"]
-        refS = self.label("E", fillS)
-        spcI = len("Equ. " + fillS + " - " + self.lineS.strip())
-        lineS = "Equ. " + fillS + " - " + self.lineS.strip() \
-            + refS.rjust(wI-spcI)
-        self.labelD["equI"] = enumI
-
-        print(lineS)
-        return lineS
-
     def assign(self):
         """declare variable values
 

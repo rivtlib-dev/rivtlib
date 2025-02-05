@@ -142,7 +142,7 @@ class RivtParse:
                     xrstS += reS
             elif "_[" in uS:                            # tags
                 usL = uS.split("_[")                    # split off tags
-                lineS = usL[0]
+                lineS = usL[0].strip()
                 tagS = usL[1].strip()
                 tagcmd = self.tagsD[tagS]                # get tag name
                 if tagS in self.tagsD:                   # filter tags
