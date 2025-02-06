@@ -186,7 +186,7 @@ class Tag:
         wI = labelD["widthI"]
         enumI = int(self.labelD["equI"]) + 1
         self.labelD["equI"] = enumI
-        fillS = "Equ. " + " - " + str(enumI).zfill(2)
+        fillS = "Equ. " + str(enumI).zfill(2)
         luS = lrS = lineS + fillS.rjust(wI-len(lineS)) + "\n"
 
         # print("***equation***", f"{luS=}", f"{lrS=}", "\n")

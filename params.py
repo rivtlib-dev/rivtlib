@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 
-def dictions(rivN, rivP, rivtP):
+def dicts(rivN, rivP, rivtP):
     """dictionaries of parameters
 
     Args:
@@ -41,7 +41,7 @@ def dictions(rivN, rivP, rivtP):
     styleP = Path(projP, "docs", "pdf")
     valfileS = baseS.replace("riv", "val") + ".csv"
     readmeP = Path(projP, "README.txt")
-    xchP = Path(projP / "xchange")
+    ossP = Path(projP / "oss")
 
     # global dicts
     rivtD = {}
@@ -60,9 +60,9 @@ def dictions(rivN, rivP, rivtP):
         "sectS": "",                            # section title
         "secnumI": 0,                           # section number
         "widthI": 80,                           # print width
-        "equI": 1,                              # equation number
-        "tableI": 1,                            # table number
-        "figI": 1,                              # figure number
+        "equI": 0,                              # equation number
+        "tableI": 0,                            # table number
+        "figI": 0,                              # figure number
         "pageI": 1,                             # starting page number
         "noteL": [0],                           # footnote counter
         "footL": [1],                           # foot counter

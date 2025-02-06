@@ -16,7 +16,7 @@ class RivtParse:
         self.tS = tS
 
         if tS == "I":
-            self.cmdL = ["append", "img", "img2", "table", "text"]
+            self.cmdL = ["APPEND", "IMG", "IMG2", "TABLE", "TEXT"]
             self.tagsD = {"H]": "hline", "C]": "center", "B]": "centerbold",
                           "E]": "equation", "F]": "figure", "T]": "table",
                           "#]": "foot", "D]": "descrip", "S]": "sympy",
@@ -26,8 +26,7 @@ class RivtParse:
                           "[T]]": "itinblk", "[Q]]": "quitblk", }
 
         elif tS == "V":
-            self.cmdL = ["img", "img2", "table", "equation",
-                         "eval", "vals", "vcfg", "="]
+            self.cmdL = ["IMG", "IMG2", "TABLE", "EVAL", "VALS", "VCFG", "="]
             self.tagsD = {"E]": "equation", "F]": "figure", "T]": "table",
                           "C]": "center"}
 
@@ -135,7 +134,7 @@ class RivtParse:
                 parL = pars.split(",")
                 if cmdS in self.cmdL:                   # filter commands
                     rviC = cmds.Cmd(labelD, folderD, rivtD)
-                    reS, utS = rvtC.cmd_parse(cmdS, pthP, parL)
+                    reS, utS = rvifdictC.cmd_parse(cmdS, pthP, parL)
                     rvvC = cmds.CmdV(parL, labelD, folderD, rivtD)
                     reS, utS = rvvC.cmd_parse(cmdS)
                     xutfS += utS

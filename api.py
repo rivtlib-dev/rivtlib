@@ -52,7 +52,7 @@ if __name__ == "rivtlib.api":
     rivN = rivtP.name
     if fnmatch.fnmatch(rivN, "r????-*.py"):
         rivtP = Path(rivP, rivN)
-        folderD, labelD, rivtD = params.dictions(rivN, rivP, rivtP)
+        folderD, labelD, rivtD = params.dicts(rivN, rivP, rivtP)
 else:
     print(f"INFO     rivt file - {rivN}")
     print(f"INFO     The name must match 'rddss-filename.py' where")
