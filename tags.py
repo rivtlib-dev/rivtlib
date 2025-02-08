@@ -31,7 +31,7 @@ tabulate.PRESERVE_WHITESPACE = True
 
 class Tag:
     """
-        convert tags to formatted text or reSt
+       tags that format to utf8 or reSt
 
         Functions:
              _[h1-h6]                heading

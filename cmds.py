@@ -30,11 +30,12 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class CmdV:
-    """
-        a **=** 1+1 | unit | reference (_[E])                = is command tag
-        || **EVAL** | default |  dec1                       .csv
-        || **VALS** | rel. pth |  dec1                      .csv
-        || **VCFG** | rel. pth | rel. pth | dec1, dec2      .csv
+    """values commands that format to utf8 or reSt
+
+        a = 1+1 | unit | reference (_[E])                = is command tag
+        || EVAL | default |  dec1                       .csv
+        || VALS | rel. pth |  dec1                      .csv
+        || VCFG | rel. pth | rel. pth | dec1, dec2      .csv
 
     """
 
@@ -222,7 +223,7 @@ class CmdV:
 
         :return assignL: assign results
         :rtype: list
-        :return rstS: restruct string 
+        :return rstS: restruct string
         :rtype: string
         """
         locals().update(self.localD)
@@ -347,7 +348,7 @@ class CmdV:
 
         :return assignL: assign results
         :rtype: list
-        :return rstS: restruct string 
+        :return rstS: restruct string
         :rtype: string
         """
         locals().update(self.localD)
@@ -516,14 +517,26 @@ class CmdV:
         return utfS
 
 
+class CmdW:
+    """
+        write commands
+
+        || WRITE | rel. pth |  dec1                      .csv
+        || REPORT | rel. pth | rel. pth | dec1, dec2     .csv
+
+    """
+    pass
+
+
 class Cmd:
     """
+        insert commands that format to utf8 or reSt
 
         || APPEND | rel. pth | num; nonum                      .pdf
+        || TEXT | rel. pth |  plain; rivt                      .txt
+        || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
         || IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
         || IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
-        || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
-        || TEXT | rel. pth |  plain; rivt                      .txt
 
     """
 
@@ -546,7 +559,7 @@ class Cmd:
         )
         warnings.filterwarnings("ignore")
 
-    def cmd_parse(self, cmdS):
+    def cmd_parse(self, cmdS, pthS, parS):
         """parse a tagged line
 
         Args:
@@ -558,37 +571,65 @@ class Cmd:
         """
         cC = globals()['Cmd'](self.folderD, self.labelD)
         ccmdS = cmdS.lower()
-        print(f"{ccmdS=}")
-        print(f"{paramS=}")
-        functag = getattr(tC, ccmdS)
-        utS, reS = functag(lineS, self.folderD, self.labelD)
+        print(f"{cmdS=}")
+        print(f"{pthS=}")
+        print(f"{parS=}")
+        functag = getattr(cC, ccmdS)
+        utS, reS = functag(pthS, parS)
 
         return utS, reS
+
+    def deflabel(self, labelS, numS):
+        """format labels for equations, tables and figures
+
+            :return labelS: formatted label
+            :rtype: str
+        """
+        secS = str(self.labelD["secnumI"]).zfill(2)
+        labelS = secS + " - " + labelS + numS
+        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
+        return labelS
 
     def append(self):
         """_summary_
         """
         pass
 
-    def img(self, pthP, parL):
+    def img(self, pthS, parS):
         """insert image from file
 
         """
-        print(f"{parL=}")
-        sizeF = float(parL[1])
-        capS = parL[0].split("_[")[0]
-        file1S = str(pthP)
+        print(f"{parS=}")
+        parL = parS.split(",")
+        fileP = Path(pthS)
+        capS = parL[0]
+        scale1S = parL[1].strip()
+        if len(parL) == 3:
+            if parL[2] == "_[F]":
+                numS = self.labelD["fnum"]
+                figS = self.deflabel(capS, numS)
         fnumI = 1
-        utfS = "< Figure " + str(fnumI) + ":  " + \
-            capS + " path: " + file1S + "> \n"
+        image1 = ""
         try:
-            image = mpimage.imread(file)
-            plt.imshow(image)
+            image1 = mpimg.imread(pthS)
+            plt.imshow(image1)
+            print("\n")
         except:
             pass
-        return utfS
+        uS = "< Figure " + str(fnumI) + ":  " + capS + \
+            " path: " + str(fileP) + "> \n"
+        print(uS)
+        img1S = str(fileP)
+        reS = ("\n.. image:: "
+               + img1S + "\n"
+               + "   :scale: "
+               + scale1S + "%" + "\n"
+               + "   :align: center"
+               + "\n\n"
+               )
+        return uS, reS
 
-    def img2(self):
+    def img2(self, pthS, parS):
         """insert images from files
 
         """
@@ -601,7 +642,7 @@ class Cmd:
         print(utfS)
         return utfS
 
-    def table(self):
+    def table(self, pthS, parS):
         """insert table from csv or xlsx file as reSt
 
             :return lineS: md table
@@ -612,34 +653,34 @@ class Cmd:
         alignD = {"s": "", "d": "decimal",
                   "c": "center", "r": "right", "l": "left"}
         plenI = 2
-        if len(self.paramL) != plenI:
+        if len(parS) != plenI:
             logging.info(
                 f"{self.cmdS} command not evaluated: {plenI} parameters required")
-            return
+        return
 
-        fileP = Path(self.paramL[0].strip())
+        fileP = Path(parS.strip())
         prfxP = self.folderD["docpathP"]
         if str(fileP)[0:4] == "data":
-            pathP = Path(prfxP, fileP)                       # file path
+            pathP = Path(prfxP, fileP)                    # file path
         elif str(fileP)[0:4] == "data":
             pass
         else:
             pass
-        maxwI = int(self.paramL[1].split(",")[0])        # max column width
+        maxwI = int(self.paramL[1].split(",")[0])         # max column width
         keyS = self.paramL[1].split(",")[1].strip()
         alignS = alignD[keyS]
         extS = pathP.suffix[1:]
         # print(f"{extS=}")
-        if extS == "csv":                               # read csv file
+        if extS == "csv":                                 # read csv file
             with open(pathP, "r") as csvfile:
                 readL = list(csv.reader(csvfile))
-        elif extS == "xlsx":                            # read xls file
+        elif extS == "xlsx":                          # read xls file
             pDF1 = pd.read_excel(pathP, header=None)
             readL = pDF1.values.tolist()
         else:
             logging.info(
                 f"{self.cmdS} not evaluated: {extS} file not processed")
-            return
+        return
 
         sys.stdout.flush()
         old_stdout = sys.stdout
@@ -678,39 +719,39 @@ class Cmd:
                 f"{self.cmdS} command not evaluated:  \
                                     {plenI} parameters required")
             return
-        if self.paramL[0] == "data":
-            folderP = Path(self.folderD["dataP"])
-        else:
-            folderP = Path(self.folderD["dataP"])
-        fileP = Path(self.paramL[1].strip())
-        pathP = Path(folderP / fileP)
-        txttypeS = self.paramL[2].strip()
-        extS = pathP.suffix
-        with open(pathP, "r", encoding="md-8") as f1:
-            txtfileS = f1.read()
-        with open(pathP, "r", encoding="md-8") as f2:
-            txtfileL = f2.readlines()
-        j = ""
-        if extS == ".txt":
-            # print(f"{txttypeS=}")
-            if txttypeS == "plain":
-                print(txtfileS)
-                return txtfileS
-            elif txttypeS == "code":
+            if self.paramL[0] == "data":
+                folderP = Path(self.folderD["dataP"])
+            else:
+                folderP = Path(self.folderD["dataP"])
+                fileP = Path(self.paramL[1].strip())
+                pathP = Path(folderP / fileP)
+                txttypeS = self.paramL[2].strip()
+                extS = pathP.suffix
+                with open(pathP, "r", encoding="md-8") as f1:
+                    txtfileS = f1.read()
+                with open(pathP, "r", encoding="md-8") as f2:
+                    txtfileL = f2.readlines()
+                j = ""
+            if extS == ".txt":
+                # print(f"{txttypeS=}")
+                if txttypeS == "plain":
+                    print(txtfileS)
+                    return txtfileS
+                elif txttypeS == "code":
+                    pass
+                elif txttypeS == "rivttags":
+                    xtagC = parse.RivtParseTag(
+                        self.folderD, self.labelD,  self.localD)
+                    xmdS, self.labelD, self.folderD, self.localD = xtagC.md_parse(
+                        txtfileL)
+                    return xmdS
+                elif extS == ".html":
+                    mdS = self.txthtml(txtfileL)
+                    print(mdS)
+                    return mdS
+            elif extS == ".tex":
+                soupS = self.txttex(txtfileS, txttypeS)
+                print(soupS)
+                return soupS
+            elif extS == ".py":
                 pass
-            elif txttypeS == "rivttags":
-                xtagC = parse.RivtParseTag(
-                    self.folderD, self.labelD,  self.localD)
-                xmdS, self.labelD, self.folderD, self.localD = xtagC.md_parse(
-                    txtfileL)
-                return xmdS
-        elif extS == ".html":
-            mdS = self.txthtml(txtfileL)
-            print(mdS)
-            return mdS
-        elif extS == ".tex":
-            soupS = self.txttex(txtfileS, txttypeS)
-            print(soupS)
-            return soupS
-        elif extS == ".py":
-            pass

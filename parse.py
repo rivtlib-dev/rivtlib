@@ -126,20 +126,23 @@ class RivtParse:
                     xutfS += taguS + "\n"
                     xrstS += tagrS + "\n"
                     continue
-            elif uS[0:2] == "||":                       # commands
-                parL = uS[2:].split("|")
-                cmdS = parL[0].strip()
-                pthP = Path(parL[1].strip())
-                pars = parL[2].strip()
-                parL = pars.split(",")
+            elif uS[0:1] == "|":                       # commands
+                if uS[0:1] == "||":
+                    parL = uS[2:].split("|")
+                else:
+                    parL = uS[1:].split("|")
+                cmdS = parL[0].strip()    # command
+                pthS = parL[1].strip()    # file path
+                parS = parL[2].strip()
                 if cmdS in self.cmdL:                   # filter commands
-                    rviC = cmds.Cmd(labelD, folderD, rivtD)
-                    reS, utS = rvifdictC.cmd_parse(cmdS, pthP, parL)
-                    rvvC = cmds.CmdV(parL, labelD, folderD, rivtD)
-                    reS, utS = rvvC.cmd_parse(cmdS)
+                    rviC = cmds.Cmd(folderD, labelD)
+                    utS, reS = rviC.cmd_parse(cmdS, pthS, parS)
+                    if self.tS == "V":
+                        rvvC = cmds.CmdV(labelD, folderD, rivtD)
+                        utS, reS = rvvC.cmd_parse(cmdS, pthS, parS)
                     xutfS += utS
                     xrstS += reS
-            elif "_[" in uS:                            # tags
+            elif "_[" in uS or "__[" in uS:             # tags
                 usL = uS.split("_[")                    # split off tags
                 lineS = usL[0].strip()
                 tagS = usL[1].strip()
