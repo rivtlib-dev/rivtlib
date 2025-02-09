@@ -1,8 +1,8 @@
 #! python
-"""rivt API
+""" rivt API
 The API is intialized with 
 
-             import rivtlib.api as rv 
+    import rivtlib.api as rv 
 
 API Functions:
 
@@ -14,8 +14,8 @@ API Functions:
     rv.W(rS) - (Write) Write formatted documents 
     rv.Q(rS) - (Quit) Exit rivt processing
     
-    where rS is a triple quoted utf-8 string. The rivtlib code base uses
-    variable types identified with the last letter of a variable name:
+where rS is a triple quoted utf-8 string. The rivtlib code base uses
+variable types identified with the last letter of a variable name:
 
 A = array
 B = boolean
@@ -88,18 +88,25 @@ warnings.filterwarnings("ignore")
 
 
 def rivt_parse(rS, tS):
-    """parse rivt string and write doc text to stdout
+    """parse and accumulate a rivt string
 
     Globals:
-        utfS (str): accumulating utf text string 
-        rstS (str): acculating restr text string
-        labelD (dict): label dictionary
-        folderD (dict): folder dictionary
-        rivtD (dict): rivt values dictionary 
+        utfS (str): accumulated utf text string 
+        rstS (str): accumulated reSt text string
+        labelD (dict): labels 
+        folderD (dict): folders 
+        rivtD (dict): values
 
     Args:
-        tS (str): section type R,I,V,T,W or X
         rS (str): rivt string
+        tS (str): section type is R,I,V,T,W or X
+
+    Calls:
+        RivtParse (class)
+        parse_str (method)
+
+    Returns:
+        None
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -112,14 +119,12 @@ def rivt_parse(rS, tS):
     utfS += xutfS       # accumulate output strings
     rstS += xrstS
 
-    print(xutfS)
-
 
 def R(rS):
-    """process Run string
+    """ process Run string
 
-        Args:
-            rS (str): rivt string
+    Args:
+        rS (str): rivt string
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -127,21 +132,21 @@ def R(rS):
 
 
 def I(rS):
-    """format Insert string
+    """ format Insert string
 
-        Args:
-            rS (str): rivt string
+    Args:
+        rS (str): rivt string
     """
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, folderD, labelD
 
     rivt_parse(rS, "I")
 
 
 def V(rS):
-    """format Value string
+    """ format Value string
 
-        Args:
-            rS (str): rivt string
+    Args:
+        rS (str): rivt string
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -151,10 +156,10 @@ def V(rS):
 
 
 def T(rS):
-    """process Tools string
+    """ process Tools string
 
-        Args:
-            rS (str): rivt string
+    Args:
+        rS (str): rivt string
     """
     global utfS, rstS, folderD, labelD, rivtD
 
@@ -164,26 +169,25 @@ def T(rS):
 
 
 def W(rS):
-    """write output files
+    """ write output files
 
-        Args:
-            rS (str): rivt string
+    Args:
+        rS (str): rivt string
     """
     pass
 
 
 def X(rS):
-    """skip rivt string - no processing
+    """ skip rivt string - no processing
 
-        Args:
-            rS (str): rivt string
-
+    Args:
+        rS (str): rivt string
     """
 
-    rL = rS.split("\n")
+    rL = rS.split("|")
     print("\n X func - section skipped: " + rL[0] + "\n")
 
 
 def Q():
-    print("<<<<<<<< exit rivtlib >>>>>>>>>")
+    print("<<<<< end rivtlib >>>>>")
     sys.exit()

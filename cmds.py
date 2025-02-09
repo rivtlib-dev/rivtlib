@@ -16,6 +16,7 @@ import numpy.linalg as la
 import pandas as pd
 import sympy as sp
 import tabulate
+from PIL import Image
 from IPython.display import Image as _Image
 from IPython.display import display as _display
 from numpy import *
@@ -29,6 +30,13 @@ from rivtlib.unit import *
 tabulate.PRESERVE_WHITESPACE = True
 
 
+# value table
+hdraL = ["variable", "value", "[value]", "description"]
+alignaL = ["left", "right", "right", "left"]
+hdreL = ["variable", "value", "[value]", "description [eq. number]"]
+aligneL = ["left", "right", "right", "left"]
+
+
 class CmdV:
     """values commands that format to utf8 or reSt
 
@@ -38,6 +46,10 @@ class CmdV:
         || VCFG | rel. pth | rel. pth | dec1, dec2      .csv
 
     """
+
+    blckevalL = []      # current value table
+    eqL = []            # equation result table
+    vtableL = []        # value table for export
 
     def __init__(self, labelD, folderD,  rivtD):
         """commands that format a utf doc
@@ -467,6 +479,12 @@ class CmdV:
         sys.stdout = old_stdout
         sys.stdout.flush()
 
+        # valP = Path(folderD["valsP"], folderD["valfileS"])
+        # with open(valP, "w", newline="") as f:
+        #     writecsv = csv.writer(f)
+        #     writecsv.writerow(hdraL)
+        #     writecsv.writerows(vtableL)
+
         self.localD.update(locals())
         print("\n" + mdS+"\n")
         return mdS
@@ -569,15 +587,17 @@ class Cmd:
         Returns:
             utS: formatted utf string
         """
+
         cC = globals()['Cmd'](self.folderD, self.labelD)
         ccmdS = cmdS.lower()
-        print(f"{cmdS=}")
-        print(f"{pthS=}")
-        print(f"{parS=}")
         functag = getattr(cC, ccmdS)
-        utS, reS = functag(pthS, parS)
+        uS, rS = functag(pthS, parS)
 
-        return utS, reS
+        # print(f"{cmdS=}")
+        # print(f"{pthS=}")
+        # print(f"{parS=}")
+
+        return uS, rS
 
     def deflabel(self, labelS, numS):
         """format labels for equations, tables and figures
@@ -596,96 +616,155 @@ class Cmd:
         pass
 
     def img(self, pthS, parS):
-        """insert image from file
+        """ insert image from file
 
+        Args:
+            pthS (str): relative file path
+            parS (str): parameters
+
+        Returns:
+            uS (str): formatted utf string
+            rS (str): formatted reSt string
         """
-        print(f"{parS=}")
+        # print(f"{parS=}")
         parL = parS.split(",")
         fileP = Path(pthS)
         capS = parL[0]
-        scale1S = parL[1].strip()
+        scS = parL[1].strip()
+        scF = float(scS)
+        figS = ""
         if len(parL) == 3:
             if parL[2] == "_[F]":
                 numS = self.labelD["fnum"]
                 figS = self.deflabel(capS, numS)
-        fnumI = 1
-        image1 = ""
         try:
-            image1 = mpimg.imread(pthS)
-            plt.imshow(image1)
-            print("\n")
+            img1 = Image.open(pthS)
+            img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
+            _display(img1)
         except:
             pass
-        uS = "< Figure " + str(fnumI) + ":  " + capS + \
-            " path: " + str(fileP) + "> \n"
+        uS = "< " + capS + " : " + str(fileP) + " > \n"
+        rS = ("\n.. image:: "
+              + pthS + "\n"
+              + "   :scale: "
+              + scS + "%" + "\n"
+              + "   :align: center"
+              + "\n\n"
+              )
         print(uS)
-        img1S = str(fileP)
-        reS = ("\n.. image:: "
-               + img1S + "\n"
-               + "   :scale: "
-               + scale1S + "%" + "\n"
-               + "   :align: center"
-               + "\n\n"
-               )
-        return uS, reS
+        return uS, rS
 
     def img2(self, pthS, parS):
-        """insert images from files
+        """ insert side by side images from files
 
+        Args:
+            pthS (str): relative file path
+            parS (str): parameters
+
+        Returns:
+            uS (str): formatted utf string
+            rS (str): formatted reSt string
         """
-        utfS = ""
-        iL = self.paramL
-        iL = iL[0].split(",")
-        file1S = iL[0].strip()
-        file2S = iL[1].strip()
-        utfS = "Figure path: " + file1S + "\n" + "Figure path: " + file2S + "\n"
-        print(utfS)
-        return utfS
+        # print(f"{parS=}")
+        parL = parS.split(",")
+        fileL = pthS.split(",")
+        file1P = Path(fileL[0])
+        file2P = Path(fileL[1])
+        cap1S = parL[0].strip()
+        cap2S = parL[1].strip()
+        scale1S = parL[2].strip()
+        scale2S = parL[3].strip()
+        figS = ""
+        if len(parL) == 5:
+            if parL[2] == "_[F]":
+                numS = self.labelD["fnum"]
+                figS = self.deflabel(capS, numS)
+        try:
+            img1 = Image.open(pthS)
+            _display(img1)
+        except:
+            pass
+        uS = "<" + capS + " : " + str(fileP) + "> \n"
+        rS = ("\n.. image:: "
+              + pthS + "\n"
+              + "   :scale: "
+              + scale1S + "%" + "\n"
+              + "   :align: center"
+              + "\n\n"
+              )
+        print(uS)
+        return uS, rS
+
+
+    # def combine_images_side_by_side(image_path1, image_path2, output_path):
+    #     """Combines two images horizontally side by side.
+
+    # Args:
+    #     image_path1: Path to the first image.
+    #     image_path2: Path to the second image.
+    #     output_path: Path to save the combined image.
+    # """
+    # try:
+    #     img1 = Image.open(image_path1)
+    #     img2 = Image.open(image_path2)
+
+    #     new_width = img1.width + img2.width
+    #     new_height = max(img1.height, img2.height)
+
+    #     new_img = Image.new('RGB', (new_width, new_height), 'white')
+
+    #     new_img.paste(img1, (0, 0))
+    #     new_img.paste(img2, (img1.width, 0))
+
+    #     new_img.save(output_path)
+    #     print(f"Combined image saved to: {output_path}")
+
+    # except FileNotFoundError:
+    #     print("Error: One or both image files not found.")
+    # except Exception as e:
+    #     print(f"An error occurred: {e}")
+
+    # if __name__ == '__main__':
+    #     combine_images_side_by_side('image1.jpg', 'image2.jpg', 'combined_image.jpg')
+
 
     def table(self, pthS, parS):
-        """insert table from csv or xlsx file as reSt
+        """insert table from csv, xlsx or reSt file
 
-            :return lineS: md table
-            :rtype: str
         """
 
-        tableS = ""
-        alignD = {"s": "", "d": "decimal",
-                  "c": "center", "r": "right", "l": "left"}
-        plenI = 2
-        if len(parS) != plenI:
-            logging.info(
-                f"{self.cmdS} command not evaluated: {plenI} parameters required")
-        return
-
-        fileP = Path(parS.strip())
-        prfxP = self.folderD["docpathP"]
-        if str(fileP)[0:4] == "data":
-            pathP = Path(prfxP, fileP)                    # file path
-        elif str(fileP)[0:4] == "data":
-            pass
-        else:
-            pass
-        maxwI = int(self.paramL[1].split(",")[0])         # max column width
-        keyS = self.paramL[1].split(",")[1].strip()
+        uS = rS = """"""
+        alignD = {"s": "", "d": "decimal", "c": "center", "r": "right", "l": "left"}
+        pthS = pthS.split(":")                            # strip rows
+        pthP = Path(pthS[0])
+        parL = parS.split(",")
+        maxwI = int(parL[0])
+        keyS = parL[1].strip()
         alignS = alignD[keyS]
-        extS = pathP.suffix[1:]
-        # print(f"{extS=}")
-        if extS == "csv":                                 # read csv file
-            with open(pathP, "r") as csvfile:
-                readL = list(csv.reader(csvfile))
-        elif extS == "xlsx":                          # read xls file
+        extS = pthP.suffix[1:]
+        readL = []
+        #print(f"{extS=}")
+        if extS == "csv":                                  # read csv file
+            with open(pthP, "r") as csvfile:
+                reader = csv.reader(csvfile)
+                for row in reader:
+                    #print(f"{row=}")
+                    if row and row[0].startswith('#'):
+                        #print(f"{row=}")
+                        continue
+                    else:
+                        readL.append(row)
+        elif extS == "xlsx":                               # read xls file
             pDF1 = pd.read_excel(pathP, header=None)
             readL = pDF1.values.tolist()
         else:
-            logging.info(
-                f"{self.cmdS} not evaluated: {extS} file not processed")
-        return
+            logging.info(f"{self.cmdS} not evaluated: {extS} file not processed")
+            return
 
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
-        output.write(tabulate(
+        output.write(tabulate.tabulate(
             readL,
             tablefmt="rst",
             headers="firstrow",
@@ -693,17 +772,11 @@ class Cmd:
             maxcolwidths=maxwI,
             stralign=alignS))
 
-        tableS = output.getvalue()
+        uS = rS = output.getvalue()
         sys.stdout = old_stdout
 
-        # valP = Path(folderD["valsP"], folderD["valfileS"])
-        # with open(valP, "w", newline="") as f:
-        #     writecsv = csv.writer(f)
-        #     writecsv.writerow(hdraL)
-        #     writecsv.writerows(vtableL)
-
-        print(tableS)
-        return tableS
+        print(uS)
+        return uS, rS
 
     def text(self):
         """insert text from file

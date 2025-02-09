@@ -54,8 +54,6 @@ class Tag:
              _[[T]]                  itinblk (latex pdf)
              _[[Q]]                  quitblk
 
-        # \*[a-zA-Z0-9_]*\*
-
     """
 
     def __init__(self,  folderD, labelD):
@@ -131,12 +129,12 @@ class Tag:
             _type_: _description_
         """
         # utf
-        luS = lineS.center(int(labelD["widthI"])) + "\n"
+        uS = lineS.center(int(labelD["widthI"])) + "\n"
         # rst
-        lrS = "\n::\n\n" + lineS.center(int(labelD['widthI'])) + "\n"
+        rS = "\n::\n\n" + lineS.center(int(labelD['widthI'])) + "\n"
 
-        # print("***center***", f"{luS=}", f"{lrS=}", "\n")
-        return luS, lrS
+        print(uS)
+        return uS, rS
 
     def sympy(self, lineS, folderD, labelD):
         """format sympy math _[S]
@@ -158,12 +156,12 @@ class Tag:
             pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
-        luS = lineS.center(int(labelD["widthI"])) + "\n"
+        uS = lineS.center(int(labelD["widthI"])) + "\n"
         # rst
-        lrS = ".. raw:: math\n\n   " + lineS + "\n"
+        rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        # print("***sympy***", f"{luS=}", f"{lrS=}", "\n")
-        return luS, lrS
+        print(uS)
+        return uS, rS
 
     def deflabel(self, labelS, numS):
         """format labels for equations, tables and figures
@@ -187,10 +185,10 @@ class Tag:
         enumI = int(self.labelD["equI"]) + 1
         self.labelD["equI"] = enumI
         fillS = "Equ. " + str(enumI).zfill(2)
-        luS = lrS = lineS + fillS.rjust(wI-len(lineS)) + "\n"
+        uS = rS = lineS + fillS.rjust(wI-len(lineS)) + "\n"
 
-        # print("***equation***", f"{luS=}", f"{lrS=}", "\n")
-        return luS, lrS
+        print(us)
+        return uS, rS
 
     def table(self, lineS, folderD, labelD):
         """format table title _[T]
@@ -201,11 +199,11 @@ class Tag:
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
         # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
+        uS = "Table " + str(tnumI) + " - " + lineS
         # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        rS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        print(uS)
         return luS, lrS
 
     def figure(self, lineS, folderD, labelD):
@@ -261,7 +259,7 @@ class Tag:
                 "\n"+"_" * self.labelD["widthI"] + "\n"
         return "\n" + rvtS
 
-    def plainblk(self, lineS, folderD, labelD):
+    def blkplain(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
@@ -277,7 +275,7 @@ class Tag:
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def indblk(self, lineS, folderD, labelD):
+    def blkcode(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
@@ -293,7 +291,7 @@ class Tag:
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def codeblk(self, lineS, folderD, labelD):
+    def blkbold(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
@@ -309,7 +307,7 @@ class Tag:
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def latexblk(self, lineS, folderD, labelD):
+    def blkital(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
@@ -325,7 +323,7 @@ class Tag:
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def italblk(self, lineS, folderD, labelD):
+    def blkind(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
@@ -341,7 +339,7 @@ class Tag:
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def boldblk(self, lineS, folderD, labelD):
+    def blkitind(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
@@ -357,7 +355,7 @@ class Tag:
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def itindblk(self, lineS, folderD, labelD):
+    def blklatex(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
@@ -373,7 +371,7 @@ class Tag:
         print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def quitblk(self, lineS, folderD, labelD):
+    def blkquit(self, lineS, folderD, labelD):
         """format table title _[T]
 
         :return lineS: md table title
