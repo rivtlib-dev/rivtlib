@@ -4,9 +4,9 @@
       {
         "label": "lintpy",
         "type": "shell",
-        "command": "autopep8 -i ${fileBasename}",
+        "command": "autopep8 -i ${file}",
         "windows": {
-          "command": "autopep8 -i ${fileBasename}"
+          "command": "autopep8 -i ${file}"
         },
         "presentation": {
           "reveal": "silent",
