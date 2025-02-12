@@ -25,7 +25,7 @@ from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
 from rivtlib import tags
-from rivtlib.unit import *
+from rivtlib.units import *
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -59,7 +59,6 @@ class Cmd:
         """
         self.folderD = folderD
         self.labelD = labelD
-        # print(folderD)
         errlogP = folderD["errlogP"]
         modnameS = __name__.split(".")[1]
         logging.basicConfig(

@@ -29,7 +29,7 @@ P = path
 S = string
 """
 
-from rivtlib.unit import *
+from rivtlib.units import *
 from rivtlib import params, parse
 import __main__
 from pathlib import Path

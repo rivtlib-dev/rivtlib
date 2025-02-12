@@ -23,7 +23,7 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib.unit import *
+from rivtlib.units import *
 from rivtlib import cmds
 
 tabulate.PRESERVE_WHITESPACE = True

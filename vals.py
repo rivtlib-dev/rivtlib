@@ -24,7 +24,7 @@ from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
 from rivtlib import tags, cmds
-from rivtlib.unit import *
+from rivtlib.units import *
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -34,15 +34,10 @@ class CmdV:
 
     Commands:
         a = 1+1 | unit | reference
-        | VCFG | rel. pth | rel. pth | dec1, dec2  
-        | VALS | rel. pth |  dec1    
+        | VREAD | rel. pth |  dec1    
     """
 
-    blckevalL = []      # current value table
-    eqL = []            # equation result table
-    vtableL = []        # value table for export
-
-    def __init__(self, labelD, folderD):
+    def __init__(self, folderD, labelD):
         """commands that format a utf doc
 
         Args:
@@ -54,16 +49,14 @@ class CmdV:
 
         self.folderD = folderD
         self.labelD = labelD
-        self.errlogP = folderD["errlogP"]
-
-        baseS = self.labelD["baseS"]
-        # print(f"{modnameS=}")
+        errlogP = folderD["errlogP"]
+        modnameS = __name__.split(".")[1]
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + baseS +
+            format="%(asctime)-8s  " + modnameS +
             "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
-            filename=self.errlogP,
+            filename=errlogP,
             filemode="w",
         )
         warnings.filterwarnings("ignore")
@@ -90,7 +83,67 @@ class CmdV:
 
         return uS, rS
 
-    def vread(self):
+    def vread(self, pthS, parS):
+        """ import values from csv files
+
+
+        """
+
+        pathP = Path(pthS)
+        with open(pathP, "r") as csvfile:
+            readL = list(csv.reader(csvfile))
+
+        # print(f"{readL=}")
+        tbL = []
+        for vaL in readL:
+            # print(f"{vL=}")
+            if "=" not in vaL[0]:
+                continue
+            cmdS = vaL[0].strip()
+            varS = vaL[0].split("=")[0].strip()
+            valS = vaL[0].split("=")[1].strip()
+            descripS = vaL[1].strip()
+            unit1S, unit2S = vaL[2].strip(), vaL[3].strip()
+            dec1I, dec2I = int(vaL[4]), int(vaL[5])
+            loc = {"x": 1}
+            loc[varS] = loc.pop('x')
+            if unit1S != "-":
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                else:
+                    cmdS = vaL[0].strip()
+                    # print(f"{cmdS=}")
+                    try:
+                        exec(cmdS, globals(), loc)
+                    except ValueError as ve:
+                        print(f"A ValueError occurred: {ve}")
+                    except Exception as e:
+                        print(f"An unexpected error occurred: {e}")
+                    exec(cmdS)
+                    # print(globals())
+                    # print(loc)
+                    valU = eval(varS, globals(), loc)
+                    val1U = str(valU.cast_unit(eval(unit1S)))
+                    val2U = str(valU.cast_unit(eval(unit2S)))
+            else:
+                cmdS = varS + " = " + valS
+                exec(cmdS, globals(), locals())
+                valU = eval(varS)
+                val1U = str(valU)
+                val2U = str(valU)
+            tbL.append([varS, val1U, val2U, descripS])
+
+        tblfmt = 'rst'
+        hdrvL = ["variable", "value", "[value]", "description"]
+        alignL = ["left", "right", "right", "left"]
+
+        vC = CmdV(self.folderD, self.labelD)
+        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
+
+        return uS, rS
+
+    def vread2(self):
         """ import values from csv files
 
 
@@ -392,7 +445,7 @@ class TagV:
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
 
-        vC = CmdV(self.labelD, self.folderD)
+        vC = CmdV(self.folderD, self.labelD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
         return uS, rS

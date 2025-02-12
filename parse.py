@@ -138,11 +138,13 @@ class RivtParse:
                 pthS = parL[1].strip()                   # file path
                 parS = parL[2].strip()
                 if cmdS in self.cmdL:                    # filter commands
-                    rviC = cmds.Cmd(folderD, labelD)
-                    utS, reS = rviC.cmd_parse(cmdS, pthS, parS)
                     if self.tS == "V":
-                        rvvC = vals.CmdV(labelD, folderD)
+                        rvvC = vals.CmdV(folderD, labelD)
                         utS, reS = rvvC.cmd_parse(cmdS, pthS, parS)
+                    else:
+                        rviC = cmds.Cmd(folderD, labelD)
+                        utS, reS = rviC.cmd_parse(cmdS, pthS, parS)
+                    print(utS)
                     xutfS += utS
                     xrstS += reS
             elif "_[" in ulS or "__[" in ulS:            # tags
