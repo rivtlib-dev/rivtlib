@@ -60,13 +60,12 @@ def dicts(rivN, rivP, rivtP):
         "sectS": "",                            # section title
         "secnumI": 0,                           # section number
         "widthI": 80,                           # print width
-        "equI": 0,                              # equation number
-        "tableI": 0,                            # table number
-        "figI": 0,                              # figure number
+        "equI": 1,                              # equation number
+        "tableI": 1,                            # table number
+        "figI": 1,                              # figure number
         "pageI": 1,                             # starting page number
         "noteL": [0],                           # footnote counter
         "footL": [1],                           # foot counter
-        "unitS": "M,M",                         # units
         "descS": "2",                           # description or decimal places
         "headrS": "",                           # header string
         "footrS": "",                           # footer string

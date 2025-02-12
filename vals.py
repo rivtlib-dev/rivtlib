@@ -23,17 +23,10 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib import tags
+from rivtlib import tags, cmds
 from rivtlib.unit import *
 
 tabulate.PRESERVE_WHITESPACE = True
-
-
-# value table
-hdraL = ["variable", "value", "[value]", "description"]
-alignaL = ["left", "right", "right", "left"]
-hdreL = ["variable", "value", "[value]", "description [eq. number]"]
-aligneL = ["left", "right", "right", "left"]
 
 
 class CmdV:
@@ -49,7 +42,7 @@ class CmdV:
     eqL = []            # equation result table
     vtableL = []        # value table for export
 
-    def __init__(self, labelD, folderD,  rivtD):
+    def __init__(self, labelD, folderD):
         """commands that format a utf doc
 
         Args:
@@ -59,7 +52,6 @@ class CmdV:
             localD (dict): _description_
         """
 
-        self.rivtD = rivtD
         self.folderD = folderD
         self.labelD = labelD
         self.errlogP = folderD["errlogP"]
@@ -98,20 +90,15 @@ class CmdV:
 
         return uS, rS
 
-    def equals(self):
-        """
+    def vread(self):
+        """ import values from csv files
 
-
-        """
-
-    def vals1(self):
-        """import values from files
 
         """
 
         hdrL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
-        plenI = 2                       # number of parameters
+        plenI = 2                            # number of parameters
         if len(self.paramL) != plenI:
             logging.info(
                 f"{self.cmdS} command not evaluated: {plenI} parameters required")
@@ -152,17 +139,6 @@ class CmdV:
 
         rstS = self.vtable(valL, hdrL, "rst", alignL)
 
-        # print(mdS + "\n")
-        return rstS
-
-    def vals2(self):
-        """import data from files
-
-
-            :return lineS: md table
-            :rtype: str
-        """
-
         locals().update(self.rivtD)
         valL = []
         if len(vL) < 5:
@@ -188,20 +164,76 @@ class CmdV:
 
         return
 
-    def vsub1(self, eqL, precI, varS, val1U):
-        """substitute variables with values
+    def valeq(self):
+        """ format equations
 
-        :param eqL: _description_
-        :type eqL: _type_
-        :param precI: _description_
-        :type precI: _type_
-        :param varS: _description_
-        :type varS: _type_
-        :param val1U: _description_
-        :type val1U: _type_
-        :return: _description_
-        :rtype: _type_
+
         """
+
+    def valtable(self, tbL, hdrL, alignL, tblfmt):
+        """ format value table
+
+        """
+
+        # locals().update(self.rivtD)
+
+        # print(f"{tbL=}")
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tbL, tablefmt=tblfmt, headers=hdrL,
+                showindex=False,  colalign=alignL))
+        uS = rS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+
+        return uS, rS
+
+    def vsub(self, eqL, precI, varS, val1U):
+        """substitute numbers for variables in formatted equations
+
+        :return assignL: assign results
+        :rtype: list
+        :return rstS: restruct string
+        :rtype: string
+        """
+        locals().update(self.localD)
+        fmtS = "%." + str(precI) + "f"
+        varL = [str(eqL[0]), str(eqL[1])]
+        # resultS = vars[0].strip() + " = " + str(eval(vars[1]))
+        # sps = sps.encode('unicode-escape').decode()
+        eqS = "Eq(" + eqL[0] + ",(" + eqL[1] + "))"
+        with sp.evaluate(False):
+            symeq = sp.sympify(eqS.strip())
+        symat = symeq.atoms(sp.Symbol)
+        for n1O in symat:
+            if str(n1O) == varS:
+                symeq = symeq.subs(n1O, sp.Symbol(str(val1U)))
+                continue
+            n1U = eval(str(n1O))
+            n1U.set_format(value_format=fmtS, auto_norm=True)
+            evlen = len(str(n1U))  # get var length
+            new_var = str(n1U).rjust(evlen, "~")
+            new_var = new_var.replace("_", "|")
+            with sp.evaluate(False):                # sub values
+                symeq = symeq.subs(n1O, sp.Symbol(new_var))
+        out2 = sp.pretty(symeq, wrap_line=False)
+        out3 = out2  # clean up unicode
+        out3 = out3.replace("*", "\\u22C5")
+        _cnt = 0
+        for _m in out3:
+            if _m == "-":
+                _cnt += 1
+                continue
+            else:
+                if _cnt > 1:
+                    out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
+                _cnt = 0
+        self.localD.update(locals())
+        indeqS = out3.replace("\n", "\n   ")
+        rstS = "\n::\n\n   " + indeqS + "\n\n"
 
         locals().update(self.localD)
         fmtS = "%." + str(precI) + "f"
@@ -230,23 +262,6 @@ class CmdV:
                 symeq = symeq.subs(n1O, sp.Symbol(new_var))
             # print(f"{symeq=}")
         out2 = sp.pretty(symeq, wrap_line=False)
-        # print('out2a\n', out2)
-        # symat1 = symeq.atoms(sp.Symbol)  # adjust character length
-        # for n2 in symat1:
-        #     orig_var = str(n2).replace("~", "")
-        #     orig_var = orig_var.replace("|", "_")
-        #     expr = eval(varL[1])
-        #     if type(expr) == float:
-        #         form = "{%." + str(precI) + "f}"
-        #         symeval1 = form.format(eval(str(expr)))
-        #     else:
-        #         try:
-        #             symeval1 = eval(
-        #                 orig_var.__str__()).__str__()
-        #         except:
-        #             symeval1 = eval(orig_var.__str__()).__str__()
-        #     out2 = out2.replace(n2.__str__(), symeval1)   # substitute
-        # print('out2b\n', out2)
         out3 = out2  # clean up unicode
         out3 = out3.replace("*", "\\u22C5")
         _cnt = 0
@@ -261,186 +276,11 @@ class CmdV:
         self.localD.update(locals())
         mdS = out3 + "\n\n"
 
-        return mdS
+    def tablex():
 
-    def vsub2(self, eqL, precI, varS, val1U):
-        """substitute numbers for variables in printed output
-
-        :return assignL: assign results
-        :rtype: list
-        :return rstS: restruct string
-        :rtype: string
-        """
-        locals().update(self.localD)
-        fmtS = "%." + str(precI) + "f"
-        varL = [str(eqL[0]), str(eqL[1])]
-        # resultS = vars[0].strip() + " = " + str(eval(vars[1]))
-        # sps = sps.encode('unicode-escape').decode()
-        eqS = "Eq(" + eqL[0] + ",(" + eqL[1] + "))"
-        with sp.evaluate(False):
-            symeq = sp.sympify(eqS.strip())
-        symat = symeq.atoms(sp.Symbol)
-        for n1O in symat:
-            if str(n1O) == varS:
-                symeq = symeq.subs(n1O, sp.Symbol(str(val1U)))
-                continue
-            n1U = eval(str(n1O))
-            n1U.set_format(value_format=fmtS, auto_norm=True)
-            evlen = len(str(n1U))  # get var length
-            new_var = str(n1U).rjust(evlen, "~")
-            new_var = new_var.replace("_", "|")
-            with sp.evaluate(False):                # sub values
-                symeq = symeq.subs(n1O, sp.Symbol(new_var))
-        out2 = sp.pretty(symeq, wrap_line=False)
-        # symat1 = symeq.atoms(sp.Symbol)
-        # for n2 in symat1:
-        #     orig_var = str(n2).replace("~", "")
-        #     orig_var = orig_var.replace("|", "_")
-        #     expr = eval(varL[1])
-        #     if type(expr) == float:
-        #         form = "{%." + str(precI) + "f}"
-        #         symeval1 = form.format(eval(str(expr)))
-        #     else:
-        #         try:
-        #             symeval1 = eval(
-        #                 orig_var.__str__()).__str__()
-        #         except:
-        #             symeval1 = eval(orig_var.__str__()).__str__()
-        #     out2 = out2.replace(n2.__str__(), symeval1)   # substitute
-        # print('out2b\n', out2)
-        out3 = out2  # clean up unicode
-        out3 = out3.replace("*", "\\u22C5")
-        _cnt = 0
-        for _m in out3:
-            if _m == "-":
-                _cnt += 1
-                continue
-            else:
-                if _cnt > 1:
-                    out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
-                _cnt = 0
-        self.localD.update(locals())
-        indeqS = out3.replace("\n", "\n   ")
-        rstS = "\n::\n\n   " + indeqS + "\n\n"
-
-        return rstS
-
-    def vtable(self, tbL, hdrL, tblfmt, alignL):
-        """write value table"""
-
-        # locals().update(self.rivtD)
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate(
-                tbL, headers=hdrL, tablefmt=tblfmt,
-                showindex=False, colalign=alignL
-            )
-        )
-        mdS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-
-        return mdS
-
-        # self.calcS += mdS + "\n"
-        # self.rivtD.update(locals())
-
-    def atable2(self, tblL, hdreL, tblfmt, alignaL):
-        """write assign table"""
-
-        locals().update(self.rivtD)
-
-        valL = []
-        for vaL in tblL:
-            varS = vaL[0].strip()
-            valS = vaL[1].strip()
-            unit1S, unit2S = vaL[2], vaL[3]
-            descripS = vaL[4].strip()
-            if unit1S != "-":
-                if type(eval(valS)) == list:
-                    val1U = array(eval(valS)) * eval(unit1S)
-                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-                else:
-                    cmdS = varS + "= " + valS
-                    exec(cmdS, globals(), locals())
-                    valU = eval(varS)
-                    val1U = str(valU.cast_unit(eval(unit1S)))
-                    val2U = str(valU.cast_unit(eval(unit2S)))
-            else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-                valU = eval(varS)
-                val1U = str(valU)
-                val2U = str(valU)
-            valL.append([varS, val1U, val2U, descripS])
-
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate(
-                valL, tablefmt=tblfmt, headers=hdreL,
-                showindex=False,  colalign=alignaL))
-        utfS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-
-        # valP = Path(folderD["valsP"], folderD["valfileS"])
-        # with open(valP, "w", newline="") as f:
-        #     writecsv = csv.writer(f)
-        #     writecsv.writerow(hdraL)
-        #     writecsv.writerows(vtableL)
-
-        self.localD.update(locals())
-        print("\n" + mdS+"\n")
-        return mdS
-
-    def etable2(self, tblL, hdrvL, tblfmt, aligneL):
-        """write eval table"""
-
-        locals().update(self.rivtD)
-
-        valL = []
-        for vaL in tblL:
-            varS = vaL[0].strip()
-            valS = vaL[1].strip()
-            unit1S, unit2S = vaL[2], vaL[3]
-            descripS = vaL[4].strip()
-            if unit1S != "-":
-                if type(eval(valS)) == list:
-                    val1U = array(eval(valS)) * eval(unit1S)
-                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-                else:
-                    cmdS = varS + "= " + valS + " * " + unit1S
-                    exec(cmdS, globals(), locals())
-                    valU = eval(varS)
-                    val1U = str(valU.cast_unit(eval(unit1S)))
-                    val2U = str(valU.cast_unit(eval(unit2S)))
-            else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-                valU = eval(varS)
-                val1U = str(valU)
-                val2U = str(valU)
-            valL.append([varS, val1U, val2U, descripS])
-
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate(
-                valL, tablefmt=tblfmt, headers=hdrvL,
-                showindex=False,  colalign=alignvL))
-        utfS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-
-        self.rivtD.update(locals())
-
-        print("\n" + mdS+"\n")
-        return utfS
+        alignaL = ["left", "right", "right", "left"]
+        hdreL = ["variable", "value", "[value]", "description [eq. number]"]
+        aligneL = ["left", "right", "right", "left"]
 
 
 class TagV:
@@ -456,7 +296,7 @@ class TagV:
     """
 
     def __init__(self,  folderD, labelD):
-        """format to utf and reSt
+        """tags that format to utf and reSt
 
         """
         self.folderD = folderD
@@ -474,7 +314,7 @@ class TagV:
         )
         warnings.filterwarnings("ignore")
 
-    def tag_parse(self, tagcmdS, blockS):
+    def tag_parse(self, tagcmdS, blockL):
         """parse a tagged line
 
         Args:
@@ -484,57 +324,75 @@ class TagV:
         Returns:
             utS: formatted utf string
         """
-        tC = globals()['TagV'](self.folderD, self.labelD)
+
+        tC = TagV(self.folderD, self.labelD)
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
-        utS, reS = functag(lineS, self.folderD, self.labelD)
+        uS, rS = functag(blockL)
 
         # print(f"{tcmdS=}")
-        # print(f"{lineS=}")
-        return utS, reS
+        return uS, rS
 
-    def values(self, folderD, 
+    def values(self, blockL):
         """return value table
 
         """
 
-    locals().update(self.rivtD)
-    locals().update(self.localD)
+        vaL = []
+        tbL = []
+        # print(f"{blockL=}")
+        for vaS in blockL:
+            # print(f"{vaS=}")
+            # print(tbL)
+            vaL = vaS.split("|")
+            if len(vaL) != 4:
+                continue
+            if "=" not in vaL[0]:
+                continue
+            cmdS = vaL[0].strip()
+            varS = vaL[0].split("=")[0].strip()
+            valS = vaL[0].split("=")[1].strip()
+            descripS = vaL[1].strip()
+            unitL = vaL[2].split(",")
+            unit1S, unit2S = unitL[0], unitL[1]
+            decL = vaL[3].split(",")
+            dec1I, dec2I = decL[0], decL[1]
+            loc = {"x": 1}
+            loc[varS] = loc.pop('x')
+            if unit1S != "-":
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                else:
+                    cmdS = vaL[0].strip()
+                    # print(f"{cmdS=}")
 
-    valL = []
-    for vaL in tblL:
-        varS = vaL[0].strip()
-        valS = vaL[1].strip()
-        unit1S, unit2S = vaL[2], vaL[3]
-        descripS = vaL[4].strip()
-        if unit1S != "-":
-            if type(eval(valS)) == list:
-                val1U = array(eval(valS)) * eval(unit1S)
-                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                    try:
+                        exec(cmdS, globals(), loc)
+                    except ValueError as ve:
+                        print(f"A ValueError occurred: {ve}")
+                    except Exception as e:
+                        print(f"An unexpected error occurred: {e}")
+                    exec(cmdS)
+
+                    # print(globals())
+                    # print(loc)
+                    valU = eval(varS, globals(), loc)
+                    val1U = str(valU.cast_unit(eval(unit1S)))
+                    val2U = str(valU.cast_unit(eval(unit2S)))
             else:
-                cmdS = varS + "= " + valS
+                cmdS = varS + " = " + valS
                 exec(cmdS, globals(), locals())
                 valU = eval(varS)
-                val1U = str(valU.cast_unit(eval(unit1S)))
-                val2U = str(valU.cast_unit(eval(unit2S)))
-        else:
-            cmdS = varS + "= " + valS
-            exec(cmdS, globals(), locals())
-            valU = eval(varS)
-            val1U = str(valU)
-            val2U = str(valU)
-        valL.append([varS, val1U, val2U, descripS])
+                val1U = str(valU)
+                val2U = str(valU)
+            tbL.append([varS, val1U, val2U, descripS])
 
-        varS = str(self.lineS).split(":=")[0].strip()
-        valS = str(self.lineS).split(":=")[1].strip()
-        unit1S = str(self.labelD["unitS"]).split(",")[0]
-        unit2S = str(self.labelD["unitS"]).split(",")[1]
-        descripS = str(self.labelD["descS"])
-        if unit1S.strip() != "-":
-            cmdS = varS + "= " + valS + "*" + unit1S
-        else:
-            cmdS = varS + "= as_unum(" + valS + ")"
+        tblfmt = 'rst'
+        hdrvL = ["variable", "value", "[value]", "description"]
+        alignL = ["left", "right", "right", "left"]
 
-        exec(cmdS, globals(), locals())
-        self.localD.update(locals())
-        return [varS, valS, unit1S, unit2S, descripS]
+        vC = CmdV(self.labelD, self.folderD)
+        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
+
+        return uS, rS

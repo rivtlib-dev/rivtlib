@@ -138,6 +138,17 @@ class Tag:
         print(uS)       # stdout
         return uS, rS
 
+    def deflabel(self, labelS, numS):
+        """format labels for equations, tables and figures
+
+            :return labelS: formatted label
+            :rtype: str
+        """
+        secS = str(self.labelD["secnumI"]).zfill(2)
+        labelS = secS + " - " + labelS + numS
+        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
+        return labelS
+
     def sympy(self, lineS):
         """format sympy math _[S]
 
@@ -158,61 +169,59 @@ class Tag:
             pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
-        uS = lineS.center(int(labelD["widthI"])) + "\n"
+        uS = lineS
         # rst
         rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        print(uS)
+        print(uS)               # stdout
         return uS, rS
 
-    def deflabel(self, labelS, numS):
-        """format labels for equations, tables and figures
-
-            :return labelS: formatted label
-            :rtype: str
-        """
-        secS = str(self.labelD["secnumI"]).zfill(2)
-        labelS = secS + " - " + labelS + numS
-        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
-        return labelS
-
     def equation(self, lineS):
-        """equation label _[e]
+        """ format equation label _[E]
 
-        :return lineS: md equation label
-        :rtype: str
+        Args:
+            lineS (_type_): _description_
+
+        Returns:
+            _type_: _description_
         """
-
-        wI = labelD["widthI"]
-        enumI = int(self.labelD["equI"]) + 1
-        self.labelD["equI"] = enumI
+        enumI = int(self.labelD["equI"])
+        self.labelD["equI"] = enumI + 1
+        wI = self.labelD["widthI"]
         fillS = "Equ. " + str(enumI).zfill(2)
         uS = rS = lineS + fillS.rjust(wI-len(lineS)) + "\n"
 
-        print(us)
+        print(uS)               # stdout
         return uS, rS
 
-    def table(self, lineS, folderD, labelD):
+    def table(self, lineS):
         """format table title _[T]
 
-        :return lineS: md table title
-        :rtype: str
+        Args:
+            lineS (_type_): _description_
+
+        Returns:
+            _type_: _description_
         """
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
+        fillS = str(tnumI).zfill(2)
         # utf
         uS = "Table " + str(tnumI) + " - " + lineS
         # rst
         rS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
         print(uS)
-        return luS, lrS
+        return uS, rS
 
-    def figure(self, lineS, folderD, labelD):
+    def figure(self, lineS):
         """utf figure caption _[F]
 
-        :return lineS: figure label
-        :rtype: str
+        Args:
+            lineS (_type_): _description_
+
+        Returns:
+            _type_: _description_
         """
         fnumI = int(self.labelD["figI"])
         self.labelD["figI"] = fnumI + 1

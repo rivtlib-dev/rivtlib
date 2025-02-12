@@ -1,4 +1,4 @@
-from rivtlib import tags, cmds
+from rivtlib import tags, cmds, vals
 from pathlib import Path
 
 
@@ -25,7 +25,7 @@ class RivtParse:
                           "[L]]": "blklatex",  "[Q]]": "blkquit", }
 
         elif tS == "V":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "VALS", "VCFG", "="]
+            self.cmdL = ["IMG", "IMG2", "TABLE", "VREAD", "="]
             self.tagsD = {"E]": "equation", "F]": "figure", "T]": "table",
                           "PAGE]": "page", "[V]]": "values", "[Q]]": "quit"}
 
@@ -100,6 +100,7 @@ class RivtParse:
         print(hdutfS)
 
         # print(strL)
+        blockS = """"""
         for ulS in strL[1:]:                             # section body
             # print(f"{uS=}")
             try:
@@ -110,18 +111,22 @@ class RivtParse:
             except:
                 pass
             if blockB:                                   # accumulate block
-                blockS += ulS
+                blockS += ulS + "\n"
                 if blockB and ulS.strip() == "_[[Q]]":
                     blockB = False
                     if self.tS == "V":
+                        blockL = blockS.split("\n")
                         tC = vals.TagV(folderD, labelD)
-                        uS, rS = tC.tag_parse(tagcmd, blocks)
+                        uS, rS = tC.tag_parse(tagcmd, blockL)
                         xutfS += uS + "\n"
                         xrstS += rS + "\n"
+                        blockL = []
+                        print(uS)
                         continue
                     uS, rS = tC.tag_parse(tagcmd, blockS)
                     xutfS += uS + "\n"
                     xrstS += rS + "\n"
+                    blockS = """"""
                     print(uS)                            # stdout
                     continue
             elif ulS[0:1] == "|":                        # read commands
@@ -136,7 +141,7 @@ class RivtParse:
                     rviC = cmds.Cmd(folderD, labelD)
                     utS, reS = rviC.cmd_parse(cmdS, pthS, parS)
                     if self.tS == "V":
-                        rvvC = vals.CmdV(labelD, folderD, rivtD)
+                        rvvC = vals.CmdV(labelD, folderD)
                         utS, reS = rvvC.cmd_parse(cmdS, pthS, parS)
                     xutfS += utS
                     xrstS += reS
