@@ -25,7 +25,7 @@ class RivtParse:
                           "[L]]": "blklatex",  "[Q]]": "blkquit", }
 
         elif tS == "V":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "VREAD", "="]
+            self.cmdL = ["IMG", "IMG2", "TABLE", "VREAD"]
             self.tagsD = {"E]": "equation", "F]": "figure", "T]": "table",
                           "PAGE]": "page", "[V]]": "values", "[Q]]": "quit"}
 
@@ -124,20 +124,20 @@ class RivtParse:
                         print(uS)
                         continue
                     uS, rS = tC.tag_parse(tagcmd, blockS)
+                    print(uS)                            # stdout
                     xutfS += uS + "\n"
                     xrstS += rS + "\n"
                     blockS = """"""
-                    print(uS)                            # stdout
                     continue
-            elif ulS[0:1] == "|":                        # read commands
-                if ulS[0:1] == "||":                     # write commands
+            elif ulS[0] == "|":                          # read/write commands
+                if ulS[0:1] == "||":
                     parL = ulS[2:].split("|")
                 else:
                     parL = ulS[1:].split("|")
-                cmdS = parL[0].strip()                   # command
-                pthS = parL[1].strip()                   # file path
+                cmdS = parL[0].strip()
+                pthS = parL[1].strip()
                 parS = parL[2].strip()
-                if cmdS in self.cmdL:                    # filter commands
+                if cmdS in self.cmdL:                    # command classes
                     if self.tS == "V":
                         rvvC = vals.CmdV(folderD, labelD)
                         utS, reS = rvvC.cmd_parse(cmdS, pthS, parS)
@@ -147,14 +147,24 @@ class RivtParse:
                     print(utS)
                     xutfS += utS
                     xrstS += reS
+            elif self.ts == "V":                         # = sign command
+                if "=" in ulS:
+                    cmdS = parL[0].strip()
+                    pthS = parL[1].strip()
+                    parS = parL[2].strip()
+                    rvvC = vals.CmdV(folderD, labelD)
+                    utS, reS = rvvC.cmd_parse(cmdS, pthS, parS)
+                    print(utS)                           # std out
+                    xutfS += utS
+                    xrstS += reS
             elif "_[" in ulS or "__[" in ulS:            # tags
-                ulL = ulS.split("_[")                    # split off tags
+                ulL = ulS.split("_[")                    # split off tag
                 lineS = ulL[0].strip()
                 tagS = ulL[1].strip()
                 tagcmd = self.tagsD[tagS]                # get tag name
                 if tagS in self.tagsD:                   # filter tags
                     tC = tags.Tag(folderD, labelD)
-                    if len(tagS) < 3:                    # line tags
+                    if len(tagS) < 3:                    # line tag
                         uS, rS = tC.tag_parse(tagcmd, lineS)
                         xutfS += uS + "\n"
                         xrstS += rS + "\n"
