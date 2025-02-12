@@ -36,7 +36,7 @@ def dicts(rivN, rivP, rivtP):
     rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
     reportP = Path(projP, "reports")
     xrivtP = Path(projP, "xrivt")
-    tempP = Path(projP, "temp")
+    tempP = Path(projP, "docs", "temp")
     errlogP = Path(tempP, "rivt-log.txt")
     styleP = Path(projP, "docs", "pdf")
     valfileS = baseS.replace("riv", "val") + ".csv"

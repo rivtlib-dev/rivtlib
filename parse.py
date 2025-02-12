@@ -19,15 +19,15 @@ class RivtParse:
             self.tagsD = {"H]": "hline", "C]": "center", "B]": "centerbold",
                           "E]": "equation", "F]": "figure", "T]": "table",
                           "#]": "foot", "D]": "descrip", "S]": "sympy",
-                          "K]": "link", "PAGE]": "page", "URL]": "url",
+                          "K]": "link", "A]": "page", "URL]": "url",
                           "[P]]": "blkplain",  "[O]]": "blkcode", "[B]]": "blkbold",
                           "[I]]": "blkital",  "[N]]": "blkind", "[T]]": "blkitind",
                           "[L]]": "blklatex",  "[Q]]": "blkquit", }
 
         elif tS == "V":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "EVAL", "VALS", "VCFG", "="]
+            self.cmdL = ["IMG", "IMG2", "TABLE", "VALS", "VCFG", "="]
             self.tagsD = {"E]": "equation", "F]": "figure", "T]": "table",
-                          "C]": "center"}
+                          "PAGE]": "page", "[V]]": "values", "[Q]]": "quit"}
 
         elif tS == "R":
             self.cmdL = ["run", "process"]
@@ -113,24 +113,30 @@ class RivtParse:
                 blockS += ulS
                 if blockB and ulS.strip() == "_[[Q]]":
                     blockB = False
+                    if self.tS == "V":
+                        tC = vals.TagV(folderD, labelD)
+                        uS, rS = tC.tag_parse(tagcmd, blocks)
+                        xutfS += uS + "\n"
+                        xrstS += rS + "\n"
+                        continue
                     uS, rS = tC.tag_parse(tagcmd, blockS)
                     xutfS += uS + "\n"
                     xrstS += rS + "\n"
-                    print(blockS)
+                    print(uS)                            # stdout
                     continue
-            elif ulS[0:1] == "|":                        # commands
-                if ulS[0:1] == "||":
+            elif ulS[0:1] == "|":                        # read commands
+                if ulS[0:1] == "||":                     # write commands
                     parL = ulS[2:].split("|")
                 else:
                     parL = ulS[1:].split("|")
-                cmdS = parL[0].strip()                  # command
-                pthS = parL[1].strip()                  # file path
+                cmdS = parL[0].strip()                   # command
+                pthS = parL[1].strip()                   # file path
                 parS = parL[2].strip()
-                if cmdS in self.cmdL:                   # filter commands
+                if cmdS in self.cmdL:                    # filter commands
                     rviC = cmds.Cmd(folderD, labelD)
                     utS, reS = rviC.cmd_parse(cmdS, pthS, parS)
                     if self.tS == "V":
-                        rvvC = cmds.CmdV(labelD, folderD, rivtD)
+                        rvvC = vals.CmdV(labelD, folderD, rivtD)
                         utS, reS = rvvC.cmd_parse(cmdS, pthS, parS)
                     xutfS += utS
                     xrstS += reS
@@ -154,7 +160,7 @@ class RivtParse:
                         except:
                             pass
             else:
-                print(ulS)
+                print(ulS)                               # stdout
                 xutfS += uS + "\n"                       # return other
                 xrstS += rS + "\n"
 

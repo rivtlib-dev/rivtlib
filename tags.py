@@ -34,7 +34,7 @@ class Tag:
        format to utf8 or reSt
 
         Functions:
-             _[h1-h6]                heading
+             _[1-6]                  headings
              _[#]                    foot
              _[D]                    descrip
              _[C]                    center
@@ -42,9 +42,9 @@ class Tag:
              _[E]                    equation
              _[F]                    figure
              _[T]                    table
-             _[HLINE]                hline
-             _[PAGE]                 page
-             _[URL]                  url, reference
+             _[H]                    hline
+             _[G]                    page
+             _[K]                    url, reference
              _[[P]]                  plainblk
              _[[N]]                  indblk
              _[[O]]                  codeblk 
@@ -52,7 +52,7 @@ class Tag:
              _[[I]]                  italblk (latex pdf)
              _[[B]]                  boldblk (latex pdf)
              _[[T]]                  itinblk (latex pdf)
-             _[[Q]]                  quitblk
+             _[[Q]]                  quit
 
     """
 
@@ -85,16 +85,17 @@ class Tag:
         Returns:
             utS: formatted utf string
         """
-        tC = globals()['Tag'](self.folderD, self.labelD)
+
+        tC = Tag(self.folderD, self.labelD)
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
-        utS, reS = functag(lineS, self.folderD, self.labelD)
+        utS, reS = functag(lineS)
 
         # print(f"{tcmdS=}")
         # print(f"{lineS=}")
         return utS, reS
 
-    def foot(self, lineS, folderD, labelD):
+    def foot(self):
         """footnote number _[#]
 
 
@@ -106,7 +107,7 @@ class Tag:
         print(lineS)
         return lineS
 
-    def description(self, lineS, folderD, labelD):
+    def description(self, lineS):
         """footnote description _[D]
 
         :return lineS: footnote
@@ -114,10 +115,11 @@ class Tag:
         """
         ftnumI = self.labelD["noteL"].pop(0)
         lineS = "[" + str(ftnumI) + "] " + self.lineS
+
         print(lineS)
         return lineS
 
-    def center(self, lineS, folderD, labelD):
+    def center(self, lineS):
         """center text _[C]
 
         Args:
@@ -129,14 +131,14 @@ class Tag:
             _type_: _description_
         """
         # utf
-        uS = lineS.center(int(labelD["widthI"])) + "\n"
+        uS = lineS.center(int(self.labelD["widthI"])) + "\n"
         # rst
-        rS = "\n::\n\n" + lineS.center(int(labelD['widthI'])) + "\n"
+        rS = "\n::\n\n" + lineS.center(int(self.labelD['widthI'])) + "\n"
 
-        print(uS)
+        print(uS)       # stdout
         return uS, rS
 
-    def sympy(self, lineS, folderD, labelD):
+    def sympy(self, lineS):
         """format sympy math _[S]
 
         Args:
@@ -147,7 +149,7 @@ class Tag:
         Returns:
             _type_: _description_
         """
-        spS = self.lineS.strip()
+        spS = lineS.strip()
         try:
             spL = spS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
@@ -174,7 +176,7 @@ class Tag:
         self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
         return labelS
 
-    def equation(self, lineS, folderD, labelD):
+    def equation(self, lineS):
         """equation label _[e]
 
         :return lineS: md equation label

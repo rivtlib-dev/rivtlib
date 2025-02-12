@@ -37,13 +37,12 @@ aligneL = ["left", "right", "right", "left"]
 
 
 class CmdV:
-    """values commands that format to utf8 or reSt
+    """ format values to utf8 or reSt
 
-        a = 1+1 | unit | reference (_[E])                = is command tag
-        || EVAL | default |  dec1                       .csv
-        || VALS | rel. pth |  dec1                      .csv
-        || VCFG | rel. pth | rel. pth | dec1, dec2      .csv
-
+    Commands:
+        a = 1+1 | unit | reference
+        | VCFG | rel. pth | rel. pth | dec1, dec2  
+        | VALS | rel. pth |  dec1    
     """
 
     blckevalL = []      # current value table
@@ -77,75 +76,35 @@ class CmdV:
         )
         warnings.filterwarnings("ignore")
 
-    def vals(self):
-        """declare variable values
+    def cmd_parse(self, cmdS, pthS, parS):
+        """parse tagged line
+
+        Args:
+            cmdS (_type_): _description_
+            lineS (_type_): _description_
+
+        Returns:
+            utS: formatted utf string
+        """
+
+        cC = globals()['CmdV'](self.folderD, self.labelD)
+        ccmdS = cmdS.lower()
+        functag = getattr(cC, ccmdS)
+        uS, rS = functag(pthS, parS)
+
+        # print(f"{cmdS=}")
+        # print(f"{pthS=}")
+        # print(f"{parS=}")
+
+        return uS, rS
+
+    def equals(self):
+        """
+
 
         """
-        locals().update(self.localD)
-        varS = str(self.lineS).split(":=")[0].strip()
-        valS = str(self.lineS).split(":=")[1].strip()
-        unit1S = str(self.labelD["unitS"]).split(",")[0]
-        unit2S = str(self.labelD["unitS"]).split(",")[1]
-        descripS = str(self.labelD["descS"])
-        if unit1S.strip() != "-":
-            cmdS = varS + "= " + valS + "*" + unit1S
-        else:
-            cmdS = varS + "= as_unum(" + valS + ")"
 
-        exec(cmdS, globals(), locals())
-        self.localD.update(locals())
-        return [varS, valS, unit1S, unit2S, descripS]
-
-    def evalmds(self):
-        """assign value to equation
-
-        :return: _description_
-        :rtype: _type_
-        """
-        locals().update(self.localD)
-        varS = str(self.lineS).split("=")[0].strip()
-        valS = str(self.lineS).split("=")[1].strip()
-        unit1S = str(self.labelD["unitS"]).split(",")[0]
-        unit2S = str(self.labelD["unitS"]).split(",")[1]
-        descS = str(self.labelD["eqlabelS"])
-        precI = int(self.labelD["descS"])  # trim result
-        fmtS = "%." + str(precI) + "f"
-        if unit1S.strip() != "-":
-            if type(eval(valS)) == list:
-                val1U = array(eval(valS)) * eval(unit1S)
-                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-            else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-
-                val1U = eval(varS).cast_unit(eval(unit1S))
-                val1U.set_format(value_format=fmtS, auto_norm=True)
-                val2U = val1U.cast_unit(eval(unit2S))
-                # print(f"{val1U=}")
-        else:
-            cmdS = varS + "= as_unum(" + valS + ")"
-            exec(cmdS, globals(), locals())
-
-            valU = eval(varS)
-            valdec = round(valU.number(), precI)
-            val1U = val2U = str(valdec)
-
-        spS = "Eq(" + varS + ",(" + valS + "))"
-        mdS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        mdS = "\n" + mdS + "\n"
-        eqL = [varS, valS, unit1S, unit2S, descS]
-
-        print(mdS)                      # print equation
-
-        subS = " "
-        if self.labelD["subB"]:
-            subS = self.vsub(eqL, precI, varS, val1U)
-            print(subS)                  # print with substition
-
-        self.localD.update(locals())
-        return [eqL, mdS + "\n" + subS + "\n\n"]
-
-    def eval(self):
+    def vals1(self):
         """import values from files
 
         """
@@ -196,7 +155,7 @@ class CmdV:
         # print(mdS + "\n")
         return rstS
 
-    def eval2(self):
+    def vals2(self):
         """import data from files
 
 
@@ -229,57 +188,7 @@ class CmdV:
 
         return
 
-    def evalrst(self):
-        """ = assign result to equation
-
-        :return assignL: assign results
-        :rtype: list
-        :return rstS: restruct string
-        :rtype: string
-        """
-        locals().update(self.localD)
-        varS = str(self.lineS).split("=")[0].strip()
-        valS = str(self.lineS).split("=")[1].strip()
-        unit1S = str(self.labelD["unitS"]).split(",")[0]
-        unit2S = str(self.labelD["unitS"]).split(",")[1]
-        descS = str(self.labelD["eqlabelS"])
-        precI = int(self.labelD["descS"])  # trim result
-        fmtS = "%." + str(precI) + "f"
-        if unit1S.strip() != "-":
-            if type(eval(valS)) == list:
-                val1U = array(eval(valS)) * eval(unit1S)
-                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-            else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-
-                val1U = eval(varS).cast_unit(eval(unit1S))
-                val1U.set_format(value_format=fmtS, auto_norm=True)
-                val2U = val1U.cast_unit(eval(unit2S))
-        else:
-            cmdS = varS + "= as_unum(" + valS + ")"
-            exec(cmdS, globals(), locals())
-
-            valU = eval(varS)
-            valdec = round(valU.number(), precI)
-            val1U = val2U = str(valdec)
-        spS = "Eq(" + varS + ",(" + valS + "))"
-        # symeq = sp.sympify(spS, _clash2, evaluate=False)
-        # eqltxS = sp.latex(symeq, mul_symbol="dot")
-        eqS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        indeqS = eqS.replace("\n", "\n   ")
-        rstS = "\n::\n\n   " + indeqS + "\n\n"
-        eqL = [varS, valS, unit1S, unit2S, descS]
-        self.localD.update(locals())
-
-        subS = "\n\n"
-        if self.labelD["subB"]:              # replace variables with numbers
-            subS = self.vsub(eqL, precI, varS, val1U) + "\n\n"
-
-        assignL = [varS, str(val1U), unit1S, unit2S, descS]
-        return [assignL, rstS + subS]
-
-    def vsub(self, eqL, precI, varS, val1U):
+    def vsub1(self, eqL, precI, varS, val1U):
         """substitute variables with values
 
         :param eqL: _description_
@@ -532,3 +441,100 @@ class CmdV:
 
         print("\n" + mdS+"\n")
         return utfS
+
+
+class TagV:
+    """format to utf8 or reSt
+
+    Functions:
+            _[E]                    equation
+            _[F]                    figure
+            _[T]                    table
+            _[A]                    page
+            _[[V]]                  values
+            _[[Q]]                  quit
+    """
+
+    def __init__(self,  folderD, labelD):
+        """format to utf and reSt
+
+        """
+        self.folderD = folderD
+        self.labelD = labelD
+        # print(folderD)
+        errlogP = folderD["errlogP"]
+        modnameS = __name__.split(".")[1]
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)-8s  " + modnameS +
+            "   %(levelname)-8s %(message)s",
+            datefmt="%m-%d %H:%M",
+            filename=errlogP,
+            filemode="w",
+        )
+        warnings.filterwarnings("ignore")
+
+    def tag_parse(self, tagcmdS, blockS):
+        """parse a tagged line
+
+        Args:
+            tagcmd (_type_): _description_
+            lineS (_type_): _description_
+
+        Returns:
+            utS: formatted utf string
+        """
+        tC = globals()['TagV'](self.folderD, self.labelD)
+        tcmdS = str(tagcmdS)
+        functag = getattr(tC, tcmdS)
+        utS, reS = functag(lineS, self.folderD, self.labelD)
+
+        # print(f"{tcmdS=}")
+        # print(f"{lineS=}")
+        return utS, reS
+
+    def values(self, folderD, 
+        """return value table
+
+        """
+
+    locals().update(self.rivtD)
+    locals().update(self.localD)
+
+    valL = []
+    for vaL in tblL:
+        varS = vaL[0].strip()
+        valS = vaL[1].strip()
+        unit1S, unit2S = vaL[2], vaL[3]
+        descripS = vaL[4].strip()
+        if unit1S != "-":
+            if type(eval(valS)) == list:
+                val1U = array(eval(valS)) * eval(unit1S)
+                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+            else:
+                cmdS = varS + "= " + valS
+                exec(cmdS, globals(), locals())
+                valU = eval(varS)
+                val1U = str(valU.cast_unit(eval(unit1S)))
+                val2U = str(valU.cast_unit(eval(unit2S)))
+        else:
+            cmdS = varS + "= " + valS
+            exec(cmdS, globals(), locals())
+            valU = eval(varS)
+            val1U = str(valU)
+            val2U = str(valU)
+        valL.append([varS, val1U, val2U, descripS])
+
+        varS = str(self.lineS).split(":=")[0].strip()
+        valS = str(self.lineS).split(":=")[1].strip()
+        unit1S = str(self.labelD["unitS"]).split(",")[0]
+        unit2S = str(self.labelD["unitS"]).split(",")[1]
+        descripS = str(self.labelD["descS"])
+        if unit1S.strip() != "-":
+            cmdS = varS + "= " + valS + "*" + unit1S
+        else:
+            cmdS = varS + "= as_unum(" + valS + ")"
+
+        exec(cmdS, globals(), locals())
+        self.localD.update(locals())
+        return [varS, valS, unit1S, unit2S, descripS]
