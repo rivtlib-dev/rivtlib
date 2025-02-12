@@ -29,8 +29,6 @@ P = path
 S = string
 """
 
-from rivtlib.units import *
-from rivtlib import params, parse
 import __main__
 from pathlib import Path
 from datetime import datetime, time
@@ -40,6 +38,8 @@ import os
 import logging
 import fnmatch
 import sys
+from rivtlib.units import *
+from rivtlib import params, parse
 
 # from rivtlib import write
 

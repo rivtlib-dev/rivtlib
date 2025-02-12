@@ -1,5 +1,3 @@
-"""parameter dictionaries and lists"""
-
 import os
 import sys
 from pathlib import Path
@@ -10,7 +8,7 @@ def dicts(rivN, rivP, rivtP):
 
     Args:
         rivN (_type_): _description_
-        curP (_type_): _description_
+        rivP (_type_): _description_
         rivtP (_type_): _description_
 
     Returns:
@@ -30,7 +28,6 @@ def dicts(rivN, rivP, rivtP):
     docsP = Path(projP, "docs")
     insP = Path(rivP / ("ins" + divnumS))
     valsP = Path(rivP / ("vals" + divnumS))
-
     # output paths
     pypath = os.path.dirname(sys.executable)  # rivt package path
     rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
@@ -42,10 +39,7 @@ def dicts(rivN, rivP, rivtP):
     valfileS = baseS.replace("riv", "val") + ".csv"
     readmeP = Path(projP, "README.txt")
     ossP = Path(projP / "oss")
-
     # global dicts
-    rivtD = {}
-
     folderD = {}
     for item in ["rivtP", "docsP", "readmeP", "reportP", "projP",
                  "valsP", "insP", "errlogP", "styleP", "tempP"]:
@@ -73,5 +67,6 @@ def dicts(rivN, rivP, rivtP):
         "docstrB": False,                       # print doc strings
         "subB": False                           # sub values in equations
     }
+    rivtD = {}
 
     return folderD, labelD, rivtD
