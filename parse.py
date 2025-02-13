@@ -15,16 +15,16 @@ class RivtParse:
         if tS == "I":
             self.cmdL = ["APPEND", "IMG", "IMG2", "TABLE", "TEXT"]
             self.tagsD = {"H]": "hline", "C]": "center", "B]": "centerbold",
-                          "E]": "equation", "F]": "figure", "T]": "table",
+                          "E]": "equa", "F]": "figure", "T]": "table",
                           "#]": "foot", "D]": "descrip", "S]": "sympy",
                           "K]": "link", "A]": "page", "URL]": "url",
-                          "[P]]": "blkplain",  "[O]]": "blkcode", "[B]]": "blkbold",
-                          "[I]]": "blkital",  "[N]]": "blkind", "[T]]": "blkitind",
+                          "[O]]": "blkcode", "[B]]": "blkbold", "[N]]": "blkind",
+                          "[I]]": "blkital",  "[T]]": "blkitind",
                           "[L]]": "blklatex",  "[Q]]": "blkquit", }
         elif tS == "V":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "VREAD"]
-            self.tagsD = {"E]": "equation", "F]": "figure", "T]": "table",
-                          "PAGE]": "page", "[V]]": "values", "[Q]]": "quit"}
+            self.cmdL = ["IMG", "IMG2", "TABLE", "VALREAD"]
+            self.tagsD = {"E]": "equa", "F]": "figure", "T]": "table",
+                          "G]": "page", "[V]]": "values", "[Q]]": "quit"}
         elif tS == "R":
             self.cmdL = ["run", "process"]
             self.tagsD = {}
@@ -86,19 +86,21 @@ class RivtParse:
             bordrS = labelD["widthI"] * "-"
             hdutfS = bordrS + "\n" + headS + "\n" + bordrS + "\n"
             hdrstS = "**" + headS + "**" + "\n\n" + bordrS + "\n"
-
-        print(hdutfS)                                    # stdout header
         xutfS += hdutfS
         xrstS += hdrstS
+        print(hdutfS)                                    # stdout header
 
         # print(strL)
         blockS = """"""
         for ulS in strL[1:]:                            # section contents
             # print(f"{ulS=}")
+            if len(ulS.strip()) < 1 and not blockB:
+                xutfS += "\n"
+                xrstS += "\n"
+                print(" ")                              # stdout blank line
+                continue
             try:
                 if ulS[0] == "#":                       # skip comment lines
-                    continue
-                elif len(ulS) < 1:
                     continue
             except:
                 pass
@@ -116,18 +118,18 @@ class RivtParse:
                         print(uS)                       # stdout vread
                         continue
                     uS, rS = tC.tag_parse(tagcmd, blockS)
-                    print(uS)                           # stdout block
                     xutfS += uS + "\n"
                     xrstS += rS + "\n"
+                    print(uS)                           # stdout block
                     blockS = """"""
                     continue
             elif self.tS == "R":                        # run function
-                continue
+                pass
             elif self.tS == "T":                        # tools function
-                continue
+                pass
             elif self.tS == "W":                        # write function
-                continue
-            elif ulS[0:1] == "|":                         # read/write commands
+                pass
+            elif ulS[0:1] == "|":                       # read/write commands
                 if ulS[0:2] == "||":
                     parL = ulS[2:].split("|")
                 else:
@@ -139,33 +141,31 @@ class RivtParse:
                     if self.tS == "V":                   # vread command
                         rvvC = vals.CmdV(folderD, labelD)
                         utS, reS = rvvC.cmd_parse(cmdS, pthS, parS)
+                        print(utS)                       # stdout vread
+                        xutfS += utS
+                        xrstS += reS
+                        continue
                     else:                                # insert commands
                         rviC = cmds.Cmd(folderD, labelD)
                         utS, reS = rviC.cmd_parse(cmdS, pthS, parS)
                         print(utS)                       # stdout command
                         xutfS += utS
                         xrstS += reS
-            elif self.tS == "V":
-                if "=" in ulS:                           # command =
-                    eqL = ulS.split("|", 1)
-                    eqS = eqL[0].strip()
-                    parS = eqL[1].strip()
-                    rvvC = vals.CmdV(folderD, labelD)
-                    utS, reS = rvvC.cmd_parse("valeq", eqS, parS)
-                    print(utS)                           # stdout =
-                    xutfS += utS
-                    xrstS += reS
-            elif "_[" in ulS or "__[" in ulS:            # tags
-                ulL = ulS.split("_[")                    # split off tag
+                        continue
+            elif "_[" in ulS:                            # tags
+                ulL = ulS.split("_[")                    # split tag
                 lineS = ulL[0].strip()
                 tagS = ulL[1].strip()
                 tagcmd = self.tagsD[tagS]                # get tag name
                 if tagS in self.tagsD:                   # filter tags
+                    # print(f"{tagS=}")
                     tC = tags.Tag(folderD, labelD)
                     if len(tagS) < 3:                    # line tag
                         uS, rS = tC.tag_parse(tagcmd, lineS)
+                        print(uS)                        # stdout tag
                         xutfS += uS + "\n"
                         xrstS += rS + "\n"
+                        continue
                     else:
                         blockS = ""                      # block - init
                         blockB = True
@@ -173,10 +173,19 @@ class RivtParse:
                             xutfS += lineS + "\n"
                             xrstS += lineS + "\n"
                         except:
-                            pass
+                            continue
+            elif self.tS == "V" and "=" in ulS:
+                eqL = ulS.split("|", 1)
+                eqS = eqL[0].strip()
+                parS = eqL[1].strip()
+                rvvC = vals.CmdV(folderD, labelD)
+                utS, reS = rvvC.cmd_parse("valeq", eqS, parS)
+                xutfS += utS
+                xrstS += reS
+                print(utS)                               # stdout =
             else:
-                print(ulS)                               # stdout - no format
-                xutfS += uS + "\n"                       # return other
+                xutfS += uS + "\n"
                 xrstS += rS + "\n"
+                print(ulS)                               # stdout - no format
 
         return (xutfS, xrstS, folderD, labelD, rivtD)

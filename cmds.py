@@ -93,17 +93,6 @@ class Cmd:
 
         return uS, rS
 
-    def deflabel(self, labelS, numS):
-        """format labels for equations, tables and figures
-
-            :return labelS: formatted label
-            :rtype: str
-        """
-        secS = str(self.labelD["secnumI"]).zfill(2)
-        labelS = secS + " - " + labelS + numS
-        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
-        return labelS
-
     def append(self):
         """_summary_
         """
@@ -145,7 +134,7 @@ class Cmd:
               + "   :align: center"
               + "\n\n"
               )
-        print(uS)
+
         return uS, rS
 
     def img2(self, pthS, parS):
@@ -186,39 +175,8 @@ class Cmd:
               + "   :align: center"
               + "\n\n"
               )
-        print(uS)
+
         return uS, rS
-
-    # def combine_images_side_by_side(image_path1, image_path2, output_path):
-    #     """Combines two images horizontally side by side.
-
-    # Args:
-    #     image_path1: Path to the first image.
-    #     image_path2: Path to the second image.
-    #     output_path: Path to save the combined image.
-    # """
-    # try:
-    #     img1 = Image.open(image_path1)
-    #     img2 = Image.open(image_path2)
-
-    #     new_width = img1.width + img2.width
-    #     new_height = max(img1.height, img2.height)
-
-    #     new_img = Image.new('RGB', (new_width, new_height), 'white')
-
-    #     new_img.paste(img1, (0, 0))
-    #     new_img.paste(img2, (img1.width, 0))
-
-    #     new_img.save(output_path)
-    #     print(f"Combined image saved to: {output_path}")
-
-    # except FileNotFoundError:
-    #     print("Error: One or both image files not found.")
-    # except Exception as e:
-    #     print(f"An error occurred: {e}")
-
-    # if __name__ == '__main__':
-    #     combine_images_side_by_side('image1.jpg', 'image2.jpg', 'combined_image.jpg')
 
     def table(self, pthS, parS):
         """insert table from csv, xlsx or reSt file
@@ -269,7 +227,6 @@ class Cmd:
         uS = rS = output.getvalue()
         sys.stdout = old_stdout
 
-        print(uS)
         return uS, rS
 
     def text(self):

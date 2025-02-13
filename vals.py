@@ -84,19 +84,25 @@ class CmdV:
 
         return uS, rS
 
-    def vread(self, pthS, parS):
+    def valread(self, pthS, parS):
         """ import values from csv files
 
-
+        Args:
+            lineS (_type_): _description_
+            labelD (_type_): _description_
+            folderD (_type_): _description_
+        Returns:
+            _type_: _description_
         """
         pathP = Path(pthS)
         with open(pathP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
-
         # print(f"{readL=}")
         tbL = []
         for vaL in readL:
             # print(f"{vL=}")
+            if len(vaL[0].strip()) < 1:
+                continue
             if "=" not in vaL[0]:
                 continue
             cmdS = vaL[0].strip()
@@ -107,7 +113,6 @@ class CmdV:
             dec1I, dec2I = int(vaL[4]), int(vaL[5])
             loc = {"x": 1}
             loc[varS] = loc.pop('x')
-
             if unit1S != "-":
                 if type(eval(valS)) == list:
                     val1U = array(eval(valS)) * eval(unit1S)
@@ -122,9 +127,6 @@ class CmdV:
                     except Exception as e:
                         print(f"An unexpected error occurred: {e}")
                     exec(cmdS)
-
-                    # print(globals())
-                    # print(loc)
                     valU = eval(varS, globals(), loc)
                     val1U = str(valU.cast_unit(eval(unit1S)))
                     val2U = str(valU.cast_unit(eval(unit2S)))
@@ -139,23 +141,19 @@ class CmdV:
         tblfmt = 'rst'
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
-
         vC = CmdV(self.folderD, self.labelD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
         return uS, rS
 
-    def vwrite(self, pthS, parS):
+    def valwrite(self, pthS, parS):
         pass
 
     def valtable(self, tbL, hdrL, alignL, tblfmt):
         """ format table
 
         """
-
-        # locals().update(self.rivtD)
         # print(f"{tbL=}")
-
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -184,21 +182,23 @@ class CmdV:
         alignaL = ["left", "right", "right", "left"]
         hdreL = ["variable", "value", "[value]", "description [eq. number]"]
         aligneL = ["left", "right", "right", "left"]
+        wI = self.labelD["widthI"]
 
         spS = eqS.strip()
+        refS = parS.split("|")[0].strip()
         try:
             spL = spS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
             # sps = sp.encode('unicode-escape').decode()
         except:
             pass
+        refS = refS.rjust(wI)
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
-        uS = lineS
+        uS = refS + "\n" + lineS + "\n\n"
         # rst
         rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        print(uS)               # stdout
         return uS, rS
 
     def vsub(self, eqL, precI, varS, val1U):
@@ -316,7 +316,8 @@ class TagV:
             # print(f"{vaS=}")
             # print(tbL)
             vaL = vaS.split("|")
-            if len(vaL) != 4:
+            # print(f"{vaL=}")
+            if len(vaL) != 4 or len(vaL[0]) < 1:
                 continue
             if "=" not in vaL[0]:
                 continue

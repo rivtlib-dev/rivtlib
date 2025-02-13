@@ -95,103 +95,24 @@ class Tag:
         # print(f"{lineS=}")
         return utS, reS
 
-    def foot(self):
-        """footnote number _[#]
-
-
-        """
-        ftnumI = self.labelD["footL"].pop(0)
-        self.labelD["noteL"].append(ftnumI + 1)
-        self.labelD["footL"].append(ftnumI + 1)
-        lineS = self.lineS.replace("*]", "[" + str(ftnumI) + "]")
-        print(lineS)
-        return lineS
-
-    def description(self, lineS):
-        """footnote description _[D]
-
-        :return lineS: footnote
-        :rtype: str
-        """
-        ftnumI = self.labelD["noteL"].pop(0)
-        lineS = "[" + str(ftnumI) + "] " + self.lineS
-
-        print(lineS)
-        return lineS
-
-    def center(self, lineS):
-        """center text _[C]
-
-        Args:
-            lineS (_type_): _description_
-            labelD (_type_): _description_
-            folderD (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        # utf
-        uS = lineS.center(int(self.labelD["widthI"])) + "\n"
-        # rst
-        rS = "\n::\n\n" + lineS.center(int(self.labelD['widthI'])) + "\n"
-
-        print(uS)       # stdout
-        return uS, rS
-
-    def deflabel(self, labelS, numS):
-        """format labels for equations, tables and figures
-
-            :return labelS: formatted label
-            :rtype: str
-        """
-        secS = str(self.labelD["secnumI"]).zfill(2)
-        labelS = secS + " - " + labelS + numS
-        self.labelD["eqlabelS"] = self.lineS + " [" + numS.zfill(2) + "]"
-        return labelS
-
-    def sympy(self, lineS):
-        """format sympy math _[S]
-
-        Args:
-            lineS (_type_): _description_
-            labelD (_type_): _description_
-            folderD (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        spS = lineS.strip()
-        try:
-            spL = spS.split("=")
-            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            # sps = sp.encode('unicode-escape').decode()
-        except:
-            pass
-        lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        # utf
-        uS = lineS
-        # rst
-        rS = ".. raw:: math\n\n   " + lineS + "\n"
-
-        print(uS)               # stdout
-        return uS, rS
-
-    def equation(self, lineS):
+    def equa(self, lineS):
         """ format equation label _[E]
 
         Args:
-            lineS (_type_): _description_
+            lineS (str): _description_
 
         Returns:
-            _type_: _description_
+            str : _description_
         """
         enumI = int(self.labelD["equI"])
         self.labelD["equI"] = enumI + 1
         wI = self.labelD["widthI"]
-        fillS = "Equ. " + str(enumI).zfill(2)
-        uS = rS = lineS + fillS.rjust(wI-len(lineS)) + "\n"
+       # utf
+        fillS = "Eq-" + str(enumI).zfill(2)
+        uS = rS = lineS + fillS.rjust(wI-len(lineS))
+        # rst
+        rS = uS
 
-        print(uS)               # stdout
         return uS, rS
 
     def table(self, lineS):
@@ -211,7 +132,6 @@ class Tag:
         # rst
         rS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print(uS)
         return uS, rS
 
     def figure(self, lineS):
@@ -228,6 +148,75 @@ class Tag:
         lineS = "Fig. " + str(fnumI) + " - " + self.lineS
 
         return lineS + "\n"
+
+    def foot(self):
+        """ footnote number _[#]
+
+        Args:
+            lineS (str): rivt line
+        Returns:
+            str, str: formatted utf, reSt 
+        """
+        ftnumI = self.labelD["footL"].pop(0)
+        self.labelD["noteL"].append(ftnumI + 1)
+        self.labelD["footL"].append(ftnumI + 1)
+        lineS = self.lineS.replace("*]", "[" + str(ftnumI) + "]")
+        print(lineS)
+        return lineS
+
+    def description(self, lineS):
+        """ footnote description _[D]
+
+        Args:
+            lineS (str): rivt line
+        Returns:
+            str: formatted utf 
+            str: formatted reSt 
+        """
+        ftnumI = self.labelD["noteL"].pop(0)
+        lineS = "[" + str(ftnumI) + "] " + self.lineS
+
+        return lineS
+
+    def center(self, lineS):
+        """ center text _[C]
+
+        Args:
+            lineS (str): rivt line
+        Returns:
+            str, str: formatted utf, reSt 
+        """
+        # utf
+        uS = lineS.center(int(self.labelD["widthI"])) + "\n"
+        # rst
+        rS = "\n::\n\n" + lineS.center(int(self.labelD['widthI'])) + "\n"
+
+        return uS, rS
+
+    def sympy(self, lineS):
+        """ format sympy math _[S]
+
+
+        Args:
+            lineS (str): rivt line
+        Returns:
+            str, str: formatted utf, reSt 
+        """
+        spS = lineS.strip()
+        try:
+            spL = spS.split("=")
+            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            # sps = sp.encode('unicode-escape').decode()
+        except:
+            pass
+        lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+        # utf
+        uS = lineS
+        # rst
+        rS = ".. raw:: math\n\n   " + lineS + "\n"
+
+        # print(uS)
+        return uS, rS
 
     def plain(self, lineS, folderD, labelD):
         """format plain literal text _[P]
