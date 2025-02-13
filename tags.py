@@ -120,7 +120,6 @@ class Tag:
 
         Args:
             lineS (_type_): _description_
-
         Returns:
             _type_: _description_
         """

@@ -74,7 +74,7 @@ class RivtParse:
             labelD["docS"] = hL[0].strip()              # section title
             labelD["xch"] = hL[1].strip()               # xchange flag
             labelD["color"] = hL[2].strip()             # background color
-            hdutfS = hdrstS = "\n"                      # empty header
+            hdutfS = hdrstS = "  "                      # empty header
         else:
             # section title
             titleS = labelD["docS"] = hL[0].strip()     # section title
@@ -104,9 +104,9 @@ class RivtParse:
                     continue
             except:
                 pass
-            if blockB:                                  # accumulate block
+            if blockB:                                  # block accumulate
                 blockS += ulS + "\n"
-                if blockB and ulS.strip() == "_[[Q]]":
+                if blockB and ulS.strip() == "_[[Q]]":  # block end
                     blockB = False
                     if self.tS == "V":                  # vread block
                         blockL = blockS.split("\n")
@@ -152,6 +152,8 @@ class RivtParse:
                         xutfS += utS
                         xrstS += reS
                         continue
+                else:
+                    pass
             elif "_[" in ulS:                            # tags
                 ulL = ulS.split("_[")                    # split tag
                 lineS = ulL[0].strip()
@@ -167,13 +169,15 @@ class RivtParse:
                         xrstS += rS + "\n"
                         continue
                     else:
-                        blockS = ""                      # block - init
+                        blockS = ""                      # block start
                         blockB = True
                         try:
                             xutfS += lineS + "\n"
                             xrstS += lineS + "\n"
                         except:
                             continue
+                else:
+                    pass
             elif self.tS == "V" and "=" in ulS:
                 eqL = ulS.split("|", 1)
                 eqS = eqL[0].strip()
