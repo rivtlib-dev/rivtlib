@@ -39,18 +39,18 @@ class Tag:
              _[D]                    descrip
              _[C]                    center
              _[S]                    sympy
+             _[N]                    number (sympy)
              _[E]                    equation
              _[F]                    figure
              _[T]                    table
              _[H]                    hline
              _[G]                    page
              _[K]                    url, reference
-             _[[P]]                  plainblk
              _[[N]]                  indblk
-             _[[O]]                  codeblk 
+             _[[O]]                  codeblk (literal)
+             _[[B]]                  boldblk (latex pdf)
              _[[L]]                  latexblk (latex pdf)
              _[[I]]                  italblk (latex pdf)
-             _[[B]]                  boldblk (latex pdf)
              _[[T]]                  itinblk (latex pdf)
              _[[Q]]                  quit
 
@@ -89,18 +89,17 @@ class Tag:
         tC = Tag(self.folderD, self.labelD)
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
-        utS, reS = functag(lineS)
+        uS, rS = functag(lineS)
 
         # print(f"{tcmdS=}")
         # print(f"{lineS=}")
-        return utS, reS
+        return uS, rS, self.folderD, self.labelD
 
     def equa(self, lineS):
         """ format equation label _[E]
 
         Args:
             lineS (str): _description_
-
         Returns:
             str : _description_
         """

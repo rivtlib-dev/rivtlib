@@ -13,12 +13,13 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy.linalg as la
 import pandas as pd
-import sympy as sp
+
 import tabulate
 from PIL import Image
 from IPython.display import Image as _Image
 from IPython.display import display as _display
 from numpy import *
+import sympy as sp
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
@@ -37,7 +38,7 @@ class CmdV:
         | VREAD | rel. pth |  dec1    
     """
 
-    def __init__(self, folderD, labelD):
+    def __init__(self, folderD, labelD, rivtD):
         """commands that format a utf doc
 
         Args:
@@ -47,6 +48,7 @@ class CmdV:
             localD (dict): _description_
         """
 
+        self.rivtD = rivtD
         self.folderD = folderD
         self.labelD = labelD
         errlogP = folderD["errlogP"]
@@ -73,7 +75,7 @@ class CmdV:
             utS: formatted utf string
         """
 
-        cC = globals()['CmdV'](self.folderD, self.labelD)
+        cC = globals()['CmdV'](self.folderD, self.labelD, self.rivtD)
         ccmdS = cmdS.lower()
         functag = getattr(cC, ccmdS)
         uS, rS = functag(pthS, parS)
@@ -82,10 +84,11 @@ class CmdV:
         # print(f"{pthS=}")
         # print(f"{parS=}")
 
-        return uS, rS
+        print(self.rivtD)
+        return uS, rS, self.folderD, self.labelD, self.rivtD
 
     def valread(self, pthS, parS):
-        """ import values from csv files
+        """ import values from csv files, update rivtD
 
         Args:
             lineS (_type_): _description_
@@ -94,6 +97,8 @@ class CmdV:
         Returns:
             _type_: _description_
         """
+
+        locals().update(self.rivtD)
         pathP = Path(pthS)
         with open(pathP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
@@ -136,18 +141,16 @@ class CmdV:
                 valU = eval(varS)
                 val1U = str(valU)
                 val2U = str(valU)
+            self.rivtD.update(loc)
             tbL.append([varS, val1U, val2U, descripS])
 
         tblfmt = 'rst'
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
-        vC = CmdV(self.folderD, self.labelD)
+        vC = CmdV(self.folderD, self.labelD, self.rivtD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
         return uS, rS
-
-    def valwrite(self, pthS, parS):
-        pass
 
     def valtable(self, tbL, hdrL, alignL, tblfmt):
         """ format table
@@ -167,14 +170,16 @@ class CmdV:
 
         return uS, rS
 
-    def valeq(self, eqS, parS):
+    def valwrite(self, pthS, parS):
+        pass
+
+    def eqform(self, eqS, parS):
         """format equation ' = '
 
         Args:
             lineS (_type_): _description_
             labelD (_type_): _description_
             folderD (_type_): _description_
-
         Returns:
             _type_: _description_
         """
@@ -201,8 +206,8 @@ class CmdV:
 
         return uS, rS
 
-    def vsub(self, eqL, precI, varS, val1U):
-        """substitute numbers for variables in formatted equations
+    def eqtable(self, eqS, parS):
+        """format equation table, update rivtD
 
         :return assignL: assign results
         :rtype: list
@@ -210,17 +215,58 @@ class CmdV:
         :rtype: string
         """
 
-        locals().update(self.localD)
-        fmtS = "%." + str(precI) + "f"
-        varL = [str(eqL[0]), str(eqL[1])]
+        vaL = []
+        tbL = []
+        alignaL = ["left", "right", "right", "left"]
+        hdreL = ["variable", "value", "[value]", "description [eq. number]"]
+        aligneL = ["left", "right", "right", "left"]
+        wI = self.labelD["widthI"]
+        eqS = eqS.strip()
+        refS = parS.split("|")
+        print(f"{eqS=}")
+        print(f"{refS=}")
+        varS = eqS.split("=")[0].strip()
+        valS = eqS.split("=")[1].strip()
+        descripS = refS[0].strip()
+        unitL = refS[1].split(",")
+        unit1S, unit2S = unitL[0], unitL[1]
+        decL = refS[2].split(",")
+        dec1I, dec2I = decL[0], decL[1]
+        fmtS = "%." + str(dec1I) + "f"
         # resultS = vars[0].strip() + " = " + str(eval(vars[1]))
         # sps = sps.encode('unicode-escape').decode()
-        eqS = "Eq(" + eqL[0] + ",(" + eqL[1] + "))"
+
+        if unit1S != "-":
+            try:
+                print("----", eqS)
+                exec(eqS, globals(), self.rivtD)
+            except ValueError as ve:
+                print(f"A ValueError occurred: {ve}")
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+            print(f"{varS=}")
+            print("=======", self.rivtD[varS])
+            valU = eval(varS, globals(), self.rivtD)
+            val1U = str(valU.cast_unit(eval(unit1S)))
+            val2U = str(valU.cast_unit(eval(unit2S)))
+            print("____", val2U)
+        else:
+            cmdS = varS + " = " + valS
+            try:
+                exec(cmdS, globals(), self.rivtD)
+            except ValueError as ve:
+                print(f"A ValueError occurred: {ve}")
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+            valU = eval(varS, globals(), self.rivtD)
+            val1U = str(valU)
+            val2U = str(valU)
+
         with sp.evaluate(False):
             symeq = sp.sympify(eqS.strip())
-        # print(f"{symeq=}")
+        print(f"{symeq=}")
         symat = symeq.atoms(sp.Symbol)
-        # print(f"{symat=}")
+        print(f"{symat=}")
         for n1O in symat:
             if str(n1O) == varS:
                 symeq = symeq.subs(n1O, sp.Symbol(str(val1U)))
@@ -251,7 +297,16 @@ class CmdV:
         self.localD.update(locals())
         indeqS = out3.replace("\n", "\n   ")
         rstS = "\n::\n\n   " + indeqS + "\n\n"
-        # mdS = out3 + "\n\n"
+
+        tbL.append([varS, val1U, val2U, descripS])
+
+        tblfmt = 'rst'
+        hdrvL = ["variable", "value", "[value]", "description"]
+        alignL = ["left", "right", "right", "left"]
+
+        self.rivtD.update(loc)
+        vC = CmdV(self.folderD, self.labelD)
+        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
 
 class TagV:
@@ -266,10 +321,11 @@ class TagV:
             _[[Q]]                  quit
     """
 
-    def __init__(self,  folderD, labelD):
+    def __init__(self,  folderD, labelD, rivtD):
         """tags that format to utf and reSt
 
         """
+        self.rivtD = rivtD
         self.folderD = folderD
         self.labelD = labelD
         # print(folderD)
@@ -296,25 +352,26 @@ class TagV:
             utS: formatted utf string
         """
 
-        tC = TagV(self.folderD, self.labelD)
+        tC = TagV(self.folderD, self.labelD, self.rivtD)
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
         uS, rS = functag(blockL)
 
         # print(f"{tcmdS=}")
-        return uS, rS
+        print(self.rivtD)
+        return uS, rS, self.folderD, self.labelD, self.rivtD
 
     def values(self, blockL):
-        """return value table
+        """return value table, update rivtD
 
         """
 
+        locals().update(self.rivtD)
         vaL = []
         tbL = []
         # print(f"{blockL=}")
         for vaS in blockL:
             # print(f"{vaS=}")
-            # print(tbL)
             vaL = vaS.split("|")
             # print(f"{vaL=}")
             if len(vaL) != 4 or len(vaL[0]) < 1:
@@ -329,32 +386,21 @@ class TagV:
             unit1S, unit2S = unitL[0], unitL[1]
             decL = vaL[3].split(",")
             dec1I, dec2I = decL[0], decL[1]
-            loc = {"x": 1}
-            loc[varS] = loc.pop('x')
             if unit1S != "-":
-                if type(eval(valS)) == list:
-                    val1U = array(eval(valS)) * eval(unit1S)
-                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-                else:
-                    cmdS = vaL[0].strip()
-                    # print(f"{cmdS=}")
-
-                    try:
-                        exec(cmdS, globals(), loc)
-                    except ValueError as ve:
-                        print(f"A ValueError occurred: {ve}")
-                    except Exception as e:
-                        print(f"An unexpected error occurred: {e}")
-                    exec(cmdS)
-
-                    # print(globals())
-                    # print(loc)
-                    valU = eval(varS, globals(), loc)
-                    val1U = str(valU.cast_unit(eval(unit1S)))
-                    val2U = str(valU.cast_unit(eval(unit2S)))
+                try:
+                    exec(cmdS, globals(), self.rivtD)
+                except ValueError as ve:
+                    print(f"A ValueError occurred: {ve}")
+                except Exception as e:
+                    print(f"An unexpected error occurred: {e}")
+                # print(globals())
+                # print(loc)
+                valU = eval(varS, {}, self.rivtD)
+                val1U = str(valU.cast_unit(eval(unit1S)))
+                val2U = str(valU.cast_unit(eval(unit2S)))
             else:
                 cmdS = varS + " = " + valS
-                exec(cmdS, globals(), locals())
+                exec(cmdS, globals(), self.rivtD)
                 valU = eval(varS)
                 val1U = str(valU)
                 val2U = str(valU)
@@ -364,7 +410,7 @@ class TagV:
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
 
-        vC = CmdV(self.folderD, self.labelD)
+        vC = CmdV(self.folderD, self.labelD, self.rivtD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
         return uS, rS

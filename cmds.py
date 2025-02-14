@@ -91,7 +91,7 @@ class Cmd:
         # print(f"{pthS=}")
         # print(f"{parS=}")
 
-        return uS, rS
+        return uS, rS, self.folderD, self.labelD
 
     def append(self):
         """_summary_
