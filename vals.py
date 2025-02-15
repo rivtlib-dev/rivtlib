@@ -231,7 +231,7 @@ class CmdV:
         unitL = refS[1].split(",")
         unit1S, unit2S = unitL[0], unitL[1]
         decL = refS[2].split(",")
-        dec1I, dec2I = decL[0], decL[1]
+        dec1I, dec2I = int(decL[0]), int(decL[1])
         fmtS = "%." + str(dec1I) + "f"
         # resultS = vars[0].strip() + " = " + str(eval(vars[1]))
         # sps = sps.encode('unicode-escape').decode()
@@ -249,6 +249,7 @@ class CmdV:
             valU = eval(varS, globals(), self.rivtD)
             val1U = str(valU.cast_unit(eval(unit1S)))
             val2U = str(valU.cast_unit(eval(unit2S)))
+            print("____", val1U)
             print("____", val2U)
         else:
             cmdS = varS + " = " + valS
@@ -262,27 +263,28 @@ class CmdV:
             val1U = str(valU)
             val2U = str(valU)
 
-        with sp.evaluate(False):
-            symeq = sp.sympify(eqS.strip())
-        print(f"{symeq=}")
-        symat = symeq.atoms(sp.Symbol)
-        print(f"{symat=}")
-        for n1O in symat:
-            if str(n1O) == varS:
-                symeq = symeq.subs(n1O, sp.Symbol(str(val1U)))
+        eqxS = eqS.split("=")[1]
+        print("======", eqxS)
+        symeqO = sp.sympify(eqxS, _clash2, evaluate=False)
+        print(f"{symeqO=}")
+        symaO = symeqO.atoms(sp.Symbol)
+        print(f"{symaO=}")
+        for aO in symaO:
+            if str(aO) == varS:
+                symeqO = symeqO.subs(aO, sp.Symbol(str(val1U)))
                 continue
-            # print(f"{n1O=}")
-            n1U = eval(str(n1O))
+            print(f"{aO=}")
+            n1U = eval(str(aO), globals(), self.rivtD)
+            print("xxxx", n1U)
             n1U.set_format(value_format=fmtS, auto_norm=True)
-            # print(f"{n1U=}")
+            print(f"{n1U=}")
             evlen = len(str(n1U))  # get var length
             new_var = str(n1U).rjust(evlen, "~")
             new_var = new_var.replace("_", "|")
             # print(f"{new_var=}")
-            with sp.evaluate(False):
-                symeq = symeq.subs(n1O, sp.Symbol(new_var))
+            symeqO = symeqO.subs(aO, sp.Symbol(new_var), evaluate=False)
             # print(f"{symeq=}")
-        out2 = sp.pretty(symeq, wrap_line=False)
+        out2 = sp.pretty(symeqO, wrap_line=False)
         out3 = out2  # clean up unicode
         out3 = out3.replace("*", "\\u22C5")
         _cnt = 0
@@ -294,7 +296,6 @@ class CmdV:
                 if _cnt > 1:
                     out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
                 _cnt = 0
-        self.localD.update(locals())
         indeqS = out3.replace("\n", "\n   ")
         rstS = "\n::\n\n   " + indeqS + "\n\n"
 
@@ -304,8 +305,7 @@ class CmdV:
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
 
-        self.rivtD.update(loc)
-        vC = CmdV(self.folderD, self.labelD)
+        vC = CmdV(self.folderD, self.labelD, self.rivtD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
 
