@@ -149,7 +149,6 @@ class CmdV:
         alignL = ["left", "right", "right", "left"]
         vC = CmdV(self.folderD, self.labelD, self.rivtD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
-
         pS = "\n" + "[values read from file: " + pthS + "]"
         uS += pS
         rS += pS
@@ -198,7 +197,7 @@ class CmdV:
         try:
             spL = spS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            # sps = sp.encode('unicode-escape').decode()
+
         except:
             pass
         refS = refS.rjust(wI)
@@ -338,9 +337,9 @@ class TagV:
         tcmdS = str(tagcmdS)
         functag = getattr(tC, tcmdS)
         uS, rS = functag(blockL)
-
         # print(f"{tcmdS=}")
         # print(self.rivtD)
+
         return uS, rS, self.folderD, self.labelD, self.rivtD
 
     def values(self, blockL):
@@ -376,7 +375,6 @@ class TagV:
                 except Exception as e:
                     print(f"An unexpected error occurred: {e}")
                 # print(globals())
-                # print(loc)
                 valU = eval(varS, {}, self.rivtD)
                 val1U = str(valU.cast_unit(eval(unit1S)))
                 val2U = str(valU.cast_unit(eval(unit2S)))

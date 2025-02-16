@@ -30,6 +30,18 @@ from rivtlib.units import *
 tabulate.PRESERVE_WHITESPACE = True
 
 
+class Capturing(list):
+    def __enter__(self):
+        self._stdout = sys.stdout
+        sys.stdout = self._stringio = StringIO()
+        return self
+
+    def __exit__(self, *args):
+        self.extend(self._stringio.getvalue().splitlines())
+        del self._stringio    # free up some memory
+        sys.stdout = self._stdout
+
+
 class CmdW:
     """
         write commands
@@ -123,10 +135,12 @@ class Cmd:
         img1 = Image.open(pthS)
         img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
         try:
+            # with Capturing() as output:
+            #    _display(img1)
             _display(img1)
         except:
             pass
-        uS = "< " + figS + capS + " : " + str(fileP) + " > \n"
+        uS = figS + capS + " : " + str(fileP) + "\n"
         rS = ("\n.. image:: "
               + pthS + "\n"
               + "   :scale: "

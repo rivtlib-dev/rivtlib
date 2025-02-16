@@ -29,7 +29,7 @@ def dicts(rivN, rivP, rivtP):
     insP = Path(rivP / ("ins" + divnumS))
     valsP = Path(rivP / ("vals" + divnumS))
     # output paths
-    pypath = os.path.dirname(sys.executable)  # rivt package path
+    pypath = os.path.dirname(sys.executable)
     rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
     reportP = Path(projP, "reports")
     xrivtP = Path(projP, "xrivt")

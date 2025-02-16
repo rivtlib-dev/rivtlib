@@ -204,7 +204,6 @@ class Tag:
         try:
             spL = spS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            # sps = sp.encode('unicode-escape').decode()
         except:
             pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
@@ -270,7 +269,7 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blkcode(self, lineS, folderD, labelD):
@@ -286,7 +285,7 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blkbold(self, lineS, folderD, labelD):
@@ -302,7 +301,7 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blkital(self, lineS, folderD, labelD):
@@ -318,7 +317,7 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blkind(self, lineS, folderD, labelD):
@@ -334,7 +333,7 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blkitind(self, lineS, folderD, labelD):
@@ -350,7 +349,7 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blklatex(self, lineS, folderD, labelD):
@@ -366,7 +365,7 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blkquit(self, lineS, folderD, labelD):
@@ -382,5 +381,5 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        print("***sympy***", f"{luS=}", f"{lrS=}")
+        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
