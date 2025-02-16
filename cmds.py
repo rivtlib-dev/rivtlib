@@ -115,18 +115,18 @@ class Cmd:
         capS = parL[0]
         scS = parL[1].strip()
         scF = float(scS)
-        figS = ""
+        figS = "Fig. "
         if len(parL) == 3:
             if parL[2] == "_[F]":
                 numS = self.labelD["fnum"]
                 figS = self.deflabel(capS, numS)
+        img1 = Image.open(pthS)
+        img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
         try:
-            img1 = Image.open(pthS)
-            img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
             _display(img1)
         except:
             pass
-        uS = "< " + capS + " : " + str(fileP) + " > \n"
+        uS = "< " + figS + capS + " : " + str(fileP) + " > \n"
         rS = ("\n.. image:: "
               + pthS + "\n"
               + "   :scale: "
@@ -183,18 +183,17 @@ class Cmd:
 
         """
 
+        # print(f"{pthS=}")
         uS = rS = """"""
         alignD = {"s": "", "d": "decimal",
                   "c": "center", "r": "right", "l": "left"}
-        pthS = pthS.split(":")                            # strip rows
-        pthP = Path(pthS[0])
+        pthP = Path(pthS)
         parL = parS.split(",")
         maxwI = int(parL[0])
         keyS = parL[1].strip()
         alignS = alignD[keyS]
         extS = pthP.suffix[1:]
         readL = []
-        # print(f"{extS=}")
         if extS == "csv":                                  # read csv file
             with open(pthP, "r") as csvfile:
                 reader = csv.reader(csvfile)
@@ -209,23 +208,20 @@ class Cmd:
             pDF1 = pd.read_excel(pathP, header=None)
             readL = pDF1.values.tolist()
         else:
-            logging.info(
-                f"{self.cmdS} not evaluated: {extS} file not processed")
             return
-
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
         output.write(tabulate.tabulate(
-            readL,
-            tablefmt="rst",
-            headers="firstrow",
-            numalign="decimal",
-            maxcolwidths=maxwI,
-            stralign=alignS))
+            readL, tablefmt="rst", headers="firstrow",
+            numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
 
         uS = rS = output.getvalue()
         sys.stdout = old_stdout
+
+        pS = "\n" + "[values read from file: " + pthS + "]"
+        uS += pS
+        rS += pS
 
         return uS, rS
 

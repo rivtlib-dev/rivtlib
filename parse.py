@@ -109,9 +109,9 @@ class RivtParse:
                         print(uS)                       # stdout valread
                         continue
                     uS, rS = tC.tag_parse(tagcmd, blockS)
+                    print(uS)                           # stdout block
                     xutfS += uS + "\n"
                     xrstS += rS + "\n"
-                    print(uS)                           # stdout block
                     blockS = """"""
                     continue
             elif self.tS == "R":                        # run function
@@ -131,19 +131,19 @@ class RivtParse:
                 if cmdS in self.cmdL:
                     if self.tS == "V":                   # valread command
                         rvvC = vals.CmdV(folderD, labelD, rivtD)
-                        utS, reS, folderD, labelD, rivtD = rvvC.cmd_parse(
+                        uS, rS, folderD, labelD, rivtD = rvvC.cmd_parse(
                             cmdS, pthS, parS)
-                        print(utS)                       # stdout vread
-                        xutfS += utS
-                        xrstS += reS
+                        print(uS)                       # stdout valread
+                        xutfS += uS
+                        xrstS += rS
                         continue
                     else:                                # insert commands
                         rviC = cmds.Cmd(folderD, labelD)
-                        utS, reS, folderD, labelD = rviC.cmd_parse(
+                        uS, rS, folderD, labelD = rviC.cmd_parse(
                             cmdS, pthS, parS)
-                        print(utS)                       # stdout command
-                        xutfS += utS
-                        xrstS += reS
+                        print(uS)                       # stdout command
+                        xutfS += uS
+                        xrstS += rS
                         continue
                 else:
                     pass
@@ -180,15 +180,15 @@ class RivtParse:
                     "eqform", eqS, parS)
                 xutfS += uS
                 xrstS += rS
-                print(utS)                               # stdout '='
+                print(uS)                               # stdout '='
                 uS, rS, folderD, labelD, rivtD = rvvC.cmd_parse(
                     "eqtable", eqS, parS)
+                print(uS)                               # stdout '='
                 xutfS += uS
                 xrstS += rS
-                print(utS)                               # stdout '='
             else:
-                xutfS += uS + "\n"
-                xrstS += rS + "\n"
                 print(ulS)                               # stdout - no format
+                xutfS += ulS + "\n"
+                xrstS += ulS + "\n"
 
         return (xutfS, xrstS, folderD, labelD, rivtD)

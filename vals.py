@@ -35,7 +35,7 @@ class CmdV:
 
     Commands:
         a = 1+1 | unit | reference
-        | VREAD | rel. pth |  dec1    
+        | VREAD | rel. pth |  dec1
     """
 
     def __init__(self, folderD, labelD, rivtD):
@@ -75,16 +75,16 @@ class CmdV:
             utS: formatted utf string
         """
 
+        # print(f"{cmdS=}")
+        # print(f"{pthS=}")
+        # print(f"{parS=}")
+
         cC = globals()['CmdV'](self.folderD, self.labelD, self.rivtD)
         ccmdS = cmdS.lower()
         functag = getattr(cC, ccmdS)
         uS, rS = functag(pthS, parS)
 
-        # print(f"{cmdS=}")
-        # print(f"{pthS=}")
-        # print(f"{parS=}")
-
-        print(self.rivtD)
+        # print(self.rivtD)
         return uS, rS, self.folderD, self.labelD, self.rivtD
 
     def valread(self, pthS, parS):
@@ -150,6 +150,10 @@ class CmdV:
         vC = CmdV(self.folderD, self.labelD, self.rivtD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
+        pS = "\n" + "[values read from file: " + pthS + "]"
+        uS += pS
+        rS += pS
+
         return uS, rS
 
     def valtable(self, tbL, hdrL, alignL, tblfmt):
@@ -214,17 +218,10 @@ class CmdV:
         :return rstS: restruct string
         :rtype: string
         """
-
         vaL = []
-        tbL = []
-        alignaL = ["left", "right", "right", "left"]
-        hdreL = ["variable", "value", "[value]", "description [eq. number]"]
-        aligneL = ["left", "right", "right", "left"]
         wI = self.labelD["widthI"]
         eqS = eqS.strip()
         refS = parS.split("|")
-        print(f"{eqS=}")
-        print(f"{refS=}")
         varS = eqS.split("=")[0].strip()
         valS = eqS.split("=")[1].strip()
         descripS = refS[0].strip()
@@ -232,29 +229,18 @@ class CmdV:
         unit1S, unit2S = unitL[0], unitL[1]
         decL = refS[2].split(",")
         dec1I, dec2I = int(decL[0]), int(decL[1])
-        fmtS = "%." + str(dec1I) + "f"
-        # resultS = vars[0].strip() + " = " + str(eval(vars[1]))
-        # sps = sps.encode('unicode-escape').decode()
-
         if unit1S != "-":
             try:
-                print("----", eqS)
+                # print("----", eqS)
                 exec(eqS, globals(), self.rivtD)
             except ValueError as ve:
                 print(f"A ValueError occurred: {ve}")
             except Exception as e:
                 print(f"An unexpected error occurred: {e}")
-            print(f"{varS=}")
-            print("=======", self.rivtD[varS])
-            valU = eval(varS, globals(), self.rivtD)
-            val1U = str(valU.cast_unit(eval(unit1S)))
-            val2U = str(valU.cast_unit(eval(unit2S)))
-            print("____", val1U)
-            print("____", val2U)
         else:
             cmdS = varS + " = " + valS
             try:
-                exec(cmdS, globals(), self.rivtD)
+                exec(eqS, globals(), self.rivtD)
             except ValueError as ve:
                 print(f"A ValueError occurred: {ve}")
             except Exception as e:
@@ -264,49 +250,45 @@ class CmdV:
             val2U = str(valU)
 
         eqxS = eqS.split("=")[1]
-        print("======", eqxS)
         symeqO = sp.sympify(eqxS, _clash2, evaluate=False)
-        print(f"{symeqO=}")
         symaO = symeqO.atoms(sp.Symbol)
-        print(f"{symaO=}")
+        numvarI = len(symaO) + 1
+        tbl1L = []
+        tbl2L = []
+        hdr1L = []
+        hdr1L.append(varS)
+        for vS in symaO:
+            hdr1L.append(str(vS))
+
+        fmtS = "%." + str(dec1I) + "f"
+        n1U = eval(varS, globals(), self.rivtD)
+        n1U.set_format(value_format=fmtS, auto_norm=True)
+        val1U = str(n1U.cast_unit(eval(unit1S)))
+        val2U = str(n1U.cast_unit(eval(unit2S)))
+        tbl1L.append(val1U)
+        tbl2L.append(val2U)
+        fmtS = "%." + str(dec2I) + "f"
         for aO in symaO:
-            if str(aO) == varS:
-                symeqO = symeqO.subs(aO, sp.Symbol(str(val1U)))
-                continue
-            print(f"{aO=}")
             n1U = eval(str(aO), globals(), self.rivtD)
-            print("xxxx", n1U)
             n1U.set_format(value_format=fmtS, auto_norm=True)
-            print(f"{n1U=}")
-            evlen = len(str(n1U))  # get var length
-            new_var = str(n1U).rjust(evlen, "~")
-            new_var = new_var.replace("_", "|")
-            # print(f"{new_var=}")
-            symeqO = symeqO.subs(aO, sp.Symbol(new_var), evaluate=False)
-            # print(f"{symeq=}")
-        out2 = sp.pretty(symeqO, wrap_line=False)
-        out3 = out2  # clean up unicode
-        out3 = out3.replace("*", "\\u22C5")
-        _cnt = 0
-        for _m in out3:
-            if _m == "-":
-                _cnt += 1
-                continue
-            else:
-                if _cnt > 1:
-                    out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
-                _cnt = 0
-        indeqS = out3.replace("\n", "\n   ")
-        rstS = "\n::\n\n   " + indeqS + "\n\n"
-
-        tbL.append([varS, val1U, val2U, descripS])
-
+            tbl1L.append(n1U)
+            tbl2L.append(n1U)
+        tblL = [tbl1L]
+        tblL.append(tbl2L)
         tblfmt = 'rst'
-        hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
+        alignL = []
+        for nI in range(numvarI):
+            alignL.append("center")
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(tabulate.tabulate(tblL, tablefmt=tblfmt, headers=hdr1L,
+                                       showindex=False,  colalign=alignL))
+        uS = rS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
 
-        vC = CmdV(self.folderD, self.labelD, self.rivtD)
-        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
+        return uS, rS
 
 
 class TagV:
@@ -358,7 +340,7 @@ class TagV:
         uS, rS = functag(blockL)
 
         # print(f"{tcmdS=}")
-        print(self.rivtD)
+        # print(self.rivtD)
         return uS, rS, self.folderD, self.labelD, self.rivtD
 
     def values(self, blockL):
@@ -412,5 +394,4 @@ class TagV:
 
         vC = CmdV(self.folderD, self.labelD, self.rivtD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
-
         return uS, rS
