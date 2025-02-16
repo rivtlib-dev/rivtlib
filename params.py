@@ -36,13 +36,14 @@ def dicts(rivN, rivP, rivtP):
     tempP = Path(projP, "docs", "temp")
     errlogP = Path(tempP, "rivt-log.txt")
     styleP = Path(projP, "docs", "pdf")
-    valfileS = baseS.replace("riv", "val") + ".csv"
+    valN = baseS.replace("r", "v", 1) + ".csv"
+    valueP = Path(valsP, valN)
     readmeP = Path(projP, "README.txt")
     ossP = Path(projP / "oss")
     # global dicts
     folderD = {}
     for item in ["rivtP", "docsP", "readmeP", "reportP", "projP",
-                 "valsP", "insP", "errlogP", "styleP", "tempP"]:
+                 "valueP", "insP", "errlogP", "styleP", "tempP"]:
         folderD[item] = eval(item)
 
     labelD = {
@@ -65,7 +66,8 @@ def dicts(rivN, rivP, rivtP):
         "footrS": "",                           # footer string
         "tocB": False,                          # table of contents
         "docstrB": False,                       # print doc strings
-        "subB": False                           # sub values in equations
+        "subB": False,                          # sub values in equations
+        "valL": []                              # list of values for export
     }
     rivtD = {}
 
