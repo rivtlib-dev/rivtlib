@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from rivtlib import tags, cmds, vals
 
@@ -36,6 +37,34 @@ class RivtParse:
             self.tagsD = {}
         else:
             pass
+
+    def asterstrip(self, txtS):
+        """
+
+        """
+
+        txt1L = []
+        txt2L = []
+        txtrS = txtS
+        txt1L = re.findall(r"\*\*(.*?)\*\*", txtS)
+        # print(f"{txt1L=}")
+        if len(txt1L) > 0:
+            for tS in txt1L:
+                t1S = "**" + tS + "**"
+                txtrS = txtS.replace(t1S, tS)
+        else:
+            pass
+
+        txt2L = re.findall(r"\*(.*?)\*", txtrS)
+        # print(f"{txt2L=}")
+        if len(txt2L) > 0:
+            for tS in txt2L:
+                t2S = "*" + tS + "*"
+                txtrS = txtrS.replace(t2S, tS)
+        else:
+            txtrS = txtrS
+
+        return txtrS
 
     def parse_str(self, strL, folderD, labelD, rivtD):
         """ add header and parse section contents
@@ -103,10 +132,10 @@ class RivtParse:
                         tC = vals.TagV(folderD, labelD, rivtD)
                         uS, rS, folderD, labelD, rivtD = tC.tag_parse(
                             tagcmd, blockL)
+                        print(uS)                       # stdout valread
                         xutfS += uS + "\n"
                         xrstS += rS + "\n"
                         blockL = []
-                        print(uS)                       # stdout valread
                         continue
                     uS, rS = tC.tag_parse(tagcmd, blockS)
                     print(uS)                           # stdout block
@@ -187,6 +216,7 @@ class RivtParse:
                 xutfS += uS
                 xrstS += rS
             else:
+                ulS = self.asterstrip(ulS)
                 print(ulS)                               # stdout - no format
                 xutfS += ulS + "\n"
                 xrstS += ulS + "\n"

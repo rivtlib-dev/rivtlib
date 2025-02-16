@@ -247,7 +247,6 @@ class CmdV:
             valU = eval(varS, globals(), self.rivtD)
             val1U = str(valU)
             val2U = str(valU)
-
         eqxS = eqS.split("=")[1]
         symeqO = sp.sympify(eqxS, _clash2, evaluate=False)
         symaO = symeqO.atoms(sp.Symbol)
@@ -258,7 +257,6 @@ class CmdV:
         hdr1L.append(varS)
         for vS in symaO:
             hdr1L.append(str(vS))
-
         fmtS = "%." + str(dec1I) + "f"
         n1U = eval(varS, globals(), self.rivtD)
         n1U.set_format(value_format=fmtS, auto_norm=True)
