@@ -99,10 +99,14 @@ class CmdV:
         """
 
         locals().update(self.rivtD)
-        pathP = Path(pthS)
+        pathP = Path(self.folderD["projP"] / "vals" / pthS)
         with open(pathP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         # print(f"{readL=}")
+        # add to valexp
+        for iL in readL:
+            iS = ",".join(iL)
+            self.labelD["valexpS"] += iS+"\n"
         tbL = []
         for vaL in readL:
             # print(f"{vL=}")
@@ -285,6 +289,10 @@ class CmdV:
         sys.stdout = old_stdout
         sys.stdout.flush()
 
+        refS = parS.split("|")
+        iS = eqS + "," + ",".join(refS)
+        self.labelD["valexpS"] += iS + "\n"
+
         return uS, rS
 
 
@@ -383,6 +391,15 @@ class TagV:
                 val1U = str(valU)
                 val2U = str(valU)
             tbL.append([varS, val1U, val2U, descripS])
+
+        for vaS in blockL:
+            vaL = vaS.split("|")
+            if len(vaL) != 4 or len(vaL[0]) < 1:
+                continue
+            if "=" not in vaL[0]:
+                continue
+            iS = ",".join(vaL)
+            self.labelD["valexpS"] += iS + "\n"
 
         tblfmt = 'rst'
         hdrvL = ["variable", "value", "[value]", "description"]

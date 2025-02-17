@@ -221,7 +221,8 @@ class RivtParse:
                 xutfS += ulS + "\n"
                 xrstS += ulS + "\n"
 
-            with open(folderD[valueP], 'w') as file:     # export value file
-                file.write(labelD[valL])
+        if self.tS == "V":
+            with open(folderD["valP"], 'w') as file:     # export value file
+                file.write(labelD["valexpS"])
 
         return (xutfS, xrstS, folderD, labelD, rivtD)
