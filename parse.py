@@ -108,7 +108,14 @@ class RivtParse:
         xutfS += hdutfS
         xrstS += hdrstS
         print(hdutfS)                                   # stdout header
-
+        try:
+            valN = folderD["valN"]                      # value export file
+            valN = valN.replace("qqqqqq", str(snumI))
+            valsP = folderD["valsP"]
+            valP = Path(valsP, valN)
+            folderD["valP"] = valP
+        except:
+            pass
         # print(strL)
         blockS = """"""
         for ulS in strL[1:]:                            # section contents

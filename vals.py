@@ -87,7 +87,17 @@ class CmdV:
         # print(self.rivtD)
         return uS, rS, self.folderD, self.labelD, self.rivtD
 
-    def rivttype(self):
+    def rivtdict(self, varS, valS, unitL, decL):
+        """_summary_
+
+        Args:
+            varS (_type_): _description_
+            valS (_type_): _description_
+            unitS (_type_): _description_
+            decS (_type_): _description_
+        """
+        self.rivtD[varS] = (valS, unitL[0], unitL[1], decL[0], decL[1])
+
         pass
 
     def valread(self, pthS, parS):

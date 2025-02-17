@@ -37,17 +37,12 @@ def dicts(rivN, rivP, rivtP):
     errlogP = Path(tempP, "rivt-log.txt")
     styleP = Path(projP, "docs", "pdf")
     valN = baseS.split("-")[0]
-    valN = valN.replace("r", "v", 1) + ".csv"
+    valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
     valP = Path(valsP, valN)
+    # print(eval("valP"))
     readmeP = Path(projP, "README.txt")
     ossP = Path(projP / "oss")
-    print(eval("valP"))
     # global dicts
-    folderD = {}
-    for item in ["rivtP", "docsP", "readmeP", "reportP", "projP",
-                 "valP", "insP", "errlogP", "styleP", "tempP"]:
-        folderD[item] = eval(item)
-
     labelD = {
         "rivN": rivN,                           # file name
         "divnumS": divnumS,                     # div number
@@ -71,6 +66,12 @@ def dicts(rivN, rivP, rivtP):
         "subB": False,                          # sub values in equations
         "valexpS": ""                           # list of values for export
     }
+
+    folderD = {}
+    for item in ["rivtP", "docsP", "readmeP", "reportP", "projP",
+                 "valP", "valsP", "valN", "insP", "errlogP", "styleP", "tempP"]:
+        folderD[item] = eval(item)
+
     rivtD = {}
 
     return folderD, labelD, rivtD
