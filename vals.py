@@ -87,6 +87,9 @@ class CmdV:
         # print(self.rivtD)
         return uS, rS, self.folderD, self.labelD, self.rivtD
 
+    def rivttype(self):
+        pass
+
     def valread(self, pthS, parS):
         """ import values from csv files, update rivtD
 
