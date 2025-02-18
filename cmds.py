@@ -29,28 +29,21 @@ from rivtlib.units import *
 
 tabulate.PRESERVE_WHITESPACE = True
 
+def rivtdict(self, rivS):
+    """_summary_
 
-class Capturing(list):
-    def __enter__(self):
-        self._stdout = sys.stdout
-        sys.stdout = self._stringio = StringIO()
-        return self
-
-    def __exit__(self, *args):
-        self.extend(self._stringio.getvalue().splitlines())
-        del self._stringio    # free up some memory
-        sys.stdout = self._stdout
-
-
-class CmdW:
+    var, unit1, unit2, dec1, dec2
+    
+    from valread:  equ, desc, unit1, unit2, dec1, dec2
+    from valtable: equ | desc | unit | dec
+    from equtable: equ | desc | unit | dec
+    
     """
-        write commands
 
-        || WRITE | rel. pth |  dec1                      .csv
-        || REPORT | rel. pth | rel. pth | dec1, dec2     .csv
+    
 
-    """
-    pass
+    return self.rivtD
+     
 
 
 class Cmd:
@@ -58,11 +51,10 @@ class Cmd:
         insert commands that format to utf8 or reSt
 
         || APPEND | rel. pth | num; nonum                      .pdf
-        || TEXT | rel. pth |  plain; rivt                      .txt
-        || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
         || IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
         || IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
-
+        || TEXT | rel. pth |  plain; rivt                      .txt
+        || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
     """
 
     def __init__(self,  folderD, labelD):
@@ -135,8 +127,6 @@ class Cmd:
         img1 = Image.open(pthS)
         img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
         try:
-            # with Capturing() as output:
-            #    _display(img1)
             _display(img1)
         except:
             pass
@@ -196,7 +186,6 @@ class Cmd:
         """insert table from csv, xlsx or reSt file
 
         """
-
         # print(f"{pthS=}")
         uS = rS = """"""
         alignD = {"s": "", "d": "decimal",
@@ -289,3 +278,14 @@ class Cmd:
                 return soupS
             elif extS == ".py":
                 pass
+
+
+class CmdW:
+    """
+        write commands
+
+        || WRITE | rel. pth |  dec1                      .csv
+        || REPORT | rel. pth | rel. pth | dec1, dec2     .csv
+
+    """
+    pass

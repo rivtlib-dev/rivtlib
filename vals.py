@@ -30,12 +30,34 @@ from rivtlib.units import *
 tabulate.PRESERVE_WHITESPACE = True
 
 
+def rivtdict(rivtD, *argv):
+    """_summary_
+
+    var: val, unit1, unit2, dec1, dec2
+
+    from valform - equ | desc | unit | dec
+    from valread -  var, val, desc, unit1, unit2, dec1, dec2
+    from equtable - equ | desc | unit | dec
+
+    """
+    varS = argv[0]
+    valS = argv[1]
+    unit1S = argv[2]
+    unit2S = argv[3]
+    dec1S = argv[4]
+    dec2S = argv[5]
+
+    rivtD[varS] = (valS, unit1S, unit2S, dec1S, dec2S)
+
+    return rivtD
+
+
 class CmdV:
     """ value commands format to utf8 or reSt
 
     Commands:
         a = 1+1 | unit | reference
-        | VREAD | rel. pth |  dec1
+        | VALREAD | rel. pth |  dec1
     """
 
     def __init__(self, folderD, labelD, rivtD):
@@ -166,6 +188,7 @@ class CmdV:
         alignL = ["left", "right", "right", "left"]
         vC = CmdV(self.folderD, self.labelD, self.rivtD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
+
         pS = "\n" + "[values read from file: " + pthS + "]"
         uS += pS
         rS += pS
@@ -361,9 +384,22 @@ class TagV:
 
         return uS, rS, self.folderD, self.labelD, self.rivtD
 
-    def values(self, blockL):
-        """return value table, update rivtD
+    def callrivtdict(self, *argv):
+        """_summary_
 
+        Returns:
+            _type_: _description_
+        """
+        return rivtdict(self.rivtD, argv)
+
+    def valform(self, blockL):
+        """_summary_
+
+        Args:
+            blockL (_type_): _description_
+
+        Returns:
+            _type_: _description_
         """
 
         locals().update(self.rivtD)
@@ -385,7 +421,7 @@ class TagV:
             unitL = vaL[2].split(",")
             unit1S, unit2S = unitL[0], unitL[1]
             decL = vaL[3].split(",")
-            dec1I, dec2I = decL[0], decL[1]
+            dec1S, dec2S = decL[0], decL[1]
             if unit1S != "-":
                 try:
                     exec(cmdS, globals(), self.rivtD)
@@ -404,6 +440,8 @@ class TagV:
                 val1U = str(valU)
                 val2U = str(valU)
             tbL.append([varS, val1U, val2U, descripS])
+
+            self.callrivtdict(self, varS, val1U, unit1S, unit2S, dec1S, dec2S)
 
         for vaS in blockL:
             vaL = vaS.split("|")

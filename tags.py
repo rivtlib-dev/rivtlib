@@ -53,11 +53,10 @@ class Tag:
              _[[I]]                  italblk (latex pdf)
              _[[T]]                  itinblk (latex pdf)
              _[[Q]]                  quit
-
     """
 
     def __init__(self,  folderD, labelD):
-        """tags that format to utf and reSt
+        """format tags - utf and reSt
 
         """
         self.folderD = folderD

@@ -21,11 +21,11 @@ class RivtParse:
                           "K]": "link", "A]": "page", "URL]": "url",
                           "[O]]": "blkcode", "[B]]": "blkbold", "[N]]": "blkind",
                           "[I]]": "blkital",  "[T]]": "blkitind",
-                          "[L]]": "blklatex",  "[Q]]": "blkquit", }
+                          "[L]]": "blklatex",  "[Q]]": "blkquit"}
         elif tS == "V":
             self.cmdL = ["IMG", "IMG2", "TABLE", "VALREAD"]
             self.tagsD = {"E]": "equa", "F]": "figure", "T]": "table",
-                          "G]": "page", "[V]]": "values", "[Q]]": "quit"}
+                          "G]": "page", "[V]]": "valform", "[Q]]": "quit"}
         elif tS == "R":
             self.cmdL = ["run", "process"]
             self.tagsD = {}

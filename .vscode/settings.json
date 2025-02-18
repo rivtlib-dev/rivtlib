@@ -24,6 +24,7 @@
     },
     "editor.formatOnSave": false,
     "editor.parameterHints.enabled": false,
+    "editor.foldingImportsByDefault": true,
     "triggerTaskOnSave.tasks": {
         "lintpy": [
             "**/*.py"
