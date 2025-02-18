@@ -161,7 +161,7 @@ class CmdV:
             self.rivtD.update(loc)
             tbL.append([varS, val1U, val2U, descripS])
 
-        tblfmt = 'rst'
+        tblfmt = 'simple'
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
         vC = CmdV(self.folderD, self.labelD, self.rivtD)
@@ -289,7 +289,7 @@ class CmdV:
             tbl2L.append(n1U)
         tblL = [tbl1L]
         tblL.append(tbl2L)
-        tblfmt = 'rst'
+        tblfmt = 'simple'
         alignL = []
         for nI in range(numvarI):
             alignL.append("center")
@@ -414,7 +414,7 @@ class TagV:
             iS = ",".join(vaL)
             self.labelD["valexpS"] += iS + "\n"
 
-        tblfmt = 'rst'
+        tblfmt = 'simple'
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
 

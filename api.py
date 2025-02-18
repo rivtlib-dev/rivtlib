@@ -53,7 +53,6 @@ if __name__ == "rivtlib.api":
     if fnmatch.fnmatch(rivN, "r????-*.py"):
         rivtP = Path(rivP, rivN)
         folderD, labelD, rivtD = params.dicts(rivN, rivP, rivtP)
-        print(f"{folderD=}")
 else:
     print(f"INFO     rivt file - {rivN}")
     print(f"INFO     The name must match 'rddss-filename.py' where")
@@ -120,6 +119,8 @@ def rivt_parse(rS, tS):
     utfS += xutfS       # accumulate output strings
     rstS += xrstS
 
+    return utfS, rstS
+
 
 def R(rS):
     """ process Run string
@@ -129,7 +130,7 @@ def R(rS):
     """
     global utfS, rstS, folderD, labelD, rivtD
 
-    rivt_parse(rS, "R")
+    utfS, rstS = rivt_parse(rS, "R")
 
 
 def I(rS):
@@ -140,7 +141,7 @@ def I(rS):
     """
     global utfS, rstS, folderD, labelD
 
-    rivt_parse(rS, "I")
+    utfS, rstS = rivt_parse(rS, "I")
 
 
 def V(rS):
@@ -152,7 +153,7 @@ def V(rS):
     global utfS, rstS, folderD, labelD, rivtD
 
     locals().update(rivtD)
-    rivt_parse(rS, "V")
+    utfS, rstS = rivt_parse(rS, "V")
     rivtD.update(locals())
 
 
@@ -165,7 +166,7 @@ def T(rS):
     global utfS, rstS, folderD, labelD, rivtD
 
     locals().update(rivtD)
-    rivt_parse("T", rS)
+    utfS, rstS = rivt_parse("T", rS)
     rivtD.update(locals())
 
 
@@ -190,5 +191,7 @@ def X(rS):
 
 
 def Q():
+    with open(folderD["reportP"], 'w', encoding="utf-8") as file:
+        file.write(utfS)
     print("<<<<< end rivtlib >>>>>")
     sys.exit()

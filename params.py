@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from fpdf import FPDF
 
 
 def dicts(rivN, rivP, rivtP):
@@ -31,7 +32,7 @@ def dicts(rivN, rivP, rivtP):
     # output paths
     pypath = os.path.dirname(sys.executable)
     rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
-    reportP = Path(projP, "reports")
+    reportP = Path(projP, "docs", "test.txt")
     xrivtP = Path(projP, "xrivt")
     tempP = Path(projP, "docs", "temp")
     errlogP = Path(tempP, "rivt-log.txt")

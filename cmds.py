@@ -227,7 +227,7 @@ class Cmd:
         old_stdout = sys.stdout
         output = StringIO()
         output.write(tabulate.tabulate(
-            readL, tablefmt="rst", headers="firstrow",
+            readL, tablefmt="simple", headers="firstrow",
             numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
 
         uS = rS = output.getvalue()

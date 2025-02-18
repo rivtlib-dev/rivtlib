@@ -102,7 +102,7 @@ class RivtParse:
             snumI = labelD["secnumI"] = labelD["secnumI"] + 1
             dnumS = labelD["docnumS"] + "-[" + str(snumI) + "]"
             headS = dnumS + " " + hL[0].strip()
-            bordrS = labelD["widthI"] * "-"
+            bordrS = labelD["widthI"] * "_"
             hdutfS = bordrS + "\n" + headS + "\n" + bordrS + "\n"
             hdrstS = "**" + headS + "**" + "\n\n" + bordrS + "\n"
         xutfS += hdutfS

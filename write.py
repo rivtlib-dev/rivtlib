@@ -1,6 +1,310 @@
 import time
 import os
-global utfS, rstS, labelD, folderD
+
+from pyPdf import PdfFileWriter, PdfFileReader
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.platypus import XPreformatted, Table, flowables, TableStyle
+from reportlab.lib.pagesizes import letter, legal, A4, elevenSeventeen
+from reportlab.platypus.flowables import PageBreak
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.rl_config import defaultPageSize
+from reportlab.lib.units import inch
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+
+# ReportLab - Platypus constants
+PAGE_HEIGHT = defaultPageSize[0]
+PAGE_WIDTH = defaultPageSize[0]
+# create template
+
+_doc_template = "SimpleDocTemplate(_pname," + _page_margin + _page_size + ")"
+_doc = eval(_doc_template)
+
+_equa_label_spac = 62 * (1+(_doc.pagesize[0]-612.)/612)
+
+# print dir(_doc)
+_p_para1 = ParagraphStyle('paragraph1', alignment=TA_LEFT,
+                          spaceBefore=5, spaceAfter=1,
+                          fontSize=12, leading=16, fontName='arial',
+                          leftIndent=0 * inch)
+
+_p_para2 = ParagraphStyle('paragraph2', alignment=TA_LEFT,
+                          spaceBefore=5, spaceAfter=1,
+                          fontSize=12, leading=16, fontName='arial',
+                          leftIndent=0 * inch)
+
+_p_equa = ParagraphStyle('equation', alignment=TA_LEFT,
+                         spaceBefore=5, spaceAfter=1,
+                         fontSize=12, leading=16, fontName='vm',
+                         leftIndent=.25 * inch)
+
+_p_caption1 = ParagraphStyle('caption', alignment=TA_CENTER,
+                             spaceBefore=4, spaceAfter=2,
+                             fontSize=11, leading=16, fontName='arial')
+_p_caption2 = ParagraphStyle('caption', alignment=TA_LEFT,
+                             spaceBefore=4, spaceAfter=2,
+                             fontSize=11, leading=16, fontName='arial')
+_p_caption3 = ParagraphStyle('caption', alignment=TA_RIGHT,
+                             spaceBefore=4, spaceAfter=2,
+                             fontSize=11, leading=16, fontName='arial')
+
+_p_text = ParagraphStyle('text', alignment=TA_LEFT,
+                         spaceBefore=5, spaceAfter=1,
+                         fontSize=10, leading=9, fontName='vm',
+                         leftIndent=.25 * inch)
+_p_text4 = ParagraphStyle('text', alignment=TA_LEFT,
+                          spaceBefore=5, spaceAfter=1,
+                          fontSize=10, leading=9, fontName='vm',
+                          leftIndent=.5 * inch)
+_p_text8 = ParagraphStyle('text', alignment=TA_LEFT,
+                          spaceBefore=5, spaceAfter=1,
+                          fontSize=10, leading=9, fontName='vm',
+                          leftIndent=.75 * inch)
+
+_p_cbold = ParagraphStyle('cbold', alignment=TA_LEFT,
+                          spaceBefore=1, spaceAfter=1,
+                          fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
+_p_cbold2 = ParagraphStyle('cbold', alignment=TA_CENTER,
+                           spaceBefore=1, spaceAfter=1,
+                           fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
+
+_p_bold = ParagraphStyle('bold', alignment=TA_LEFT,
+                         spaceBefore=2, spaceAfter=1,
+                         fontSize=12, leading=16, fontName='vmb',
+                         leftIndent=.5 * inch, rightIndent=1 * inch)
+_p_bold2 = ParagraphStyle('bold2', alignment=TA_LEFT,
+                          spaceBefore=2, spaceAfter=1,
+                          fontSize=11, leading=16, fontName='arialbd',
+                          leftIndent=.88 * inch, rightIndent=1 * inch)
+
+_p_hbig = ParagraphStyle('hbold', alignment=TA_LEFT,
+                         spaceBefore=4, spaceAfter=1,
+                         fontSize=13, leading=22, fontName='arial')
+_p_hbig2 = ParagraphStyle('hbold', alignment=TA_CENTER,
+                          spaceBefore=4, spaceAfter=1,
+                          fontSize=13, leading=22, fontName='arialbd')
+
+_p_code = ParagraphStyle('italic', alignment=TA_LEFT,
+                         spaceBefore=5, spaceAfter=1,
+                         fontSize=11, leading=16, fontName='vmi')
+_p_table = ParagraphStyle('table', alignment=TA_LEFT,
+                          spaceBefore=5, spaceAfter=1,
+                          fontSize=11, leading=16, fontName='vm')
+_p_line = ParagraphStyle('line', alignment=TA_RIGHT,
+                         spaceBefore=5, spaceAfter=1,
+                         fontSize=10, leading=16, fontName='arial')
+
+# write pdf of procedure
+_pdfflag = 1
+_doc.build(_Story)
+
+# start page; stamp file; block file
+_col = _e[7:].strip().split(';')
+
+# exit if merge information is missing
+try:
+    _pgs = int(_col[0])
+    _pgstart = _pgs
+    _pdfflag = 2
+except:
+    print(_s3)
+    if _emailflag == 1:
+        if _pdfflag == 0:
+            _pdfflag = 3
+        if _pdfflag == 1:
+            _pdfflag = 4
+        if _pdfflag == 2:
+            _pdfflag = 5
+    # print "pdfflag", _pdfflag
+return _lines-1, _beginflag, _pdfflag, _dname, _emailflag
+
+# make list of procedures
+_proc_cnt = _lines
+for _i in _istory[_lines:]:
+    _lines = _lines+1
+    if _i[0:5] == "-end-":
+        _flist = _istory[_proc_cnt:_lines-1]
+        # print "list of procedures", _flist
+        break
+
+# print _flist
+for _i in _flist:
+    # print "PDF file merged: ",_i
+    if _i[0] == "|":
+        _i = _i[1:]
+    if _i[0] == "*":
+        _i = _i[1:]
+    _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
+    for _j in range(_input1.getNumPages()):
+        _pgs += 1
+        # print "pages", _pgs
+
+# create blank pdf file with title block text using reportlab
+try:
+    os.remove(_cpypath+"/logos/block_only.pdf")
+except:
+    pass
+_pg = SimpleDocTemplate(_cpypath+"/logos/block_only.pdf",
+                        leftMargin=0.5*inch, rightMargin=0.5*inch,
+                        bottomMargin=2.5*inch, topMargin=1*inch)
+# use author attribute to pass max page number to reportlab
+_pg.author = str(_pgs-1)
+try:
+    _newStory = []
+    for _xx in range(_pgs+1):
+        _az = "     "
+        _pa = XPreformatted(_az, _p_text)
+        _newStory.append(_pa)
+        _newStory.append(PageBreak())
+    # print dir(_pg)
+    _pg.build(_newStory, onFirstPage=_cpyBlock, onLaterPages=_cpyBlock)
+    print(_pgs, " blank pages stamped with title block text")
+except:
+    raise
+# merge pdf procedure file with logo and title block text using PyPDF
+# output1 = merged document, input2 = title block text, input3 = stamped/title block pdf file
+_pgs = _pgstart
+_output1 = PdfFileWriter()
+_pgname = _cpypath+"/logos/block_only.pdf"
+_input2 = PdfFileReader(file(_pgname, "rb"))
+
+# get pdf logo file
+try:
+    _input3 = PdfFileReader(file(_cpypath+_col[1], "rb"))
+    _stamp = 1
+except:
+    print(_message(1))
+# merge blank title block /stamped documents with list of pdf procedures using PyPDF
+
+for _i in _flist:
+    # print _i
+    if _i[0] == "|":
+        _i = _i[1:]
+    _stamp_flag = 1
+    print("PDF MERGED : ", _i)
+    if _i[0] == "*":
+        _stamp_flag = 0
+        _i = _i[1:]
+
+    _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
+    for _j in range(_input1.getNumPages()):
+        _pagex = _input1.getPage(_j)
+        _output1.addPage(_pagex)
+
+        # merge with stamp
+        if _stamp_flag == 1:
+            if _stamp:
+                _pagex.mergePage(_input3.getPage(0))
+
+        # merge with title block
+        if _stamp_flag == 1:
+            if int(_col[0]) > 0:
+                _pagex.mergePage(_input2.getPage(_pgs-1))
+        _pgs += 1
+
+_outputStream = file(_dname, "wb")
+_output1.write(_outputStream)
+_outputStream.close()
+_s1 = ""
+
+if _emailflag == 1:
+if _pdfflag == 0:
+    _pdfflag = 3
+if _pdfflag == 1:
+    _pdfflag = 4
+if _pdfflag == 2:
+    _pdfflag = 5
+# print "pdfflag", _pdfflag
+
+print "="*30
+print _s3
+# print "list of procedures", _flist
+return _lines-1, _beginflag, _pdfflag, _dname, _emailflag
+
+
+# everything else is reportlab formatted text
+else:
+    # print "text - no tag"
+    # print len(_e.split())
+    # print _e, _formatflag
+if len(_e.split()) > 0 and _beginflag == 1:
+    # print "formatflag ",_formatflag
+_s1 += _e
+
+if _formatflag == 0:
+    _listnum = 0
+    _s3 += _s1+"\n"
+    _para = Paragraph(_s1, _p_para1)
+
+elif _formatflag == 1:
+    _listnum = 0
+    _s3 += _s1+"\n"
+    _para = XPreformatted(_s1, _p_text)
+
+elif _formatflag == 2:
+    # print "formatflag is 2"
+    _listnum += 1
+    _s1 = str(_listnum)+". "+_s1
+    _s3 += _s1+"\n"
+    _para = XPreformatted(_s1, _p_text)
+
+elif _formatflag == 3:
+    # print "formatflag is 3"
+    _listnum += 1
+    # print _listnum
+    if _listnum == 26:
+        _listnum = 0
+    _s1 = string.lowercase[_listnum]+". "+_s1
+    # print _s1
+    _s3 += _s1+"\n"
+    _para = XPreformatted(_s1, _p_text)
+
+elif _formatflag == 4:
+    # print "formatflag is 4"
+    _listnum += 1
+    if _listnum == 26:
+        _listnum = 0
+    _s1 = string.uppercase[_listnum]+". "+_s1
+    _s3 += _s1+"\n"
+    _para = XPreformatted(_s1, _p_text)
+
+else:
+    _listnum = 0
+    _s3 += _s1
+    _para = XPreformatted(_s1, _p_text)
+# print dir(_doc)
+# print dir(_doc._onPage)
+_Story.append(_para)
+# print dir(_Story)
+_codeblk = ""
+_s1 = ""
+
+# write procedure pdf for every case
+print _s3
+if _beginflag:
+    if _pdfflag == 0:
+        _doc.build(_Story)
+if _emailflag == 1:
+    if _pdfflag == 0:
+        _pdfflag = 3
+    if _pdfflag == 1:
+        _pdfflag = 4
+    if _pdfflag == 2:
+        _pdfflag = 5
+    # print "pdfflag ", _pdfflag
+return _lines-1, _beginflag, _pdfflag, _dname, _emailflag
+
+# exit from loop if error
+except:
+    print "="*30
+    print _s3
+    print "PROCEDURE PREMATURELY EXITED AT LINE ", _lines-1, "SEE PRIOR ERROR MESSAGES"
+    raise
+
 
 print(f" -------- write doc files: [{docfileS}] --------- ")
 logging.info(f"""write doc files: [{docfileS}]""")
