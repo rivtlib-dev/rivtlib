@@ -66,7 +66,7 @@ class RivtParse:
 
         return txtrS
 
-    def parse_str(self, strL, folderD, labelD, rivtD):
+    def parse_str(self, strL, folderD, labelD, rivtpD, rivtvD):
         """ add header and parse section contents
 
         Args:
@@ -134,10 +134,10 @@ class RivtParse:
                 blockS += ulS + "\n"
                 if blockB and ulS.strip() == "_[[Q]]":  # block end
                     blockB = False
-                    if self.tS == "V":                  # valread block
+                    if self.tS == "V":                  # valform block
                         blockL = blockS.split("\n")
-                        tC = vals.TagV(folderD, labelD, rivtD)
-                        uS, rS, folderD, labelD, rivtD = tC.tag_parse(
+                        tvC = vals.TagV(folderD, labelD, rivtpD, rivtvD)
+                        uS, rS, folderD, labelD, rivtpD, rivtvD = tvC.tag_parse(
                             tagcmd, blockL)
                         print(uS)                       # stdout valread
                         xutfS += uS + "\n"
@@ -166,8 +166,8 @@ class RivtParse:
                 parS = parL[2].strip()
                 if cmdS in self.cmdL:
                     if self.tS == "V":                   # valread command
-                        rvvC = vals.CmdV(folderD, labelD, rivtD)
-                        uS, rS, folderD, labelD, rivtD = rvvC.cmd_parse(
+                        rvvC = vals.CmdV(folderD, labelD, rivtpD, rivtvD)
+                        uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
                             cmdS, pthS, parS)
                         print(uS)                       # stdout valread
                         xutfS += uS
@@ -192,7 +192,7 @@ class RivtParse:
                     # print(f"{tagS=}")
                     tC = tags.Tag(folderD, labelD)
                     if len(tagS) < 3:                    # line tag
-                        uS, rS, folderD, lableD = tC.tag_parse(tagcmd, lineS)
+                        uS, rS, folderD, labelD = tC.tag_parse(tagcmd, lineS)
                         print(uS)                        # stdout tag
                         xutfS += uS + "\n"
                         xrstS += rS + "\n"
@@ -211,14 +211,14 @@ class RivtParse:
                 eqL = ulS.split("|", 1)
                 eqS = eqL[0].strip()
                 parS = eqL[1].strip()
-                rvvC = vals.CmdV(folderD, labelD, rivtD)
-                uS, rS, folderD, labelD, rivtD = rvvC.cmd_parse(
-                    "eqform", eqS, parS)
+                rvvC = vals.CmdV(folderD, labelD, rivtpD, rivtvD)
+                uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
+                    "equform", eqS, parS)
                 xutfS += uS
                 xrstS += rS
                 print(uS)                               # stdout '='
-                uS, rS, folderD, labelD, rivtD = rvvC.cmd_parse(
-                    "eqtable", eqS, parS)
+                uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
+                    "equtable", eqS, parS)
                 print(uS)                               # stdout '='
                 xutfS += uS
                 xrstS += rS
@@ -232,4 +232,4 @@ class RivtParse:
             with open(folderD["valP"], 'w') as file:     # export value file
                 file.write(labelD["valexpS"])
 
-        return (xutfS, xrstS, folderD, labelD, rivtD)
+        return (xutfS, xrstS, folderD, labelD, rivtpD, rivtvD)

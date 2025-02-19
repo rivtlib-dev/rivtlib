@@ -43,7 +43,7 @@ from rivtlib import params, parse
 
 # from rivtlib import write
 
-global utfS, rstS, folderD, labelD, rivtD
+global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
 curP = Path(os.getcwd())
 rivP = curP
@@ -52,7 +52,7 @@ if __name__ == "rivtlib.api":
     rivN = rivtP.name
     if fnmatch.fnmatch(rivN, "r????-*.py"):
         rivtP = Path(rivP, rivN)
-        folderD, labelD, rivtD = params.dicts(rivN, rivP, rivtP)
+        folderD, labelD, rivtpD, rivtvD = params.dicts(rivN, rivP, rivtP)
 else:
     print(f"INFO     rivt file - {rivN}")
     print(f"INFO     The name must match 'rddss-filename.py' where")
@@ -108,13 +108,13 @@ def rivt_parse(rS, tS):
     Returns:
         None
     """
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     rL = rS.split("\n")
     # print(rL)
     parseC = parse.RivtParse(tS)
-    xutfS, xrstS, folderD, labelD, rivtD = parseC.parse_str(
-        rL, folderD, labelD, rivtD)
+    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
+        rL, folderD, labelD, rivtpD, rivtvD)
 
     utfS += xutfS       # accumulate output strings
     rstS += xrstS
@@ -128,7 +128,7 @@ def R(rS):
     Args:
         rS (str): rivt string
     """
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "R")
 
@@ -139,7 +139,7 @@ def I(rS):
     Args:
         rS (str): rivt string
     """
-    global utfS, rstS, folderD, labelD
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "I")
 
@@ -150,11 +150,9 @@ def V(rS):
     Args:
         rS (str): rivt string
     """
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    locals().update(rivtD)
     utfS, rstS = rivt_parse(rS, "V")
-    rivtD.update(locals())
 
 
 def T(rS):
@@ -163,11 +161,9 @@ def T(rS):
     Args:
         rS (str): rivt string
     """
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    locals().update(rivtD)
     utfS, rstS = rivt_parse("T", rS)
-    rivtD.update(locals())
 
 
 def W(rS):

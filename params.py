@@ -28,7 +28,7 @@ def dicts(rivN, rivP, rivtP):
     toolsP = Path(projP, "tools")
     docsP = Path(projP, "docs")
     insP = Path(rivP / ("ins" + divnumS))
-    valsP = Path(projP / "vals" / ("val" + divnumS))
+    valsP = Path(projP / "vals" / ("v" + divnumS))
     # output paths
     pypath = os.path.dirname(sys.executable)
     rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
@@ -73,6 +73,7 @@ def dicts(rivN, rivP, rivtP):
                  "valP", "valsP", "valN", "insP", "errlogP", "styleP", "tempP"]:
         folderD[item] = eval(item)
 
-    rivtD = {}
+    rivtpD = {}
+    rivtvD = {}
 
-    return folderD, labelD, rivtD
+    return folderD, labelD, rivtpD, rivtvD
