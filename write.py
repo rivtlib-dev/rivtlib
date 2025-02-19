@@ -1,7 +1,9 @@
 import time
 import os
+import logging
+import warnings
 
-from pyPdf import PdfFileWriter, PdfFileReader
+from pypdf import PdfFileWriter, PdfFileReader
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.platypus import XPreformatted, Table, flowables, TableStyle
 from reportlab.lib.pagesizes import letter, legal, A4, elevenSeventeen
@@ -14,6 +16,42 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+import rst2pdf
+
+
+class CmdW:
+    """ value commands format to utf8 or reSt
+
+    Commands:
+        a = 1+1 | unit | reference
+        | VALREAD | rel. pth |  dec1
+    """
+
+    def __init__(self, folderD, labelD, rivtpD, rivtvD):
+        """commands that format a utf doc
+
+        Args:
+            paramL (list): _description_
+            labelD (dict): _description_
+            folderD (dict): _description_
+            localD (dict): _description_
+        """
+
+        self.rivtvD = rivtvD
+        self.rivtpD = rivtpD
+        self.folderD = folderD
+        self.labelD = labelD
+        errlogP = folderD["errlogP"]
+        modnameS = __name__.split(".")[1]
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)-8s  " + modnameS +
+            "   %(levelname)-8s %(message)s",
+            datefmt="%m-%d %H:%M",
+            filename=errlogP,
+            filemode="w",
+        )
+        warnings.filterwarnings("ignore")
 
 
 # ReportLab - Platypus constants

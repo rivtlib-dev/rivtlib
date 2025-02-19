@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from rivtlib import tags, cmds, vals
+from rivtlib import tags, cmds, vals, write
 
 
 class RivtParse:
@@ -33,7 +33,7 @@ class RivtParse:
             self.cmdL = ["python"]
             self.tagsD = {}
         elif tS == "W":
-            self.cmdL = ["write"]
+            self.cmdL = ["DOC", "REPORT"]
             self.tagsD = {}
         else:
             pass
