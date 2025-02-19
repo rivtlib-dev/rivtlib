@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from rivtlib import tags, cmds, vals, write
+from rivtlib import tags, cmds, vals
 
 
 class RivtParse:

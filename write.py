@@ -23,8 +23,8 @@ class CmdW:
     """ value commands format to utf8 or reSt
 
     Commands:
-        a = 1+1 | unit | reference
-        | VALREAD | rel. pth |  dec1
+        | DOC | rel. pth |  dec1
+        | REPORT | rel. pth |  dec1
     """
 
     def __init__(self, folderD, labelD, rivtpD, rivtvD):

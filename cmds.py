@@ -29,21 +29,19 @@ from rivtlib.units import *
 
 tabulate.PRESERVE_WHITESPACE = True
 
+
 def rivtdict(self, rivS):
     """_summary_
 
     var, unit1, unit2, dec1, dec2
-    
+
     from valread:  equ, desc, unit1, unit2, dec1, dec2
     from valtable: equ | desc | unit | dec
     from equtable: equ | desc | unit | dec
-    
+
     """
 
-    
-
     return self.rivtD
-     
 
 
 class Cmd:
@@ -216,7 +214,7 @@ class Cmd:
         old_stdout = sys.stdout
         output = StringIO()
         output.write(tabulate.tabulate(
-            readL, tablefmt="simple", headers="firstrow",
+            readL, tablefmt="rst", headers="firstrow",
             numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
 
         uS = rS = output.getvalue()
