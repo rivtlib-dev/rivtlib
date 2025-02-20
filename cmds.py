@@ -112,6 +112,7 @@ class Cmd:
             rS (str): formatted reSt string
         """
         # print(f"{parS=}")
+        projP = self.folderD["rivP"]
         parL = parS.split(",")
         fileP = Path(pthS)
         capS = parL[0]
@@ -120,8 +121,9 @@ class Cmd:
         figS = "Fig. "
         if len(parL) == 3:
             if parL[2] == "_[F]":
-                numS = self.labelD["fnum"]
-                figS = self.deflabel(capS, numS)
+                numS = str(self.labelD["fnum"])
+                self.labelD["fnum"] = int(numS) + 1
+                figS = figS + numS + capS
         img1 = Image.open(pthS)
         img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
         try:
@@ -131,7 +133,7 @@ class Cmd:
         uS = figS + capS + " : " + str(fileP) + "\n"
         rS = ("\n.. image:: "
               + pthS + "\n"
-              + "   :scale: "
+              + "   :width: "
               + scS + "%" + "\n"
               + "   :align: center"
               + "\n\n"
@@ -159,17 +161,17 @@ class Cmd:
         cap2S = parL[1].strip()
         scale1S = parL[2].strip()
         scale2S = parL[3].strip()
-        figS = ""
-        if len(parL) == 5:
-            if parL[2] == "_[F]":
-                numS = self.labelD["fnum"]
-                figS = self.deflabel(capS, numS)
+        figS = "Fig. "
+        if parL[2] == "_[F]":
+            numS = str(self.labelD["fnum"])
+            self.labelD["fnum"] = int(numS) + 1
+            figS = figS + numS + cap1S
         try:
             img1 = Image.open(pthS)
             _display(img1)
         except:
             pass
-        uS = "<" + capS + " : " + str(fileP) + "> \n"
+        uS = "<" + cap1S + " : " + str(file1P) + "> \n"
         rS = ("\n.. image:: "
               + pthS + "\n"
               + "   :scale: "
@@ -276,14 +278,3 @@ class Cmd:
                 return soupS
             elif extS == ".py":
                 pass
-
-
-class CmdW:
-    """
-        write commands
-
-        || WRITE | rel. pth |  dec1                      .csv
-        || REPORT | rel. pth | rel. pth | dec1, dec2     .csv
-
-    """
-    pass

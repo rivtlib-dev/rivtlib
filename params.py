@@ -32,7 +32,7 @@ def dicts(rivN, rivP, rivtP):
     # output paths
     pypath = os.path.dirname(sys.executable)
     rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
-    reportP = Path(projP, "docs", "test.txt")
+    reportP = Path(projP, "docs")
     xrivtP = Path(projP, "xrivt")
     tempP = Path(projP, "docs", "temp")
     errlogP = Path(tempP, "rivt-log.txt")
@@ -69,7 +69,7 @@ def dicts(rivN, rivP, rivtP):
     }
 
     folderD = {}
-    for item in ["rivtP", "docsP", "readmeP", "reportP", "projP",
+    for item in ["rivP", "rivtP", "docsP", "readmeP", "reportP", "projP",
                  "valP", "valsP", "valN", "insP", "errlogP", "styleP", "tempP"]:
         folderD[item] = eval(item)
 

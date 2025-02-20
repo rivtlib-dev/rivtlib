@@ -105,12 +105,14 @@ class Tag:
         enumI = int(self.labelD["equI"])
         self.labelD["equI"] = enumI + 1
         wI = self.labelD["widthI"]
-       # utf
+        # utf
         fillS = "Eq-" + str(enumI).zfill(2)
         uS = rS = lineS + fillS.rjust(wI-len(lineS))
         # rst
         rS = uS
-
+        # tex
+        rS = uS
+        
         return uS, rS
 
     def table(self, lineS):

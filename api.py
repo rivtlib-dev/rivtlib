@@ -187,7 +187,11 @@ def X(rS):
 
 
 def Q():
-    with open(folderD["reportP"], 'w', encoding="utf-8") as file:
+    txtP = Path(folderD["reportP"], "doc1.txt")
+    rstP = Path(folderD["reportP"], "doc2.rst")
+    with open(txtP, 'w', encoding="utf-8") as file:
         file.write(utfS)
+    with open(rstP, 'w', encoding="utf-8") as file:
+        file.write(rstS)
     print("<<<<< end rivtlib >>>>>")
     sys.exit()

@@ -27,18 +27,10 @@ class CmdW:
         | REPORT | rel. pth |  dec1
     """
 
-    def __init__(self, folderD, labelD, rivtpD, rivtvD):
-        """commands that format a utf doc
+    def __init__(self,  folderD, labelD):
+        """commands that format to utf and reSt
 
-        Args:
-            paramL (list): _description_
-            labelD (dict): _description_
-            folderD (dict): _description_
-            localD (dict): _description_
         """
-
-        self.rivtvD = rivtvD
-        self.rivtpD = rivtpD
         self.folderD = folderD
         self.labelD = labelD
         errlogP = folderD["errlogP"]
@@ -53,1637 +45,1174 @@ class CmdW:
         )
         warnings.filterwarnings("ignore")
 
+    def cmd_parse(self, cmdS, pthS, parS):
+        """parse a tagged line
 
-# ReportLab - Platypus constants
-PAGE_HEIGHT = defaultPageSize[0]
-PAGE_WIDTH = defaultPageSize[0]
-# create template
+        Args:
+            cmdS (_type_): _description_
+            lineS (_type_): _description_
 
-_doc_template = "SimpleDocTemplate(_pname," + _page_margin + _page_size + ")"
-_doc = eval(_doc_template)
+        Returns:
+            utS: formatted utf string
+        """
 
-_equa_label_spac = 62 * (1+(_doc.pagesize[0]-612.)/612)
+        cC = globals()['Cmd'](self.folderD, self.labelD)
+        ccmdS = cmdS.lower()
+        functag = getattr(cC, ccmdS)
+        uS, rS = functag(pthS, parS)
 
-# print dir(_doc)
-_p_para1 = ParagraphStyle('paragraph1', alignment=TA_LEFT,
-                          spaceBefore=5, spaceAfter=1,
-                          fontSize=12, leading=16, fontName='arial',
-                          leftIndent=0 * inch)
+        # print(f"{cmdS=}")
+        # print(f"{pthS=}")
+        # print(f"{parS=}")
 
-_p_para2 = ParagraphStyle('paragraph2', alignment=TA_LEFT,
-                          spaceBefore=5, spaceAfter=1,
-                          fontSize=12, leading=16, fontName='arial',
-                          leftIndent=0 * inch)
+        return uS, rS, self.folderD, self.labelD
 
-_p_equa = ParagraphStyle('equation', alignment=TA_LEFT,
-                         spaceBefore=5, spaceAfter=1,
-                         fontSize=12, leading=16, fontName='vm',
-                         leftIndent=.25 * inch)
+    def parse_write(self, cmdS, pthS, parS):
+        """parse a tagged line
 
-_p_caption1 = ParagraphStyle('caption', alignment=TA_CENTER,
-                             spaceBefore=4, spaceAfter=2,
-                             fontSize=11, leading=16, fontName='arial')
-_p_caption2 = ParagraphStyle('caption', alignment=TA_LEFT,
-                             spaceBefore=4, spaceAfter=2,
-                             fontSize=11, leading=16, fontName='arial')
-_p_caption3 = ParagraphStyle('caption', alignment=TA_RIGHT,
-                             spaceBefore=4, spaceAfter=2,
-                             fontSize=11, leading=16, fontName='arial')
+        Args:
+            cmdS (_type_): _description_
+            lineS (_type_): _description_
 
-_p_text = ParagraphStyle('text', alignment=TA_LEFT,
-                         spaceBefore=5, spaceAfter=1,
-                         fontSize=10, leading=9, fontName='vm',
-                         leftIndent=.25 * inch)
-_p_text4 = ParagraphStyle('text', alignment=TA_LEFT,
-                          spaceBefore=5, spaceAfter=1,
-                          fontSize=10, leading=9, fontName='vm',
-                          leftIndent=.5 * inch)
-_p_text8 = ParagraphStyle('text', alignment=TA_LEFT,
-                          spaceBefore=5, spaceAfter=1,
-                          fontSize=10, leading=9, fontName='vm',
-                          leftIndent=.75 * inch)
+        Returns:
+            utS: formatted utf string
+        """
 
-_p_cbold = ParagraphStyle('cbold', alignment=TA_LEFT,
-                          spaceBefore=1, spaceAfter=1,
-                          fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
-_p_cbold2 = ParagraphStyle('cbold', alignment=TA_CENTER,
-                           spaceBefore=1, spaceAfter=1,
-                           fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
+        cC = globals()['Cmd'](self.folderD, self.labelD)
+        ccmdS = cmdS.lower()
+        functag = getattr(cC, ccmdS)
+        uS, rS = functag(pthS, parS)
 
-_p_bold = ParagraphStyle('bold', alignment=TA_LEFT,
-                         spaceBefore=2, spaceAfter=1,
-                         fontSize=12, leading=16, fontName='vmb',
-                         leftIndent=.5 * inch, rightIndent=1 * inch)
-_p_bold2 = ParagraphStyle('bold2', alignment=TA_LEFT,
-                          spaceBefore=2, spaceAfter=1,
-                          fontSize=11, leading=16, fontName='arialbd',
-                          leftIndent=.88 * inch, rightIndent=1 * inch)
+        # print(f"{cmdS=}")
+        # print(f"{pthS=}")
+        # print(f"{parS=}")
 
-_p_hbig = ParagraphStyle('hbold', alignment=TA_LEFT,
-                         spaceBefore=4, spaceAfter=1,
-                         fontSize=13, leading=22, fontName='arial')
-_p_hbig2 = ParagraphStyle('hbold', alignment=TA_CENTER,
-                          spaceBefore=4, spaceAfter=1,
-                          fontSize=13, leading=22, fontName='arialbd')
+    def tocs(self):
+        # add table of contents to summary
+        tocS = ""
+        secI = 0
 
-_p_code = ParagraphStyle('italic', alignment=TA_LEFT,
-                         spaceBefore=5, spaceAfter=1,
-                         fontSize=11, leading=16, fontName='vmi')
-_p_table = ParagraphStyle('table', alignment=TA_LEFT,
-                          spaceBefore=5, spaceAfter=1,
-                          fontSize=11, leading=16, fontName='vm')
-_p_line = ParagraphStyle('line', alignment=TA_RIGHT,
-                         spaceBefore=5, spaceAfter=1,
-                         fontSize=10, leading=16, fontName='arial')
+        for iS in rivtL:
+            if iS[0:5] == "rv.I(" and "--" not in iS:
+                secI += 1
+                jS = iS.split('"""')
+                kS = jS.split("|").strip()
+                tocS += str(secI) + "'" + kS
+            elif i[0:4] == "rv.V" and "--" not in iS:
+                secI += 1
+                jS = iS.split('"""')
+                kS = jS.split("|").strip()
+                tocS += str(secI) + "'" + kS
+            elif i[0:4] == "rv.T" and "--" not in iS:
+                secI += 1
+                jS = iS.split('"""')
+                kS = jS.split("|").strip()
+                tocS += str(secI) + "'" + kS
+            else:
+                pass
 
-# write pdf of procedure
-_pdfflag = 1
-_doc.build(_Story)
+        mdeditL = mdS.split("## ", 1)
+        mdS = mdeditL[0] + tocS + mdeditL[1]
 
-# start page; stamp file; block file
-_col = _e[7:].strip().split(';')
+    def doctext(self):
+        pass
 
-# exit if merge information is missing
-try:
-    _pgs = int(_col[0])
-    _pgstart = _pgs
-    _pdfflag = 2
-except:
-    print(_s3)
-    if _emailflag == 1:
+    def dochtml(self):
+        pass
+
+    def docrstpdf(self):
+        # ReportLab - Platypus constants
+        PAGE_HEIGHT = defaultPageSize[0]
+        PAGE_WIDTH = defaultPageSize[0]
+        # create template
+
+        _doc_template = "SimpleDocTemplate(_pname," + \
+            _page_margin + _page_size + ")"
+        _doc = eval(_doc_template)
+
+        _equa_label_spac = 62 * (1+(_doc.pagesize[0]-612.)/612)
+
+        # print dir(_doc)
+        _p_para1 = ParagraphStyle('paragraph1', alignment=TA_LEFT,
+                                  spaceBefore=5, spaceAfter=1,
+                                  fontSize=12, leading=16, fontName='arial',
+                                  leftIndent=0 * inch)
+
+        _p_para2 = ParagraphStyle('paragraph2', alignment=TA_LEFT,
+                                  spaceBefore=5, spaceAfter=1,
+                                  fontSize=12, leading=16, fontName='arial',
+                                  leftIndent=0 * inch)
+
+        _p_equa = ParagraphStyle('equation', alignment=TA_LEFT,
+                                 spaceBefore=5, spaceAfter=1,
+                                 fontSize=12, leading=16, fontName='vm',
+                                 leftIndent=.25 * inch)
+
+        _p_caption1 = ParagraphStyle('caption', alignment=TA_CENTER,
+                                     spaceBefore=4, spaceAfter=2,
+                                     fontSize=11, leading=16, fontName='arial')
+        _p_caption2 = ParagraphStyle('caption', alignment=TA_LEFT,
+                                     spaceBefore=4, spaceAfter=2,
+                                     fontSize=11, leading=16, fontName='arial')
+        _p_caption3 = ParagraphStyle('caption', alignment=TA_RIGHT,
+                                     spaceBefore=4, spaceAfter=2,
+                                     fontSize=11, leading=16, fontName='arial')
+
+        _p_text = ParagraphStyle('text', alignment=TA_LEFT,
+                                 spaceBefore=5, spaceAfter=1,
+                                 fontSize=10, leading=9, fontName='vm',
+                                 leftIndent=.25 * inch)
+        _p_text4 = ParagraphStyle('text', alignment=TA_LEFT,
+                                  spaceBefore=5, spaceAfter=1,
+                                  fontSize=10, leading=9, fontName='vm',
+                                  leftIndent=.5 * inch)
+        _p_text8 = ParagraphStyle('text', alignment=TA_LEFT,
+                                  spaceBefore=5, spaceAfter=1,
+                                  fontSize=10, leading=9, fontName='vm',
+                                  leftIndent=.75 * inch)
+
+        _p_cbold = ParagraphStyle('cbold', alignment=TA_LEFT,
+                                  spaceBefore=1, spaceAfter=1,
+                                  fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
+        _p_cbold2 = ParagraphStyle('cbold', alignment=TA_CENTER,
+                                   spaceBefore=1, spaceAfter=1,
+                                   fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
+
+        _p_bold = ParagraphStyle('bold', alignment=TA_LEFT,
+                                 spaceBefore=2, spaceAfter=1,
+                                 fontSize=12, leading=16, fontName='vmb',
+                                 leftIndent=.5 * inch, rightIndent=1 * inch)
+        _p_bold2 = ParagraphStyle('bold2', alignment=TA_LEFT,
+                                  spaceBefore=2, spaceAfter=1,
+                                  fontSize=11, leading=16, fontName='arialbd',
+                                  leftIndent=.88 * inch, rightIndent=1 * inch)
+
+        _p_hbig = ParagraphStyle('hbold', alignment=TA_LEFT,
+                                 spaceBefore=4, spaceAfter=1,
+                                 fontSize=13, leading=22, fontName='arial')
+        _p_hbig2 = ParagraphStyle('hbold', alignment=TA_CENTER,
+                                  spaceBefore=4, spaceAfter=1,
+                                  fontSize=13, leading=22, fontName='arialbd')
+
+        _p_code = ParagraphStyle('italic', alignment=TA_LEFT,
+                                 spaceBefore=5, spaceAfter=1,
+                                 fontSize=11, leading=16, fontName='vmi')
+        _p_table = ParagraphStyle('table', alignment=TA_LEFT,
+                                  spaceBefore=5, spaceAfter=1,
+                                  fontSize=11, leading=16, fontName='vm')
+        _p_line = ParagraphStyle('line', alignment=TA_RIGHT,
+                                 spaceBefore=5, spaceAfter=1,
+                                 fontSize=10, leading=16, fontName='arial')
+
+        # write pdf of procedure
+        _pdfflag = 1
+        _doc.build(_Story)
+
+        # start page; stamp file; block file
+        _col = _e[7:].strip().split(';')
+
+        # exit if merge information is missing
+        try:
+            _pgs = int(_col[0])
+            _pgstart = _pgs
+            _pdfflag = 2
+        except:
+            print(_s3)
+            if _emailflag == 1:
+                if _pdfflag == 0:
+                    _pdfflag = 3
+                if _pdfflag == 1:
+                    _pdfflag = 4
+                if _pdfflag == 2:
+                    _pdfflag = 5
+            # print "pdfflag", _pdfflag
+
+        # make list of procedures
+        _proc_cnt = _lines
+        for _i in _istory[_lines:]:
+            _lines = _lines+1
+            if _i[0:5] == "-end-":
+                _flist = _istory[_proc_cnt:_lines-1]
+                # print "list of procedures", _flist
+                break
+
+        # print _flist
+        for _i in _flist:
+            # print "PDF file merged: ",_i
+            if _i[0] == "|":
+                _i = _i[1:]
+            if _i[0] == "*":
+                _i = _i[1:]
+            _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
+            for _j in range(_input1.getNumPages()):
+                _pgs += 1
+                # print "pages", _pgs
+
+        # create blank pdf file with title block text using reportlab
+        try:
+            os.remove(_cpypath+"/logos/block_only.pdf")
+        except:
+            pass
+        _pg = SimpleDocTemplate(_cpypath+"/logos/block_only.pdf",
+                                leftMargin=0.5*inch, rightMargin=0.5*inch,
+                                bottomMargin=2.5*inch, topMargin=1*inch)
+        # use author attribute to pass max page number to reportlab
+        _pg.author = str(_pgs-1)
+        try:
+            _newStory = []
+            for _xx in range(_pgs+1):
+                _az = "     "
+                _pa = XPreformatted(_az, _p_text)
+                _newStory.append(_pa)
+                _newStory.append(PageBreak())
+            # print dir(_pg)
+            _pg.build(_newStory, onFirstPage=_cpyBlock, onLaterPages=_cpyBlock)
+            print(_pgs, " blank pages stamped with title block text")
+        except:
+            raise
+        # merge pdf procedure file with logo and title block text using PyPDF
+        # output1 = merged document, input2 = title block text, input3 = stamped/title block pdf file
+        _pgs = _pgstart
+        _output1 = PdfFileWriter()
+        _pgname = _cpypath+"/logos/block_only.pdf"
+        _input2 = PdfFileReader(file(_pgname, "rb"))
+
+        # get pdf logo file
+        try:
+            _input3 = PdfFileReader(file(_cpypath+_col[1], "rb"))
+            _stamp = 1
+        except:
+            print(_message(1))
+        # merge blank title block /stamped documents with list of pdf procedures using PyPDF
+
+        for _i in _flist:
+            # print _i
+            if _i[0] == "|":
+                _i = _i[1:]
+            _stamp_flag = 1
+            print("PDF MERGED : ", _i)
+            if _i[0] == "*":
+                _stamp_flag = 0
+                _i = _i[1:]
+
+            _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
+            for _j in range(_input1.getNumPages()):
+                _pagex = _input1.getPage(_j)
+                _output1.addPage(_pagex)
+
+                # merge with stamp
+                if _stamp_flag == 1:
+                    if _stamp:
+                        _pagex.mergePage(_input3.getPage(0))
+
+                # merge with title block
+                if _stamp_flag == 1:
+                    if int(_col[0]) > 0:
+                        _pagex.mergePage(_input2.getPage(_pgs-1))
+                _pgs += 1
+
+        _outputStream = file(_dname, "wb")
+        _output1.write(_outputStream)
+        _outputStream.close()
+        _s1 = ""
+
+        if _emailflag == 1:
         if _pdfflag == 0:
             _pdfflag = 3
         if _pdfflag == 1:
             _pdfflag = 4
         if _pdfflag == 2:
             _pdfflag = 5
-    # print "pdfflag", _pdfflag
-return _lines-1, _beginflag, _pdfflag, _dname, _emailflag
+        # print "pdfflag", _pdfflag
 
-# make list of procedures
-_proc_cnt = _lines
-for _i in _istory[_lines:]:
-    _lines = _lines+1
-    if _i[0:5] == "-end-":
-        _flist = _istory[_proc_cnt:_lines-1]
+        print "="*30
+        print _s3
         # print "list of procedures", _flist
-        break
 
-# print _flist
-for _i in _flist:
-    # print "PDF file merged: ",_i
-    if _i[0] == "|":
-        _i = _i[1:]
-    if _i[0] == "*":
-        _i = _i[1:]
-    _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
-    for _j in range(_input1.getNumPages()):
-        _pgs += 1
-        # print "pages", _pgs
+        """write calc rSt file to d00_docs folder
 
-# create blank pdf file with title block text using reportlab
-try:
-    os.remove(_cpypath+"/logos/block_only.pdf")
-except:
-    pass
-_pg = SimpleDocTemplate(_cpypath+"/logos/block_only.pdf",
-                        leftMargin=0.5*inch, rightMargin=0.5*inch,
-                        bottomMargin=2.5*inch, topMargin=1*inch)
-# use author attribute to pass max page number to reportlab
-_pg.author = str(_pgs-1)
-try:
-    _newStory = []
-    for _xx in range(_pgs+1):
-        _az = "     "
-        _pa = XPreformatted(_az, _p_text)
-        _newStory.append(_pa)
-        _newStory.append(PageBreak())
-    # print dir(_pg)
-    _pg.build(_newStory, onFirstPage=_cpyBlock, onLaterPages=_cpyBlock)
-    print(_pgs, " blank pages stamped with title block text")
-except:
-    raise
-# merge pdf procedure file with logo and title block text using PyPDF
-# output1 = merged document, input2 = title block text, input3 = stamped/title block pdf file
-_pgs = _pgstart
-_output1 = PdfFileWriter()
-_pgname = _cpypath+"/logos/block_only.pdf"
-_input2 = PdfFileReader(file(_pgname, "rb"))
+        Args:
+            cmdS (str): [description]
+            doctypeS ([type]): [description]
+            stylefileS ([type]): [description]
+            calctitleS ([type]): [description]
+            startpageS ([type]): [description]
+        """
 
-# get pdf logo file
-try:
-    _input3 = PdfFileReader(file(_cpypath+_col[1], "rb"))
-    _stamp = 1
-except:
-    print(_message(1))
-# merge blank title block /stamped documents with list of pdf procedures using PyPDF
+        global rstcalcS, _rstflagB
 
-for _i in _flist:
-    # print _i
-    if _i[0] == "|":
-        _i = _i[1:]
-    _stamp_flag = 1
-    print("PDF MERGED : ", _i)
-    if _i[0] == "*":
-        _stamp_flag = 0
-        _i = _i[1:]
+        _rstflagB = True
+        rstcalcS = """"""
+        exec(cmdS, globals(), locals())
+        docdir = os.getcwd()
+        with open(_rstfileP, "wb") as f1:
+            f1.write(rstcalcS.encode("md-8"))
+        print("INFO: rst calc written ", docdir, flush=True)
 
-    _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
-    for _j in range(_input1.getNumPages()):
-        _pagex = _input1.getPage(_j)
-        _output1.addPage(_pagex)
+        f1 = open(_rstfileP, "r", encoding="md-8", errors="ignore")
+        rstcalcL = f1.readlines()
+        f1.close()
+        print("INFO: rst file read: " + str(_rstfileP))
 
-        # merge with stamp
-        if _stamp_flag == 1:
-            if _stamp:
-                _pagex.mergePage(_input3.getPage(0))
-
-        # merge with title block
-        if _stamp_flag == 1:
-            if int(_col[0]) > 0:
-                _pagex.mergePage(_input2.getPage(_pgs-1))
-        _pgs += 1
-
-_outputStream = file(_dname, "wb")
-_output1.write(_outputStream)
-_outputStream.close()
-_s1 = ""
-
-if _emailflag == 1:
-if _pdfflag == 0:
-    _pdfflag = 3
-if _pdfflag == 1:
-    _pdfflag = 4
-if _pdfflag == 2:
-    _pdfflag = 5
-# print "pdfflag", _pdfflag
-
-print "="*30
-print _s3
-# print "list of procedures", _flist
-return _lines-1, _beginflag, _pdfflag, _dname, _emailflag
-
-
-# everything else is reportlab formatted text
-else:
-    # print "text - no tag"
-    # print len(_e.split())
-    # print _e, _formatflag
-if len(_e.split()) > 0 and _beginflag == 1:
-    # print "formatflag ",_formatflag
-_s1 += _e
-
-if _formatflag == 0:
-    _listnum = 0
-    _s3 += _s1+"\n"
-    _para = Paragraph(_s1, _p_para1)
-
-elif _formatflag == 1:
-    _listnum = 0
-    _s3 += _s1+"\n"
-    _para = XPreformatted(_s1, _p_text)
-
-elif _formatflag == 2:
-    # print "formatflag is 2"
-    _listnum += 1
-    _s1 = str(_listnum)+". "+_s1
-    _s3 += _s1+"\n"
-    _para = XPreformatted(_s1, _p_text)
-
-elif _formatflag == 3:
-    # print "formatflag is 3"
-    _listnum += 1
-    # print _listnum
-    if _listnum == 26:
-        _listnum = 0
-    _s1 = string.lowercase[_listnum]+". "+_s1
-    # print _s1
-    _s3 += _s1+"\n"
-    _para = XPreformatted(_s1, _p_text)
-
-elif _formatflag == 4:
-    # print "formatflag is 4"
-    _listnum += 1
-    if _listnum == 26:
-        _listnum = 0
-    _s1 = string.uppercase[_listnum]+". "+_s1
-    _s3 += _s1+"\n"
-    _para = XPreformatted(_s1, _p_text)
-
-else:
-    _listnum = 0
-    _s3 += _s1
-    _para = XPreformatted(_s1, _p_text)
-# print dir(_doc)
-# print dir(_doc._onPage)
-_Story.append(_para)
-# print dir(_Story)
-_codeblk = ""
-_s1 = ""
-
-# write procedure pdf for every case
-print _s3
-if _beginflag:
-    if _pdfflag == 0:
-        _doc.build(_Story)
-if _emailflag == 1:
-    if _pdfflag == 0:
-        _pdfflag = 3
-    if _pdfflag == 1:
-        _pdfflag = 4
-    if _pdfflag == 2:
-        _pdfflag = 5
-    # print "pdfflag ", _pdfflag
-return _lines-1, _beginflag, _pdfflag, _dname, _emailflag
-
-# exit from loop if error
-except:
-    print "="*30
-    print _s3
-    print "PROCEDURE PREMATURELY EXITED AT LINE ", _lines-1, "SEE PRIOR ERROR MESSAGES"
-    raise
-
-
-print(f" -------- write doc files: [{docfileS}] --------- ")
-logging.info(f"""write doc files: [{docfileS}]""")
-
-formatL = formatS.split(",")
-docmdS = "README.md"
-docmdP = Path(docP.parent / docmdS)
-docutfP = Path(docP.parent / docutfS)
-rstfileP = Path(docP.parent, docbaseS + ".rst")
-# eshortP = Path(*Path(rstfileP).parts[-3:])
-
-print("", flush=True)
-
-if "md" in formatL:                          # save md file
-    with open(docmdP, "w", encoding='utf-8') as f1:
-        f1.write(mdS)
-        # with open(_rstfile, "wb") as f1:
-        #   f1.write(rstcalcS.encode("md-8"))
-        # f1 = open(_rstfile, "r", encoding="md-8", errors="ignore")
-    print(f"markdown written: {dshortP}\README.md")
-    logging.info(f"""markdown written: {dshortP}\README.md""")
-print("", flush=True)
-
-if "utf" in formatL:                          # save utf file
-    with open(docmdP, "w", encoding='utf-8') as f1:
-        f1.write(mdS)
-        # with open(_rstfile, "wb") as f1:
-        #   f1.write(rstcalcS.encode("md-8"))
-        # f1 = open(_rstfile, "r", encoding="md-8", errors="ignore")
-    print(f"markdown written: {dshortP}\README.md")
-    logging.info(f"""markdown written: {dshortP}\README.md""")
-print("", flush=True)
-
-if "pdf" in formatL:                           # save pdf file
-    with open(rstfileP, "w", encoding='md-8') as f2:
-        f2.write(rstS)
-    logging.info(f"reST written: {rstfileP}")
-    print(f"reST written: {rstfileP}")
-    logging.info(f"start PDF file process: {rstfileP}")
-    print("start PDF file process: {rstfileP}")
-    pdfstyleS = i.split(":")[1].strip()
-    styleP = Path(prvP, pdfstyleS)
-    folderD["styleP"] = styleP
-    logging.info(f"PDF style file: {styleP}")
-    print(f"PDF style file: {styleP}")
-    pdffileP = _rest2tex(rstS)
-    logging.info(f"PDF doc written: {pdffileP}")
-    print(f"PDF doc written: {pdffileP}")
-sys.exit()
-
-
-def _tocs():
-    # add table of contents to summary
-    tocS = ""
-    secI = 0
-
-    for iS in rivtL:
-        if iS[0:5] == "rv.I(" and "--" not in iS:
-            secI += 1
-            jS = iS.split('"""')
-            kS = jS.split("|").strip()
-            tocS += str(secI) + "'" + kS
-        elif i[0:4] == "rv.V" and "--" not in iS:
-            secI += 1
-            jS = iS.split('"""')
-            kS = jS.split("|").strip()
-            tocS += str(secI) + "'" + kS
-        elif i[0:4] == "rv.T" and "--" not in iS:
-            secI += 1
-            jS = iS.split('"""')
-            kS = jS.split("|").strip()
-            tocS += str(secI) + "'" + kS
+        if doctypeS == "tex" or doctypeS == "pdf":
+            gen_tex(doctypeS, stylefileS, calctitleS, startpageS)
+        elif doctypeS == "html":
+            gen_html()
         else:
-            pass
+            print("INFO: doc type not recognized")
 
-    mdeditL = mdS.split("## ", 1)
-    mdS = mdeditL[0] + tocS + mdeditL[1]
+        # everything else is reportlab formatted text
+        # print "text - no tag"
+        # print len(_e.split())
+        # print _e, _formatflag
+        if len(_e.split()) > 0 and _beginflag == 1:
+            # print "formatflag ",_formatflag
+        _s1 += _e
 
+        if _formatflag == 0:
+            _listnum = 0
+            _s3 += _s1+"\n"
+            _para = Paragraph(_s1, _p_para1)
 
-def _mod_tex(tfileP):
-    """Modify TeX file to avoid problems with escapes:
+        elif _formatflag == 1:
+            _listnum = 0
+            _s3 += _s1+"\n"
+            _para = XPreformatted(_s1, _p_text)
+
+        elif _formatflag == 2:
+            # print "formatflag is 2"
+            _listnum += 1
+            _s1 = str(_listnum)+". "+_s1
+            _s3 += _s1+"\n"
+            _para = XPreformatted(_s1, _p_text)
+
+        elif _formatflag == 3:
+            # print "formatflag is 3"
+            _listnum += 1
+            # print _listnum
+            if _listnum == 26:
+                _listnum = 0
+            _s1 = string.lowercase[_listnum]+". "+_s1
+            # print _s1
+            _s3 += _s1+"\n"
+            _para = XPreformatted(_s1, _p_text)
+
+        elif _formatflag == 4:
+            # print "formatflag is 4"
+            _listnum += 1
+            if _listnum == 26:
+                _listnum = 0
+            _s1 = string.uppercase[_listnum]+". "+_s1
+            _s3 += _s1+"\n"
+            _para = XPreformatted(_s1, _p_text)
+
+        else:
+            _listnum = 0
+            _s3 += _s1
+            _para = XPreformatted(_s1, _p_text)
+        # print dir(_doc)
+        # print dir(_doc._onPage)
+        _Story.append(_para)
+        # print dir(_Story)
+        _codeblk = ""
+        _s1 = ""
+
+        # write procedure pdf for every case
+        print _s3
+        if _beginflag:
+            if _pdfflag == 0:
+                _doc.build(_Story)
+        if _emailflag == 1:
+            if _pdfflag == 0:
+                _pdfflag = 3
+            if _pdfflag == 1:
+                _pdfflag = 4
+            if _pdfflag == 2:
+                _pdfflag = 5
+            # print "pdfflag ", _pdfflag
+
+        # exit from loop if error
+
+            print "="*30
+            print _s3
+            print "PROCEDURE PREMATURELY EXITED AT LINE ", _lines-1, "SEE PRIOR ERROR MESSAGES"
+            raise
+
+        print(f" -------- write doc files: [{docfileS}] --------- ")
+        logging.info(f"""write doc files: [{docfileS}]""")
+
+        formatL = formatS.split(",")
+        docmdS = "README.md"
+        docmdP = Path(docP.parent / docmdS)
+        docutfP = Path(docP.parent / docutfS)
+        rstfileP = Path(docP.parent, docbaseS + ".rst")
+        # eshortP = Path(*Path(rstfileP).parts[-3:])
+
+        print("", flush=True)
+
+        if "md" in formatL:                          # save md file
+            with open(docmdP, "w", encoding='utf-8') as f1:
+                f1.write(mdS)
+                # with open(_rstfile, "wb") as f1:
+                #   f1.write(rstcalcS.encode("md-8"))
+                # f1 = open(_rstfile, "r", encoding="md-8", errors="ignore")
+            print(f"markdown written: {dshortP}\README.md")
+            logging.info(f"""markdown written: {dshortP}\README.md""")
+        print("", flush=True)
+
+        if "utf" in formatL:                          # save utf file
+            with open(docmdP, "w", encoding='utf-8') as f1:
+                f1.write(mdS)
+                # with open(_rstfile, "wb") as f1:
+                #   f1.write(rstcalcS.encode("md-8"))
+                # f1 = open(_rstfile, "r", encoding="md-8", errors="ignore")
+            print(f"markdown written: {dshortP}\README.md")
+            logging.info(f"""markdown written: {dshortP}\README.md""")
+        print("", flush=True)
+
+        if "pdf" in formatL:                           # save pdf file
+            with open(rstfileP, "w", encoding='md-8') as f2:
+                f2.write(rstS)
+            logging.info(f"reST written: {rstfileP}")
+            print(f"reST written: {rstfileP}")
+            logging.info(f"start PDF file process: {rstfileP}")
+            print("start PDF file process: {rstfileP}")
+            pdfstyleS = i.split(":")[1].strip()
+            styleP = Path(prvP, pdfstyleS)
+            folderD["styleP"] = styleP
+            logging.info(f"PDF style file: {styleP}")
+            print(f"PDF style file: {styleP}")
+            pdffileP = _rest2tex(rstS)
+            logging.info(f"PDF doc written: {pdffileP}")
+            print(f"PDF doc written: {pdffileP}")
+
+    def doctexpdf(self):
+        """Modify TeX file to avoid problems with escapes:
 
         -  Replace marker "aaxbb " inserted by rivt with
             \\hfill because it is not handled by reST).
         - Delete inputenc package
         - Modify section title and add table of contents
 
-    """
-    startS = str(labelD["pageI"])
-    doctitleS = str(labelD["doctitleS"])
-
-    with open(tfileP, "r", encoding="md-8", errors="ignore") as f2:
-        texf = f2.read()
-
-    # modify "at" command
-    texf = texf.replace("""\\begin{document}""",
-                        """\\renewcommand{\contentsname}{""" + doctitleS
-                        + "}\n" +
-                        """\\begin{document}\n""" +
-                        """\\makeatletter\n""" +
-                        """\\renewcommand\@dotsep{10000}""" +
-                        """\\makeatother\n""")
-
-    # add table of contents, figures and tables
-    # texf = texf.replace("""\\begin{document}""",
-    #                     """\\renewcommand{\contentsname}{""" + doctitleS
-    #                     + "}\n" +
-    #                     """\\begin{document}\n""" +
-    #                     """\\makeatletter\n""" +
-    #                     """\\renewcommand\@dotsep{10000}""" +
-    #                     """\\makeatother\n""" +
-    #                     """\\tableofcontents\n""" +
-    #                     """\\listoftables\n""" +
-    #                     """\\listoffigures\n""")
-
-    texf = texf.replace("""inputenc""", """ """)
-    texf = texf.replace("aaxbb ", """\\hfill""")
-    texf = texf.replace("?x?", """\\""")
-    texf = texf.replace(
-        """fancyhead[L]{\leftmark}""",
-        """fancyhead[L]{\\normalsize\\bfseries  """ + doctitleS + "}")
-    texf = texf.replace("x*x*x", "[" + labelD["docnumS"] + "]")
-    texf = texf.replace("""\\begin{tabular}""", "%% ")
-    texf = texf.replace("""\\end{tabular}""", "%% ")
-    texf = texf.replace(
-        """\\begin{document}""",
-        """\\begin{document}\n\\setcounter{page}{""" + startS + "}\n")
-
-    with open(tfileP, "w", encoding="md-8") as f2:
-        f2.write(texf)
-
-    # with open(tfileP, 'w') as texout:
-    #    print(texf, file=texout)
-
-    return
-
-
-def _gen_pdf(self):
-    """Write PDF file from TEX file
-
-    """
-
-    pdfD = {
-        "xpdfP": Path(tempP, docbaseS + ".pdf"),
-        "xhtmlP": Path(tempP, docbaseS + ".html"),
-        "xrstP": Path(tempP, docbaseS + ".rst"),
-        "xtexP": Path(tempP, docbaseS + ".tex"),
-        "xauxP": Path(tempP, docbaseS + ".aux"),
-        "xoutP": Path(tempP, docbaseS + ".out"),
-        "xflsP": Path(tempP, docbaseS + ".fls"),
-        "xtexmakP": Path(tempP, docbaseS + ".fdb_latexmk"),
-    }
-    # os.system('latex --version')
-    os.chdir(tempP)
-    texfS = str(pdfD["xtexP"])
-    # pdf1 = 'latexmk -xelatex -quiet -f ' + texfS + " > latex-log.txt"
-    pdf1 = 'xelatex -interaction=batchmode ' + texfS
-    # print(f"{pdf1=}"")
-    os.system(pdf1)
-    srcS = ".".join([docbaseS, "pdf"])
-    dstS = str(Path(reportP, srcS))
-    shutil.copy(srcS, dstS)
-
-    return dstS
-
-
-def _rest2tex(rstfileS):
-    """convert reST to tex file
-
-    0. insert [i] data into model (see _genxmodel())
-    1. read the expanded model
-    2. build the operations ordered dictionary
-    3. execute the dictionary and write the md-8 calc and Python file
-    4. if the pdf flag is set re-execute xmodel and write the PDF calc
-    5. write variable summary to stdout
-
-    :param pdffileS: _description_
-    :type pdffileS: _type_
-    """
-
-    global folderD
-
-    style_path = folderD["styleP"]
-    # print(f"{style_path=}")
-    # f2 = open(style_path)
-    # f2.close
-
-    pythoncallS = "python "
-    if sys.platform == "linux":
-        pythoncallS = "python3 "
-    elif sys.platform == "darwin":
-        pythoncallS = "python3 "
-
-    rst2texP = Path(rivtP, "scripts", "rst2latex.py")
-    # print(f"{str(rst2texP)=}")
-    texfileP = Path(tempP, docbaseS + ".tex")
-    rstfileP = Path(tempP, docbaseS + ".rst")
-
-    with open(rstfileP, "w", encoding='md-8') as f2:
-        f2.write(rstS)
-
-    tex1S = "".join(
-        [
-            pythoncallS,
-            str(rst2texP),
-            " --embed-stylesheet ",
-            " --documentclass=report ",
-            " --documentoptions=12pt,notitle,letterpaper ",
-            " --stylesheet=",
-            str(style_path) + " ",
-            str(rstfileP) + " ",
-            str(texfileP),
-        ]
-    )
-    logging.info(f"tex call:{tex1S=}")
-    os.chdir(tempP)
-    try:
-        os.system(tex1S)
-        time.sleep(1)
-        logging.info(f"tex file written: {texfileP=}")
-        print(f"tex file written: {texfileP=}")
-    except SystemExit as e:
-        logging.exception('tex file not written')
-        logging.error(str(e))
-        sys.exit("tex file write failed")
-
-    _mod_tex(texfileP)
-
-    pdfS = _gen_pdf(texfileP)
-
-    return pdfS
-
-
-#! python
-
-"""
-    Collate pdf docs into a report
-"""
-
-#!python
-""" rivt write methods for pdf and html files"""
-
-
-def write_md(mdS):
-    pass
-
-
-def gen_rst(cmdS, doctypeS, stylefileS, calctitleS, startpageS):
-    """write calc rSt file to d00_docs folder
-
-    Args:
-        cmdS (str): [description]
-        doctypeS ([type]): [description]
-        stylefileS ([type]): [description]
-        calctitleS ([type]): [description]
-        startpageS ([type]): [description]
-    """
-
-    global rstcalcS, _rstflagB
-
-    _rstflagB = True
-    rstcalcS = """"""
-    exec(cmdS, globals(), locals())
-    docdir = os.getcwd()
-    with open(_rstfileP, "wb") as f1:
-        f1.write(rstcalcS.encode("md-8"))
-    print("INFO: rst calc written ", docdir, flush=True)
-
-    f1 = open(_rstfileP, "r", encoding="md-8", errors="ignore")
-    rstcalcL = f1.readlines()
-    f1.close()
-    print("INFO: rst file read: " + str(_rstfileP))
-
-    if doctypeS == "tex" or doctypeS == "pdf":
-        gen_tex(doctypeS, stylefileS, calctitleS, startpageS)
-    elif doctypeS == "html":
-        gen_html()
-    else:
-        print("INFO: doc type not recognized")
-
-    os._exit(1)
-
-
-def gen_tex(doctypeS, stylefileS, calctitleS, startpageS):
-
-    global rstcalcS, _rstflagB
-
-    pdfD = {
-        "cpdfP": Path(_dpathP0 / ".".join([_cnameS, "pdf"])),
-        "chtml": Path(_dpathP0 / ".".join([_cnameS, "html"])),
-        "trst": Path(_dpathP0 / ".".join([_cnameS, "rst"])),
-        "ttex1": Path(_dpathP0 / ".".join([_cnameS, "tex"])),
-        "auxfile": Path(_dpathP0 / ".".join([_cnameS, ".aux"])),
-        "omdile": Path(_dpathP0 / ".".join([_cnameS, ".out"])),
-        "texmak2": Path(_dpathP0 / ".".join([_cnameS, ".fls"])),
-        "texmak3": Path(_dpathP0 / ".".join([_cnameS, ".fdb_latexmk"])),
-    }
-    if stylefileS == "default":
-        stylefileS = "pdf_style.sty"
-    else:
-        stylefileS == stylefileS.strip()
-    style_path = Path(_dpathP0 / stylefileS)
-    print("INFO: style sheet " + str(style_path))
-    pythoncallS = "python "
-    if sys.platform == "linux":
-        pythoncallS = "python3 "
-    elif sys.platform == "darwin":
-        pythoncallS = "python3 "
-
-    rst2xeP = Path(rivtpath / "scripts" / "rst2xetex.py")
-    texfileP = pdfD["ttex1"]
-    tex1S = "".join(
-        [
-            pythoncallS,
-            str(rst2xeP),
-            " --embed-stylesheet ",
-            " --documentclass=report ",
-            " --documentoptions=12pt,notitle,letterpaper ",
-            " --stylesheet=",
-            str(style_path) + " ",
-            str(_rstfileP) + " ",
-            str(texfileP),
-        ]
-    )
-
-    os.chdir(_dpathP0)
-    os.system(tex1S)
-    print("INFO: tex file written " + str(texfileP))
-
-    # fix escape sequences
-    fnumS = _setsectD["fnumS"]
-    with open(texfileP, "r", encoding="md-8", errors="ignore") as texin:
-        texf = texin.read()
-    texf = texf.replace("?x?", """\\""")
-    texf = texf.replace(
-        """fancyhead[L]{\leftmark}""",
-        """fancyhead[L]{\\normalsize  """ + calctitleS + "}",
-    )
-    texf = texf.replace("x*x*x", fnumS)
-    texf = texf.replace("""\\begin{tabular}""", "%% ")
-    texf = texf.replace("""\\end{tabular}""", "%% ")
-    texf = texf.replace(
-        """\\begin{document}""",
-        """\\begin{document}\n\\setcounter{page}{""" + startpageS + "}\n",
-    )
-
-    # texf = texf.replace(
-    #     """\\begin{document}""",
-    #     """\\renewcommand{\contentsname}{"""
-    #     + self.calctitle
-    #     + "}\n"
-    #     + """\\begin{document}"""
-    #     + "\n"
-    #     + """\\makeatletter"""
-    #     + """\\renewcommand\@dotsep{10000}"""
-    #     + """\\makeatother"""
-    #     + """\\tableofcontents"""
-    #     + """\\listoftables"""
-    #     + """\\listoffigures"""
-    # )
-
-    time.sleep(1)
-    with open(texfileP, "w", encoding="md-8") as texout:
-        texout.write(texf)
-    print("INFO: tex file updated")
-
-    if doctypeS == "pdf":
-        gen_pdf(texfileP)
-
-    os._exit(1)
-
-
-def write_pdf(texfileP):
-    """write pdf calc to reports folder and open
-
-    Args:
-        texfileP (path): doc config folder
-    """
-
-    global rstcalcS, _rstflagB
-
-    os.chdir()
-    time.sleep(1)  # cleanup tex files
-    os.system("latexmk -c")
-    time.sleep(1)
-
-    pdfmkS = (
-        "perl.exe c:/texlive/2020/texmf-dist/scripts/latexmk/latexmk.pl "
-        + "-pdf -xelatex -quiet -f "
-        + str(texfileP)
-    )
-
-    os.system(pdfmkS)
-    print("\nINFO: pdf file written: " + ".".join([_cnameS, "pdf"]))
-
-    dnameS = _cnameS.replace("c", "d", 1)
-    docpdfP = Path(_dpathP / ".".join([dnameS, "pdf"]))
-    doclocalP = Path(_dpathP0 / ".".join([_cnameS, "pdf"]))
-    time.sleep(2)  # move pdf to doc folder
-    shutil.move(doclocalP, docpdfP)
-    os.chdir(_dpathPcurP)
-    print("INFO: pdf file moved to docs folder", flush=True)
-    print("INFO: program complete")
-
-    cfgP = Path(_dpathP0 / "rv_cfg.txt")  # read pdf display program
-    with open(cfgP) as f2:
-        cfgL = f2.readlines()
-        cfg1S = cfgL[0].split("|")
-        cfg2S = cfg1S[1].strip()
-    cmdS = cfg2S + " " + str(Path(_dpathP) / ".".join([dnameS, "pdf"]))
-    # print(cmdS)
-    subprocess.run(cmdS)
-
-    os._exit(1)
-
-
-def gen_pdf(cmdS, doctypeS, stylefileS, calctitleS, startpageS):
-    """write calc rSt file to d00_docs folder
-
-    Args:
-        cmdS (str): [description]
-        doctypeS ([type]): [description]
-        stylefileS ([type]): [description]
-        calctitleS ([type]): [description]
-        startpageS ([type]): [description]
-    """
-
-    # clean temp files
-    fileL = [
-        Path(fileconfigP, ".".join([calcbaseS, "pdf"])),
-        Path(fileconfigP, ".".join([calcbaseS, "html"])),
-        Path(fileconfigP, ".".join([calcbaseS, "rst"])),
-        Path(fileconfigP, ".".join([calcbaseS, "tex"])),
-        Path(fileconfigP, ".".join([calcbaseS, ".aux"])),
-        Path(fileconfigP, ".".join([calcbaseS, ".out"])),
-        Path(fileconfigP, ".".join([calcbaseS, ".fls"])),
-        Path(fileconfigP, ".".join([calcbaseS, ".fdb_latexmk"])),
-    ]
-    os.chdir(fileconfigP)
-    tmpS = os.getcwd()
-    if tmpS == str(fileconfigP):
-        for f in fileL:
-            try:
-                os.remove(f)
-            except:
-                pass
-        time.sleep(1)
-        print("INFO: temporary Tex files deleted \n", flush=True)
-
-
-def write_html(rstS):
-    pass
-
-
-def project(self, rL):
-    """insert tables or text from csv, xlsx or txt file
-
-    Args:
-        rL (list): parameter list
-
-    Files are read from /docs/docfolder
-    The command is identical to itable except file is read from docs/info.
-
-    """
-    alignD = {"S": "", "D": "decimal",
-              "C": "center", "R": "right", "L": "left"}
-
-    if len(rL) < 4:
-        rL += [""] * (4 - len(rL))  # pad parameters
-    rstS = ""
-    contentL = []
-    sumL = []
-    fileS = rL[1].strip()
-    tfileS = Path(self.folderD["dpath0"] / fileS)
-    extS = fileS.split(".")[1]
-    if extS == "csv":
-        with open(tfileS, "r") as csvfile:  # read csv file
-            readL = list(csv.reader(csvfile))
-    elif extS == "xlsx":
-        xDF = pd.read_excel(tfileS, header=None)
-        readL = xDF.values.tolist()
-    else:
-        return
-    incl_colL = list(range(len(readL[0])))
-    widthI = self.setcmdD["cwidthI"]
-    alignS = self.setcmdD["calignS"]
-    saS = alignD[alignS]
-    if rL[2].strip():
-        widthL = rL[2].split(",")  # new max col width
-        widthI = int(widthL[0].strip())
-        alignS = widthL[1].strip()
-        saS = alignD[alignS]  # new alignment
-        self.setcmdD.update({"cwidthI": widthI})
-        self.setcmdD.update({"calignS": alignS})
-    totalL = [""] * len(incl_colL)
-    if rL[3].strip():  # columns
-        if rL[3].strip() == "[:]":
-            totalL = [""] * len(incl_colL)
+        """
+        startS = str(labelD["pageI"])
+        doctitleS = str(labelD["doctitleS"])
+
+        with open(tfileP, "r", encoding="md-8", errors="ignore") as f2:
+            texf = f2.read()
+
+        # modify "at" command
+        texf = texf.replace("""\\begin{document}""",
+                            """\\renewcommand{\contentsname}{""" + doctitleS
+                            + "}\n" +
+                            """\\begin{document}\n""" +
+                            """\\makeatletter\n""" +
+                            """\\renewcommand\@dotsep{10000}""" +
+                            """\\makeatother\n""")
+
+        # add table of contents, figures and tables
+        # texf = texf.replace("""\\begin{document}""",
+        #                     """\\renewcommand{\contentsname}{""" + doctitleS
+        #                     + "}\n" +
+        #                     """\\begin{document}\n""" +
+        #                     """\\makeatletter\n""" +
+        #                     """\\renewcommand\@dotsep{10000}""" +
+        #                     """\\makeatother\n""" +
+        #                     """\\tableofcontents\n""" +
+        #                     """\\listoftables\n""" +
+        #                     """\\listoffigures\n""")
+
+        texf = texf.replace("""inputenc""", """ """)
+        texf = texf.replace("aaxbb ", """\\hfill""")
+        texf = texf.replace("?x?", """\\""")
+        texf = texf.replace(
+            """fancyhead[L]{\leftmark}""",
+            """fancyhead[L]{\\normalsize\\bfseries  """ + doctitleS + "}")
+        texf = texf.replace("x*x*x", "[" + labelD["docnumS"] + "]")
+        texf = texf.replace("""\\begin{tabular}""", "%% ")
+        texf = texf.replace("""\\end{tabular}""", "%% ")
+        texf = texf.replace(
+            """\\begin{document}""",
+            """\\begin{document}\n\\setcounter{page}{""" + startS + "}\n")
+
+        with open(tfileP, "w", encoding="md-8") as f2:
+            f2.write(texf)
+
+        # with open(tfileP, 'w') as texout:
+        #    print(texf, file=texout)
+
+            pdfD = {
+                "xpdfP": Path(tempP, docbaseS + ".pdf"),
+                "xhtmlP": Path(tempP, docbaseS + ".html"),
+                "xrstP": Path(tempP, docbaseS + ".rst"),
+                "xtexP": Path(tempP, docbaseS + ".tex"),
+                "xauxP": Path(tempP, docbaseS + ".aux"),
+                "xoutP": Path(tempP, docbaseS + ".out"),
+                "xflsP": Path(tempP, docbaseS + ".fls"),
+                "xtexmakP": Path(tempP, docbaseS + ".fdb_latexmk"),
+            }
+
+        _mod_tex(texfileP)
+
+        pdfS = _gen_pdf(texfileP)
+
+        global rstcalcS, _rstflagB
+
+        pdfD = {
+            "cpdfP": Path(_dpathP0 / ".".join([_cnameS, "pdf"])),
+            "chtml": Path(_dpathP0 / ".".join([_cnameS, "html"])),
+            "trst": Path(_dpathP0 / ".".join([_cnameS, "rst"])),
+            "ttex1": Path(_dpathP0 / ".".join([_cnameS, "tex"])),
+            "auxfile": Path(_dpathP0 / ".".join([_cnameS, ".aux"])),
+            "omdile": Path(_dpathP0 / ".".join([_cnameS, ".out"])),
+            "texmak2": Path(_dpathP0 / ".".join([_cnameS, ".fls"])),
+            "texmak3": Path(_dpathP0 / ".".join([_cnameS, ".fdb_latexmk"])),
+        }
+        if stylefileS == "default":
+            stylefileS = "pdf_style.sty"
         else:
-            incl_colL = eval(rL[3].strip())
-            totalL = [""] * len(incl_colL)
-    ttitleS = readL[0][0].strip() + " [t]_"
-    rstgS = self._tags(ttitleS, rtagL)
-    self.restS += rstgS.rstrip() + "\n\n"
-    for row in readL[1:]:
-        contentL.append([row[i] for i in incl_colL])
-    wcontentL = []
-    for rowL in contentL:
-        wrowL = []
-        for iS in rowL:
-            templist = textwrap.wrap(str(iS), int(widthI))
-            templist = [i.replace("""\\n""", """\n""") for i in templist]
-            wrowL.append("""\n""".join(templist))
-        wcontentL.append(wrowL)
-    sys.stdout.flush()
-    old_stdout = sys.stdout
-    output = StringIO()
-    output.write(
-        tabulate(
-            wcontentL,
-            tablefmt="rst",
-            headers="firstrow",
-            numalign="decimal",
-            stralign=saS,
+            stylefileS == stylefileS.strip()
+        style_path = Path(_dpathP0 / stylefileS)
+        print("INFO: style sheet " + str(style_path))
+        pythoncallS = "python "
+        if sys.platform == "linux":
+            pythoncallS = "python3 "
+        elif sys.platform == "darwin":
+            pythoncallS = "python3 "
+
+        rst2xeP = Path(rivtpath / "scripts" / "rst2xetex.py")
+        texfileP = pdfD["ttex1"]
+        tex1S = "".join(
+            [
+                pythoncallS,
+                str(rst2xeP),
+                " --embed-stylesheet ",
+                " --documentclass=report ",
+                " --documentoptions=12pt,notitle,letterpaper ",
+                " --stylesheet=",
+                str(style_path) + " ",
+                str(_rstfileP) + " ",
+                str(texfileP),
+            ]
         )
-    )
-    rstS = output.getvalue()
-    sys.stdout = old_stdout
 
-    self.restS += rstS + "\n"
+        os.chdir(_dpathP0)
+        os.system(tex1S)
+        print("INFO: tex file written " + str(texfileP))
 
+        # fix escape sequences
+        fnumS = _setsectD["fnumS"]
+        with open(texfileP, "r", encoding="md-8", errors="ignore") as texin:
+            texf = texin.read()
+        texf = texf.replace("?x?", """\\""")
+        texf = texf.replace(
+            """fancyhead[L]{\leftmark}""",
+            """fancyhead[L]{\\normalsize  """ + calctitleS + "}",
+        )
+        texf = texf.replace("x*x*x", fnumS)
+        texf = texf.replace("""\\begin{tabular}""", "%% ")
+        texf = texf.replace("""\\end{tabular}""", "%% ")
+        texf = texf.replace(
+            """\\begin{document}""",
+            """\\begin{document}\n\\setcounter{page}{""" + startpageS + "}\n",
+        )
 
-def attach(self, rsL):
-    b = 5
+        # texf = texf.replace(
+        #     """\\begin{document}""",
+        #     """\\renewcommand{\contentsname}{"""
+        #     + self.calctitle
+        #     + "}\n"
+        #     + """\\begin{document}"""
+        #     + "\n"
+        #     + """\\makeatletter"""
+        #     + """\\renewcommand\@dotsep{10000}"""
+        #     + """\\makeatother"""
+        #     + """\\tableofcontents"""
+        #     + """\\listoftables"""
+        #     + """\\listoffigures"""
+        # )
 
+        time.sleep(1)
+        with open(texfileP, "w", encoding="md-8") as texout:
+            texout.write(texf)
+        print("INFO: tex file updated")
 
-def report(self, rL):
-    """skip info command for md calcs
+        if doctypeS == "pdf":
+            gen_pdf(texfileP)
 
-    Command is executed only for docs in order to
-    separate protected information for shareable calcs.
+        os._exit(1)
 
-    Args:
-        rL (list): parameter list
-    """
+        # os.system('latex --version')
+        os.chdir(tempP)
+        texfS = str(pdfD["xtexP"])
+        # pdf1 = 'latexmk -xelatex -quiet -f ' + texfS + " > latex-log.txt"
+        pdf1 = 'xelatex -interaction=batchmode ' + texfS
+        # print(f"{pdf1=}"")
+        os.system(pdf1)
+        srcS = ".".join([docbaseS, "pdf"])
+        dstS = str(Path(reportP, srcS))
+        shutil.copy(srcS, dstS)
 
-    """
-    try:
-        filen1 = os.path.join(self.rpath, "reportmerge.txt")
-        print(filen1)
-        file1 = open(filen1, 'r')
-        mergelist = file1.readlines()
-        file1.close()
-        mergelist2 = mergelist[:]
-    except OSError:
-        print('< reportmerge.txt file not found in reprt folder >')
-        return
-    calnum1 = self.pdffile[0:5]
-    file2 = open(filen1, 'w')
-    newstr1 = 'c | ' + self.pdffile + ' | ' + self.calctitle
-    for itm1 in mergelist:
-        if calnum1 in itm1:
-            indx1 = mergelist2.index(itm1)
-            mergelist2[indx1] = newstr1
-            for j1 in mergelist2:
-                file2.write(j1)
-            file2.close()
-            return
-    mergelist2.append("\n" + newstr1)
-    for j1 in mergelist2:
-        file2.write(j1)
-    file2.close()
-    return """
-    pass
+        """convert reST to tex file
 
-    # from values
+        0. insert [i] data into model (see _genxmodel())
+        1. read the expanded model
+        2. build the operations ordered dictionary
+        3. execute the dictionary and write the md-8 calc and Python file
+        4. if the pdf flag is set re-execute xmodel and write the PDF calc
+        5. write variable summary to stdout
 
+        :param pdffileS: _description_
+        :type pdffileS: _type_
+        """
 
-if vL[1].strip() == "sub":
-    self.setcmdD["subB"] = True
-self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
-self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
-# write dictionary from value-string
-locals().update(self.rivtD)
-rprecS = str(self.setcmdD["trmrI"])  # trim numbers
-tprecS = str(self.setcmdD["trmtI"])
-fltfmtS = "." + rprecS.strip() + "f"
-exec("set_printoptions(precision=" + rprecS + ")")
-exec("Unum.set_format(value_format = '%." + rprecS + "f')")
-if len(vL) <= 2:  # equation
-    varS = vL[0].split("=")[0].strip()
-    valS = vL[0].split("=")[1].strip()
-    if vL[1].strip() != "DC" and vL[1].strip() != "":
-        unitL = vL[1].split(",")
-        unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-        val1U = val2U = array(eval(valS))
-        if type(eval(valS)) == list:
-            val1U = array(eval(valS)) * eval(unit1S)
-            val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-        else:
-            cmdS = varS + "= " + valS
-            exec(cmdS, globals(), locals())
-            valU = eval(varS).cast_unit(eval(unit1S))
-            valdec = ("%." + str(rprecS) + "f") % valU.number()
-            val1U = str(valdec) + " " + str(valU.unit())
-            val2U = valU.cast_unit(eval(unit2S))
-    else:  # no units
-        cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-        exec(cmdS, globals(), locals())
-        # valU = eval(varS).cast_unit(eval(unit1S))
-        # valdec = ("%." + str(rprecS) + "f") % valU.number()
-        # val1U = str(valdec) + " " + str(valU.unit())
-        val1U = eval(varS)
-        val1U = val1U.simplify_unit()
-        val2U = val1U
-    mdS = vL[0]
-    spS = "Eq(" + varS + ",(" + valS + "))"
-    mdS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-    print("\n" + mdS + "\n")  # pretty print equation
-    self.calcS += "\n" + mdS + "\n"
-    eqS = sp.sympify(valS)
-    eqatom = eqS.atoms(sp.Symbol)
-    if self.setcmdD["subB"]:  # substitute into equation
-        self._vsub(vL)
-    else:  # write equation table
-        hdrL = []
-        valL = []
-        hdrL.append(varS)
-        valL.append(str(val1U) + "  [" + str(val2U) + "]")
-        for sym in eqatom:
-            hdrL.append(str(sym))
-            symU = eval(str(sym))
-            valL.append(str(symU.simplify_unit()))
-        alignL = ["center"] * len(valL)
-        self._vtable([valL], hdrL, "rst", alignL)
-    if self.setcmdD["saveB"] == True:
-        pyS = vL[0] + vL[1] + "  # equation" + "\n"
-        # print(pyS)
-        self.exportS += pyS
-    locals().update(self.rivtD)
-elif len(vL) >= 3:  # value
-    descripS = vL[2].strip()
-    varS = vL[0].split("=")[0].strip()
-    valS = vL[0].split("=")[1].strip()
-    val1U = val2U = array(eval(valS))
-    if vL[1].strip() != "" and vL[1].strip() != "-":
-        unitL = vL[1].split(",")
-        unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-        if type(eval(valS)) == list:
-            val1U = array(eval(valS)) * eval(unit1S)
-            val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-        else:
-            cmdS = varS + "= " + valS + "*" + unit1S
-            exec(cmdS, globals(), locals())
-            valU = eval(varS)
-            val1U = str(valU.number()) + " " + str(valU.unit())
-            val2U = valU.cast_unit(eval(unit2S))
-    else:
-        cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-        exec(cmdS, globals(), locals())
-        valU = eval(varS)
-        # val1U = str(valU.number()) + " " + str(valU.unit())
-        val2U = valU
-    self.valL.append([varS, val1U, val2U, descripS])
-    if self.setcmdD["saveB"] == True:
-        pyS = vL[0] + vL[1] + vL[2] + "\n"
-        # print(pyS)
-        self.exportS += pyS
-self.rivtD.update(locals())
+        global folderD
 
-# update dictionary
-if vL[1].strip() == "sub":
-    self.setcmdD["subB"] = True
-self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
-self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
+        style_path = folderD["styleP"]
+        # print(f"{style_path=}")
+        # f2 = open(style_path)
+        # f2.close
 
-# assign values
-locals().update(self.rivtD)
-rprecS = str(self.setcmdD["trmrI"])  # trim numbers
-tprecS = str(self.setcmdD["trmtI"])
-fltfmtS = "." + rprecS.strip() + "f"
-exec("set_printoptions(precision=" + rprecS + ")")
-exec("Unum.set_format(value_format = '%." + rprecS + "f')")
-if len(vL) <= 2:  # equation
-    varS = vL[0].split("=")[0].strip()
-    valS = vL[0].split("=")[1].strip()
-    val1U = val2U = array(eval(valS))
-    if vL[1].strip() != "DC" and vL[1].strip() != "":
-        unitL = vL[1].split(",")
-        unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-        if type(eval(valS)) == list:
-            val1U = array(eval(valS)) * eval(unit1S)
-            val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-        else:
-            cmdS = varS + "= " + valS
-            exec(cmdS, globals(), locals())
-            valU = eval(varS).cast_unit(eval(unit1S))
-            valdec = ("%." + str(rprecS) + "f") % valU.number()
-            val1U = str(valdec) + " " + str(valU.unit())
-            val2U = valU.cast_unit(eval(unit2S))
-    else:
-        cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-        exec(cmdS, globals(), locals())
-        # valU = eval(varS).cast_unit(eval(unit1S))
-        # valdec = ("%." + str(rprecS) + "f") % valU.number()
-        # val1U = str(valdec) + " " + str(valU.unit())
-        val1U = eval(varS)
-        val1U = val1U.simplify_unit()
-        val2U = val1U
-    rstS = vL[0]
-    spS = "Eq(" + varS + ",(" + valS + "))"  # pretty print
-    symeq = sp.sympify(spS, _clash2, evaluate=False)
-    eqltxS = sp.latex(symeq, mul_symbol="dot")
-    self.restS += "\n.. math:: \n\n" + "  " + eqltxS + "\n\n"
-    eqS = sp.sympify(valS)
-    eqatom = eqS.atoms(sp.Symbol)
-    if self.setcmdD["subB"]:
-        self._vsub(vL)
-    else:
-        hdrL = []
-        valL = []
-        hdrL.append(varS)
-        valL.append(str(val1U) + "  [" + str(val2U) + "]")
-        for sym in eqatom:
-            hdrL.append(str(sym))
-            symU = eval(str(sym))
-            valL.append(str(symU.simplify_unit()))
-        alignL = ["center"] * len(valL)
-        self._vtable([valL], hdrL, "rst", alignL, fltfmtS)
-    if self.setcmdD["saveB"] == True:
-        pyS = vL[0] + vL[1] + "  # equation" + "\n"
-        # print(pyS)
-        self.exportS += pyS
-elif len(vL) >= 3:  # value
-    descripS = vL[2].strip()
-    varS = vL[0].split("=")[0].strip()
-    valS = vL[0].split("=")[1].strip()
-    val1U = val2U = array(eval(valS))
-    if vL[1].strip() != "" and vL[1].strip() != "-":
-        unitL = vL[1].split(",")
-        unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-        if type(eval(valS)) == list:
-            val1U = array(eval(valS)) * eval(unit1S)
-            val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-        else:
-            cmdS = varS + "= " + valS + "*" + unit1S
-            exec(cmdS, globals(), locals())
-            valU = eval(varS)
-            val1U = str(valU.number()) + " " + str(valU.unit())
-            val2U = valU.cast_unit(eval(unit2S))
-    else:
-        cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-        # print(f"{cmdS=}")
-        exec(cmdS, globals(), locals())
-        valU = eval(varS)
-        # val1U = str(valU.number()) + " " + str(valU.unit())
-        val2U = valU
-    self.valL.append([varS, val1U, val2U, descripS])
-    if self.setcmdD["saveB"] == True:
-        pyS = vL[0] + vL[1] + vL[2] + "\n"
-        # print(pyS)
-        self.exportS += pyS
-self.rivtD.update(locals())
-# print(self.rivtD)
+        pythoncallS = "python "
+        if sys.platform == "linux":
+            pythoncallS = "python3 "
+        elif sys.platform == "darwin":
+            pythoncallS = "python3 "
 
-# write values to table
-tbl = "x"
-hdrL = "y"
-tlbfmt = "z"
-alignL = "true"
-fltfmtS = "x"
-locals().update(self.rivtD)
-rprecS = str(self.setcmdD["trmrI"])  # trim numbers
-tprecS = str(self.setcmdD["trmtI"])
-fltfmtS = "." + rprecS.strip() + "f"
-sys.stdout.flush()
-old_stdout = sys.stdout
-output = StringIO()
-tableS = tabulate(
-    tbl,
-    tablefmt=tblfmt,
-    headers=hdrL,
-    showindex=False,
-    colalign=alignL,
-    floatfmt=fltfmtS,
-)
-output.write(tableS)
-rstS = output.getvalue()
-sys.stdout = old_stdout
-sys.stdout.flush()
-inrstS = ""
-self.restS += ":: \n\n"
-for i in rstS.split("\n"):
-    inrstS = "  " + i
-    self.restS += inrstS + "\n"
-self.restS += "\n\n"
-self.rivtD.update(locals())
+        rst2texP = Path(rivtP, "scripts", "rst2latex.py")
+        # print(f"{str(rst2texP)=}")
+        texfileP = Path(tempP, docbaseS + ".tex")
+        rstfileP = Path(tempP, docbaseS + ".rst")
 
-if vsub:
-    eqL = [1]
-    eqS = "descrip"
-    locals().update(self.rivtd)
+        with open(rstfileP, "w", encoding='md-8') as f2:
+            f2.write(rstS)
 
-    eformat = ""
-    mdS = eqL[0].strip()
-    descripS = eqL[3]
-    parD = dict(eqL[1])
-    varS = mdS.split("=")
-    resultS = vars[0].strip() + " = " + str(eval(vars[1]))
-    try:
-        eqS = "Eq(" + eqL[0] + ",(" + eqL[1] + "))"
-        # sps = sps.encode('unicode-escape').decode()
-        mds = sp.pretty(sp.sympify(eqS, _clash2, evaluate=False))
-        self.calcl.append(mds)
-    except:
-        self.calcl.append(mds)
-    try:
-        symeq = sp.sympify(eqS.strip())  # substitute
-        symat = symeq.atoms(sp.Symbol)
-        for _n2 in symat:
-            evlen = len((eval(_n2.__str__())).__str__())  # get var length
-            new_var = str(_n2).rjust(evlen, "~")
-            new_var = new_var.replace("_", "|")
-            symeq1 = symeq.subs(_n2, sp.Symbols(new_var))
-        out2 = sp.pretty(symeq1, wrap_line=False)
-        # print('out2a\n', out2)
-        symat1 = symeq1.atoms(sp.Symbol)  # adjust character length
-        for _n1 in symat1:
-            orig_var = str(_n1).replace("~", "")
-            orig_var = orig_var.replace("|", "_")
-            try:
-                expr = eval((self.odict[orig_var][1]).split("=")[1])
-                if type(expr) == float:
-                    form = "{:." + eformat + "f}"
-                    symeval1 = form.format(eval(str(expr)))
-                else:
-                    symeval1 = eval(orig_var.__str__()).__str__()
-            except:
-                symeval1 = eval(orig_var.__str__()).__str__()
-            out2 = out2.replace(_n1.__str__(), symeval1)
-        # print('out2b\n', out2)
-        out3 = out2  # clean up unicode
-        out3.replace("*", "\\u22C5")
-        # print('out3a\n', out3)
-        _cnt = 0
-        for _m in out3:
-            if _m == "-":
-                _cnt += 1
-                continue
-            else:
-                if _cnt > 1:
-                    out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
-                _cnt = 0
-    except:
+        tex1S = "".join(
+            [
+                pythoncallS,
+                str(rst2texP),
+                " --embed-stylesheet ",
+                " --documentclass=report ",
+                " --documentoptions=12pt,notitle,letterpaper ",
+                " --stylesheet=",
+                str(style_path) + " ",
+                str(rstfileP) + " ",
+                str(texfileP),
+            ]
+        )
+        logging.info(f"tex call:{tex1S=}")
+        os.chdir(tempP)
+        try:
+            os.system(tex1S)
+            time.sleep(1)
+            logging.info(f"tex file written: {texfileP=}")
+            print(f"tex file written: {texfileP=}")
+        except SystemExit as e:
+            logging.exception('tex file not written')
+            logging.error(str(e))
+            sys.exit("tex file write failed")
+
+    def write_pdf(texfileP):
+        """write pdf calc to reports folder and open
+
+        Args:
+            texfileP (path): doc config folder
+        """
+
+        global rstcalcS, _rstflagB
+
+        os.chdir()
+        time.sleep(1)  # cleanup tex files
+        os.system("latexmk -c")
+        time.sleep(1)
+
+        pdfmkS = (
+            "perl.exe c:/texlive/2020/texmf-dist/scripts/latexmk/latexmk.pl "
+            + "-pdf -xelatex -quiet -f "
+            + str(texfileP)
+        )
+
+        os.system(pdfmkS)
+        print("\nINFO: pdf file written: " + ".".join([_cnameS, "pdf"]))
+
+        dnameS = _cnameS.replace("c", "d", 1)
+        docpdfP = Path(_dpathP / ".".join([dnameS, "pdf"]))
+        doclocalP = Path(_dpathP0 / ".".join([_cnameS, "pdf"]))
+        time.sleep(2)  # move pdf to doc folder
+        shutil.move(doclocalP, docpdfP)
+        os.chdir(_dpathPcurP)
+        print("INFO: pdf file moved to docs folder", flush=True)
+        print("INFO: program complete")
+
+        cfgP = Path(_dpathP0 / "rv_cfg.txt")  # read pdf display program
+        with open(cfgP) as f2:
+            cfgL = f2.readlines()
+            cfg1S = cfgL[0].split("|")
+            cfg2S = cfg1S[1].strip()
+        cmdS = cfg2S + " " + str(Path(_dpathP) / ".".join([dnameS, "pdf"]))
+        # print(cmdS)
+        subprocess.run(cmdS)
+
+        os._exit(1)
+
+    def gen_pdf(cmdS, doctypeS, stylefileS, calctitleS, startpageS):
+        """write calc rSt file to d00_docs folder
+
+        Args:
+            cmdS (str): [description]
+            doctypeS ([type]): [description]
+            stylefileS ([type]): [description]
+            calctitleS ([type]): [description]
+            startpageS ([type]): [description]
+        """
+
+        # clean temp files
+        fileL = [
+            Path(fileconfigP, ".".join([calcbaseS, "pdf"])),
+            Path(fileconfigP, ".".join([calcbaseS, "html"])),
+            Path(fileconfigP, ".".join([calcbaseS, "rst"])),
+            Path(fileconfigP, ".".join([calcbaseS, "tex"])),
+            Path(fileconfigP, ".".join([calcbaseS, ".aux"])),
+            Path(fileconfigP, ".".join([calcbaseS, ".out"])),
+            Path(fileconfigP, ".".join([calcbaseS, ".fls"])),
+            Path(fileconfigP, ".".join([calcbaseS, ".fdb_latexmk"])),
+        ]
+        os.chdir(fileconfigP)
+        tmpS = os.getcwd()
+        if tmpS == str(fileconfigP):
+            for f in fileL:
+                try:
+                    os.remove(f)
+                except:
+                    pass
+            time.sleep(1)
+            print("INFO: temporary Tex files deleted \n", flush=True)
+
+    def write_html(rstS):
         pass
 
-        if typeS != "table":  # skip table print
-            print(uS)
-            self.calcS += uS.rstrip() + "\n"
-        self.rivtD.update(locals())
+    def project(self, rL):
+        """insert tables or text from csv, xlsx or txt file
 
-    if len(self.valL) > 0:  # print value table
-        hdrL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
-        self._vtable(self.valL, hdrL, "rst", alignL)
-        self.valL = []
-        print(uS.rstrip(" "))
-        self.calcS += " \n"
-        self.rivtD.update(locals())
-        continue
-    else:
-        print(" ")
-        self.calcS += "\n"
-        continue
+        Args:
+            rL (list): parameter list
 
-if typeS == "values":
-    self.setcmdD["saveB"] = False
-    if "=" in uS and uS.strip()[-2] == "||":  # set save flag
-        uS = uS.replace("||", " ")
-        self.setcmdD["saveB"] = True
-    if "=" in uS:  # just assign value
-        uL = uS.split("|")
-        self._vassign(uL)
-        continue
+        Files are read from /docs/docfolder
+        The command is identical to itable except file is read from docs/info.
 
-if typeS == "table":
-    if uS[0:2] == "||":  # check for command
-        uL = uS[2:].split("|")
-        indxI = cmdL.index(uL[0].strip())
-        methL[indxI](uL)
-        continue
-    else:
-        exec(uS)  # otherwise exec Python code
-        continue
+        """
+        alignD = {"S": "", "D": "decimal",
+                  "C": "center", "R": "right", "L": "left"}
 
-    self._parseRST("values", vcmdL, vmethL, vtagL)
-    self.rivtD.update(locals())
-    return self.restS, self.setsectD, self.setcmdD, self.rivtD, self.exportS
-
-
-def project(self, rL):
-    """insert tables or text from csv, xlsx or txt file
-
-    Args:
-        rL (list): parameter list
-
-    Files are read from /docs/docfolder
-    The command is identical to itable except file is read from docs/info.
-
-    """
-    alignD = {"S": "", "D": "decimal",
-              "C": "center", "R": "right", "L": "left"}
-
-    if len(rL) < 4:
-        rL += [""] * (4 - len(rL))  # pad parameters
-    rstS = ""
-    contentL = []
-    sumL = []
-    fileS = rL[1].strip()
-    tfileS = Path(self.folderD["dpath0"] / fileS)
-    extS = fileS.split(".")[1]
-    if extS == "csv":
-        with open(tfileS, "r") as csvfile:  # read csv file
-            readL = list(csv.reader(csvfile))
-    elif extS == "xlsx":
-        xDF = pd.read_excel(tfileS, header=None)
-        readL = xDF.values.tolist()
-    else:
-        return
-    incl_colL = list(range(len(readL[0])))
-    widthI = self.setcmdD["cwidthI"]
-    alignS = self.setcmdD["calignS"]
-    saS = alignD[alignS]
-    if rL[2].strip():
-        widthL = rL[2].split(",")  # new max col width
-        widthI = int(widthL[0].strip())
-        alignS = widthL[1].strip()
-        saS = alignD[alignS]  # new alignment
-        self.setcmdD.update({"cwidthI": widthI})
-        self.setcmdD.update({"calignS": alignS})
-    totalL = [""] * len(incl_colL)
-    if rL[3].strip():  # columns
-        if rL[3].strip() == "[:]":
-            totalL = [""] * len(incl_colL)
+        if len(rL) < 4:
+            rL += [""] * (4 - len(rL))  # pad parameters
+        rstS = ""
+        contentL = []
+        sumL = []
+        fileS = rL[1].strip()
+        tfileS = Path(self.folderD["dpath0"] / fileS)
+        extS = fileS.split(".")[1]
+        if extS == "csv":
+            with open(tfileS, "r") as csvfile:  # read csv file
+                readL = list(csv.reader(csvfile))
+        elif extS == "xlsx":
+            xDF = pd.read_excel(tfileS, header=None)
+            readL = xDF.values.tolist()
         else:
-            incl_colL = eval(rL[3].strip())
-            totalL = [""] * len(incl_colL)
-    ttitleS = readL[0][0].strip() + " [t]_"
-    rstgS = self._tags(ttitleS, rtagL)
-    self.restS += rstgS.rstrip() + "\n\n"
-    for row in readL[1:]:
-        contentL.append([row[i] for i in incl_colL])
-    wcontentL = []
-    for rowL in contentL:
-        wrowL = []
-        for iS in rowL:
-            templist = textwrap.wrap(str(iS), int(widthI))
-            templist = [i.replace("""\\n""", """\n""") for i in templist]
-            wrowL.append("""\n""".join(templist))
-        wcontentL.append(wrowL)
-    sys.stdout.flush()
-    old_stdout = sys.stdout
-    output = StringIO()
-    output.write(
-        tabulate(
-            wcontentL,
-            tablefmt="rst",
-            headers="firstrow",
-            numalign="decimal",
-            stralign=saS,
-        )
-    )
-    rstS = output.getvalue()
-    sys.stdout = old_stdout
-
-    self.restS += rstS + "\n"
-
-
-def attach(self, rsL):
-    b = 5
-
-
-def report(self, rL):
-    """skip info command for md calcs
-
-    Command is executed only for docs in order to
-    separate protected information for shareable calcs.
-
-    Args:
-        rL (list): parameter list
-    """
-
-    """
-    try:
-        filen1 = os.path.join(self.rpath, "reportmerge.txt")
-        print(filen1)
-        file1 = open(filen1, 'r')
-        mergelist = file1.readlines()
-        file1.close()
-        mergelist2 = mergelist[:]
-    except OSError:
-        print('< reportmerge.txt file not found in reprt folder >')
-        return
-    calnum1 = self.pdffile[0:5]
-    file2 = open(filen1, 'w')
-    newstr1 = 'c | ' + self.pdffile + ' | ' + self.calctitle
-    for itm1 in mergelist:
-        if calnum1 in itm1:
-            indx1 = mergelist2.index(itm1)
-            mergelist2[indx1] = newstr1
-            for j1 in mergelist2:
-                file2.write(j1)
-            file2.close()
             return
-    mergelist2.append("\n" + newstr1)
-    for j1 in mergelist2:
-        file2.write(j1)
-    file2.close()
-    return """
-    pass
-
-    # from values
-
-    if vL[1].strip() == "sub":
-        self.setcmdD["subB"] = True
-    self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
-    self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
-    # write dictionary from value-string
-    locals().update(self.rivtD)
-    rprecS = str(self.setcmdD["trmrI"])  # trim numbers
-    tprecS = str(self.setcmdD["trmtI"])
-    fltfmtS = "." + rprecS.strip() + "f"
-    exec("set_printoptions(precision=" + rprecS + ")")
-    exec("Unum.set_format(value_format = '%." + rprecS + "f')")
-    if len(vL) <= 2:  # equation
-        varS = vL[0].split("=")[0].strip()
-        valS = vL[0].split("=")[1].strip()
-        if vL[1].strip() != "DC" and vL[1].strip() != "":
-            unitL = vL[1].split(",")
-            unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-            val1U = val2U = array(eval(valS))
-            if type(eval(valS)) == list:
-                val1U = array(eval(valS)) * eval(unit1S)
-                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+        incl_colL = list(range(len(readL[0])))
+        widthI = self.setcmdD["cwidthI"]
+        alignS = self.setcmdD["calignS"]
+        saS = alignD[alignS]
+        if rL[2].strip():
+            widthL = rL[2].split(",")  # new max col width
+            widthI = int(widthL[0].strip())
+            alignS = widthL[1].strip()
+            saS = alignD[alignS]  # new alignment
+            self.setcmdD.update({"cwidthI": widthI})
+            self.setcmdD.update({"calignS": alignS})
+        totalL = [""] * len(incl_colL)
+        if rL[3].strip():  # columns
+            if rL[3].strip() == "[:]":
+                totalL = [""] * len(incl_colL)
             else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-                valU = eval(varS).cast_unit(eval(unit1S))
-                valdec = ("%." + str(rprecS) + "f") % valU.number()
-                val1U = str(valdec) + " " + str(valU.unit())
-                val2U = valU.cast_unit(eval(unit2S))
-        else:  # no units
-            cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-            exec(cmdS, globals(), locals())
-            # valU = eval(varS).cast_unit(eval(unit1S))
-            # valdec = ("%." + str(rprecS) + "f") % valU.number()
-            # val1U = str(valdec) + " " + str(valU.unit())
-            val1U = eval(varS)
-            val1U = val1U.simplify_unit()
-            val2U = val1U
-        mdS = vL[0]
-        spS = "Eq(" + varS + ",(" + valS + "))"
-        mdS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        print("\n" + mdS + "\n")  # pretty print equation
-        self.calcS += "\n" + mdS + "\n"
-        eqS = sp.sympify(valS)
-        eqatom = eqS.atoms(sp.Symbol)
-        if self.setcmdD["subB"]:  # substitute into equation
-            self._vsub(vL)
-        else:  # write equation table
-            hdrL = []
-            valL = []
-            hdrL.append(varS)
-            valL.append(str(val1U) + "  [" + str(val2U) + "]")
-            for sym in eqatom:
-                hdrL.append(str(sym))
-                symU = eval(str(sym))
-                valL.append(str(symU.simplify_unit()))
-            alignL = ["center"] * len(valL)
-            self._vtable([valL], hdrL, "rst", alignL)
-        if self.setcmdD["saveB"] == True:
-            pyS = vL[0] + vL[1] + "  # equation" + "\n"
-            # print(pyS)
-            self.exportS += pyS
+                incl_colL = eval(rL[3].strip())
+                totalL = [""] * len(incl_colL)
+        ttitleS = readL[0][0].strip() + " [t]_"
+        rstgS = self._tags(ttitleS, rtagL)
+        self.restS += rstgS.rstrip() + "\n\n"
+        for row in readL[1:]:
+            contentL.append([row[i] for i in incl_colL])
+        wcontentL = []
+        for rowL in contentL:
+            wrowL = []
+            for iS in rowL:
+                templist = textwrap.wrap(str(iS), int(widthI))
+                templist = [i.replace("""\\n""", """\n""") for i in templist]
+                wrowL.append("""\n""".join(templist))
+            wcontentL.append(wrowL)
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate(
+                wcontentL,
+                tablefmt="rst",
+                headers="firstrow",
+                numalign="decimal",
+                stralign=saS,
+            )
+        )
+        rstS = output.getvalue()
+        sys.stdout = old_stdout
+
+        self.restS += rstS + "\n"
+
+    def report(self, rL):
+        """skip info command for md calcs
+
+        Command is executed only for docs in order to
+        separate protected information for shareable calcs.
+
+        Args:
+            rL (list): parameter list
+        """
+
+        """
+        try:
+            filen1 = os.path.join(self.rpath, "reportmerge.txt")
+            print(filen1)
+            file1 = open(filen1, 'r')
+            mergelist = file1.readlines()
+            file1.close()
+            mergelist2 = mergelist[:]
+        except OSError:
+            print('< reportmerge.txt file not found in reprt folder >')
+            return
+        calnum1 = self.pdffile[0:5]
+        file2 = open(filen1, 'w')
+        newstr1 = 'c | ' + self.pdffile + ' | ' + self.calctitle
+        for itm1 in mergelist:
+            if calnum1 in itm1:
+                indx1 = mergelist2.index(itm1)
+                mergelist2[indx1] = newstr1
+                for j1 in mergelist2:
+                    file2.write(j1)
+                file2.close()
+                return
+        mergelist2.append("\n" + newstr1)
+        for j1 in mergelist2:
+            file2.write(j1)
+        file2.close()
+        return """
+        pass
+
+        # from values
+
+        if vL[1].strip() == "sub":
+            self.setcmdD["subB"] = True
+        self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
+        self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
+        # write dictionary from value-string
         locals().update(self.rivtD)
-    elif len(vL) >= 3:  # value
-        descripS = vL[2].strip()
-        varS = vL[0].split("=")[0].strip()
-        valS = vL[0].split("=")[1].strip()
-        val1U = val2U = array(eval(valS))
-        if vL[1].strip() != "" and vL[1].strip() != "-":
-            unitL = vL[1].split(",")
-            unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-            if type(eval(valS)) == list:
-                val1U = array(eval(valS)) * eval(unit1S)
-                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-            else:
-                cmdS = varS + "= " + valS + "*" + unit1S
-                exec(cmdS, globals(), locals())
-                valU = eval(varS)
-                val1U = str(valU.number()) + " " + str(valU.unit())
-                val2U = valU.cast_unit(eval(unit2S))
-        else:
-            cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-            exec(cmdS, globals(), locals())
-            valU = eval(varS)
-            # val1U = str(valU.number()) + " " + str(valU.unit())
-            val2U = valU
-        self.valL.append([varS, val1U, val2U, descripS])
-        if self.setcmdD["saveB"] == True:
-            pyS = vL[0] + vL[1] + vL[2] + "\n"
-            # print(pyS)
-            self.exportS += pyS
-    self.rivtD.update(locals())
-
-    # update dictionary
-    if vL[1].strip() == "sub":
-        self.setcmdD["subB"] = True
-    self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
-    self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
-
-    # assign values
-    locals().update(self.rivtD)
-    rprecS = str(self.setcmdD["trmrI"])  # trim numbers
-    tprecS = str(self.setcmdD["trmtI"])
-    fltfmtS = "." + rprecS.strip() + "f"
-    exec("set_printoptions(precision=" + rprecS + ")")
-    exec("Unum.set_format(value_format = '%." + rprecS + "f')")
-    if len(vL) <= 2:  # equation
-        varS = vL[0].split("=")[0].strip()
-        valS = vL[0].split("=")[1].strip()
-        val1U = val2U = array(eval(valS))
-        if vL[1].strip() != "DC" and vL[1].strip() != "":
-            unitL = vL[1].split(",")
-            unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-            if type(eval(valS)) == list:
-                val1U = array(eval(valS)) * eval(unit1S)
-                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-            else:
-                cmdS = varS + "= " + valS
-                exec(cmdS, globals(), locals())
-                valU = eval(varS).cast_unit(eval(unit1S))
-                valdec = ("%." + str(rprecS) + "f") % valU.number()
-                val1U = str(valdec) + " " + str(valU.unit())
-                val2U = valU.cast_unit(eval(unit2S))
-        else:
-            cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-            exec(cmdS, globals(), locals())
-            # valU = eval(varS).cast_unit(eval(unit1S))
-            # valdec = ("%." + str(rprecS) + "f") % valU.number()
-            # val1U = str(valdec) + " " + str(valU.unit())
-            val1U = eval(varS)
-            val1U = val1U.simplify_unit()
-            val2U = val1U
-        rstS = vL[0]
-        spS = "Eq(" + varS + ",(" + valS + "))"  # pretty print
-        symeq = sp.sympify(spS, _clash2, evaluate=False)
-        eqltxS = sp.latex(symeq, mul_symbol="dot")
-        self.restS += "\n.. math:: \n\n" + "  " + eqltxS + "\n\n"
-        eqS = sp.sympify(valS)
-        eqatom = eqS.atoms(sp.Symbol)
-        if self.setcmdD["subB"]:
-            self._vsub(vL)
-        else:
-            hdrL = []
-            valL = []
-            hdrL.append(varS)
-            valL.append(str(val1U) + "  [" + str(val2U) + "]")
-            for sym in eqatom:
-                hdrL.append(str(sym))
-                symU = eval(str(sym))
-                valL.append(str(symU.simplify_unit()))
-            alignL = ["center"] * len(valL)
-            self._vtable([valL], hdrL, "rst", alignL, fltfmtS)
-        if self.setcmdD["saveB"] == True:
-            pyS = vL[0] + vL[1] + "  # equation" + "\n"
-            # print(pyS)
-            self.exportS += pyS
-    elif len(vL) >= 3:  # value
-        descripS = vL[2].strip()
-        varS = vL[0].split("=")[0].strip()
-        valS = vL[0].split("=")[1].strip()
-        val1U = val2U = array(eval(valS))
-        if vL[1].strip() != "" and vL[1].strip() != "-":
-            unitL = vL[1].split(",")
-            unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-            if type(eval(valS)) == list:
-                val1U = array(eval(valS)) * eval(unit1S)
-                val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
-            else:
-                cmdS = varS + "= " + valS + "*" + unit1S
-                exec(cmdS, globals(), locals())
-                valU = eval(varS)
-                val1U = str(valU.number()) + " " + str(valU.unit())
-                val2U = valU.cast_unit(eval(unit2S))
-        else:
-            cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
-            # print(f"{cmdS=}")
-            exec(cmdS, globals(), locals())
-            valU = eval(varS)
-            # val1U = str(valU.number()) + " " + str(valU.unit())
-            val2U = valU
-        self.valL.append([varS, val1U, val2U, descripS])
-        if self.setcmdD["saveB"] == True:
-            pyS = vL[0] + vL[1] + vL[2] + "\n"
-            # print(pyS)
-            self.exportS += pyS
-    self.rivtD.update(locals())
-    # print(self.rivtD)
-
-    # write values to table
-    tbl = "x"
-    hdrL = "y"
-    tlbfmt = "z"
-    alignL = "true"
-    fltfmtS = "x"
-    locals().update(self.rivtD)
-    rprecS = str(self.setcmdD["trmrI"])  # trim numbers
-    tprecS = str(self.setcmdD["trmtI"])
-    fltfmtS = "." + rprecS.strip() + "f"
-    sys.stdout.flush()
-    old_stdout = sys.stdout
-    output = StringIO()
-    tableS = tabulate(
-        tbl,
-        tablefmt=tblfmt,
-        headers=hdrL,
-        showindex=False,
-        colalign=alignL,
-        floatfmt=fltfmtS,
-    )
-    output.write(tableS)
-    rstS = output.getvalue()
-    sys.stdout = old_stdout
-    sys.stdout.flush()
-    inrstS = ""
-    self.restS += ":: \n\n"
-    for i in rstS.split("\n"):
-        inrstS = "  " + i
-        self.restS += inrstS + "\n"
-    self.restS += "\n\n"
-    self.rivtD.update(locals())
-
-    if vsub:
-        eqL = [1]
-        eqS = "descrip"
-        locals().update(self.rivtd)
-
-        eformat = ""
-        mdS = eqL[0].strip()
-        descripS = eqL[3]
-        parD = dict(eqL[1])
-        varS = mdS.split("=")
-        resultS = vars[0].strip() + " = " + str(eval(vars[1]))
-        try:
-            eqS = "Eq(" + eqL[0] + ",(" + eqL[1] + "))"
-            # sps = sps.encode('unicode-escape').decode()
-            mds = sp.pretty(sp.sympify(eqS, _clash2, evaluate=False))
-            self.calcl.append(mds)
-        except:
-            self.calcl.append(mds)
-        try:
-            symeq = sp.sympify(eqS.strip())  # substitute
-            symat = symeq.atoms(sp.Symbol)
-            for _n2 in symat:
-                evlen = len((eval(_n2.__str__())).__str__())  # get var length
-                new_var = str(_n2).rjust(evlen, "~")
-                new_var = new_var.replace("_", "|")
-                symeq1 = symeq.subs(_n2, sp.Symbols(new_var))
-            out2 = sp.pretty(symeq1, wrap_line=False)
-            # print('out2a\n', out2)
-            symat1 = symeq1.atoms(sp.Symbol)  # adjust character length
-            for _n1 in symat1:
-                orig_var = str(_n1).replace("~", "")
-                orig_var = orig_var.replace("|", "_")
-                try:
-                    expr = eval((self.odict[orig_var][1]).split("=")[1])
-                    if type(expr) == float:
-                        form = "{:." + eformat + "f}"
-                        symeval1 = form.format(eval(str(expr)))
-                    else:
-                        symeval1 = eval(orig_var.__str__()).__str__()
-                except:
-                    symeval1 = eval(orig_var.__str__()).__str__()
-                out2 = out2.replace(_n1.__str__(), symeval1)
-            # print('out2b\n', out2)
-            out3 = out2  # clean up unicode
-            out3.replace("*", "\\u22C5")
-            # print('out3a\n', out3)
-            _cnt = 0
-            for _m in out3:
-                if _m == "-":
-                    _cnt += 1
-                    continue
+        rprecS = str(self.setcmdD["trmrI"])  # trim numbers
+        tprecS = str(self.setcmdD["trmtI"])
+        fltfmtS = "." + rprecS.strip() + "f"
+        exec("set_printoptions(precision=" + rprecS + ")")
+        exec("Unum.set_format(value_format = '%." + rprecS + "f')")
+        if len(vL) <= 2:  # equation
+            varS = vL[0].split("=")[0].strip()
+            valS = vL[0].split("=")[1].strip()
+            if vL[1].strip() != "DC" and vL[1].strip() != "":
+                unitL = vL[1].split(",")
+                unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
+                val1U = val2U = array(eval(valS))
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
                 else:
-                    if _cnt > 1:
-                        out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
-                    _cnt = 0
-        except:
-            pass
-
-        if typeS != "table":  # skip table print
-            print(uS)
-            self.calcS += uS.rstrip() + "\n"
+                    cmdS = varS + "= " + valS
+                    exec(cmdS, globals(), locals())
+                    valU = eval(varS).cast_unit(eval(unit1S))
+                    valdec = ("%." + str(rprecS) + "f") % valU.number()
+                    val1U = str(valdec) + " " + str(valU.unit())
+                    val2U = valU.cast_unit(eval(unit2S))
+            else:  # no units
+                cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
+                exec(cmdS, globals(), locals())
+                # valU = eval(varS).cast_unit(eval(unit1S))
+                # valdec = ("%." + str(rprecS) + "f") % valU.number()
+                # val1U = str(valdec) + " " + str(valU.unit())
+                val1U = eval(varS)
+                val1U = val1U.simplify_unit()
+                val2U = val1U
+            mdS = vL[0]
+            spS = "Eq(" + varS + ",(" + valS + "))"
+            mdS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+            print("\n" + mdS + "\n")  # pretty print equation
+            self.calcS += "\n" + mdS + "\n"
+            eqS = sp.sympify(valS)
+            eqatom = eqS.atoms(sp.Symbol)
+            if self.setcmdD["subB"]:  # substitute into equation
+                self._vsub(vL)
+            else:  # write equation table
+                hdrL = []
+                valL = []
+                hdrL.append(varS)
+                valL.append(str(val1U) + "  [" + str(val2U) + "]")
+                for sym in eqatom:
+                    hdrL.append(str(sym))
+                    symU = eval(str(sym))
+                    valL.append(str(symU.simplify_unit()))
+                alignL = ["center"] * len(valL)
+                self._vtable([valL], hdrL, "rst", alignL)
+            if self.setcmdD["saveB"] == True:
+                pyS = vL[0] + vL[1] + "  # equation" + "\n"
+                # print(pyS)
+                self.exportS += pyS
+            locals().update(self.rivtD)
+        elif len(vL) >= 3:  # value
+            descripS = vL[2].strip()
+            varS = vL[0].split("=")[0].strip()
+            valS = vL[0].split("=")[1].strip()
+            val1U = val2U = array(eval(valS))
+            if vL[1].strip() != "" and vL[1].strip() != "-":
+                unitL = vL[1].split(",")
+                unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                else:
+                    cmdS = varS + "= " + valS + "*" + unit1S
+                    exec(cmdS, globals(), locals())
+                    valU = eval(varS)
+                    val1U = str(valU.number()) + " " + str(valU.unit())
+                    val2U = valU.cast_unit(eval(unit2S))
+            else:
+                cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
+                exec(cmdS, globals(), locals())
+                valU = eval(varS)
+                # val1U = str(valU.number()) + " " + str(valU.unit())
+                val2U = valU
+            self.valL.append([varS, val1U, val2U, descripS])
+            if self.setcmdD["saveB"] == True:
+                pyS = vL[0] + vL[1] + vL[2] + "\n"
+                # print(pyS)
+                self.exportS += pyS
         self.rivtD.update(locals())
 
-    if len(self.valL) > 0:  # print value table
-        hdrL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
-        self._vtable(self.valL, hdrL, "rst", alignL)
-        self.valL = []
-        print(uS.rstrip(" "))
-        self.calcS += " \n"
+        # update dictionary
+        if vL[1].strip() == "sub":
+            self.setcmdD["subB"] = True
+        self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
+        self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
+
+        # assign values
+        locals().update(self.rivtD)
+        rprecS = str(self.setcmdD["trmrI"])  # trim numbers
+        tprecS = str(self.setcmdD["trmtI"])
+        fltfmtS = "." + rprecS.strip() + "f"
+        exec("set_printoptions(precision=" + rprecS + ")")
+        exec("Unum.set_format(value_format = '%." + rprecS + "f')")
+        if len(vL) <= 2:  # equation
+            varS = vL[0].split("=")[0].strip()
+            valS = vL[0].split("=")[1].strip()
+            val1U = val2U = array(eval(valS))
+            if vL[1].strip() != "DC" and vL[1].strip() != "":
+                unitL = vL[1].split(",")
+                unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                else:
+                    cmdS = varS + "= " + valS
+                    exec(cmdS, globals(), locals())
+                    valU = eval(varS).cast_unit(eval(unit1S))
+                    valdec = ("%." + str(rprecS) + "f") % valU.number()
+                    val1U = str(valdec) + " " + str(valU.unit())
+                    val2U = valU.cast_unit(eval(unit2S))
+            else:
+                cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
+                exec(cmdS, globals(), locals())
+                # valU = eval(varS).cast_unit(eval(unit1S))
+                # valdec = ("%." + str(rprecS) + "f") % valU.number()
+                # val1U = str(valdec) + " " + str(valU.unit())
+                val1U = eval(varS)
+                val1U = val1U.simplify_unit()
+                val2U = val1U
+            rstS = vL[0]
+            spS = "Eq(" + varS + ",(" + valS + "))"  # pretty print
+            symeq = sp.sympify(spS, _clash2, evaluate=False)
+            eqltxS = sp.latex(symeq, mul_symbol="dot")
+            self.restS += "\n.. math:: \n\n" + "  " + eqltxS + "\n\n"
+            eqS = sp.sympify(valS)
+            eqatom = eqS.atoms(sp.Symbol)
+            if self.setcmdD["subB"]:
+                self._vsub(vL)
+            else:
+                hdrL = []
+                valL = []
+                hdrL.append(varS)
+                valL.append(str(val1U) + "  [" + str(val2U) + "]")
+                for sym in eqatom:
+                    hdrL.append(str(sym))
+                    symU = eval(str(sym))
+                    valL.append(str(symU.simplify_unit()))
+                alignL = ["center"] * len(valL)
+                self._vtable([valL], hdrL, "rst", alignL, fltfmtS)
+            if self.setcmdD["saveB"] == True:
+                pyS = vL[0] + vL[1] + "  # equation" + "\n"
+                # print(pyS)
+                self.exportS += pyS
+        elif len(vL) >= 3:  # value
+            descripS = vL[2].strip()
+            varS = vL[0].split("=")[0].strip()
+            valS = vL[0].split("=")[1].strip()
+            val1U = val2U = array(eval(valS))
+            if vL[1].strip() != "" and vL[1].strip() != "-":
+                unitL = vL[1].split(",")
+                unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
+                if type(eval(valS)) == list:
+                    val1U = array(eval(valS)) * eval(unit1S)
+                    val2U = [q.cast_unit(eval(unit2S)) for q in val1U]
+                else:
+                    cmdS = varS + "= " + valS + "*" + unit1S
+                    exec(cmdS, globals(), locals())
+                    valU = eval(varS)
+                    val1U = str(valU.number()) + " " + str(valU.unit())
+                    val2U = valU.cast_unit(eval(unit2S))
+            else:
+                cmdS = varS + "= " + "unum.as_unum(" + valS + ")"
+                # print(f"{cmdS=}")
+                exec(cmdS, globals(), locals())
+                valU = eval(varS)
+                # val1U = str(valU.number()) + " " + str(valU.unit())
+                val2U = valU
+            self.valL.append([varS, val1U, val2U, descripS])
+            if self.setcmdD["saveB"] == True:
+                pyS = vL[0] + vL[1] + vL[2] + "\n"
+                # print(pyS)
+                self.exportS += pyS
         self.rivtD.update(locals())
-        continue
-    else:
-        print(" ")
-        self.calcS += "\n"
-        continue
+        # print(self.rivtD)
 
-        if typeS == "values":
-    self.setcmdD["saveB"] = False
-    if "=" in uS and uS.strip()[-2] == "||":  # set save flag
-        uS = uS.replace("||", " ")
-        self.setcmdD["saveB"] = True
-    if "=" in uS:  # just assign value
-        uL = uS.split("|")
-        self._vassign(uL)
-        continue
+        # write values to table
+        tbl = "x"
+        hdrL = "y"
+        tlbfmt = "z"
+        alignL = "true"
+        fltfmtS = "x"
+        locals().update(self.rivtD)
+        rprecS = str(self.setcmdD["trmrI"])  # trim numbers
+        tprecS = str(self.setcmdD["trmtI"])
+        fltfmtS = "." + rprecS.strip() + "f"
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        tableS = tabulate(
+            tbl,
+            tablefmt=tblfmt,
+            headers=hdrL,
+            showindex=False,
+            colalign=alignL,
+            floatfmt=fltfmtS,
+        )
+        output.write(tableS)
+        rstS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+        inrstS = ""
+        self.restS += ":: \n\n"
+        for i in rstS.split("\n"):
+            inrstS = "  " + i
+            self.restS += inrstS + "\n"
+        self.restS += "\n\n"
+        self.rivtD.update(locals())
 
+        if vsub:
+            eqL = [1]
+            eqS = "descrip"
+            locals().update(self.rivtd)
 
-if typeS == "table":
-    if uS[0:2] == "||":  # check for command
-        uL = uS[2:].split("|")
-        indxI = cmdL.index(uL[0].strip())
-        methL[indxI](uL)
-        continue
-    else:
-        exec(uS)  # otherwise exec Python code
-        continue
+            eformat = ""
+            mdS = eqL[0].strip()
+            descripS = eqL[3]
+            parD = dict(eqL[1])
+            varS = mdS.split("=")
+            resultS = vars[0].strip() + " = " + str(eval(vars[1]))
+            try:
+                eqS = "Eq(" + eqL[0] + ",(" + eqL[1] + "))"
+                # sps = sps.encode('unicode-escape').decode()
+                mds = sp.pretty(sp.sympify(eqS, _clash2, evaluate=False))
+                self.calcl.append(mds)
+            except:
+                self.calcl.append(mds)
+            try:
+                symeq = sp.sympify(eqS.strip())  # substitute
+                symat = symeq.atoms(sp.Symbol)
+                for _n2 in symat:
+                    # get var length
+                    evlen = len((eval(_n2.__str__())).__str__())
+                    new_var = str(_n2).rjust(evlen, "~")
+                    new_var = new_var.replace("_", "|")
+                    symeq1 = symeq.subs(_n2, sp.Symbols(new_var))
+                out2 = sp.pretty(symeq1, wrap_line=False)
+                # print('out2a\n', out2)
+                symat1 = symeq1.atoms(sp.Symbol)  # adjust character length
+                for _n1 in symat1:
+                    orig_var = str(_n1).replace("~", "")
+                    orig_var = orig_var.replace("|", "_")
+                    try:
+                        expr = eval((self.odict[orig_var][1]).split("=")[1])
+                        if type(expr) == float:
+                            form = "{:." + eformat + "f}"
+                            symeval1 = form.format(eval(str(expr)))
+                        else:
+                            symeval1 = eval(orig_var.__str__()).__str__()
+                    except:
+                        symeval1 = eval(orig_var.__str__()).__str__()
+                    out2 = out2.replace(_n1.__str__(), symeval1)
+                # print('out2b\n', out2)
+                out3 = out2  # clean up unicode
+                out3.replace("*", "\\u22C5")
+                # print('out3a\n', out3)
+                _cnt = 0
+                for _m in out3:
+                    if _m == "-":
+                        _cnt += 1
+                        continue
+                    else:
+                        if _cnt > 1:
+                            out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
+                        _cnt = 0
+            except:
+                pass
 
-self._parseRST("values", vcmdL, vmethL, vtagL)
-self.rivtD.update(locals())
-return self.restS, self.setsectD, self.setcmdD, self.rivtD, self.exportS
+            if typeS != "table":  # skip table print
+                print(uS)
+                self.calcS += uS.rstrip() + "\n"
+            self.rivtD.update(locals())
+
+        if len(self.valL) > 0:  # print value table
+            hdrL = ["variable", "value", "[value]", "description"]
+            alignL = ["left", "right", "right", "left"]
+            self._vtable(self.valL, hdrL, "rst", alignL)
+            self.valL = []
+            print(uS.rstrip(" "))
+            self.calcS += " \n"
+            self.rivtD.update(locals())
+            continue
+        else:
+            print(" ")
+            self.calcS += "\n"
+            continue
+
+            if typeS == "values":
+        self.setcmdD["saveB"] = False
+        if "=" in uS and uS.strip()[-2] == "||":  # set save flag
+            uS = uS.replace("||", " ")
+            self.setcmdD["saveB"] = True
+        if "=" in uS:  # just assign value
+            uL = uS.split("|")
+            self._vassign(uL)
+            continue

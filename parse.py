@@ -13,7 +13,10 @@ class RivtParse:
             tS (str): section type
         """
         self.tS = tS
-        if tS == "I":
+        if tS == "R":
+            self.cmdL = ["run", "process"]
+            self.tagsD = {}
+        elif tS == "I":
             self.cmdL = ["APPEND", "IMG", "IMG2", "TABLE", "TEXT"]
             self.tagsD = {"H]": "hline", "C]": "center", "B]": "centerbold",
                           "E]": "equa", "F]": "figure", "T]": "table",
@@ -26,9 +29,6 @@ class RivtParse:
             self.cmdL = ["IMG", "IMG2", "TABLE", "VALREAD"]
             self.tagsD = {"E]": "equa", "F]": "figure", "T]": "table",
                           "G]": "page", "[V]]": "valform", "[Q]]": "quit"}
-        elif tS == "R":
-            self.cmdL = ["run", "process"]
-            self.tagsD = {}
         elif tS == "T":
             self.cmdL = ["python"]
             self.tagsD = {}
@@ -39,10 +39,14 @@ class RivtParse:
             pass
 
     def asterstrip(self, txtS):
-        """
+        """strip (*) from reSt for text output
 
-        """
+        Args:
+            txtS (str): line of text
 
+        Returns:
+            str: stripped (*) line of text
+        """
         txt1L = []
         txt2L = []
         txtrS = txtS
