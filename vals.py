@@ -99,7 +99,7 @@ class CmdV:
         Returns:
             _type_: _description_
         """
-        pathP = Path(self.folderD["projP"] / "vals" / pthS)
+        pathP = pthS
         with open(pathP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         # print(f"{readL=}")
@@ -145,11 +145,15 @@ class CmdV:
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
         vC = CmdV(self.folderD, self.labelD, self.rivtpD, self.rivtvD)
+
+        # format table
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
-        pS = "\n" + "[values read from file: " + pthS + "]"
-        uS += pS
-        rS += pS
+        pS = "[from file: " + pthS + "]" + "\n"
+        uS = pS + uS
+        rS = pS + rS
+        if parS.strip() == "noprint":
+            pass
 
         return uS, rS
 
@@ -197,6 +201,8 @@ class CmdV:
         # utf
         uS = refS + "\n" + lineS + "\n\n"
         # rst
+        rS = ".. raw:: math\n\n   " + lineS + "\n"
+        # tex
         rS = ".. raw:: math\n\n   " + lineS + "\n"
 
         return uS, rS
@@ -408,4 +414,5 @@ class TagV:
 
         vC = CmdV(self.folderD, self.labelD, self.rivtpD, self.rivtvD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
-        return uS, rS
+
+        return uS + "\n", rS + "\n"

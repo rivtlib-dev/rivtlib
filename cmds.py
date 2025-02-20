@@ -95,10 +95,56 @@ class Cmd:
 
         return uS, rS, self.folderD, self.labelD
 
-    def append(self):
+    def append(self, pthS, parS):
         """_summary_
         """
         pass
+
+    def table(self, pthS, parS):
+        """insert table from csv, xlsx or reSt file
+
+        """
+        # print(f"{pthS=}")
+        uS = rS = ""
+        pthP = Path(pthS)
+        parL = parS.split(",")
+        maxwI = int(parL[0])
+        extS = pthP.suffix[1:]
+        readL = []
+        if extS == "csv":                                  # read csv file
+            with open(pthP, "r") as csvfile:
+                reader = csv.reader(csvfile)
+                for row in reader:
+                    # print(f"{row=}")
+                    if row and row[0].startswith('#'):
+                        # print(f"{row=}")
+                        continue
+                    else:
+                        readL.append(row)
+        elif extS == "xlsx":                               # read xls file
+            pDF1 = pd.read_excel(pthS, header=None)
+            readL = pDF1.values.tolist()
+        else:
+            return
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        alignD = {"s": "", "d": "decimal",
+                  "c": "center", "r": "right", "l": "left"}
+        keyS = parL[1].strip()
+        alignS = alignD[keyS]
+        output.write(tabulate.tabulate(
+            readL, tablefmt="rst", headers="firstrow",
+            numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
+
+        uS = rS = output.getvalue()
+        sys.stdout = old_stdout
+
+        pS = "[from file: " + pthS + "]" + "\n"
+        uS = pS + uS + "\n"
+        rS = pS + rS + "\n"
+
+        return uS, rS
 
     def img(self, pthS, parS):
         """ insert image from file
@@ -112,7 +158,7 @@ class Cmd:
             rS (str): formatted reSt string
         """
         # print(f"{parS=}")
-        projP = self.folderD["rivP"]
+        print(f"{pthS=}")
         parL = parS.split(",")
         fileP = Path(pthS)
         capS = parL[0]
@@ -130,11 +176,18 @@ class Cmd:
             _display(img1)
         except:
             pass
+        # utf8
         uS = figS + capS + " : " + str(fileP) + "\n"
-        rS = ("\n.. image:: "
-              + pthS + "\n"
-              + "   :width: "
-              + scS + "%" + "\n"
+        # reSt
+        relS = "../" + self.folderD["relS"]
+        rS = ("\n.. image:: " + relS + "\n"
+              + "   :width: " + scS + "%" + "\n"
+              + "   :align: center"
+              + "\n\n"
+              )
+        # tex
+        tS = ("\n.. image:: " + pthS + "\n"
+              + "   :width: " + scS + "%" + "\n"
               + "   :align: center"
               + "\n\n"
               )
@@ -145,12 +198,12 @@ class Cmd:
         """ insert side by side images from files
 
         Args:
-            pthS (str): relative file path
-            parS (str): parameters
+            pthS(str): relative file path
+            parS(str): parameters
 
         Returns:
-            uS (str): formatted utf string
-            rS (str): formatted reSt string
+            uS(str): formatted utf string
+            rS(str): formatted reSt string
         """
         # print(f"{parS=}")
         parL = parS.split(",")
@@ -182,99 +235,52 @@ class Cmd:
 
         return uS, rS
 
-    def table(self, pthS, parS):
-        """insert table from csv, xlsx or reSt file
-
-        """
-        # print(f"{pthS=}")
-        uS = rS = """"""
-        alignD = {"s": "", "d": "decimal",
-                  "c": "center", "r": "right", "l": "left"}
-        pthP = Path(pthS)
-        parL = parS.split(",")
-        maxwI = int(parL[0])
-        keyS = parL[1].strip()
-        alignS = alignD[keyS]
-        extS = pthP.suffix[1:]
-        readL = []
-        if extS == "csv":                                  # read csv file
-            with open(pthP, "r") as csvfile:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                    # print(f"{row=}")
-                    if row and row[0].startswith('#'):
-                        # print(f"{row=}")
-                        continue
-                    else:
-                        readL.append(row)
-        elif extS == "xlsx":                               # read xls file
-            pDF1 = pd.read_excel(pathP, header=None)
-            readL = pDF1.values.tolist()
-        else:
-            return
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(tabulate.tabulate(
-            readL, tablefmt="rst", headers="firstrow",
-            numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
-
-        uS = rS = output.getvalue()
-        sys.stdout = old_stdout
-
-        pS = "\n" + "[values read from file: " + pthS + "]"
-        uS += pS
-        rS += pS
-
-        return uS, rS
-
-    def text(self):
+    def text(self, pthS, parS):
         """insert text from file
 
-        || text | folder | file | type
-
-        :param lineS: string block
+        | | text | folder | file | type: param lineS: string block
 
         """
+
         plenI = 3
         if len(self.paramL) != plenI:
             logging.info(
                 f"{self.cmdS} command not evaluated:  \
                                     {plenI} parameters required")
             return
-            if self.paramL[0] == "data":
-                folderP = Path(self.folderD["dataP"])
-            else:
-                folderP = Path(self.folderD["dataP"])
-                fileP = Path(self.paramL[1].strip())
-                pathP = Path(folderP / fileP)
-                txttypeS = self.paramL[2].strip()
-                extS = pathP.suffix
-                with open(pathP, "r", encoding="md-8") as f1:
-                    txtfileS = f1.read()
-                with open(pathP, "r", encoding="md-8") as f2:
-                    txtfileL = f2.readlines()
-                j = ""
-            if extS == ".txt":
-                # print(f"{txttypeS=}")
-                if txttypeS == "plain":
-                    print(txtfileS)
-                    return txtfileS
-                elif txttypeS == "code":
-                    pass
-                elif txttypeS == "rivttags":
-                    xtagC = parse.RivtParseTag(
-                        self.folderD, self.labelD,  self.localD)
-                    xmdS, self.labelD, self.folderD, self.localD = xtagC.md_parse(
-                        txtfileL)
-                    return xmdS
-                elif extS == ".html":
-                    mdS = self.txthtml(txtfileL)
-                    print(mdS)
-                    return mdS
-            elif extS == ".tex":
-                soupS = self.txttex(txtfileS, txttypeS)
-                print(soupS)
-                return soupS
-            elif extS == ".py":
+        elif self.paramL[0] == "data":
+            folderP = Path(self.folderD["dataP"])
+        else:
+            folderP = Path(self.folderD["dataP"])
+            fileP = Path(self.paramL[1].strip())
+            pathP = Path(folderP / fileP)
+            txttypeS = self.paramL[2].strip()
+            extS = pathP.suffix
+            with open(pathP, "r", encoding="md-8") as f1:
+                txtfileS = f1.read()
+            with open(pathP, "r", encoding="md-8") as f2:
+                txtfileL = f2.readlines()
+            j = ""
+        if extS == ".txt":
+            # print(f"{txttypeS=}")
+            if txttypeS == "plain":
+                print(txtfileS)
+                return txtfileS
+            elif txttypeS == "code":
                 pass
+            elif txttypeS == "rivttags":
+                xtagC = parse.RivtParseTag(
+                    self.folderD, self.labelD,  self.localD)
+                xmdS, self.labelD, self.folderD, self.localD = xtagC.md_parse(
+                    txtfileL)
+                return xmdS
+            elif extS == ".html":
+                mdS = self.txthtml(txtfileL)
+                print(mdS)
+                return mdS
+        elif extS == ".tex":
+            soupS = self.txttex(txtfileS, txttypeS)
+            print(soupS)
+            return soupS
+        elif extS == ".py":
+            pass

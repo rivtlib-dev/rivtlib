@@ -112,7 +112,7 @@ class Tag:
         rS = uS
         # tex
         rS = uS
-        
+
         return uS, rS
 
     def table(self, lineS):
@@ -188,7 +188,9 @@ class Tag:
         # utf
         uS = lineS.center(int(self.labelD["widthI"])) + "\n"
         # rst
-        rS = "\n::\n\n" + lineS.center(int(self.labelD['widthI'])) + "\n"
+        rS = lineS.center(int(self.labelD["widthI"])) + "\n"
+        # tex
+        tS = "\n::\n\n" + lineS.center(int(self.labelD['widthI'])) + "\n"
 
         return uS, rS
 

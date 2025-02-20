@@ -169,21 +169,30 @@ class RivtParse:
                 pthS = parL[1].strip()
                 parS = parL[2].strip()
                 if cmdS in self.cmdL:
-                    if self.tS == "V":                   # valread command
+                    if self.tS == "R":                  # run commands
+                        pass
+                    elif self.tS == "I":                # insert commands
+                        folderD["relS"] = pthS
+                        insP = folderD["rivP"]
+                        pthxS = str(Path(insP, pthS))
+                        rviC = cmds.Cmd(folderD, labelD)
+                        uS, rS, folderD, labelD = rviC.cmd_parse(
+                            cmdS, pthxS, parS)
+                        print(uS)                       # stdout command
+                        xutfS += uS
+                        xrstS += rS
+                        continue
+                    elif self.tS == "V":                # values command
+                        valsP = folderD["valsP"]
+                        pthxS = str(Path(valsP, pthS))
                         rvvC = vals.CmdV(folderD, labelD, rivtpD, rivtvD)
                         uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
-                            cmdS, pthS, parS)
+                            cmdS, pthxS, parS)
                         print(uS)                       # stdout valread
                         xutfS += uS
                         xrstS += rS
                         continue
-                    else:                                # insert commands
-                        rviC = cmds.Cmd(folderD, labelD)
-                        uS, rS, folderD, labelD = rviC.cmd_parse(
-                            cmdS, pthS, parS)
-                        print(uS)                       # stdout command
-                        xutfS += uS
-                        xrstS += rS
+                    elif self.tS == "T":                # tools command
                         continue
                 else:
                     pass
@@ -211,7 +220,7 @@ class RivtParse:
                             continue
                 else:
                     pass
-            elif self.tS == "V" and "=" in ulS:         # '=' command
+            elif self.tS == "V" and "=" in ulS:          # '=' command
                 eqL = ulS.split("|", 1)
                 eqS = eqL[0].strip()
                 parS = eqL[1].strip()
@@ -220,10 +229,10 @@ class RivtParse:
                     "equform", eqS, parS)
                 xutfS += uS
                 xrstS += rS
-                print(uS)                               # stdout '='
+                print(uS)                                # stdout '='
                 uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
                     "equtable", eqS, parS)
-                print(uS)                               # stdout '='
+                print(uS)                                # stdout '='
                 xutfS += uS
                 xrstS += rS
             else:

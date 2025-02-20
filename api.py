@@ -187,8 +187,8 @@ def X(rS):
 
 
 def Q():
-    txtP = Path(folderD["reportP"], "doc1.txt")
-    rstP = Path(folderD["reportP"], "doc2.rst")
+    txtP = Path(folderD["tempP"], "doc1.txt")
+    rstP = Path(folderD["tempP"], "doc2.rst")
     with open(txtP, 'w', encoding="utf-8") as file:
         file.write(utfS)
     with open(rstP, 'w', encoding="utf-8") as file:
