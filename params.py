@@ -36,6 +36,7 @@ def dicts(rivN, rivP, rivtP):
     valN = baseS.split("-")[0]
     valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
     pdfN = baseS + ".pdf"
+    rstpN = baseS + ".rstp"
     rstN = baseS + ".rst"
     txtN = baseS + ".txt"
     tempP = Path(rivP, "temp")
@@ -73,7 +74,7 @@ def dicts(rivN, rivP, rivtP):
 
     folderD = {}
     for item in ["rivP", "rivtP", "docsP", "readmeP", "reportP", "projP", "docsP",
-                 "rstN", "valN", "pdfN", "txtN", "errlogP", "styleP",
+                 "rstN", "rstpN", "valN", "pdfN", "txtN", "errlogP", "styleP",
                  "tempP", "valsP", ]:
         folderD[item] = eval(item)
 

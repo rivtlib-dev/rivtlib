@@ -174,7 +174,7 @@ def W(rS):
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     txtP = Path(folderD["tempP"], folderD["txtN"])
-    rstP = Path(folderD["tempP"], folderD["rstN"])
+    rstP = Path(folderD["tempP"], folderD["rstpN"])
     print(txtP, rstP)
     pdfP = Path(folderD["tempP"], folderD["pdfN"])
 

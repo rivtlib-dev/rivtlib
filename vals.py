@@ -149,9 +149,9 @@ class CmdV:
         # format table
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
 
-        pS = "[from file: " + pthS + "]" + "\n"
-        uS = pS + uS
-        rS = pS + rS
+        pS = "\n" + "[from file: " + pthS + "]" + "\n"
+        uS = uS + pS
+        rS = rS + pS
         if parS.strip() == "noprint":
             pass
 

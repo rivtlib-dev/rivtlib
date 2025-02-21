@@ -237,10 +237,10 @@ class RivtParse:
                 xutfS += uS
                 xrstS += rS
             else:
+                xrstS += ulS + "\n"
                 ulS = self.asterstrip(ulS)               # strip asterik format
                 print(ulS)                               # stdout - no format
                 xutfS += ulS + "\n"
-                xrstS += ulS + "\n"
 
         if self.tS == "V":
             with open(folderD["valP"], 'w') as file:     # export value file
