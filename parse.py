@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from rivtlib import tags, cmds, vals
+from rivtlib import tags, cmds, vals, write
 
 
 class RivtParse:
@@ -13,6 +13,7 @@ class RivtParse:
             tS (str): section type
         """
         self.tS = tS
+        print("^^^^^^^^^^", f"{tS=}")
         if tS == "R":
             self.cmdL = ["run", "process"]
             self.tagsD = {}
@@ -47,8 +48,6 @@ class RivtParse:
         Returns:
             str: stripped (*) line of text
         """
-        txt1L = []
-        txt2L = []
         txtrS = txtS
         txt1L = re.findall(r"\*\*(.*?)\*\*", txtS)
         # print(f"{txt1L=}")
@@ -121,9 +120,10 @@ class RivtParse:
         except:
             pass
         # print(strL)
+        print("(((((((((((())))))))))))", f"{self.tS=}")
         blockS = """"""
         for ulS in strL[1:]:                            # section contents
-            # print(f"{ulS=}")
+            print(f"{ulS=}")
             if len(ulS.strip()) < 1 and not blockB:
                 xutfS += "\n"
                 xrstS += "\n"
@@ -154,20 +154,16 @@ class RivtParse:
                     xrstS += rS + "\n"
                     blockS = """"""
                     continue
-            elif self.tS == "R":                        # run function
-                pass
-            elif self.tS == "T":                        # tools function
-                pass
-            elif self.tS == "W":                        # write function
-                pass
             elif ulS[0:1] == "|":                       # read/write commands
                 if ulS[0:2] == "||":
                     parL = ulS[2:].split("|")
+                    print("kkkkkkkkkkkkkkkkkkkkkk")
                 else:
                     parL = ulS[1:].split("|")
                 cmdS = parL[0].strip()
                 pthS = parL[1].strip()
                 parS = parL[2].strip()
+                print(cmdS, pthS, parS)
                 if cmdS in self.cmdL:
                     if self.tS == "R":                  # run commands
                         pass
@@ -194,8 +190,15 @@ class RivtParse:
                         continue
                     elif self.tS == "T":                # tools command
                         continue
-                else:
-                    pass
+                    elif self.tS == "W":                # write command
+                        print("***********************")
+                        pthxS = pthS
+                        rvwC = write.CmdW(folderD, labelD)
+                        msgS = rvwC.write_parse(cmdS, pthxS, parS)
+                        print("---------", msgS)
+                        continue
+                    else:
+                        pass
             elif "_[" in ulS:                            # tags
                 ulL = ulS.split("_[")                    # split tag
                 lineS = ulL[0].strip()

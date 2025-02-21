@@ -1,19 +1,19 @@
 #! python
 """ rivt API
-The API is intialized with 
+The API is intialized with
 
-    import rivtlib.api as rv 
+    import rivtlib.api as rv
 
 API Functions:
 
-    rv.R(rS) - (Run) Execute shell scripts 
+    rv.R(rS) - (Run) Execute shell scripts
     rv.I(rS) - (Insert) Insert static text, math, images and tables
-    rv.V(rS) - (Values) Evaluate values and equations 
-    rv.T(rS) - (Tools) Execute Python functions and scripts 
-    rv.X(rS) - (eXclude) Skip string processing 
-    rv.W(rS) - (Write) Write formatted documents 
+    rv.V(rS) - (Values) Evaluate values and equations
+    rv.T(rS) - (Tools) Execute Python functions and scripts
+    rv.X(rS) - (eXclude) Skip string processing
+    rv.W(rS) - (Write) Write formatted documents
     rv.Q(rS) - (Quit) Exit rivt processing
-    
+
 where rS is a triple quoted utf-8 string. The rivtlib code base uses
 variable types identified with the last letter of a variable name:
 
@@ -91,10 +91,10 @@ def rivt_parse(rS, tS):
     """parse and accumulate a rivt string
 
     Globals:
-        utfS (str): accumulated utf text string 
+        utfS (str): accumulated utf text string
         rstS (str): accumulated reSt text string
-        labelD (dict): labels 
-        folderD (dict): folders 
+        labelD (dict): labels
+        folderD (dict): folders
         rivtD (dict): values
 
     Args:
@@ -111,7 +111,6 @@ def rivt_parse(rS, tS):
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     rL = rS.split("\n")
-    # print(rL)
     parseC = parse.RivtParse(tS)
     xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
         rL, folderD, labelD, rivtpD, rivtvD)
@@ -163,7 +162,7 @@ def T(rS):
     """
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    utfS, rstS = rivt_parse("T", rS)
+    utfS, rstS = rivt_parse(rS, "T")
 
 
 def W(rS):
@@ -172,7 +171,9 @@ def W(rS):
     Args:
         rS (str): rivt string
     """
-    pass
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
+
+    utfS, rstS = rivt_parse(rS, "W")
 
 
 def X(rS):

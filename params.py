@@ -23,23 +23,25 @@ def dicts(rivN, rivP, rivtP):
     titleS = baseS.split("-")[1]
     divnumS = baseS.split("-")[0][1:3]
     projP = Path(os.path.dirname(rivP))
-    relS = Path("..")
     bakP = Path(rivP / ".".join((baseS, "bak")))
     prfxS = baseS[1:5]
     toolsP = Path(projP, "tools")
     docsP = Path(projP, "docs")
     # output paths
-    pypath = os.path.dirname(sys.executable)
-    rivtpkgP = os.path.join(pypath, "Lib", "site-packages", "rivt")
+    pypathS = os.path.dirname(sys.executable)
+    rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
     reportP = Path(projP, "docs")
     xrivtP = Path(projP, "xrivt")
     tempP = Path(rivP, "temp")
     errlogP = Path(tempP, "rivt-log.txt")
-    styleP = Path(projP, "docs", "pdf")
+    docsP = Path(projP, "docs")
     valN = baseS.split("-")[0]
     valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
+    pdfN = baseS.split("-")[0] + ".pdf"
+    rstN = baseS.split("-")[0] + ".rst"
     valsP = Path(projP, "vals")
     valP = Path(valsP, valN)
+    styleP = Path(docsP, "styles")
     # print(eval("valP"))
     readmeP = Path(projP, "README.txt")
     ossP = Path(projP / "oss")
@@ -69,8 +71,8 @@ def dicts(rivN, rivP, rivtP):
     }
 
     folderD = {}
-    for item in ["rivP", "rivtP", "docsP", "readmeP", "reportP", "projP",
-                 "relS", "valsP", "valN", "errlogP", "styleP", "tempP"]:
+    for item in ["rivP", "rivtP", "docsP", "readmeP", "reportP", "projP", "docsP",
+                 "rstN", "valN", "pdfN", "errlogP", "styleP", "tempP", "valsP", ]:
         folderD[item] = eval(item)
 
     rivtpD = {}

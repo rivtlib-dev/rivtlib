@@ -2,21 +2,7 @@ import time
 import os
 import logging
 import warnings
-
-from pypdf import PdfFileWriter, PdfFileReader
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
-from reportlab.platypus import XPreformatted, Table, flowables, TableStyle
-from reportlab.lib.pagesizes import letter, legal, A4, elevenSeventeen
-from reportlab.platypus.flowables import PageBreak
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
-from reportlab.rl_config import defaultPageSize
-from reportlab.lib.units import inch
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-import rst2pdf
+import subprocess
 
 
 class CmdW:
@@ -45,7 +31,7 @@ class CmdW:
         )
         warnings.filterwarnings("ignore")
 
-    def cmd_parse(self, cmdS, pthS, parS):
+    def write_parse(self, cmdS, pthS, parS):
         """parse a tagged line
 
         Args:
@@ -56,36 +42,16 @@ class CmdW:
             utS: formatted utf string
         """
 
-        cC = globals()['Cmd'](self.folderD, self.labelD)
-        ccmdS = cmdS.lower()
-        functag = getattr(cC, ccmdS)
-        uS, rS = functag(pthS, parS)
+        parL = parS.split(",")
+        if parL[0].strip() == "rpdf":
+            wcmdS = "docrst2pdf"
+        if pthS == "docs":
+            pass
+        wC = globals()['CmdW'](self.folderD, self.labelD)
+        functag = getattr(wC, wcmdS)
+        msgS = functag()
 
-        # print(f"{cmdS=}")
-        # print(f"{pthS=}")
-        # print(f"{parS=}")
-
-        return uS, rS, self.folderD, self.labelD
-
-    def parse_write(self, cmdS, pthS, parS):
-        """parse a tagged line
-
-        Args:
-            cmdS (_type_): _description_
-            lineS (_type_): _description_
-
-        Returns:
-            utS: formatted utf string
-        """
-
-        cC = globals()['Cmd'](self.folderD, self.labelD)
-        ccmdS = cmdS.lower()
-        functag = getattr(cC, ccmdS)
-        uS, rS = functag(pthS, parS)
-
-        # print(f"{cmdS=}")
-        # print(f"{pthS=}")
-        # print(f"{parS=}")
+        return msgS
 
     def tocs(self):
         # add table of contents to summary
@@ -117,374 +83,23 @@ class CmdW:
     def doctext(self):
         pass
 
-    def dochtml(self):
-        pass
-
-    def docrstpdf(self):
-        # ReportLab - Platypus constants
-        PAGE_HEIGHT = defaultPageSize[0]
-        PAGE_WIDTH = defaultPageSize[0]
-        # create template
-
-        _doc_template = "SimpleDocTemplate(_pname," + \
-            _page_margin + _page_size + ")"
-        _doc = eval(_doc_template)
-
-        _equa_label_spac = 62 * (1+(_doc.pagesize[0]-612.)/612)
-
-        # print dir(_doc)
-        _p_para1 = ParagraphStyle('paragraph1', alignment=TA_LEFT,
-                                  spaceBefore=5, spaceAfter=1,
-                                  fontSize=12, leading=16, fontName='arial',
-                                  leftIndent=0 * inch)
-
-        _p_para2 = ParagraphStyle('paragraph2', alignment=TA_LEFT,
-                                  spaceBefore=5, spaceAfter=1,
-                                  fontSize=12, leading=16, fontName='arial',
-                                  leftIndent=0 * inch)
-
-        _p_equa = ParagraphStyle('equation', alignment=TA_LEFT,
-                                 spaceBefore=5, spaceAfter=1,
-                                 fontSize=12, leading=16, fontName='vm',
-                                 leftIndent=.25 * inch)
-
-        _p_caption1 = ParagraphStyle('caption', alignment=TA_CENTER,
-                                     spaceBefore=4, spaceAfter=2,
-                                     fontSize=11, leading=16, fontName='arial')
-        _p_caption2 = ParagraphStyle('caption', alignment=TA_LEFT,
-                                     spaceBefore=4, spaceAfter=2,
-                                     fontSize=11, leading=16, fontName='arial')
-        _p_caption3 = ParagraphStyle('caption', alignment=TA_RIGHT,
-                                     spaceBefore=4, spaceAfter=2,
-                                     fontSize=11, leading=16, fontName='arial')
-
-        _p_text = ParagraphStyle('text', alignment=TA_LEFT,
-                                 spaceBefore=5, spaceAfter=1,
-                                 fontSize=10, leading=9, fontName='vm',
-                                 leftIndent=.25 * inch)
-        _p_text4 = ParagraphStyle('text', alignment=TA_LEFT,
-                                  spaceBefore=5, spaceAfter=1,
-                                  fontSize=10, leading=9, fontName='vm',
-                                  leftIndent=.5 * inch)
-        _p_text8 = ParagraphStyle('text', alignment=TA_LEFT,
-                                  spaceBefore=5, spaceAfter=1,
-                                  fontSize=10, leading=9, fontName='vm',
-                                  leftIndent=.75 * inch)
-
-        _p_cbold = ParagraphStyle('cbold', alignment=TA_LEFT,
-                                  spaceBefore=1, spaceAfter=1,
-                                  fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
-        _p_cbold2 = ParagraphStyle('cbold', alignment=TA_CENTER,
-                                   spaceBefore=1, spaceAfter=1,
-                                   fontSize=12, leading=18, fontName='arialbd', leftIndent=0 * inch)
-
-        _p_bold = ParagraphStyle('bold', alignment=TA_LEFT,
-                                 spaceBefore=2, spaceAfter=1,
-                                 fontSize=12, leading=16, fontName='vmb',
-                                 leftIndent=.5 * inch, rightIndent=1 * inch)
-        _p_bold2 = ParagraphStyle('bold2', alignment=TA_LEFT,
-                                  spaceBefore=2, spaceAfter=1,
-                                  fontSize=11, leading=16, fontName='arialbd',
-                                  leftIndent=.88 * inch, rightIndent=1 * inch)
-
-        _p_hbig = ParagraphStyle('hbold', alignment=TA_LEFT,
-                                 spaceBefore=4, spaceAfter=1,
-                                 fontSize=13, leading=22, fontName='arial')
-        _p_hbig2 = ParagraphStyle('hbold', alignment=TA_CENTER,
-                                  spaceBefore=4, spaceAfter=1,
-                                  fontSize=13, leading=22, fontName='arialbd')
-
-        _p_code = ParagraphStyle('italic', alignment=TA_LEFT,
-                                 spaceBefore=5, spaceAfter=1,
-                                 fontSize=11, leading=16, fontName='vmi')
-        _p_table = ParagraphStyle('table', alignment=TA_LEFT,
-                                  spaceBefore=5, spaceAfter=1,
-                                  fontSize=11, leading=16, fontName='vm')
-        _p_line = ParagraphStyle('line', alignment=TA_RIGHT,
-                                 spaceBefore=5, spaceAfter=1,
-                                 fontSize=10, leading=16, fontName='arial')
-
-        # write pdf of procedure
-        _pdfflag = 1
-        _doc.build(_Story)
-
-        # start page; stamp file; block file
-        _col = _e[7:].strip().split(';')
-
-        # exit if merge information is missing
-        try:
-            _pgs = int(_col[0])
-            _pgstart = _pgs
-            _pdfflag = 2
-        except:
-            print(_s3)
-            if _emailflag == 1:
-                if _pdfflag == 0:
-                    _pdfflag = 3
-                if _pdfflag == 1:
-                    _pdfflag = 4
-                if _pdfflag == 2:
-                    _pdfflag = 5
-            # print "pdfflag", _pdfflag
-
-        # make list of procedures
-        _proc_cnt = _lines
-        for _i in _istory[_lines:]:
-            _lines = _lines+1
-            if _i[0:5] == "-end-":
-                _flist = _istory[_proc_cnt:_lines-1]
-                # print "list of procedures", _flist
-                break
-
-        # print _flist
-        for _i in _flist:
-            # print "PDF file merged: ",_i
-            if _i[0] == "|":
-                _i = _i[1:]
-            if _i[0] == "*":
-                _i = _i[1:]
-            _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
-            for _j in range(_input1.getNumPages()):
-                _pgs += 1
-                # print "pages", _pgs
-
-        # create blank pdf file with title block text using reportlab
-        try:
-            os.remove(_cpypath+"/logos/block_only.pdf")
-        except:
-            pass
-        _pg = SimpleDocTemplate(_cpypath+"/logos/block_only.pdf",
-                                leftMargin=0.5*inch, rightMargin=0.5*inch,
-                                bottomMargin=2.5*inch, topMargin=1*inch)
-        # use author attribute to pass max page number to reportlab
-        _pg.author = str(_pgs-1)
-        try:
-            _newStory = []
-            for _xx in range(_pgs+1):
-                _az = "     "
-                _pa = XPreformatted(_az, _p_text)
-                _newStory.append(_pa)
-                _newStory.append(PageBreak())
-            # print dir(_pg)
-            _pg.build(_newStory, onFirstPage=_cpyBlock, onLaterPages=_cpyBlock)
-            print(_pgs, " blank pages stamped with title block text")
-        except:
-            raise
-        # merge pdf procedure file with logo and title block text using PyPDF
-        # output1 = merged document, input2 = title block text, input3 = stamped/title block pdf file
-        _pgs = _pgstart
-        _output1 = PdfFileWriter()
-        _pgname = _cpypath+"/logos/block_only.pdf"
-        _input2 = PdfFileReader(file(_pgname, "rb"))
-
-        # get pdf logo file
-        try:
-            _input3 = PdfFileReader(file(_cpypath+_col[1], "rb"))
-            _stamp = 1
-        except:
-            print(_message(1))
-        # merge blank title block /stamped documents with list of pdf procedures using PyPDF
-
-        for _i in _flist:
-            # print _i
-            if _i[0] == "|":
-                _i = _i[1:]
-            _stamp_flag = 1
-            print("PDF MERGED : ", _i)
-            if _i[0] == "*":
-                _stamp_flag = 0
-                _i = _i[1:]
-
-            _input1 = PdfFileReader(file(_cpypath+_i.strip(), "rb"))
-            for _j in range(_input1.getNumPages()):
-                _pagex = _input1.getPage(_j)
-                _output1.addPage(_pagex)
-
-                # merge with stamp
-                if _stamp_flag == 1:
-                    if _stamp:
-                        _pagex.mergePage(_input3.getPage(0))
-
-                # merge with title block
-                if _stamp_flag == 1:
-                    if int(_col[0]) > 0:
-                        _pagex.mergePage(_input2.getPage(_pgs-1))
-                _pgs += 1
-
-        _outputStream = file(_dname, "wb")
-        _output1.write(_outputStream)
-        _outputStream.close()
-        _s1 = ""
-
-        if _emailflag == 1:
-        if _pdfflag == 0:
-            _pdfflag = 3
-        if _pdfflag == 1:
-            _pdfflag = 4
-        if _pdfflag == 2:
-            _pdfflag = 5
-        # print "pdfflag", _pdfflag
-
-        print "="*30
-        print _s3
-        # print "list of procedures", _flist
-
-        """write calc rSt file to d00_docs folder
-
-        Args:
-            cmdS (str): [description]
-            doctypeS ([type]): [description]
-            stylefileS ([type]): [description]
-            calctitleS ([type]): [description]
-            startpageS ([type]): [description]
+    def docrst2pdf(self):
+        """_summary_
         """
 
-        global rstcalcS, _rstflagB
+        styleS = "../docs/styles/rst2pdf.yaml"
+        cmd1S = "rst2pdf " + "/temp/" + self.folderD["rstN"]         # input
+        cmd2S = "-o " + "../docs/doc-rpdf/" + self.folderD["pdfN"]   # output
+        cmd3S = "--config = ../docs/styles/rst2pdf.ini"               # config
+        cmdS = cmd1S + cmd2S + cmd3S
+        subprocess.run(cmdS, shell=True, check=True)
 
-        _rstflagB = True
-        rstcalcS = """"""
-        exec(cmdS, globals(), locals())
-        docdir = os.getcwd()
-        with open(_rstfileP, "wb") as f1:
-            f1.write(rstcalcS.encode("md-8"))
-        print("INFO: rst calc written ", docdir, flush=True)
+        msgS = "file written: " + \
+            str(self.folderD["docsP"]) + "/doc-rpdf/" + self.folderD["pdfN"]
+        return msgS
 
-        f1 = open(_rstfileP, "r", encoding="md-8", errors="ignore")
-        rstcalcL = f1.readlines()
-        f1.close()
-        print("INFO: rst file read: " + str(_rstfileP))
-
-        if doctypeS == "tex" or doctypeS == "pdf":
-            gen_tex(doctypeS, stylefileS, calctitleS, startpageS)
-        elif doctypeS == "html":
-            gen_html()
-        else:
-            print("INFO: doc type not recognized")
-
-        # everything else is reportlab formatted text
-        # print "text - no tag"
-        # print len(_e.split())
-        # print _e, _formatflag
-        if len(_e.split()) > 0 and _beginflag == 1:
-            # print "formatflag ",_formatflag
-        _s1 += _e
-
-        if _formatflag == 0:
-            _listnum = 0
-            _s3 += _s1+"\n"
-            _para = Paragraph(_s1, _p_para1)
-
-        elif _formatflag == 1:
-            _listnum = 0
-            _s3 += _s1+"\n"
-            _para = XPreformatted(_s1, _p_text)
-
-        elif _formatflag == 2:
-            # print "formatflag is 2"
-            _listnum += 1
-            _s1 = str(_listnum)+". "+_s1
-            _s3 += _s1+"\n"
-            _para = XPreformatted(_s1, _p_text)
-
-        elif _formatflag == 3:
-            # print "formatflag is 3"
-            _listnum += 1
-            # print _listnum
-            if _listnum == 26:
-                _listnum = 0
-            _s1 = string.lowercase[_listnum]+". "+_s1
-            # print _s1
-            _s3 += _s1+"\n"
-            _para = XPreformatted(_s1, _p_text)
-
-        elif _formatflag == 4:
-            # print "formatflag is 4"
-            _listnum += 1
-            if _listnum == 26:
-                _listnum = 0
-            _s1 = string.uppercase[_listnum]+". "+_s1
-            _s3 += _s1+"\n"
-            _para = XPreformatted(_s1, _p_text)
-
-        else:
-            _listnum = 0
-            _s3 += _s1
-            _para = XPreformatted(_s1, _p_text)
-        # print dir(_doc)
-        # print dir(_doc._onPage)
-        _Story.append(_para)
-        # print dir(_Story)
-        _codeblk = ""
-        _s1 = ""
-
-        # write procedure pdf for every case
-        print _s3
-        if _beginflag:
-            if _pdfflag == 0:
-                _doc.build(_Story)
-        if _emailflag == 1:
-            if _pdfflag == 0:
-                _pdfflag = 3
-            if _pdfflag == 1:
-                _pdfflag = 4
-            if _pdfflag == 2:
-                _pdfflag = 5
-            # print "pdfflag ", _pdfflag
-
-        # exit from loop if error
-
-            print "="*30
-            print _s3
-            print "PROCEDURE PREMATURELY EXITED AT LINE ", _lines-1, "SEE PRIOR ERROR MESSAGES"
-            raise
-
-        print(f" -------- write doc files: [{docfileS}] --------- ")
-        logging.info(f"""write doc files: [{docfileS}]""")
-
-        formatL = formatS.split(",")
-        docmdS = "README.md"
-        docmdP = Path(docP.parent / docmdS)
-        docutfP = Path(docP.parent / docutfS)
-        rstfileP = Path(docP.parent, docbaseS + ".rst")
-        # eshortP = Path(*Path(rstfileP).parts[-3:])
-
-        print("", flush=True)
-
-        if "md" in formatL:                          # save md file
-            with open(docmdP, "w", encoding='utf-8') as f1:
-                f1.write(mdS)
-                # with open(_rstfile, "wb") as f1:
-                #   f1.write(rstcalcS.encode("md-8"))
-                # f1 = open(_rstfile, "r", encoding="md-8", errors="ignore")
-            print(f"markdown written: {dshortP}\README.md")
-            logging.info(f"""markdown written: {dshortP}\README.md""")
-        print("", flush=True)
-
-        if "utf" in formatL:                          # save utf file
-            with open(docmdP, "w", encoding='utf-8') as f1:
-                f1.write(mdS)
-                # with open(_rstfile, "wb") as f1:
-                #   f1.write(rstcalcS.encode("md-8"))
-                # f1 = open(_rstfile, "r", encoding="md-8", errors="ignore")
-            print(f"markdown written: {dshortP}\README.md")
-            logging.info(f"""markdown written: {dshortP}\README.md""")
-        print("", flush=True)
-
-        if "pdf" in formatL:                           # save pdf file
-            with open(rstfileP, "w", encoding='md-8') as f2:
-                f2.write(rstS)
-            logging.info(f"reST written: {rstfileP}")
-            print(f"reST written: {rstfileP}")
-            logging.info(f"start PDF file process: {rstfileP}")
-            print("start PDF file process: {rstfileP}")
-            pdfstyleS = i.split(":")[1].strip()
-            styleP = Path(prvP, pdfstyleS)
-            folderD["styleP"] = styleP
-            logging.info(f"PDF style file: {styleP}")
-            print(f"PDF style file: {styleP}")
-            pdffileP = _rest2tex(rstS)
-            logging.info(f"PDF doc written: {pdffileP}")
-            print(f"PDF doc written: {pdffileP}")
+    def doc2html(self):
+        pass
 
     def doctexpdf(self):
         """Modify TeX file to avoid problems with escapes:
@@ -1128,91 +743,3 @@ class CmdW:
             self.restS += inrstS + "\n"
         self.restS += "\n\n"
         self.rivtD.update(locals())
-
-        if vsub:
-            eqL = [1]
-            eqS = "descrip"
-            locals().update(self.rivtd)
-
-            eformat = ""
-            mdS = eqL[0].strip()
-            descripS = eqL[3]
-            parD = dict(eqL[1])
-            varS = mdS.split("=")
-            resultS = vars[0].strip() + " = " + str(eval(vars[1]))
-            try:
-                eqS = "Eq(" + eqL[0] + ",(" + eqL[1] + "))"
-                # sps = sps.encode('unicode-escape').decode()
-                mds = sp.pretty(sp.sympify(eqS, _clash2, evaluate=False))
-                self.calcl.append(mds)
-            except:
-                self.calcl.append(mds)
-            try:
-                symeq = sp.sympify(eqS.strip())  # substitute
-                symat = symeq.atoms(sp.Symbol)
-                for _n2 in symat:
-                    # get var length
-                    evlen = len((eval(_n2.__str__())).__str__())
-                    new_var = str(_n2).rjust(evlen, "~")
-                    new_var = new_var.replace("_", "|")
-                    symeq1 = symeq.subs(_n2, sp.Symbols(new_var))
-                out2 = sp.pretty(symeq1, wrap_line=False)
-                # print('out2a\n', out2)
-                symat1 = symeq1.atoms(sp.Symbol)  # adjust character length
-                for _n1 in symat1:
-                    orig_var = str(_n1).replace("~", "")
-                    orig_var = orig_var.replace("|", "_")
-                    try:
-                        expr = eval((self.odict[orig_var][1]).split("=")[1])
-                        if type(expr) == float:
-                            form = "{:." + eformat + "f}"
-                            symeval1 = form.format(eval(str(expr)))
-                        else:
-                            symeval1 = eval(orig_var.__str__()).__str__()
-                    except:
-                        symeval1 = eval(orig_var.__str__()).__str__()
-                    out2 = out2.replace(_n1.__str__(), symeval1)
-                # print('out2b\n', out2)
-                out3 = out2  # clean up unicode
-                out3.replace("*", "\\u22C5")
-                # print('out3a\n', out3)
-                _cnt = 0
-                for _m in out3:
-                    if _m == "-":
-                        _cnt += 1
-                        continue
-                    else:
-                        if _cnt > 1:
-                            out3 = out3.replace("-" * _cnt, "\u2014" * _cnt)
-                        _cnt = 0
-            except:
-                pass
-
-            if typeS != "table":  # skip table print
-                print(uS)
-                self.calcS += uS.rstrip() + "\n"
-            self.rivtD.update(locals())
-
-        if len(self.valL) > 0:  # print value table
-            hdrL = ["variable", "value", "[value]", "description"]
-            alignL = ["left", "right", "right", "left"]
-            self._vtable(self.valL, hdrL, "rst", alignL)
-            self.valL = []
-            print(uS.rstrip(" "))
-            self.calcS += " \n"
-            self.rivtD.update(locals())
-            continue
-        else:
-            print(" ")
-            self.calcS += "\n"
-            continue
-
-            if typeS == "values":
-        self.setcmdD["saveB"] = False
-        if "=" in uS and uS.strip()[-2] == "||":  # set save flag
-            uS = uS.replace("||", " ")
-            self.setcmdD["saveB"] = True
-        if "=" in uS:  # just assign value
-            uL = uS.split("|")
-            self._vassign(uL)
-            continue
