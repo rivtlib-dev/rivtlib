@@ -13,7 +13,7 @@ class RivtParse:
             tS (str): section type
         """
         self.tS = tS
-        print("^^^^^^^^^^", f"{tS=}")
+        # print(f"{tS=}")
         if tS == "R":
             self.cmdL = ["run", "process"]
             self.tagsD = {}
@@ -120,10 +120,10 @@ class RivtParse:
         except:
             pass
         # print(strL)
-        print("(((((((((((())))))))))))", f"{self.tS=}")
+        # print(f"{self.tS=}")
         blockS = """"""
         for ulS in strL[1:]:                            # section contents
-            print(f"{ulS=}")
+            # print(f"{ulS=}")
             if len(ulS.strip()) < 1 and not blockB:
                 xutfS += "\n"
                 xrstS += "\n"
@@ -157,7 +157,6 @@ class RivtParse:
             elif ulS[0:1] == "|":                       # read/write commands
                 if ulS[0:2] == "||":
                     parL = ulS[2:].split("|")
-                    print("kkkkkkkkkkkkkkkkkkkkkk")
                 else:
                     parL = ulS[1:].split("|")
                 cmdS = parL[0].strip()
@@ -191,7 +190,6 @@ class RivtParse:
                     elif self.tS == "T":                # tools command
                         continue
                     elif self.tS == "W":                # write command
-                        print("***********************")
                         pthxS = pthS
                         rvwC = write.CmdW(folderD, labelD)
                         msgS = rvwC.write_parse(cmdS, pthxS, parS)

@@ -173,6 +173,16 @@ def W(rS):
     """
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
+    txtP = Path(folderD["tempP"], folderD["txtN"])
+    rstP = Path(folderD["tempP"], folderD["rstN"])
+    print(txtP, rstP)
+    pdfP = Path(folderD["tempP"], folderD["pdfN"])
+
+    with open(txtP, 'w', encoding="utf-8") as file:
+        file.write(utfS)
+    with open(rstP, 'w', encoding="utf-8") as file:
+        file.write(rstS)
+
     utfS, rstS = rivt_parse(rS, "W")
 
 
@@ -188,11 +198,6 @@ def X(rS):
 
 
 def Q():
-    txtP = Path(folderD["tempP"], "doc1.txt")
-    rstP = Path(folderD["tempP"], "doc2.rst")
-    with open(txtP, 'w', encoding="utf-8") as file:
-        file.write(utfS)
-    with open(rstP, 'w', encoding="utf-8") as file:
-        file.write(rstS)
+
     print("<<<<< end rivtlib >>>>>")
     sys.exit()

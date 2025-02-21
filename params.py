@@ -32,13 +32,14 @@ def dicts(rivN, rivP, rivtP):
     rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
     reportP = Path(projP, "docs")
     xrivtP = Path(projP, "xrivt")
-    tempP = Path(rivP, "temp")
-    errlogP = Path(tempP, "rivt-log.txt")
     docsP = Path(projP, "docs")
     valN = baseS.split("-")[0]
     valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
-    pdfN = baseS.split("-")[0] + ".pdf"
-    rstN = baseS.split("-")[0] + ".rst"
+    pdfN = baseS + ".pdf"
+    rstN = baseS + ".rst"
+    txtN = baseS + ".txt"
+    tempP = Path(rivP, "temp")
+    errlogP = Path(tempP, "rivt-log.txt")
     valsP = Path(projP, "vals")
     valP = Path(valsP, valN)
     styleP = Path(docsP, "styles")
@@ -72,7 +73,8 @@ def dicts(rivN, rivP, rivtP):
 
     folderD = {}
     for item in ["rivP", "rivtP", "docsP", "readmeP", "reportP", "projP", "docsP",
-                 "rstN", "valN", "pdfN", "errlogP", "styleP", "tempP", "valsP", ]:
+                 "rstN", "valN", "pdfN", "txtN", "errlogP", "styleP",
+                 "tempP", "valsP", ]:
         folderD[item] = eval(item)
 
     rivtpD = {}
