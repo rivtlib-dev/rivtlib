@@ -39,7 +39,7 @@ import logging
 import fnmatch
 import sys
 from rivtlib.units import *
-from rivtlib import params, parse, write
+from rivtlib import params, parse
 
 # from rivtlib import write
 
