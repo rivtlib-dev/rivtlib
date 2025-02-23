@@ -129,7 +129,7 @@ class Tag:
         # utf
         uS = "Table " + str(tnumI) + " - " + lineS
         # rst
-        rS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        rS = "\n" + "Table " + fillS + ": " + lineS
 
         return uS, rS
 
@@ -212,11 +212,13 @@ class Tag:
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
         uS = lineS
+        # prst
+        prS = lineS
         # rst
-        rS = ".. raw:: math\n\n   " + lineS + "\n"
+        xrS = ".. raw:: math\n\n   " + lineS + "\n"
 
         # print(uS)
-        return uS, rS
+        return uS, prS
 
     def plain(self, lineS, folderD, labelD):
         """format plain literal text _[P]
@@ -270,7 +272,7 @@ class Tag:
         # utf
         luS = "Table " + str(tnumI) + " - " + lineS
         # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        lrS = "\n" + "Table " + fillS + ": " + lineS
 
         # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
@@ -286,7 +288,7 @@ class Tag:
         # utf
         luS = "Table " + str(tnumI) + " - " + lineS
         # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        lrS = "\n" + "Table " + fillS + ": " + lineS
 
         # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
@@ -302,7 +304,7 @@ class Tag:
         # utf
         luS = "Table " + str(tnumI) + " - " + lineS
         # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        lrS = "\n" + "Table " + fillS + ": " + lineS
 
         # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
@@ -318,7 +320,7 @@ class Tag:
         # utf
         luS = "Table " + str(tnumI) + " - " + lineS
         # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        lrS = "\n" + "Table " + fillS + ": " + lineS
 
         # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
@@ -334,7 +336,7 @@ class Tag:
         # utf
         luS = "Table " + str(tnumI) + " - " + lineS
         # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+        lrS = "\n" + "Table " + fillS + ": " + lineS
 
         # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS

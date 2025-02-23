@@ -17,8 +17,7 @@ import pandas as pd
 import sympy as sp
 import tabulate
 from PIL import Image
-from IPython.display import Image as _Image
-from IPython.display import display as _display
+from reportlab.lib.utils import ImageReader
 from numpy import *
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
@@ -169,26 +168,23 @@ class Cmd:
                 numS = str(self.labelD["fnum"])
                 self.labelD["fnum"] = int(numS) + 1
                 figS = figS + numS + capS
-        img1 = Image.open(pthS)
-        img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
-        # _display(img1)
         # utf8
         uS = figS + capS + " : " + str(fileP) + "\n"
-        # reSt
+        # prst
         relS = "../" + self.folderD["relS"]
-        rS = ("\n.. image:: " + relS + "\n"
+        prS = ("\n\n.. image:: " + relS + "\n"
+               + "   :width: " + scS + "%" + "\n"
+               + "   :align: center"
+               + "\n\n\n"
+               )
+        # rSt
+        tS = ("\n\n.. image:: " + pthS + "\n"
               + "   :width: " + scS + "%" + "\n"
               + "   :align: center"
-              + "\n\n"
-              )
-        # tex
-        tS = ("\n.. image:: " + pthS + "\n"
-              + "   :width: " + scS + "%" + "\n"
-              + "   :align: center"
-              + "\n\n"
+              + "\n\n\n"
               )
 
-        return uS, rS
+        return uS, prS
 
     def img2(self, pthS, parS):
         """ insert side by side images from files
