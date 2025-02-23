@@ -100,6 +100,7 @@ class CmdW:
 
         msgS = "file written: " + \
             str(self.folderD["docsP"]) + "/doc-rpdf/" + self.folderD["pdfN"]
+
         return msgS
 
     def doc2html(self):

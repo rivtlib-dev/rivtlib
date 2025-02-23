@@ -145,13 +145,11 @@ class CmdV:
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
         vC = CmdV(self.folderD, self.labelD, self.rivtpD, self.rivtvD)
-
-        # format table
-        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)
-
-        pS = "\n" + "[from file: " + pthS + "]" + "\n"
-        uS = uS + pS
-        rS = rS + pS
+        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)      # format table
+        pthxS = str(Path(*Path(pthS).parts[-3:]))
+        pS = "[from file: " + pthxS + "]" + "\n\n"
+        uS = pS + uS
+        rS = pS + rS
         if parS.strip() == "noprint":
             pass
 

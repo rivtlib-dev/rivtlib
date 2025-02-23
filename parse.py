@@ -92,22 +92,24 @@ class RivtParse:
         xrstS = """"""      # accum rst section string
         hS = strL[0]                                    # section header
         hL = hS.split("|")
-        if hS.strip()[0:2] == "--":
+        if self.tS == "W":                              # omit header or write
+            hdutfS = ""
+            hdrstS = ""
+        elif hS.strip()[0:2] == "--":
             labelD["docS"] = hL[0].strip()              # section title
             labelD["xch"] = hL[1].strip()               # xchange flag
             labelD["color"] = hL[2].strip()             # background color
             hdutfS = hdrstS = "  "                      # empty header
         else:
-            # section title
             titleS = labelD["docS"] = hL[0].strip()     # section title
             labelD["xch"] = hL[1].strip()               # xchange flag
             labelD["color"] = hL[2].strip()             # background color
             snumI = labelD["secnumI"] = labelD["secnumI"] + 1
             dnumS = labelD["docnumS"] + "-[" + str(snumI) + "]"
             headS = dnumS + " " + hL[0].strip()
-            bordrS = labelD["widthI"] * "_"
-            hdutfS = bordrS + "\n" + headS + "\n" + bordrS + "\n"
-            hdrstS = "**" + headS + "**" + "\n\n" + bordrS + "\n"
+            bordrS = labelD["widthI"] * "-"
+            hdutfS = "\n" + headS + "\n" + bordrS + "\n"
+            hdrstS = "\n" + headS + "\n" + bordrS + "\n"
         xutfS += hdutfS
         xrstS += hdrstS
         print(hdutfS)                                   # stdout header
@@ -162,7 +164,7 @@ class RivtParse:
                 cmdS = parL[0].strip()
                 pthS = parL[1].strip()
                 parS = parL[2].strip()
-                print(cmdS, pthS, parS)
+                # print(cmdS, pthS, parS)
                 if cmdS in self.cmdL:
                     if self.tS == "R":                  # run commands
                         pass
@@ -193,8 +195,7 @@ class RivtParse:
                         pthxS = pthS
                         rvwC = write.CmdW(folderD, labelD)
                         msgS = rvwC.write_parse(cmdS, pthxS, parS)
-                        print("---------", msgS)
-                        continue
+                        return (msgS, "", folderD, labelD, rivtpD, rivtvD)
                     else:
                         pass
             elif "_[" in ulS:                            # tags

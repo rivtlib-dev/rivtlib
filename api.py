@@ -39,7 +39,7 @@ import logging
 import fnmatch
 import sys
 from rivtlib.units import *
-from rivtlib import params, parse
+from rivtlib import params, parse, write
 
 # from rivtlib import write
 
@@ -64,15 +64,7 @@ else:
 # print(f"{rivN=}")
 # print(f"{__name__=}")
 
-# initialize strings, config, logging
-rstS = utfS = xrstS = xutfS = """"""
-timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p") + 2*"\n"
-rstS += timeS
-utfS += timeS
-config = ConfigParser()
-config.read(Path(folderD["projP"], "rivt-config.ini"))
-headS = config.get('report', 'title')
-footS = config.get('utf', 'foot1')
+# initialize logging
 modnameS = __name__.split(".")[1]
 # print(f"{modnameS=}")
 logging.basicConfig(
@@ -85,6 +77,31 @@ logging.basicConfig(
 )
 warnings.filterwarnings("ignore")
 # warnings.simplefilter(action="ignore", category=FutureWarning)
+
+# read init file
+config = ConfigParser()
+config.read(Path(folderD["projP"], "rivt-config.ini"))
+headS = config.get('report', 'title')
+footS = config.get('utf', 'foot1')
+
+# initialize strings, config
+rstS = """"""
+utfS = """"""
+xrstS = """"""
+xutfS = """"""
+timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
+titleL = rivN.split("-")                           # subdivision title
+titleS = titleL[1].split(".")[0]
+titleS = titleS.title()
+dnumS = (titleL[0].split('r'))[1]
+headS = "[" + dnumS + "]  " + titleS.strip()
+bordrS = labelD["widthI"] * "="
+hdutfS = "\n" + headS + "\n" + bordrS + "\n" + timeS
+hdrstS = "\n" + headS + "\n" + bordrS + "\n" + timeS
+hdrstS = hdrstS + "\n\n\n" + ".. contents::" + "\n\n\n"
+print(hdutfS)                                      # stdout subdivision heading
+utfS += hdutfS + "\n"
+rstS += hdrstS + "\n"
 
 
 def rivt_parse(rS, tS):
@@ -115,10 +132,12 @@ def rivt_parse(rS, tS):
     xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
         rL, folderD, labelD, rivtpD, rivtvD)
 
-    utfS += xutfS       # accumulate output strings
-    rstS += xrstS
-
-    return utfS, rstS
+    if tS == "W":
+        return utfS, rstS, xutfS
+    else:
+        utfS += xutfS       # accumulate output strings
+        rstS += xrstS
+        return utfS, rstS
 
 
 def R(rS):
@@ -175,15 +194,22 @@ def W(rS):
 
     txtP = Path(folderD["tempP"], folderD["txtN"])
     rstP = Path(folderD["tempP"], folderD["rstpN"])
-    print(txtP, rstP)
     pdfP = Path(folderD["tempP"], folderD["pdfN"])
+
+    utfS, rstS, msgS = rivt_parse(rS, "W")
 
     with open(txtP, 'w', encoding="utf-8") as file:
         file.write(utfS)
     with open(rstP, 'w', encoding="utf-8") as file:
         file.write(rstS)
 
-    utfS, rstS = rivt_parse(rS, "W")
+    print("-"*labelD["widthI"])
+    print(msgS)
+    print("file written: " + str(txtP))
+    print("file written: " + str(rstP))
+    print("file written: " + str(pdfP))
+
+    sys.exit()
 
 
 def X(rS):
@@ -199,5 +225,5 @@ def X(rS):
 
 def Q():
 
-    print("<<<<< end rivtlib >>>>>")
+    print("<<<<< exit rivtlib >>>>>")
     sys.exit()

@@ -136,11 +136,10 @@ class Cmd:
         output.write(tabulate.tabulate(
             readL, tablefmt="rst", headers="firstrow",
             numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
-
         uS = rS = output.getvalue()
         sys.stdout = old_stdout
-
-        pS = "[from file: " + pthS + "]" + "\n"
+        pthxS = str(Path(*Path(pthS).parts[-3:]))
+        pS = "[from file: " + pthxS + "]" + "\n\n"
         uS = pS + uS + "\n"
         rS = pS + rS + "\n"
 
