@@ -157,7 +157,7 @@ class Cmd:
             rS (str): formatted reSt string
         """
         # print(f"{parS=}")
-        print(f"{pthS=}")
+        # print(f"{pthS=}")
         parL = parS.split(",")
         fileP = Path(pthS)
         capS = parL[0]
@@ -171,10 +171,7 @@ class Cmd:
                 figS = figS + numS + capS
         img1 = Image.open(pthS)
         img1 = img1.resize((int(img1.size[0]*scF), int(img1.size[1]*scF)))
-        try:
-            _display(img1)
-        except:
-            pass
+        # _display(img1)
         # utf8
         uS = figS + capS + " : " + str(fileP) + "\n"
         # reSt
