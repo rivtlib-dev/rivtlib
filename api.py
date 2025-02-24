@@ -196,12 +196,12 @@ def W(rS):
     rstP = Path(folderD["tempP"], folderD["rstpN"])
     pdfP = Path(folderD["tempP"], folderD["pdfN"])
 
-    utfS, rstS, msgS = rivt_parse(rS, "W")
-
     with open(txtP, 'w', encoding="utf-8") as file:
         file.write(utfS)
     with open(rstP, 'w', encoding="utf-8") as file:
         file.write(rstS)
+
+    utfS, rstS, msgS = rivt_parse(rS, "W")
 
     print("-"*labelD["widthI"])
     print(msgS)

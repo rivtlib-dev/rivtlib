@@ -155,14 +155,20 @@ class Cmd:
             uS (str): formatted utf string
             rS (str): formatted reSt string
         """
-        # print(f"{parS=}")
-        # print(f"{pthS=}")
+        print(f"{parS=}")
+        print(f"{pthS=}")
         parL = parS.split(",")
         fileP = Path(pthS)
         capS = parL[0]
         scS = parL[1].strip()
         scF = float(scS)
         figS = "Fig. "
+        pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
+        # pthxS = str(Path(insP, pthS))
+        insP = Path(pthxS, pthS)
+        insP = "..\\" + str(insP)
+        print("path-----------", pthxS+pthS)
+
         if len(parL) == 3:
             if parL[2] == "_[F]":
                 numS = str(self.labelD["fnum"])
@@ -171,14 +177,13 @@ class Cmd:
         # utf8
         uS = figS + capS + " : " + str(fileP) + "\n"
         # prst
-        relS = "../" + self.folderD["relS"]
-        prS = ("\n\n.. image:: " + relS + "\n"
+        prS = ("\n\n.. image:: " + insP + "\n"
                + "   :width: " + scS + "%" + "\n"
                + "   :align: center"
                + "\n\n\n"
                )
         # rSt
-        tS = ("\n\n.. image:: " + pthS + "\n"
+        rS = ("\n\n.. image:: " + pthS + "\n"
               + "   :width: " + scS + "%" + "\n"
               + "   :align: center"
               + "\n\n\n"

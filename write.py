@@ -92,9 +92,12 @@ class CmdW:
         cmd2S = " -o " + "../docs/doc-rpdf/" + self.folderD["pdfN"]   # output
         cmd3S = " --config=../docs/styles/rst2pdf.ini"               # config
         cmdS = cmd1S + cmd2S + cmd3S
-        print("cmdS=", cmdS)
-        cmdS = "rst2pdf " + "temp/" + \
-            self.folderD["rstpN"] + " -o " + self.folderD["pdfN"]
+        # print("cmdS=", cmdS)
+        cmdS = "rst2pdf " + "../temp/" + self.folderD["rstpN"] + \
+            " -o " + self.folderD["pdfN"] + \
+            " -s dejavu  --stylesheet-path=../temp/styles " + \
+            "--font-path=../temp/fonts"
+
         print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
 

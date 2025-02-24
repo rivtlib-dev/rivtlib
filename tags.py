@@ -8,6 +8,7 @@ import warnings
 from datetime import datetime, time
 from io import StringIO
 from pathlib import Path
+import textwrap
 
 import IPython
 import matplotlib.image as mpimg
@@ -106,12 +107,13 @@ class Tag:
         self.labelD["equI"] = enumI + 1
         wI = self.labelD["widthI"]
         # utf
-        fillS = "Eq-" + str(enumI).zfill(2)
-        uS = rS = lineS + fillS.rjust(wI-len(lineS))
+        fillS = "\nEq - " + str(enumI).zfill(2)
+        uS = fillS + "   " + lineS+"\n"
         # rst
-        rS = uS
+        fillS = "\n**Eq " + str(enumI).zfill(2) + "** - "
+        rS = fillS + "   " + lineS + "\n"
         # tex
-        rS = uS
+        tS = uS
 
         return uS, rS
 
@@ -127,9 +129,9 @@ class Tag:
         self.labelD["tableI"] = tnumI + 1
         fillS = str(tnumI).zfill(2)
         # utf
-        uS = "Table " + str(tnumI) + " - " + lineS
+        uS = "\nTable " + str(tnumI) + " - " + lineS
         # rst
-        rS = "\n" + "Table " + fillS + ": " + lineS
+        rS = "\n**Table " + fillS + "** - " + lineS
 
         return uS, rS
 
@@ -211,7 +213,7 @@ class Tag:
             pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
-        uS = lineS
+        uS = textwrap.indent(lineS, '     ')
         # prst
         prS = lineS
         # rst

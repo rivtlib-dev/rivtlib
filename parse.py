@@ -169,12 +169,9 @@ class RivtParse:
                     if self.tS == "R":                  # run commands
                         pass
                     elif self.tS == "I":                # insert commands
-                        folderD["relS"] = pthS
-                        insP = folderD["rivP"]
-                        pthxS = str(Path(insP, pthS))
                         rviC = cmds.Cmd(folderD, labelD)
                         uS, rS, folderD, labelD = rviC.cmd_parse(
-                            cmdS, pthxS, parS)
+                            cmdS, pthS, parS)
                         print(uS)                       # stdout command
                         xutfS += uS
                         xrstS += rS

@@ -32,14 +32,13 @@ def dicts(rivN, rivP, rivtP):
     rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
     reportP = Path(projP, "docs")
     xrivtP = Path(projP, "xrivt")
-    docsP = Path(projP, "docs")
     valN = baseS.split("-")[0]
     valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
     pdfN = baseS + ".pdf"
     rstpN = baseS + ".rstp"
     rstN = baseS + ".rst"
     txtN = baseS + ".txt"
-    tempP = Path(rivP, "temp")
+    tempP = Path(projP, "temp")
     errlogP = Path(tempP, "rivt-log.txt")
     valsP = Path(projP, "vals")
     valP = Path(valsP, valN)
@@ -47,6 +46,7 @@ def dicts(rivN, rivP, rivtP):
     # print(eval("valP"))
     readmeP = Path(projP, "README.txt")
     ossP = Path(projP / "oss")
+    # imrstP = Path()
     # global dicts
     labelD = {
         "rivN": rivN,                           # file name
