@@ -166,7 +166,7 @@ class Cmd:
         pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
         # pthxS = str(Path(insP, pthS))
         insP = Path(pthxS, pthS)
-        insP = "..\\" + str(insP)
+        insS = "../" + str(insP.as_posix())
         print("path-----------", pthxS+pthS)
 
         if len(parL) == 3:
@@ -175,15 +175,15 @@ class Cmd:
                 self.labelD["fnum"] = int(numS) + 1
                 figS = figS + numS + capS
         # utf8
-        uS = figS + capS + " : " + str(fileP) + "\n"
+        uS = figS + capS + " : " + str(fileP.as_posix()) + "\n"
         # prst
-        prS = ("\n\n.. image:: " + insP + "\n"
+        prS = ("\n\n.. image:: " + insS + "\n"
                + "   :width: " + scS + "%" + "\n"
                + "   :align: center"
                + "\n\n\n"
                )
         # rSt
-        rS = ("\n\n.. image:: " + pthS + "\n"
+        rS = ("\n\n.. image:: " + insS + "\n"
               + "   :width: " + scS + "%" + "\n"
               + "   :align: center"
               + "\n\n\n"
