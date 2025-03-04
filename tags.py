@@ -215,7 +215,7 @@ class Tag:
         # utf
         uS = textwrap.indent(lineS, '     ')
         # prst
-        prS = lineS
+        prS = "\n\n :: \n\n\n" + uS + "\n\n"
         # rst
         xrS = ".. raw:: math\n\n   " + lineS + "\n"
 

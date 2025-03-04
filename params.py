@@ -35,10 +35,10 @@ def dicts(rivN, rivP, rivtP):
     valN = baseS.split("-")[0]
     valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
     pdfN = baseS + ".pdf"
-    rstpN = baseS + ".rstp"
+    rstpN = baseS + ".rst"
     rstN = baseS + ".rst"
     txtN = baseS + ".txt"
-    tempP = Path(projP, "temp")
+    tempP = Path(rivP, "temp")
     errlogP = Path(tempP, "rivt-log.txt")
     valsP = Path(projP, "vals")
     valP = Path(valsP, valN)

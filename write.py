@@ -3,6 +3,7 @@ import os
 import logging
 import warnings
 import subprocess
+from pathlib import Path
 
 
 class CmdW:
@@ -44,9 +45,7 @@ class CmdW:
 
         parL = parS.split(",")
         if parL[0].strip() == "rpdf":
-            wcmdS = "docrst2pdf"
-        if pthS == "docs":
-            pass
+            wcmdS = "doc2rst"
         wC = globals()['CmdW'](self.folderD, self.labelD)
         functag = getattr(wC, wcmdS)
         msgS = functag()
@@ -80,36 +79,37 @@ class CmdW:
         mdeditL = mdS.split("## ", 1)
         mdS = mdeditL[0] + tocS + mdeditL[1]
 
-    def doctext(self):
+    def doc2text(self):
         pass
 
-    def docrst2pdf(self):
+    def doc2rst(self):
         """_summary_
         """
 
         styleS = "../docs/styles/rst2pdf.yaml"
+        # cmdS = "rst2pdf " + "../temp/" + self.folderD["rstpN"] + \
+        #     " -o " + self.folderD["pdfN"] + \
+        #     " -s dejavu  --stylesheet-path=../docs/styles " + \
+        #     "--font-path=../temp/fonts"
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]         # input
-        cmd2S = " -o " + "../docs/doc-rpdf/" + self.folderD["pdfN"]   # output
-        cmd3S = " --config=../docs/styles/rst2pdf.ini"               # config
-        cmdS = cmd1S + cmd2S + cmd3S
-        # print("cmdS=", cmdS)
-        cmdS = "rst2pdf " + "../temp/" + self.folderD["rstpN"] + \
-            " -o " + self.folderD["pdfN"] + \
-            " -s dejavu  --stylesheet-path=../temp/styles " + \
-            "--font-path=../temp/fonts"
-
+        cmd2S = " -o " + "../docs/rpdf/" + self.folderD["pdfN"]      # output
+        cmd2aS = " --font-path=../fonts"                       # output
+        cmd3S = " --config=../docs/styles/rst2pdf.ini -v"               # config
+        cmdS = cmd1S + cmd2S + cmd2aS + cmd3S
         print("cmdS=", cmdS)
+
         subprocess.run(cmdS, shell=True, check=True)
 
-        msgS = "file written: " + \
-            str(self.folderD["docsP"]) + "/doc-rpdf/" + self.folderD["pdfN"]
+        insP = Path(self.folderD["docsP"], "rpdf", self.folderD["pdfN"])
+        # print(str(insP.as_posix()))
+        msgS = "file written: " + str(insP)
 
         return msgS
 
     def doc2html(self):
         pass
 
-    def doctexpdf(self):
+    def doc2tex(self):
         """Modify TeX file to avoid problems with escapes:
 
         -  Replace marker "aaxbb " inserted by rivt with
@@ -117,7 +117,17 @@ class CmdW:
         - Delete inputenc package
         - Modify section title and add table of contents
 
+         write calc rSt file to d00_docs folder
+
+        Args:
+            cmdS (str): [description]
+            doctypeS ([type]): [description]
+            stylefileS ([type]): [description]
+            calctitleS ([type]): [description]
+            startpageS ([type]): [description]
+
         """
+
         startS = str(labelD["pageI"])
         doctitleS = str(labelD["doctitleS"])
 
@@ -335,7 +345,6 @@ class CmdW:
             logging.error(str(e))
             sys.exit("tex file write failed")
 
-    def write_pdf(texfileP):
         """write pdf calc to reports folder and open
 
         Args:
@@ -378,17 +387,6 @@ class CmdW:
 
         os._exit(1)
 
-    def gen_pdf(cmdS, doctypeS, stylefileS, calctitleS, startpageS):
-        """write calc rSt file to d00_docs folder
-
-        Args:
-            cmdS (str): [description]
-            doctypeS ([type]): [description]
-            stylefileS ([type]): [description]
-            calctitleS ([type]): [description]
-            startpageS ([type]): [description]
-        """
-
         # clean temp files
         fileL = [
             Path(fileconfigP, ".".join([calcbaseS, "pdf"])),
@@ -410,86 +408,6 @@ class CmdW:
                     pass
             time.sleep(1)
             print("INFO: temporary Tex files deleted \n", flush=True)
-
-    def write_html(rstS):
-        pass
-
-    def project(self, rL):
-        """insert tables or text from csv, xlsx or txt file
-
-        Args:
-            rL (list): parameter list
-
-        Files are read from /docs/docfolder
-        The command is identical to itable except file is read from docs/info.
-
-        """
-        alignD = {"S": "", "D": "decimal",
-                  "C": "center", "R": "right", "L": "left"}
-
-        if len(rL) < 4:
-            rL += [""] * (4 - len(rL))  # pad parameters
-        rstS = ""
-        contentL = []
-        sumL = []
-        fileS = rL[1].strip()
-        tfileS = Path(self.folderD["dpath0"] / fileS)
-        extS = fileS.split(".")[1]
-        if extS == "csv":
-            with open(tfileS, "r") as csvfile:  # read csv file
-                readL = list(csv.reader(csvfile))
-        elif extS == "xlsx":
-            xDF = pd.read_excel(tfileS, header=None)
-            readL = xDF.values.tolist()
-        else:
-            return
-        incl_colL = list(range(len(readL[0])))
-        widthI = self.setcmdD["cwidthI"]
-        alignS = self.setcmdD["calignS"]
-        saS = alignD[alignS]
-        if rL[2].strip():
-            widthL = rL[2].split(",")  # new max col width
-            widthI = int(widthL[0].strip())
-            alignS = widthL[1].strip()
-            saS = alignD[alignS]  # new alignment
-            self.setcmdD.update({"cwidthI": widthI})
-            self.setcmdD.update({"calignS": alignS})
-        totalL = [""] * len(incl_colL)
-        if rL[3].strip():  # columns
-            if rL[3].strip() == "[:]":
-                totalL = [""] * len(incl_colL)
-            else:
-                incl_colL = eval(rL[3].strip())
-                totalL = [""] * len(incl_colL)
-        ttitleS = readL[0][0].strip() + " [t]_"
-        rstgS = self._tags(ttitleS, rtagL)
-        self.restS += rstgS.rstrip() + "\n\n"
-        for row in readL[1:]:
-            contentL.append([row[i] for i in incl_colL])
-        wcontentL = []
-        for rowL in contentL:
-            wrowL = []
-            for iS in rowL:
-                templist = textwrap.wrap(str(iS), int(widthI))
-                templist = [i.replace("""\\n""", """\n""") for i in templist]
-                wrowL.append("""\n""".join(templist))
-            wcontentL.append(wrowL)
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate(
-                wcontentL,
-                tablefmt="rst",
-                headers="firstrow",
-                numalign="decimal",
-                stralign=saS,
-            )
-        )
-        rstS = output.getvalue()
-        sys.stdout = old_stdout
-
-        self.restS += rstS + "\n"
 
     def report(self, rL):
         """skip info command for md calcs

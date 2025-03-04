@@ -192,7 +192,7 @@ def W(rS):
     """
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    txtP = Path(folderD["tempP"], folderD["txtN"])
+    txtP = Path(folderD["docsP"], "text", folderD["txtN"])
     rstP = Path(folderD["tempP"], folderD["rstpN"])
     pdfP = Path(folderD["tempP"], folderD["pdfN"])
 
@@ -204,10 +204,9 @@ def W(rS):
     utfS, rstS, msgS = rivt_parse(rS, "W")
 
     print("-"*labelD["widthI"])
-    print(msgS)
     print("file written: " + str(txtP))
     print("file written: " + str(rstP))
-    print("file written: " + str(pdfP))
+    print(msgS)
 
     sys.exit()
 

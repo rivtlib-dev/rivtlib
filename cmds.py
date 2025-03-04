@@ -163,11 +163,10 @@ class Cmd:
         scS = parL[1].strip()
         scF = float(scS)
         figS = "Fig. "
-        pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
+        # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
         # pthxS = str(Path(insP, pthS))
-        insP = Path(pthxS, pthS)
+        insP = Path(pthS)
         insS = "../" + str(insP.as_posix())
-        print("path-----------", pthxS+pthS)
 
         if len(parL) == 3:
             if parL[2] == "_[F]":

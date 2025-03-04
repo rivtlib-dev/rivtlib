@@ -7,6 +7,7 @@ import warnings
 from datetime import datetime, time
 from io import StringIO
 from pathlib import Path
+import textwrap
 
 import IPython
 import matplotlib.image as mpimg
@@ -194,16 +195,16 @@ class CmdV:
 
         except:
             pass
-        refS = refS.rjust(wI)
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
+        lineS = textwrap.indent(lineS, '     ')
         uS = refS + "\n" + lineS + "\n\n"
         # rst
-        rS = ".. raw:: math\n\n   " + lineS + "\n"
+        prS = refS + "\n\n :: \n\n\n" + lineS + "\n\n"
         # tex
-        rS = ".. raw:: math\n\n   " + lineS + "\n"
+        xrS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        return uS, rS
+        return uS, prS
 
     def equtable(self, eqS, parS):
         """format equation table, update rivtD

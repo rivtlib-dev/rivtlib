@@ -189,7 +189,7 @@ class RivtParse:
                     elif self.tS == "T":                # tools command
                         continue
                     elif self.tS == "W":                # write command
-                        pthxS = pthS
+                        pthxS = Path(pthS,parS)
                         rvwC = write.CmdW(folderD, labelD)
                         msgS = rvwC.write_parse(cmdS, pthxS, parS)
                         return (msgS, "", folderD, labelD, rivtpD, rivtvD)
