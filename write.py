@@ -44,12 +44,12 @@ class CmdW:
         """
 
         parL = parS.split(",")
-        if parL[0].strip() == "rst2pdf":
-            wcmdS = "doc2pdf"
-        elif parL[0].strip() == "rst2tex":
-            wcmdS = "doc2tex"
-        elif parL[0].strip() == "rst2pdf":
-            wcmdS = "doc2pdf"
+        if parL[0].strip() == "rstpdf2":
+            wcmdS = "docpdf2"
+        elif parL[0].strip() == "rstpdf":
+            wcmdS = "docpdf"
+        elif parL[0].strip() == "rsthtml":
+            wcmdS = "dochtml"
 
         wC = globals()['CmdW'](self.folderD, self.labelD)
         functag = getattr(wC, wcmdS)
@@ -57,10 +57,10 @@ class CmdW:
 
         return msgS
 
-    def doc2text(self):
+    def doctext(self):
         pass
 
-    def doc2pdf(self):
+    def docpdf2(self):
         """_summary_
         """
 
@@ -71,7 +71,6 @@ class CmdW:
         #     "--font-path=../temp/fonts"
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]         # input
         cmd2S = " -o " + "../docs/rpdf/" + self.folderD["pdfN"]      # output
-        cmd2aS = " --font-path=/font1"                               # output
         cmd3S = " --config=../docs/styles/rst2pdf.ini -v"            # config
         cmdS = cmd1S + cmd2S + cmd3S
         print("cmdS=", cmdS)
@@ -83,10 +82,10 @@ class CmdW:
 
         return msgS
 
-    def doc2html(self):
+    def dochtml(self):
         pass
 
-    def doc2tex(self):
+    def docpdf(self):
         """Modify TeX file to avoid problems with escapes:
 
         -  Replace marker "aaxbb " inserted by rivt with
@@ -386,7 +385,7 @@ class CmdW:
             time.sleep(1)
             print("INFO: temporary Tex files deleted \n", flush=True)
 
-    def report2pdf(self):
+    def reportpdf2(self):
         """
 
 
@@ -438,13 +437,13 @@ class CmdW:
         """
         pass
 
-    def report2html(self):
+    def reporthtml(self):
         """
 
         """
         pass
 
-    def report2tex(self, rL):
+    def reportpdf(self, rL):
         """skip info command for md calcs
 
         Command is executed only for docs in order to

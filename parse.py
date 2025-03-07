@@ -27,7 +27,7 @@ class RivtParse:
                           "[I]]": "blkital",  "[T]]": "blkitind",
                           "[L]]": "blklatex",  "[Q]]": "blkquit"}
         elif tS == "V":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "VALREAD"]
+            self.cmdL = ["IMG", "IMG2", "TABLE", "VALUES"]
             self.tagsD = {"E]": "equa", "F]": "figure", "T]": "table",
                           "G]": "page", "[V]]": "valform", "[Q]]": "quit"}
         elif tS == "T":
@@ -226,7 +226,7 @@ class RivtParse:
                 parS = eqL[1].strip()
                 rvvC = vals.CmdV(folderD, labelD, rivtpD, rivtvD)
                 uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
-                    "equform", eqS, parS)
+                    "equate", eqS, parS)
                 xutfS += uS
                 xrstS += rS
                 print(uS)                                # stdout '='

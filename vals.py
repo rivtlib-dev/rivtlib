@@ -90,7 +90,7 @@ class CmdV:
         # print(self.rivtvD)
         return uS, rS, self.folderD, self.labelD, self.rivtpD, self.rivtvD
 
-    def valread(self, pthS, parS):
+    def values(self, pthS, parS):
         """ import values from csv files, update rivtD
 
         Args:
@@ -150,11 +150,11 @@ class CmdV:
         pthxS = str(Path(*Path(pthS).parts[-3:]))
         pS = "[from file: " + pthxS + "]" + "\n\n"
         uS = pS + uS
-        rS = pS + rS
+        r2S = pS + r2S
         if parS.strip() == "noprint":
             pass
 
-        return uS, rS
+        return uS, r2S
 
     def valtable(self, tbL, hdrL, alignL, tblfmt):
         """ format table
@@ -168,13 +168,13 @@ class CmdV:
             tabulate.tabulate(
                 tbL, tablefmt=tblfmt, headers=hdrL,
                 showindex=False,  colalign=alignL))
-        uS = rS = output.getvalue()
+        uS = r2S = rS = output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
 
-        return uS, rS
+        return uS, r2S
 
-    def equform(self, eqS, parS):
+    def equate(self, eqS, parS):
         """format equation ' = '
 
         Args:
@@ -200,13 +200,12 @@ class CmdV:
         lineS = textwrap.indent(lineS, '     ')
         refS = refS.rjust(self.labelD["widthI"])
         uS = refS + "\n" + lineS + "\n\n"
+        # rst2
+        r2S = "\n\n :: \n\n\n" + refS + "\n" + lineS + "\n\n"
         # rst
-        # prS = """``""" + refS + """``"""
-        prS = "\n\n :: \n\n\n" + refS + "\n" + lineS + "\n\n"
-        # tex
-        xrS = ".. raw:: math\n\n   " + lineS + "\n"
+        rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        return uS, prS
+        return uS, r2S
 
     def equtable(self, eqS, parS):
         """format equation table, update rivtD
