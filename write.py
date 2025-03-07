@@ -44,45 +44,23 @@ class CmdW:
         """
 
         parL = parS.split(",")
-        if parL[0].strip() == "rpdf":
-            wcmdS = "doc2rst"
+        if parL[0].strip() == "rst2pdf":
+            wcmdS = "doc2pdf"
+        elif parL[0].strip() == "rst2tex":
+            wcmdS = "doc2tex"
+        elif parL[0].strip() == "rst2pdf":
+            wcmdS = "doc2pdf"
+
         wC = globals()['CmdW'](self.folderD, self.labelD)
         functag = getattr(wC, wcmdS)
         msgS = functag()
 
         return msgS
 
-    def tocs(self):
-        # add table of contents to summary
-        tocS = ""
-        secI = 0
-
-        for iS in rivtL:
-            if iS[0:5] == "rv.I(" and "--" not in iS:
-                secI += 1
-                jS = iS.split('"""')
-                kS = jS.split("|").strip()
-                tocS += str(secI) + "'" + kS
-            elif i[0:4] == "rv.V" and "--" not in iS:
-                secI += 1
-                jS = iS.split('"""')
-                kS = jS.split("|").strip()
-                tocS += str(secI) + "'" + kS
-            elif i[0:4] == "rv.T" and "--" not in iS:
-                secI += 1
-                jS = iS.split('"""')
-                kS = jS.split("|").strip()
-                tocS += str(secI) + "'" + kS
-            else:
-                pass
-
-        mdeditL = mdS.split("## ", 1)
-        mdS = mdeditL[0] + tocS + mdeditL[1]
-
     def doc2text(self):
         pass
 
-    def doc2rst(self):
+    def doc2pdf(self):
         """_summary_
         """
 
@@ -408,7 +386,65 @@ class CmdW:
             time.sleep(1)
             print("INFO: temporary Tex files deleted \n", flush=True)
 
-    def report(self, rL):
+    def report2pdf(self):
+        """
+
+
+
+        My Report Title
+        ################
+
+
+        My SubTitle
+        ************
+
+        |
+        |
+        |
+        |
+
+
+        .. image:: ../ins01/rivt01.png
+        :width: 30%
+        :align: center
+
+        |
+        |
+        |
+        |
+        |
+
+
+
+        .. class:: center
+
+        **date and time**
+
+
+        .. raw:: pdf
+
+        PageBreak coverPage 
+
+
+        .. contents::
+
+
+
+        .. raw:: pdf
+
+        PageBreak mainPage
+
+
+        """
+        pass
+
+    def report2html(self):
+        """
+
+        """
+        pass
+
+    def report2tex(self, rL):
         """skip info command for md calcs
 
         Command is executed only for docs in order to
