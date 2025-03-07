@@ -90,16 +90,18 @@ utfS = """"""
 xrstS = """"""
 xutfS = """"""
 timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
-titleL = rivN.split("-")                           # subdivision title
+titleL = rivN.split("-")                            # subdivision title
 titleS = titleL[1].split(".")[0]
 titleS = titleS.title()
 dnumS = (titleL[0].split('r'))[1]
 headS = "[" + dnumS + "]  " + titleS.strip()
 bordrS = labelD["widthI"] * "="
-hdutfS = "\n" + headS + "\n" + bordrS + "\n" + timeS
-hdrstS = "\n" + headS + "\n" + bordrS + "\n" + timeS
+time1S = timeS.rjust(labelD["widthI"])
+hdutfS = time1S + "\n" + headS + "\n" + bordrS + "\n"
+hdrstS = "\n\n" + headS + "\n" + bordrS + "\n"
 hdrstS = hdrstS + "\n\n\n" + ".. contents::" + "\n\n\n"
-print(hdutfS)                                      # stdout subdivision heading
+# stdout subdivision heading
+print(hdutfS)
 utfS += hdutfS + "\n"
 rstS += hdrstS + "\n"
 

@@ -104,8 +104,9 @@ class RivtParse:
             titleS = labelD["docS"] = hL[0].strip()     # section title
             labelD["xch"] = hL[1].strip()               # xchange flag
             labelD["color"] = hL[2].strip()             # background color
-            snumI = labelD["secnumI"] = labelD["secnumI"] + 1
-            dnumS = labelD["docnumS"] + "-[" + str(snumI) + "]"
+            snumI = labelD["secnumI"] + 1
+            labelD["secnumI"] = snumI
+            dnumS = "[ " + str(snumI) + " ]"
             headS = dnumS + " " + hL[0].strip()
             bordrS = labelD["widthI"] * "-"
             hdutfS = "\n" + headS + "\n" + bordrS + "\n"
@@ -189,7 +190,7 @@ class RivtParse:
                     elif self.tS == "T":                # tools command
                         continue
                     elif self.tS == "W":                # write command
-                        pthxS = Path(pthS,parS)
+                        pthxS = Path(pthS, parS)
                         rvwC = write.CmdW(folderD, labelD)
                         msgS = rvwC.write_parse(cmdS, pthxS, parS)
                         return (msgS, "", folderD, labelD, rivtpD, rivtvD)

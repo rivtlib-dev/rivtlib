@@ -29,20 +29,6 @@ from rivtlib.units import *
 tabulate.PRESERVE_WHITESPACE = True
 
 
-def rivtdict(self, rivS):
-    """_summary_
-
-    var, unit1, unit2, dec1, dec2
-
-    from valread:  equ, desc, unit1, unit2, dec1, dec2
-    from valtable: equ | desc | unit | dec
-    from equtable: equ | desc | unit | dec
-
-    """
-
-    return self.rivtD
-
-
 class Cmd:
     """
         insert commands that format to utf8 or reSt
@@ -107,7 +93,9 @@ class Cmd:
         uS = rS = ""
         pthP = Path(pthS)
         parL = parS.split(",")
-        maxwI = int(parL[0])
+        titleS = parL[0].strip()
+        maxwI = int(parL[1])
+        keyS = parL[2].strip()
         extS = pthP.suffix[1:]
         readL = []
         if extS == "csv":                                  # read csv file
@@ -130,17 +118,29 @@ class Cmd:
         output = StringIO()
         alignD = {"s": "", "d": "decimal",
                   "c": "center", "r": "right", "l": "left"}
-        keyS = parL[1].strip()
         alignS = alignD[keyS]
         output.write(tabulate.tabulate(
             readL, tablefmt="rst", headers="firstrow",
             numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
         uS = rS = output.getvalue()
         sys.stdout = old_stdout
-        pthxS = str(Path(*Path(pthS).parts[-3:]))
-        pS = "[from file: " + pthxS + "]" + "\n\n"
-        uS = pS + uS + "\n"
-        rS = pS + rS + "\n"
+
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        fillS = str(tnumI).zfill(2)
+
+        utitlS = "\nTable " + str(tnumI) + " - " + titleS
+        rtitlS = "\n**Table " + fillS.strip() + "** - " + titleS
+        pthxP = Path(*Path(pthS).parts[-3:])
+        pthxS = str(pthxP.as_posix())
+        print(pthxS)
+        pS = " [from file: " + pthxS + "]" + "\n\n"
+        print(pS)
+
+        # utf
+        uS = utitlS + pS + uS + "\n"
+        # rst
+        rS = rtitlS + pS + rS + "\n"
 
         return uS, rS
 

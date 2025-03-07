@@ -93,11 +93,10 @@ class CmdW:
         #     "--font-path=../temp/fonts"
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]         # input
         cmd2S = " -o " + "../docs/rpdf/" + self.folderD["pdfN"]      # output
-        cmd2aS = " --font-path=../fonts"                       # output
-        cmd3S = " --config=../docs/styles/rst2pdf.ini -v"               # config
-        cmdS = cmd1S + cmd2S + cmd2aS + cmd3S
+        cmd2aS = " --font-path=/font1"                               # output
+        cmd3S = " --config=../docs/styles/rst2pdf.ini -v"            # config
+        cmdS = cmd1S + cmd2S + cmd3S
         print("cmdS=", cmdS)
-
         subprocess.run(cmdS, shell=True, check=True)
 
         insP = Path(self.folderD["docsP"], "rpdf", self.folderD["pdfN"])

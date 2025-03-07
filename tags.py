@@ -107,10 +107,10 @@ class Tag:
         self.labelD["equI"] = enumI + 1
         wI = self.labelD["widthI"]
         # utf
-        fillS = "\nEq - " + str(enumI).zfill(2)
-        uS = fillS + "   " + lineS+"\n"
+        fillS = "\nE" + str(enumI).zfill(2)
+        uS = fillS + " - " + lineS+"\n"
         # rst
-        fillS = "\n**Eq " + str(enumI).zfill(2) + "** - "
+        fillS = "\n**E" + str(enumI).zfill(2) + "** - "
         rS = fillS + "   " + lineS + "\n"
         # tex
         tS = uS

@@ -198,9 +198,11 @@ class CmdV:
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
         lineS = textwrap.indent(lineS, '     ')
+        refS = refS.rjust(self.labelD["widthI"])
         uS = refS + "\n" + lineS + "\n\n"
         # rst
-        prS = refS + "\n\n :: \n\n\n" + lineS + "\n\n"
+        # prS = """``""" + refS + """``"""
+        prS = "\n\n :: \n\n\n" + refS + "\n" + lineS + "\n\n"
         # tex
         xrS = ".. raw:: math\n\n   " + lineS + "\n"
 
