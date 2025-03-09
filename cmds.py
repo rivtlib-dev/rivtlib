@@ -99,9 +99,10 @@ class Cmd:
             titleS = " "
         maxwI = int(parL[1].strip())                       # max col. width
         alnS = parL[2].strip()                             # col. alignment
+        rowS = parL[3].strip()                                # read rows
         alignD = {"s": "", "d": "decimal",
                   "c": "center", "r": "right", "l": "left"}
-        if parL[3].strip() == "_[T]":                      # table number
+        if parL[4].strip() == "_[T]":                      # table number
             tnumI = int(self.labelD["tableI"])
             fillS = str(tnumI).zfill(2)
             utitlnS = "\nTable " + fillS + " - "
@@ -109,6 +110,7 @@ class Cmd:
             self.labelD["tableI"] = tnumI + 1
         else:
             titlnS = " "
+            rtitlnS = " "
 
         utlS = titlnS + titleS                             # file path
         rtlS = rtitlnS + titleS
@@ -176,7 +178,7 @@ class Cmd:
         pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
         pthxS = str(Path(insP, pthS))
         if parL[2].strip() == "_[F]":
-            numS = str(self.labelD["fnum"])
+            numS = str(self.labelD["figI"])
             self.labelD["fnum"] = int(numS) + 1
             figS = "Fig. " + numS
         else:
