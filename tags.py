@@ -129,11 +129,13 @@ class Tag:
         self.labelD["tableI"] = tnumI + 1
         fillS = str(tnumI).zfill(2)
         # utf
-        uS = "\nTable " + str(tnumI) + " - " + lineS
+        uS = "\nTable " + str(tnumI) + ": " + lineS
+        # rst2
+        r2S = "\n**Table " + fillS + "**: " + lineS
         # rst
-        rS = "\n**Table " + fillS + "** - " + lineS
+        rS = "\n**Table " + fillS + "**: " + lineS
 
-        return uS, rS
+        return uS, r2S
 
     def figure(self, lineS):
         """utf figure caption _[F]
@@ -264,7 +266,7 @@ class Tag:
         return "\n" + rvtS
 
     def blkplain(self, lineS, folderD, labelD):
-        """format table title _[T]
+        """format block plain [[]]
 
         :return lineS: md table title
         :rtype: str
@@ -280,7 +282,7 @@ class Tag:
         return luS, lrS
 
     def blkcode(self, lineS, folderD, labelD):
-        """format table title _[T]
+        """format block code _[[C]]
 
         :return lineS: md table title
         :rtype: str
@@ -296,7 +298,7 @@ class Tag:
         return luS, lrS
 
     def blkbold(self, lineS, folderD, labelD):
-        """format table title _[T]
+        """format block bold  _[[B]]
 
         :return lineS: md table title
         :rtype: str
@@ -312,7 +314,7 @@ class Tag:
         return luS, lrS
 
     def blkital(self, lineS, folderD, labelD):
-        """format table title _[T]
+        """format block italic (oblique) _[[O]]
 
         :return lineS: md table title
         :rtype: str
@@ -327,8 +329,8 @@ class Tag:
         # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
-    def blkind(self, lineS, folderD, labelD):
-        """format table title _[T]
+    def blkspace(self, lineS, folderD, labelD):
+        """format block indent _[[S]]
 
         :return lineS: md table title
         :rtype: str
@@ -344,7 +346,7 @@ class Tag:
         return luS, lrS
 
     def blkitind(self, lineS, folderD, labelD):
-        """format table title _[T]
+        """format italic indent block [[I]]
 
         :return lineS: md table title
         :rtype: str
@@ -356,11 +358,10 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS
 
     def blklatex(self, lineS, folderD, labelD):
-        """format table title _[T]
+        """format latex block [[L]]
 
         :return lineS: md table title
         :rtype: str
@@ -372,21 +373,4 @@ class Tag:
         # rst
         lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
-        return luS, lrS
-
-    def blkquit(self, lineS, folderD, labelD):
-        """format table title _[T]
-
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
-
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
         return luS, lrS

@@ -91,12 +91,31 @@ class Cmd:
         """
         # print(f"{pthS=}")
         uS = rS = ""
-        pthP = Path(pthS)
+        pthP = Path(pthS)                                  # path
+        extS = pthP.suffix[1:]                             # file extension
         parL = parS.split(",")
-        titleS = parL[0].strip()
-        maxwI = int(parL[1])
-        keyS = parL[2].strip()
-        extS = pthP.suffix[1:]
+        titleS = parL[0].strip()                           # title
+        if titleS == "-":
+            titleS = " "
+        maxwI = int(parL[1].strip())                       # max col. width
+        alnS = parL[2].strip()                             # col. alignment
+        alignD = {"s": "", "d": "decimal",
+                  "c": "center", "r": "right", "l": "left"}
+        if parL[3].strip() == "_[T]":                      # table number
+            tnumI = int(self.labelD["tableI"])
+            fillS = str(tnumI).zfill(2)
+            utitlnS = "\nTable " + fillS + " - "
+            rtitlnS = "\n**Table " + fillS + " -** "
+            self.labelD["tableI"] = tnumI + 1
+        else:
+            titlnS = " "
+
+        utlS = titlnS + titleS                             # file path
+        rtlS = rtitlnS + titleS
+        pthxP = Path(*Path(pthS).parts[-3:])
+        pthxS = str(pthxP.as_posix())
+        pS = " [file: " + pthxS + "]" + "\n\n"
+
         readL = []
         if extS == "csv":                                  # read csv file
             with open(pthP, "r") as csvfile:
@@ -104,7 +123,6 @@ class Cmd:
                 for row in reader:
                     # print(f"{row=}")
                     if row and row[0].startswith('#'):
-                        # print(f"{row=}")
                         continue
                     else:
                         readL.append(row)
@@ -113,36 +131,25 @@ class Cmd:
             readL = pDF1.values.tolist()
         else:
             return
+
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
-        alignD = {"s": "", "d": "decimal",
-                  "c": "center", "r": "right", "l": "left"}
-        alignS = alignD[keyS]
+        alignS = alignD[alnS]
         output.write(tabulate.tabulate(
             readL, tablefmt="rst", headers="firstrow",
             numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
         uS = rS = output.getvalue()
         sys.stdout = old_stdout
 
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        fillS = str(tnumI).zfill(2)
-
-        utitlS = "\nTable " + str(tnumI) + " - " + titleS
-        rtitlS = "\n**Table " + fillS.strip() + "** - " + titleS
-        pthxP = Path(*Path(pthS).parts[-3:])
-        pthxS = str(pthxP.as_posix())
-        print(pthxS)
-        pS = " [from file: " + pthxS + "]" + "\n\n"
-        print(pS)
-
         # utf
-        uS = utitlS + pS + uS + "\n"
+        uS = utlS + pS + uS + "\n"
+        # rst2
+        r2S = rtlS + pS + rS + "\n"
         # rst
-        rS = rtitlS + pS + rS + "\n"
+        rS = rtlS + pS + rS + "\n"
 
-        return uS, rS
+        return uS, r2S
 
     def img(self, pthS, parS):
         """ insert image from file
@@ -153,42 +160,44 @@ class Cmd:
 
         Returns:
             uS (str): formatted utf string
+            r2S (str): formatted rst2 string
             rS (str): formatted reSt string
         """
         print(f"{parS=}")
         print(f"{pthS=}")
         parL = parS.split(",")
-        fileP = Path(pthS)
-        capS = parL[0]
+        capS = parL[0].strip()
+        if capS == "-":
+            capS = " "
         scS = parL[1].strip()
-        scF = float(scS)
         figS = "Fig. "
-        # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
-        # pthxS = str(Path(insP, pthS))
         insP = Path(pthS)
-        insS = "../" + str(insP.as_posix())
-
-        if len(parL) == 3:
-            if parL[2] == "_[F]":
-                numS = str(self.labelD["fnum"])
-                self.labelD["fnum"] = int(numS) + 1
-                figS = figS + numS + capS
-        # utf8
-        uS = figS + capS + " : " + str(fileP.as_posix()) + "\n"
-        # prst
-        prS = ("\n\n.. image:: " + insS + "\n"
-               + "   :width: " + scS + "%" + "\n"
-               + "   :align: center"
+        insS = str(insP.as_posix())
+        pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
+        pthxS = str(Path(insP, pthS))
+        if parL[2].strip() == "_[F]":
+            numS = str(self.labelD["fnum"])
+            self.labelD["fnum"] = int(numS) + 1
+            figS = "Fig. " + numS
+        else:
+            figS = " "
+        # utf
+        uS = figS + capS + " [file: " + pthxS + " ] \n"
+        # rst2
+        r2S = ("\n\n.. image:: " + insS + "\n"
+               + "   :width: " + scS + "% \n"
+               + "   :align: center \n"
+               + "   :caption: " + figS + capS + "\n"
                + "\n\n\n"
                )
         # rSt
         rS = ("\n\n.. image:: " + insS + "\n"
-              + "   :width: " + scS + "%" + "\n"
-              + "   :align: center"
-              + "\n\n\n"
+              + "   :width: " + scS + "% \n"
+                + "   :align: center \n"
+                + "   :caption: " + figS + capS + "\n"
+                + "\n\n\n"
               )
-
-        return uS, prS
+        return uS, r2S
 
     def img2(self, pthS, parS):
         """ insert side by side images from files
@@ -232,51 +241,54 @@ class Cmd:
         return uS, rS
 
     def text(self, pthS, parS):
-        """insert text from file
+        """insert text from file using block formats
 
-        | | text | folder | file | type: param lineS: string block
+        | text | file | type
 
         """
 
-        plenI = 3
-        if len(self.paramL) != plenI:
-            logging.info(
-                f"{self.cmdS} command not evaluated:  \
-                                    {plenI} parameters required")
-            return
-        elif self.paramL[0] == "data":
-            folderP = Path(self.folderD["dataP"])
+        # print(f"{pthS=}")
+        uS = rS = ""
+        pthP = Path(pthS)                                  # path
+        extS = pthP.suffix[1:]                             # file extension
+        parL = parS.split(",")
+        typeS = parL[0].strip()                           # title
+        pthxP = Path(*Path(pthS).parts[-3:])
+        pthxS = str(pthxP.as_posix())
+        pS = "\n [file: " + pthxS + "]" + "\n"
+
+        with open(pthP, "r") as fileO:
+            fileL = fileO.readlines()
+
+        if typeS == "[[]]":
+            blkC = tags.Tag()
+            ubS, rb2S = blkC.blkplain(fileL, self.folderD, self.labelD)
+        elif typeS == "[[S]]":
+            blkC = tags.Tag()
+            ubS, rb2S = blkC.blkspace(fileL, self.folderD, self.labelD)
+        elif typeS == "[[C]]":
+            blkC = tags.Tag()
+            ubS, rb2S = blkC.blkcode(fileL, self.folderD, self.labelD)
+        elif typeS == "[[L]]":
+            blkC = tags.Tag()
+            ubS, rb2S = blkC.blklatex(fileL, self.folderD, self.labelD)
+        elif typeS == "[[O]]":
+            blkC = tags.Tag()
+            ubS, rb2S = blkC.blkital(fileL, self.folderD, self.labelD)
+        elif typeS == "[[B]]":
+            blkC = tags.Tag()
+            ubS, rb2S = blkC.blkbold(fileL, self.folderD, self.labelD)
+        elif typeS == "[[I]]":
+            blkC = tags.Tag()
+            ubS, rb2S = blkC.blkitind(fileL, self.folderD, self.labelD)
         else:
-            folderP = Path(self.folderD["dataP"])
-            fileP = Path(self.paramL[1].strip())
-            pathP = Path(folderP / fileP)
-            txttypeS = self.paramL[2].strip()
-            extS = pathP.suffix
-            with open(pathP, "r", encoding="md-8") as f1:
-                txtfileS = f1.read()
-            with open(pathP, "r", encoding="md-8") as f2:
-                txtfileL = f2.readlines()
-            j = ""
-        if extS == ".txt":
-            # print(f"{txttypeS=}")
-            if txttypeS == "plain":
-                print(txtfileS)
-                return txtfileS
-            elif txttypeS == "code":
-                pass
-            elif txttypeS == "rivttags":
-                xtagC = parse.RivtParseTag(
-                    self.folderD, self.labelD,  self.localD)
-                xmdS, self.labelD, self.folderD, self.localD = xtagC.md_parse(
-                    txtfileL)
-                return xmdS
-            elif extS == ".html":
-                mdS = self.txthtml(txtfileL)
-                print(mdS)
-                return mdS
-        elif extS == ".tex":
-            soupS = self.txttex(txtfileS, txttypeS)
-            print(soupS)
-            return soupS
-        elif extS == ".py":
             pass
+
+        # utf
+        uS = pS + ubS
+        # rst2
+        r2S = pS + rb2S
+        # rst
+        rS = pS + rb2S
+
+        return uS, r2S

@@ -18,18 +18,18 @@ class RivtParse:
             self.cmdL = ["run", "process"]
             self.tagsD = {}
         elif tS == "I":
-            self.cmdL = ["APPEND", "IMG", "IMG2", "TABLE", "TEXT"]
+            self.cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
             self.tagsD = {"H]": "hline", "C]": "center", "B]": "centerbold",
                           "E]": "equa", "F]": "figure", "T]": "table",
                           "#]": "foot", "D]": "descrip", "S]": "sympy",
-                          "K]": "link", "A]": "page", "URL]": "url",
+                          "P]": "page", "U]": "url",
                           "[O]]": "blkcode", "[B]]": "blkbold", "[N]]": "blkind",
                           "[I]]": "blkital",  "[T]]": "blkitind",
                           "[L]]": "blklatex",  "[Q]]": "blkquit"}
         elif tS == "V":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "VALUES"]
-            self.tagsD = {"E]": "equa", "F]": "figure", "T]": "table",
-                          "G]": "page", "[V]]": "valform", "[Q]]": "quit"}
+            self.cmdL = ["IMG", "IMG2", "VALUES"]
+            self.tagsD = {"E]": "equa", "F]": "figure", "P]": "page",
+                          "[V]]": "valform", "[Q]]": "quit"}
         elif tS == "T":
             self.cmdL = ["python"]
             self.tagsD = {}
@@ -129,7 +129,7 @@ class RivtParse:
             # print(f"{ulS=}")
             if len(ulS.strip()) < 1 and not blockB:
                 xutfS += "\n"
-                xrstS += "\n"
+                xrstS += "|\n"
                 print(" ")                              # stdout blank
                 continue
             try:
@@ -220,7 +220,7 @@ class RivtParse:
                             continue
                 else:
                     pass
-            elif self.tS == "V" and "=" in ulS:          # '=' command
+            elif self.tS == "V" and ":=" in ulS:          # ':=' command
                 eqL = ulS.split("|", 1)
                 eqS = eqL[0].strip()
                 parS = eqL[1].strip()
@@ -229,10 +229,10 @@ class RivtParse:
                     "equate", eqS, parS)
                 xutfS += uS
                 xrstS += rS
-                print(uS)                                # stdout '='
+                print(uS)                                # stdout equation
                 uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
                     "equtable", eqS, parS)
-                print(uS)                                # stdout '='
+                print(uS)                                # stdout equ table
                 xutfS += uS
                 xrstS += rS
             else:
