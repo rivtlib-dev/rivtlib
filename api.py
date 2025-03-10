@@ -98,12 +98,9 @@ headS = "[" + dnumS + "]  " + titleS.strip()
 bordrS = labelD["widthI"] * "="
 time1S = timeS.rjust(labelD["widthI"])
 hdutfS = time1S + "\n" + headS + "\n" + bordrS + "\n"
-hdrstS = "\n\n" + headS + "\n" + bordrS + "\n"
-hdrstS = hdrstS + "\n\n\n" + ".. contents::" + "\n\n\n"
 # stdout subdivision heading
 print(hdutfS)
 utfS += hdutfS + "\n"
-rstS += hdrstS + "\n"
 
 
 def rivt_parse(rS, tS):
@@ -135,7 +132,7 @@ def rivt_parse(rS, tS):
         rL, folderD, labelD, rivtpD, rivtvD)
 
     if tS == "W":
-        return utfS, rstS, xutfS
+        return xutfS, xrstS, utfS, rstS
     else:
         utfS += xutfS       # accumulate output strings
         rstS += xrstS
@@ -198,17 +195,18 @@ def W(rS):
     rstP = Path(folderD["tempP"], folderD["rstpN"])
     pdfP = Path(folderD["tempP"], folderD["pdfN"])
 
+    xutfS, xrstS, utfS, rstS = rivt_parse(rS, "W")   # add covers
+
+    rstS = xrstS + "\n" + rstS
+
     with open(txtP, 'w', encoding="utf-8") as file:
         file.write(utfS)
     with open(rstP, 'w', encoding="utf-8") as file:
         file.write(rstS)
 
-    utfS, rstS, msgS = rivt_parse(rS, "W")
-
     print("-"*labelD["widthI"])
     print("file written: " + str(txtP))
     print("file written: " + str(rstP))
-    print(msgS)
 
     sys.exit()
 

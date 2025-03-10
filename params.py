@@ -50,6 +50,7 @@ def dicts(rivN, rivP, rivtP):
     # global dicts
     labelD = {
         "rivN": rivN,                           # file name
+        "pthS": " ",                            # local path
         "divnumS": divnumS,                     # div number
         "baseS": baseS,                         # file base name
         "titleS": titleS,                       # document title

@@ -7,11 +7,12 @@ from pathlib import Path
 
 
 class CmdW:
-    """ value commands format to utf8 or reSt
+    """ write doc or report
 
     Commands:
-        | DOC | rel. pth |  dec1
-        | REPORT | rel. pth |  dec1
+        | DOC | rel. pth |  type, cover
+        | REPORT | rel. pth |  type, cover
+        | APPEND | rel. pth |  title
     """
 
     def __init__(self,  folderD, labelD):
@@ -43,19 +44,36 @@ class CmdW:
             utS: formatted utf string
         """
 
+        self.folderD["pthS"] = pthS
         parL = parS.split(",")
-        if parL[0].strip() == "rstpdf2":
-            wcmdS = "docpdf2"
-        elif parL[0].strip() == "rstpdf":
-            wcmdS = "docpdf"
-        elif parL[0].strip() == "rsthtml":
-            wcmdS = "dochtml"
+        if cmdS == "DOC":
+            if parL[0].strip() == "pdf2":
+                wcmdS = "docpdf2"
+            elif parL[0].strip() == "rstpdf":
+                wcmdS = "docpdf"
+            elif parL[0].strip() == "rsthtml":
+                wcmdS = "dochtml"
+            else:
+                pass
+
+        if parL[1].strip() == "cover":
+            titleL = self.labelD["rivN"].split("-")
+            titleS = titleL[1].split(".")[0]
+            titleS = titleS.title()
+            dnumS = (titleL[0].split('r'))[1]
+            headS = "[" + dnumS + "]  " + titleS.strip()
+            bordrS = self.labelD["widthI"] * "="
+            hdrstS = "\n\n" + headS + "\n" + bordrS + "\n"
+            hdrstS = hdrstS + "\n\n\n" + ".. contents::" + "\n\n\n"
+        else:
+            hdrstS = "\n"
 
         wC = globals()['CmdW'](self.folderD, self.labelD)
         functag = getattr(wC, wcmdS)
         msgS = functag()
+        # print(f"{msgS=}")
 
-        return msgS
+        return hdrstS
 
     def doctext(self):
         pass
@@ -64,13 +82,14 @@ class CmdW:
         """_summary_
         """
 
+        pthP = Path(self.folderD["pthS"])
         styleS = "../docs/styles/rst2pdf.yaml"
         # cmdS = "rst2pdf " + "../temp/" + self.folderD["rstpN"] + \
         #     " -o " + self.folderD["pdfN"] + \
         #     " -s dejavu  --stylesheet-path=../docs/styles " + \
         #     "--font-path=../temp/fonts"
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]         # input
-        cmd2S = " -o " + "../docs/rpdf/" + self.folderD["pdfN"]      # output
+        cmd2S = " -o " + str(pthP) + self.folderD["pdfN"]           # output
         cmd3S = " --config=../docs/styles/rst2pdf.ini -v"            # config
         cmdS = cmd1S + cmd2S + cmd3S
         print("cmdS=", cmdS)

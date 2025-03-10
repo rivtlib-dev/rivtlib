@@ -34,7 +34,7 @@ class RivtParse:
             self.cmdL = ["python"]
             self.tagsD = {}
         elif tS == "W":
-            self.cmdL = ["DOC", "REPORT"]
+            self.cmdL = ["DOC", "REPORT", "APPEND"]
             self.tagsD = {}
         else:
             pass
@@ -92,7 +92,7 @@ class RivtParse:
         xrstS = """"""      # accum rst section string
         hS = strL[0]                                    # section header
         hL = hS.split("|")
-        if self.tS == "W":                              # omit header or write
+        if self.tS == "W":                              # omit header for Write
             hdutfS = ""
             hdrstS = ""
         elif hS.strip()[0:2] == "--":
@@ -189,11 +189,11 @@ class RivtParse:
                         continue
                     elif self.tS == "T":                # tools command
                         continue
-                    elif self.tS == "W":                # write command
-                        pthxS = Path(pthS, parS)
+                    elif self.tS == "W":
+                        folderD["pthS"] = pthS               # write command
                         rvwC = write.CmdW(folderD, labelD)
-                        msgS = rvwC.write_parse(cmdS, pthxS, parS)
-                        return (msgS, "", folderD, labelD, rivtpD, rivtvD)
+                        hdrS = rvwC.write_parse(cmdS, pthS, parS)
+                        return ("", hdrS, folderD, labelD, rivtpD, rivtvD)
                     else:
                         pass
             elif "_[" in ulS:                            # tags
