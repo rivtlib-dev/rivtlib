@@ -137,6 +137,26 @@ class Tag:
 
         return uS, r2S
 
+    def value(self, lineS):
+        """format value title _[T]
+
+        Args:
+            lineS (_type_): _description_
+        Returns:
+            _type_: _description_
+        """
+        vnumI = int(self.labelD["valueI"])
+        self.labelD["tableI"] = vnumI + 1
+        fillS = str(vnumI).zfill(2)
+        # utf
+        uS = "\nValue Table " + str(vnumI) + ": " + lineS
+        # rst2
+        r2S = "\n**Value Table " + fillS + "**: " + lineS
+        # rst
+        rS = "\n**Value Table " + fillS + "**: " + lineS
+
+        return uS, r2S
+
     def figure(self, lineS):
         """utf figure caption _[F]
 

@@ -100,6 +100,18 @@ class CmdV:
         Returns:
             _type_: _description_
         """
+
+        parL = parS.split(",")
+        if parL[0].strip() == "_[V]":                      # table number
+            vnumI = int(self.labelD["valueI"])
+            fillS = str(vnumI).zfill(2)
+            utitlnS = "\nValue Table " + fillS + " - "
+            rtitlnS = "\n**Value Table " + fillS + " -** "
+            self.labelD["valueI"] = vnumI + 1
+        else:
+            utitlnS = " "
+            rtitlnS = " "
+
         pathP = pthS
         with open(pathP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
@@ -148,11 +160,12 @@ class CmdV:
         vC = CmdV(self.folderD, self.labelD, self.rivtpD, self.rivtvD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)      # format table
         pthxS = str(Path(*Path(pthS).parts[-3:]))
+
+        r2S = rS
         pS = "[from file: " + pthxS + "]" + "\n\n"
-        uS = pS + uS
-        r2S = pS + r2S
-        if parS.strip() == "noprint":
-            pass
+        uS = uS + pS + utitlnS
+        r2S = r2S + pS + rtitlnS
+        rS = rS + pS + rtitlnS
 
         return uS, r2S
 
@@ -188,6 +201,7 @@ class CmdV:
         wI = self.labelD["widthI"]
 
         spS = eqS.strip()
+        spS = spS.replace(":=", "=")
         refS = parS.split("|")[0].strip()
         try:
             spL = spS.split("=")
@@ -220,6 +234,7 @@ class CmdV:
         vaL = []
         wI = self.labelD["widthI"]
         eqS = eqS.strip()
+        eqS = eqS.replace(":=", "=")
         refS = parS.split("|")
         varS = eqS.split("=")[0].strip()
         valS = eqS.split("=")[1].strip()
@@ -353,7 +368,7 @@ class TagV:
 
         return uS, rS, self.folderD, self.labelD, self.rivtpD, self.rivtvD
 
-    def valform(self, blockL):
+    def valblock(self, blockL):
         """format values
         Args:
             blockL (list): _description_
@@ -369,11 +384,12 @@ class TagV:
             # print(f"{vaL=}")
             if len(vaL) != 4 or len(vaL[0]) < 1:
                 continue
-            if "=" not in vaL[0]:
+            if ":=" not in vaL[0]:
                 continue
             eqS = vaL[0].strip()
-            varS = vaL[0].split("=")[0].strip()
-            valS = vaL[0].split("=")[1].strip()
+            eqS = eqS.replace(":=", "=")
+            varS = eqS.split("=")[0].strip()
+            valS = eqS.split("=")[1].strip()
             descripS = vaL[1].strip()
             unitL = vaL[2].split(",")
             unit1S, unit2S = unitL[0], unitL[1]

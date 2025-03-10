@@ -28,8 +28,8 @@ class RivtParse:
                           "[L]]": "blklatex",  "[Q]]": "blkquit"}
         elif tS == "V":
             self.cmdL = ["IMG", "IMG2", "VALUES"]
-            self.tagsD = {"E]": "equa", "F]": "figure", "P]": "page",
-                          "[V]]": "valform", "[Q]]": "quit"}
+            self.tagsD = {"E]": "equa", "F]": "figure", "V]": "value",
+                          "P]": "page", "[V]]": "valblock", "[Q]]": "quit"}
         elif tS == "T":
             self.cmdL = ["python"]
             self.tagsD = {}

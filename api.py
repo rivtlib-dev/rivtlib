@@ -221,7 +221,7 @@ def X(rS):
     """
 
     rL = rS.split("|")
-    print("\n X func - section skipped: " + rL[0] + "\n")
+    print("\n Section skipped: " + rL[0] + "\n")
 
 
 def Q():

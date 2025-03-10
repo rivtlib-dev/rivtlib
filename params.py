@@ -60,6 +60,7 @@ def dicts(rivN, rivP, rivtP):
         "equI": 1,                              # equation number
         "tableI": 1,                            # table number
         "figI": 1,                              # figure number
+        "valueI": 1,                            # value number
         "pageI": 1,                             # starting page number
         "noteL": [0],                           # footnote counter
         "footL": [1],                           # foot counter

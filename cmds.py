@@ -109,10 +109,10 @@ class Cmd:
             rtitlnS = "\n**Table " + fillS + " -** "
             self.labelD["tableI"] = tnumI + 1
         else:
-            titlnS = " "
+            utitlnS = " "
             rtitlnS = " "
 
-        utlS = titlnS + titleS                             # file path
+        utlS = utitlnS + titleS                             # file path
         rtlS = rtitlnS + titleS
         pthxP = Path(*Path(pthS).parts[-3:])
         pthxS = str(pthxP.as_posix())
