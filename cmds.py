@@ -85,6 +85,99 @@ class Cmd:
         """
         pass
 
+    def prepend(self, pthS, parS):
+        """_summary_
+        """
+        pass
+
+    def img(self, pthS, parS):
+        """ insert image from file
+
+        Args:
+            pthS (str): relative file path
+            parS (str): parameters
+
+        Returns:
+            uS (str): formatted utf string
+            r2S (str): formatted rst2 string
+            rS (str): formatted reSt string
+        """
+        print(f"{parS=}")
+        print(f"{pthS=}")
+        parL = parS.split(",")
+        capS = parL[0].strip()
+        scS = parL[1].strip()
+        insP = Path(pthS)
+        insS = str(insP.as_posix())
+        pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
+        pthxS = str(Path(insP, pthS))
+        if capS == "-":
+            capS = " "
+        if parL[2].strip() == "_[F]":
+            numS = str(self.labelD["figI"])
+            self.labelD["figI"] = int(numS) + 1
+            figS = "Fig. " + numS + "-"
+        else:
+            figS = " "
+        # utf
+        uS = figS + capS + " [file: " + pthxS + " ] \n"
+        # rst2
+        r2S = ("\n\n.. image:: " + insS + "\n"
+               + "   :width: " + scS + "% \n"
+               + "   :align: center \n"
+               + "\n\n"
+               + figS + capS + "\n"
+               )
+        # rSt
+        rS = ("\n\n.. image:: " + insS + "\n"
+              + "   :width: " + scS + "% \n"
+                + "   :align: center \n"
+                + "   :caption: " + figS + capS + "\n"
+                + "\n\n\n"
+              )
+        return uS, r2S
+
+    def img2(self, pthS, parS):
+        """ insert side by side images from files
+
+        Args:
+            pthS(str): relative file path
+            parS(str): parameters
+
+        Returns:
+            uS(str): formatted utf string
+            rS(str): formatted reSt string
+        """
+        # print(f"{parS=}")
+        parL = parS.split(",")
+        fileL = pthS.split(",")
+        file1P = Path(fileL[0])
+        file2P = Path(fileL[1])
+        cap1S = parL[0].strip()
+        cap2S = parL[1].strip()
+        scale1S = parL[2].strip()
+        scale2S = parL[3].strip()
+        figS = "Fig. "
+        if parL[2] == "_[F]":
+            numS = str(self.labelD["fnum"])
+            self.labelD["fnum"] = int(numS) + 1
+            figS = figS + numS + cap1S
+        try:
+            img1 = Image.open(pthS)
+            _display(img1)
+        except:
+            pass
+        uS = "<" + cap1S + " : " + str(file1P) + "> \n"
+        rS = ("\n.. image:: "
+              + pthS + "\n"
+              + "   :scale: "
+              + scale1S + "%" + "\n"
+              + "   :align: center"
+              + "\n\n"
+              )
+
+        return uS, rS
+
     def table(self, pthS, parS):
         """insert table from csv, xlsx or reSt file
 
@@ -152,95 +245,6 @@ class Cmd:
         rS = rtlS + pS + rS + "\n"
 
         return uS, r2S
-
-    def img(self, pthS, parS):
-        """ insert image from file
-
-        Args:
-            pthS (str): relative file path
-            parS (str): parameters
-
-        Returns:
-            uS (str): formatted utf string
-            r2S (str): formatted rst2 string
-            rS (str): formatted reSt string
-        """
-        print(f"{parS=}")
-        print(f"{pthS=}")
-        parL = parS.split(",")
-        capS = parL[0].strip()
-        if capS == "-":
-            capS = " "
-        scS = parL[1].strip()
-        figS = "Fig. "
-        insP = Path(pthS)
-        insS = str(insP.as_posix())
-        pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
-        pthxS = str(Path(insP, pthS))
-        if parL[2].strip() == "_[F]":
-            numS = str(self.labelD["figI"])
-            self.labelD["fnum"] = int(numS) + 1
-            figS = "Fig. " + numS
-        else:
-            figS = " "
-        # utf
-        uS = figS + capS + " [file: " + pthxS + " ] \n"
-        # rst2
-        r2S = ("\n\n.. image:: " + insS + "\n"
-               + "   :width: " + scS + "% \n"
-               + "   :align: center \n"
-               + "   :caption: " + figS + capS + "\n"
-               + "\n\n\n"
-               )
-        # rSt
-        rS = ("\n\n.. image:: " + insS + "\n"
-              + "   :width: " + scS + "% \n"
-                + "   :align: center \n"
-                + "   :caption: " + figS + capS + "\n"
-                + "\n\n\n"
-              )
-        return uS, r2S
-
-    def img2(self, pthS, parS):
-        """ insert side by side images from files
-
-        Args:
-            pthS(str): relative file path
-            parS(str): parameters
-
-        Returns:
-            uS(str): formatted utf string
-            rS(str): formatted reSt string
-        """
-        # print(f"{parS=}")
-        parL = parS.split(",")
-        fileL = pthS.split(",")
-        file1P = Path(fileL[0])
-        file2P = Path(fileL[1])
-        cap1S = parL[0].strip()
-        cap2S = parL[1].strip()
-        scale1S = parL[2].strip()
-        scale2S = parL[3].strip()
-        figS = "Fig. "
-        if parL[2] == "_[F]":
-            numS = str(self.labelD["fnum"])
-            self.labelD["fnum"] = int(numS) + 1
-            figS = figS + numS + cap1S
-        try:
-            img1 = Image.open(pthS)
-            _display(img1)
-        except:
-            pass
-        uS = "<" + cap1S + " : " + str(file1P) + "> \n"
-        rS = ("\n.. image:: "
-              + pthS + "\n"
-              + "   :scale: "
-              + scale1S + "%" + "\n"
-              + "   :align: center"
-              + "\n\n"
-              )
-
-        return uS, rS
 
     def text(self, pthS, parS):
         """insert text from file using block formats

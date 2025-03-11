@@ -192,8 +192,8 @@ class RivtParse:
                     elif self.tS == "W":
                         folderD["pthS"] = pthS               # write command
                         rvwC = write.CmdW(folderD, labelD)
-                        hdrS = rvwC.write_parse(cmdS, pthS, parS)
-                        return ("", hdrS, folderD, labelD, rivtpD, rivtvD)
+                        rfrontS = rvwC.write_parse(cmdS, pthS, parS)
+                        return ("", rfrontS, folderD, labelD, rivtpD, rivtvD)
                     else:
                         pass
             elif "_[" in ulS:                            # tags

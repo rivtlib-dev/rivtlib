@@ -44,7 +44,72 @@ class CmdW:
             utS: formatted utf string
         """
 
+        titleL = self.labelD["rivN"].split("-")
+        titleS = titleL[1].split(".")[0]
+        titleS = titleS.title()
+        dnumS = (titleL[0].split('r'))[1]
+        headS = "[" + dnumS + "]  " + titleS.strip()
+        bordrS = self.labelD["widthI"] * "="
+        hdrstS = "\n\n" + headS + "\n" + bordrS + "\n"
+        hdrstS = hdrstS + "\n\n\n" + ".. contents::" + "\n\n\n"
         self.folderD["pthS"] = pthS
+
+        coverS = """
+
+My Report Title2
+###################
+
+
+
+subtitle
+++++++++
+
+
+
+.. class:: center
+
+   **My SubTitle2**
+
+   **date and time**
+
+
+
+|
+|
+|
+|
+|
+|
+
+
+.. image:: ../ins/i01/rivt01.png
+   :width: 30%
+   :align: center
+"""
+
+        contentS = """
+
+.. raw:: pdf
+
+   PageBreak coverPage 
+
+
+   SetPageCounter 0
+
+
+
+.. contents::   My Document Title 
+
+"""
+
+        mainpageS = """
+
+.. raw:: pdf
+
+   PageBreak mainPage
+
+"""
+
         parL = parS.split(",")
         if cmdS == "DOC":
             if parL[0].strip() == "pdf2":
@@ -56,24 +121,19 @@ class CmdW:
             else:
                 pass
 
-        if parL[1].strip() == "cover":
-            titleL = self.labelD["rivN"].split("-")
-            titleS = titleL[1].split(".")[0]
-            titleS = titleS.title()
-            dnumS = (titleL[0].split('r'))[1]
-            headS = "[" + dnumS + "]  " + titleS.strip()
-            bordrS = self.labelD["widthI"] * "="
-            hdrstS = "\n\n" + headS + "\n" + bordrS + "\n"
-            hdrstS = hdrstS + "\n\n\n" + ".. contents::" + "\n\n\n"
-        else:
-            hdrstS = "\n"
-
         wC = globals()['CmdW'](self.folderD, self.labelD)
         functag = getattr(wC, wcmdS)
         msgS = functag()
         # print(f"{msgS=}")
 
-        return hdrstS
+        if parL[1].strip() != "toc":
+            contentS = " "
+        if parL[2].strip() != "cover":
+            coverS = " "
+
+        rfrontS = coverS + contentS + mainpageS
+
+        return rfrontS
 
     def doctext(self):
         pass
@@ -83,14 +143,16 @@ class CmdW:
         """
 
         pthP = Path(self.folderD["pthS"])
-        styleS = "../docs/styles/rst2pdf.yaml"
+        pthP = os.path.join(pthP, '')
+        print(f"{pthP=}")
+        # styleS = "../docs/_styles/rst2pdf.yaml"
         # cmdS = "rst2pdf " + "../temp/" + self.folderD["rstpN"] + \
         #     " -o " + self.folderD["pdfN"] + \
         #     " -s dejavu  --stylesheet-path=../docs/styles " + \
         #     "--font-path=../temp/fonts"
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]         # input
-        cmd2S = " -o " + str(pthP) + self.folderD["pdfN"]           # output
-        cmd3S = " --config=../docs/styles/rst2pdf.ini -v"            # config
+        cmd2S = " -o " + str(pthP) + self.folderD["pdfN"]            # output
+        cmd3S = " --config=../docs/_styles/rst2pdf.ini -v"            # config
         cmdS = cmd1S + cmd2S + cmd3S
         print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
