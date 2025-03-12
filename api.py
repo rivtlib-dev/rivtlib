@@ -39,7 +39,7 @@ import logging
 import fnmatch
 import sys
 from rivtlib.units import *
-from rivtlib import params, parse
+from rivtlib import params, parse, write
 
 # from rivtlib import write
 
@@ -130,13 +130,9 @@ def rivt_parse(rS, tS):
     parseC = parse.RivtParse(tS)
     xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
         rL, folderD, labelD, rivtpD, rivtvD)
-
-    if tS == "W":
-        return xutfS, xrstS, utfS, rstS
-    else:
-        utfS += xutfS       # accumulate output strings
-        rstS += xrstS
-        return utfS, rstS
+    utfS += xutfS       # accumulate output strings
+    rstS += xrstS
+    return utfS, rstS
 
 
 def R(rS):
@@ -191,23 +187,68 @@ def W(rS):
     """
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
+    rsL = rS.split("\n")
+    for lS in rsL:
+        # print(f"{lS[:2]=}")
+        if len(lS) == 0:
+            continue
+        if lS[0] == "#":
+            continue
+        elif lS[:2] == "||":
+            cL = lS[2:].split("|")
+            cmdS = cL[0].strip()
+            pthS = cL[1].strip()
+            parS = cL[2].strip()
+        else:
+            pass
+
+    docC = write.CmdW(folderD, labelD)
     txtP = Path(folderD["docsP"], "text", folderD["txtN"])
-    rstP = Path(folderD["tempP"], folderD["rstpN"])
-    pdfP = Path(folderD["tempP"], folderD["pdfN"])
+    rstP = Path(folderD["rivP"], "temp", folderD["rstN"])
+    pdf2P = Path(folderD["tempP"], folderD["pdfN"])
 
-    xutfS, xrstS, utfS, rstS = rivt_parse(rS, "W")   # add covers
+    # print(f"{rstP=}")
+    # print(f"{cmdS=}")
+    # print(f"{pthS=}")
+    # print(f"{parS=}")
+    parL = parS.split(",")
+    rfrontS = " "
+    msgS = "end of file "
+    if cmdS == "DOC":
+        # print(f"{parL[0]=}")
+        if parL[0].strip() == "pdf2":
+            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+            # print(f"{rfrontS=}")
+            rstS = rfrontS + "\n" + rstS
+            with open(txtP, 'w', encoding="utf-8") as file:
+                file.write(utfS)
+            with open(rstP, 'w', encoding="utf-8") as file:
+                file.write(rstS)
+            msgS = docC.docpdf2(pthS)
+        elif parL[0].strip() == "rstpdf":
+            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+            msgS = docC.docpdf()
+        elif parL[0].strip() == "rsthtml":
+            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+            msgS = docC.dochtml()
+        else:
+            pass
+    elif cmdS == "REPORT":
+        if parL[0].strip() == "pdf2":
+            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+            msgS = docC.reportpdf2()
+        elif parL[0].strip() == "rstpdf":
+            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+            msgS = docC.reportpdf()
+        elif parL[0].strip() == "rsthtml":
+            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+            msgS = docC.reporthtml()
+        else:
+            pass
+    else:
+        pass
 
-    rstS = xrstS + "\n" + rstS
-
-    with open(txtP, 'w', encoding="utf-8") as file:
-        file.write(utfS)
-    with open(rstP, 'w', encoding="utf-8") as file:
-        file.write(rstS)
-
-    print("-"*labelD["widthI"])
-    print("file written: " + str(txtP))
-    print("file written: " + str(rstP))
-
+    print("\n" + f"{msgS=}")
     sys.exit()
 
 

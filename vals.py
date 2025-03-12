@@ -112,8 +112,11 @@ class CmdV:
             utitlnS = " "
             rtitlnS = " "
 
-        pathP = pthS
-        with open(pathP, "r") as csvfile:
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / pthS)
+        insS = str(insP.as_posix())
+        pS = " [file: " + pthS + "]" + "\n\n"
+        with open(insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         # print(f"{readL=}")
         for iL in readL:                           # add to valexp

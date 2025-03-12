@@ -28,13 +28,10 @@ class RivtParse:
                           "[L]]": "blklatex",  "[Q]]": "blkquit"}
         elif tS == "V":
             self.cmdL = ["IMG", "IMG2", "VALUES"]
-            self.tagsD = {"E]": "equa", "F]": "figure", "V]": "value",
+            self.tagsD = {"E]": "equa", "F]": "figure", "V]": "value", "S]": "sympy",
                           "P]": "page", "[V]]": "valblock", "[Q]]": "quit"}
         elif tS == "T":
             self.cmdL = ["python"]
-            self.tagsD = {}
-        elif tS == "W":
-            self.cmdL = ["DOC", "REPORT", "APPEND"]
             self.tagsD = {}
         else:
             pass
@@ -179,21 +176,15 @@ class RivtParse:
                         continue
                     elif self.tS == "V":                # values command
                         valsP = folderD["valsP"]
-                        pthxS = str(Path(valsP, pthS))
                         rvvC = vals.CmdV(folderD, labelD, rivtpD, rivtvD)
                         uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
-                            cmdS, pthxS, parS)
+                            cmdS, pthS, parS)
                         print(uS)                       # stdout valread
                         xutfS += uS
                         xrstS += rS
                         continue
                     elif self.tS == "T":                # tools command
                         continue
-                    elif self.tS == "W":
-                        folderD["pthS"] = pthS               # write command
-                        rvwC = write.CmdW(folderD, labelD)
-                        rfrontS = rvwC.write_parse(cmdS, pthS, parS)
-                        return ("", rfrontS, folderD, labelD, rivtpD, rivtvD)
                     else:
                         pass
             elif "_[" in ulS:                            # tags

@@ -22,35 +22,33 @@ def dicts(rivN, rivP, rivtP):
     baseS = rivN.split(".py")[0]
     titleS = baseS.split("-")[1]
     divnumS = baseS.split("-")[0][1:3]
-    projP = Path(os.path.dirname(rivP))
-    bakP = Path(rivP / ".".join((baseS, "bak")))
-    prfxS = baseS[1:5]
-    toolsP = Path(projP, "tools")
-    docsP = Path(projP, "docs")
-    # output paths
-    pypathS = os.path.dirname(sys.executable)
-    rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
-    reportP = Path(projP, "docs")
-    xrivtP = Path(projP, "xrivt")
     valN = baseS.split("-")[0]
     valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
     pdfN = baseS + ".pdf"
     rstpN = baseS + ".rst"
     rstN = baseS + ".rst"
     txtN = baseS + ".txt"
+    prfxS = baseS[1:5]
+    # input paths
+    projP = Path(os.path.dirname(rivP))
+    bakP = Path(rivP / ".".join((baseS, "bak")))
+    toolsP = Path(projP, "tools")
+    docsP = Path(projP, "docs")
+    styleP = Path(docsP, "styles")
+    # output paths
+    pypathS = os.path.dirname(sys.executable)
+    rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
+    reportP = Path(projP, "docs")
+    xrivtP = Path(projP, "xrivt")
     tempP = Path(rivP, "temp")
     errlogP = Path(tempP, "rivt-log.txt")
     valsP = Path(projP, "vals")
     valP = Path(valsP, valN)
-    styleP = Path(docsP, "styles")
-    # print(eval("valP"))
     readmeP = Path(projP, "README.txt")
     ossP = Path(projP / "oss")
-    # imrstP = Path()
-    # global dicts
+    pthS = " "
     labelD = {
         "rivN": rivN,                           # file name
-        "pthS": " ",                            # local path
         "divnumS": divnumS,                     # div number
         "baseS": baseS,                         # file base name
         "titleS": titleS,                       # document title
@@ -76,8 +74,8 @@ def dicts(rivN, rivP, rivtP):
 
     folderD = {}
     for item in ["rivP", "rivtP", "docsP", "readmeP", "reportP", "projP", "docsP",
-                 "rstN", "rstpN", "valN", "pdfN", "txtN", "errlogP", "styleP",
-                 "tempP", "valsP", ]:
+                 "pthS", "rstN", "rstpN", "valN", "pdfN", "txtN", "errlogP",
+                 "styleP",  "tempP", "valsP", ]:
         folderD[item] = eval(item)
 
     rivtpD = {}

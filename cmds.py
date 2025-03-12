@@ -107,10 +107,11 @@ class Cmd:
         parL = parS.split(",")
         capS = parL[0].strip()
         scS = parL[1].strip()
-        insP = Path(pthS)
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / pthS)
         insS = str(insP.as_posix())
-        pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
-        pthxS = str(Path(insP, pthS))
+        pS = " [file: " + pthS + "]" + "\n\n"
+        # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
         if capS == "-":
             capS = " "
         if parL[2].strip() == "_[F]":
@@ -120,7 +121,7 @@ class Cmd:
         else:
             figS = " "
         # utf
-        uS = figS + capS + " [file: " + pthxS + " ] \n"
+        uS = figS + capS + " [file: " + pthS + " ] \n"
         # rst2
         r2S = ("\n\n.. image:: " + insS + "\n"
                + "   :width: " + scS + "% \n"
@@ -205,15 +206,18 @@ class Cmd:
             utitlnS = " "
             rtitlnS = " "
 
-        utlS = utitlnS + titleS                             # file path
-        rtlS = rtitlnS + titleS
-        pthxP = Path(*Path(pthS).parts[-3:])
-        pthxS = str(pthxP.as_posix())
-        pS = " [file: " + pthxS + "]" + "\n\n"
+        # pthxP = Path(*Path(pthS).parts[-3:])
+        # pthxS = str(pthxP.as_posix())
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / pthS)
+        insS = str(insP.as_posix())
+        pS = " [file: " + pthS + "]" + "\n\n"
+        utlS = utitlnS + titleS + pS                       # file path text
+        rtlS = rtitlnS + titleS + pS
 
         readL = []
         if extS == "csv":                                  # read csv file
-            with open(pthP, "r") as csvfile:
+            with open(insP, "r") as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
                     # print(f"{row=}")
@@ -238,11 +242,11 @@ class Cmd:
         sys.stdout = old_stdout
 
         # utf
-        uS = utlS + pS + uS + "\n"
+        uS = utlS + uS + "\n"
         # rst2
-        r2S = rtlS + pS + rS + "\n"
+        r2S = rtlS + rS + "\n"
         # rst
-        rS = rtlS + pS + rS + "\n"
+        rS = rtlS + rS + "\n"
 
         return uS, r2S
 
@@ -258,40 +262,35 @@ class Cmd:
         pthP = Path(pthS)                                  # path
         extS = pthP.suffix[1:]                             # file extension
         parL = parS.split(",")
-        typeS = parL[0].strip()                           # title
-        pthxP = Path(*Path(pthS).parts[-3:])
-        pthxS = str(pthxP.as_posix())
-        pS = "\n [file: " + pthxS + "]" + "\n"
+        typeS = parL[0].strip()                            # title
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / pthS)
+        insS = str(insP.as_posix())
+        pS = " [file: " + pthS + "]" + "\n\n"
+        # pthxP = Path(*Path(pthS).parts[-3:])
 
-        with open(pthP, "r") as fileO:
+        with open(insP, "r") as fileO:
             fileL = fileO.readlines()
 
-        if typeS == "[[]]":
-            blkC = tags.Tag()
-            ubS, rb2S = blkC.blkplain(fileL, self.folderD, self.labelD)
-        elif typeS == "[[S]]":
-            blkC = tags.Tag()
-            ubS, rb2S = blkC.blkspace(fileL, self.folderD, self.labelD)
-        elif typeS == "[[C]]":
-            blkC = tags.Tag()
-            ubS, rb2S = blkC.blkcode(fileL, self.folderD, self.labelD)
-        elif typeS == "[[L]]":
-            blkC = tags.Tag()
-            ubS, rb2S = blkC.blklatex(fileL, self.folderD, self.labelD)
-        elif typeS == "[[O]]":
-            blkC = tags.Tag()
-            ubS, rb2S = blkC.blkital(fileL, self.folderD, self.labelD)
-        elif typeS == "[[B]]":
-            blkC = tags.Tag()
-            ubS, rb2S = blkC.blkbold(fileL, self.folderD, self.labelD)
-        elif typeS == "[[I]]":
-            blkC = tags.Tag()
-            ubS, rb2S = blkC.blkitind(fileL, self.folderD, self.labelD)
-        else:
-            pass
+        blkC = tags.Tag()
+        match typeS:
+            case "[[]]":
+                ubS, rb2S = blkC.blkplain(fileL, self.folderD, self.labelD)
+            case "[[S]]":
+                ubS, rb2S = blkC.blkspace(fileL, self.folderD, self.labelD)
+            case "[[C]]":
+                ubS, rb2S = blkC.blkcode(fileL, self.folderD, self.labelD)
+            case "[[L]]":
+                ubS, rb2S = blkC.blklatex(fileL, self.folderD, self.labelD)
+            case "[[O]]":
+                ubS, rb2S = blkC.blkital(fileL, self.folderD, self.labelD)
+            case "[[B]]":
+                ubS, rb2S = blkC.blkbold(fileL, self.folderD, self.labelD)
+            case "[[I]]":
+                ubS, rb2S = blkC.blkitind(fileL, self.folderD, self.labelD)
 
         # utf
-        uS = pS + ubS
+        uS = pS.rjust(self.labelD["widthI"]) + ubS
         # rst2
         r2S = pS + rb2S
         # rst

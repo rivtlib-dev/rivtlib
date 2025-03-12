@@ -33,7 +33,7 @@ class CmdW:
         )
         warnings.filterwarnings("ignore")
 
-    def write_parse(self, cmdS, pthS, parS):
+    def coverpg(self, tocS, copageS):
         """parse a tagged line
 
         Args:
@@ -44,15 +44,8 @@ class CmdW:
             utS: formatted utf string
         """
 
-        titleL = self.labelD["rivN"].split("-")
-        titleS = titleL[1].split(".")[0]
-        titleS = titleS.title()
-        dnumS = (titleL[0].split('r'))[1]
-        headS = "[" + dnumS + "]  " + titleS.strip()
-        bordrS = self.labelD["widthI"] * "="
-        hdrstS = "\n\n" + headS + "\n" + bordrS + "\n"
-        hdrstS = hdrstS + "\n\n\n" + ".. contents::" + "\n\n\n"
-        self.folderD["pthS"] = pthS
+        projP = self.folderD["projP"]
+        print(f"{projP=}")
 
         coverS = """
 
@@ -82,7 +75,7 @@ subtitle
 |
 
 
-.. image:: ../ins/i01/rivt01.png
+.. image:: """ + "../../docs/_styles/rivt01.png" + """
    :width: 30%
    :align: center
 """
@@ -110,26 +103,13 @@ subtitle
 
 """
 
-        parL = parS.split(",")
-        if cmdS == "DOC":
-            if parL[0].strip() == "pdf2":
-                wcmdS = "docpdf2"
-            elif parL[0].strip() == "rstpdf":
-                wcmdS = "docpdf"
-            elif parL[0].strip() == "rsthtml":
-                wcmdS = "dochtml"
-            else:
-                pass
-
-        wC = globals()['CmdW'](self.folderD, self.labelD)
-        functag = getattr(wC, wcmdS)
-        msgS = functag()
-        # print(f"{msgS=}")
-
-        if parL[1].strip() != "toc":
+        if tocS != "toc":
             contentS = " "
-        if parL[2].strip() != "cover":
+        if copageS != "cover":
             coverS = " "
+
+        # print(f"{tocS=}")
+        # print(f"{copageS=}")
 
         rfrontS = coverS + contentS + mainpageS
 
@@ -138,26 +118,21 @@ subtitle
     def doctext(self):
         pass
 
-    def docpdf2(self):
+    def docpdf2(self, rst2P):
         """_summary_
         """
 
         pthP = Path(self.folderD["pthS"])
-        pthP = os.path.join(pthP, '')
+        # pthP = os.path.join(pthP, '')
         print(f"{pthP=}")
-        # styleS = "../docs/_styles/rst2pdf.yaml"
-        # cmdS = "rst2pdf " + "../temp/" + self.folderD["rstpN"] + \
-        #     " -o " + self.folderD["pdfN"] + \
-        #     " -s dejavu  --stylesheet-path=../docs/styles " + \
-        #     "--font-path=../temp/fonts"
-        cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]         # input
-        cmd2S = " -o " + str(pthP) + self.folderD["pdfN"]            # output
-        cmd3S = " --config=../docs/_styles/rst2pdf.ini -v"            # config
+        cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]    # input
+        cmd2S = " -o ../" + str(rst2P) + self.folderD["pdfN"]    # output
+        cmd3S = " --config=../docs/_styles/rst2pdf.ini"       # config
         cmdS = cmd1S + cmd2S + cmd3S
         print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
 
-        insP = Path(self.folderD["docsP"], "rpdf", self.folderD["pdfN"])
+        insP = Path(self.folderD["docsP"], "pdf2", self.folderD["pdfN"])
         # print(str(insP.as_posix()))
         msgS = "file written: " + str(insP)
 
@@ -484,7 +459,7 @@ subtitle
         |
 
 
-        .. image:: ../ins01/rivt01.png
+        .. image:: /ins01/rivt01.png
         :width: 30%
         :align: center
 
