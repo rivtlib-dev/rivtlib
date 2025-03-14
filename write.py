@@ -4,7 +4,7 @@ import logging
 import warnings
 import subprocess
 from pathlib import Path
-from rivtlib.templates import cover1 as template
+from rivtlib.templates.cover import cover, content, mainpage
 
 
 class CmdW:
@@ -20,8 +20,12 @@ class CmdW:
         """commands that format to utf and reSt
 
         """
+
         self.folderD = folderD
         self.labelD = labelD
+        self.cover = cover
+        self.content = content
+        self.mainpage = mainpage
         errlogP = folderD["errlogP"]
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
@@ -34,26 +38,39 @@ class CmdW:
         )
         warnings.filterwarnings("ignore")
 
-    def frontpg(self, tocS):
+    def frontvar(self, titleS, subS, botS, imageS):
+        """_summary_
+
+        Args:
+            folderD (_type_): _description_
+            labelD (_type_): _description_
+            titleS (_type_): _description_
         """
+
+        tcovS = self.cover(titleS, subS, botS, imageS)
+        tcontS = self.content(titleS)
+        tmainS = self.mainpage()
+
+        return tcovS, tcontS, tmainS
+
+    def frontpg(self, tocS, tcovS, tcontS, tmainS):
+        """ assemble front pages
 
         """
 
         match tocS:
             case "none":
-                template.coverS = " "
-                template.contentS = " "
+                tcovS = " "
+                tcontS = " "
             case "toc":
-                template.coverS = " "
+                tcovS = " "
             case "cover":
                 pass
             case _:
-                template.coverS = " "
-                template.contentS = " "
+                tcovS = " "
+                tcontS = " "
 
-        rfrontS = template.coverS + template.contentS + template.mainpageS
-
-        return rfrontS
+        return tcovS + tcontS + tmainS
 
     def doctext(self):
         pass

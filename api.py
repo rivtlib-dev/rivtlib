@@ -206,6 +206,7 @@ def W(rS):
 
     rsL = rS.split("\n")
     for lS in rsL:
+        cmdS = ""
         # print(f"{lS[:2]=}")
         if len(lS) == 0:
             continue
@@ -213,66 +214,78 @@ def W(rS):
             continue
         elif lS[:2] == "||":
             cL = lS[2:].split("|")
+            print(cL)
             cmdS = cL[0].strip()
             pthS = cL[1].strip()
             parS = cL[2].strip()
+
+            # rstP = Path(folderD["rivP"], "temp", folderD["rstN"])
+            # pdf2P = Path(folderD["tempP"], folderD["pdfN"])
+
+            # print(f"{rstP=}")
+            # print(f"{cmdS=}")
+            # print(f"{pthS=}")
+            # print(f"{parS=}")
+
+            msgS = "end of file "
+            if cmdS == "APPEND":
+                pass
+            elif cmdS == "PREPEND":
+                pass
+            elif cmdS == "COVER":
+                titleS = pthS
+                subS = parS
+                botS = cL[3].strip()
+                imgS = cL[4].strip()
+                docC = write.CmdW(folderD, labelD)
+                tcovS, tcontS, tmainS = docC.frontvar(titleS, subS, botS, imgS)
+                # print(tcovS, tcontS, tmainS)
+            elif cmdS == "DOC":
+                parL = parS.split(",")
+                typeS = parL[0].strip()
+                tocS = parL[1].strip()
+                styleS = parL[2].strip()
+                txtP = Path(folderD["docsP"], "text", folderD["txtN"])
+                rstP = Path(folderD["tempP"], folderD["rstN"])
+                docC = write.CmdW(folderD, labelD)
+                if typeS == "pdf2":
+                    rfrontS = docC.frontpg(tocS, tcovS, tcontS, tmainS)
+                    rstS = rfrontS + "\n" + rstS
+                    with open(txtP, 'w', encoding="utf-8") as file:
+                        file.write(utfS)
+                    with open(rstP, 'w', encoding="utf-8") as file:
+                        file.write(rstS)
+                    msgS = docC.docpdf2(pthS, styleS)
+                elif typeS == "pdf":
+                    rfrontS = docC.coverpg(tocS)
+                    msgS = docC.docpdf()
+                elif typeS == "html":
+                    rfrontS = docC.coverpg(tocS)
+                    msgS = docC.dochtml()
+                elif typeS == "text":
+                    rfrontS = docC.coverpg(tocS)
+                    msgS = docC.doctext()
+                else:
+                    pass
+                tcovS = " "
+                tcontS = " "
+                tmainS = " "
+                rfrontS = " "
+                # print(f"{rfrontS=}")
+            elif cmdS == "REPORT":
+                if typeS == "pdf2":
+                    rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+                    msgS = docC.reportpdf2()
+                elif parL[0].strip() == "rstpdf":
+                    rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+                    msgS = docC.reportpdf()
+                elif parL[0].strip() == "rsthtml":
+                    rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+                    msgS = docC.reporthtml()
+                else:
+                    pass
         else:
             pass
-
-    parL = parS.split(",")
-    typeS = parL[0].strip()
-    tocS = parL[1].strip()
-    styleS = parL[2].strip()
-    docC = write.CmdW(folderD, labelD)
-    txtP = Path(folderD["docsP"], "text", folderD["txtN"])
-    rstP = Path(folderD["tempP"], folderD["rstN"])
-    parL = parS.split(",")
-    rfrontS = " "
-    msgS = "end of file "
-    # rstP = Path(folderD["rivP"], "temp", folderD["rstN"])
-    # pdf2P = Path(folderD["tempP"], folderD["pdfN"])
-
-    # print(f"{rstP=}")
-    # print(f"{cmdS=}")
-    # print(f"{pthS=}")
-    # print(f"{parS=}")
-
-    if cmdS == "DOC":
-        # print(f"{parL[0]=}")
-        if typeS == "pdf2":
-            rfrontS = docC.frontpg(tocS)
-            # print(f"{rfrontS=}")
-            rstS = rfrontS + "\n" + rstS
-            with open(txtP, 'w', encoding="utf-8") as file:
-                file.write(utfS)
-            with open(rstP, 'w', encoding="utf-8") as file:
-                file.write(rstS)
-            msgS = docC.docpdf2(pthS, styleS)
-        elif parL[0].strip() == "pdf":
-            rfrontS = docC.coverpg(tocS)
-            msgS = docC.docpdf()
-        elif parL[0].strip() == "html":
-            rfrontS = docC.coverpg(tocS)
-            msgS = docC.dochtml()
-        elif parL[0].strip() == "text":
-            rfrontS = docC.coverpg(tocS)
-            msgS = docC.doctext()
-        else:
-            pass
-    elif cmdS == "REPORT":
-        if typeS == "pdf2":
-            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
-            msgS = docC.reportpdf2()
-        elif parL[0].strip() == "rstpdf":
-            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
-            msgS = docC.reportpdf()
-        elif parL[0].strip() == "rsthtml":
-            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
-            msgS = docC.reporthtml()
-        else:
-            pass
-    else:
-        pass
 
     print("\n" + f"{msgS=}")
     sys.exit()

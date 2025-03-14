@@ -70,6 +70,7 @@ def dicts(rivN, rivP, rivtP):
         "docstrB": False,                       # print doc strings
         "subB": False,                          # sub values in equations
         "valexpS": ""                           # list of values for export
+        "coverS"
     }
 
     folderD = {}

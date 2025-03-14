@@ -9,9 +9,9 @@ Params:
     
 """
 
-imgS = "rivt01.png"
-covertitleS = "a"
-coversubtitle = "b"
+imgS = "a"
+covertitleS = "b"
+coversubtitle = "c"
 
 
 # cover template
@@ -56,7 +56,7 @@ contentS = """
    PageBreak mainPage
 
 
-.. contents::   My Document Title 
+.. contents:: Contents: """ + covertitleS + """
 
 
 """
