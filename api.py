@@ -179,6 +179,23 @@ def T(rS):
     utfS, rstS = rivt_parse(rS, "T")
 
 
+def X(rS):
+    """ skip rivt string - no processing
+
+    Args:
+        rS (str): rivt string
+    """
+
+    rL = rS.split("|")
+    print("\n Section skipped: " + rL[0] + "\n")
+
+
+def Q():
+
+    print("<<<<< exit rivtlib >>>>>")
+    sys.exit()
+
+
 def W(rS):
     """ write output files
 
@@ -202,39 +219,48 @@ def W(rS):
         else:
             pass
 
+    parL = parS.split(",")
+    typeS = parL[0].strip()
+    tocS = parL[1].strip()
+    styleS = parL[2].strip()
     docC = write.CmdW(folderD, labelD)
     txtP = Path(folderD["docsP"], "text", folderD["txtN"])
-    rstP = Path(folderD["rivP"], "temp", folderD["rstN"])
-    pdf2P = Path(folderD["tempP"], folderD["pdfN"])
+    rstP = Path(folderD["tempP"], folderD["rstN"])
+    parL = parS.split(",")
+    rfrontS = " "
+    msgS = "end of file "
+    # rstP = Path(folderD["rivP"], "temp", folderD["rstN"])
+    # pdf2P = Path(folderD["tempP"], folderD["pdfN"])
 
     # print(f"{rstP=}")
     # print(f"{cmdS=}")
     # print(f"{pthS=}")
     # print(f"{parS=}")
-    parL = parS.split(",")
-    rfrontS = " "
-    msgS = "end of file "
+
     if cmdS == "DOC":
         # print(f"{parL[0]=}")
-        if parL[0].strip() == "pdf2":
-            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+        if typeS == "pdf2":
+            rfrontS = docC.frontpg(tocS)
             # print(f"{rfrontS=}")
             rstS = rfrontS + "\n" + rstS
             with open(txtP, 'w', encoding="utf-8") as file:
                 file.write(utfS)
             with open(rstP, 'w', encoding="utf-8") as file:
                 file.write(rstS)
-            msgS = docC.docpdf2(pthS)
-        elif parL[0].strip() == "rstpdf":
-            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+            msgS = docC.docpdf2(pthS, styleS)
+        elif parL[0].strip() == "pdf":
+            rfrontS = docC.coverpg(tocS)
             msgS = docC.docpdf()
-        elif parL[0].strip() == "rsthtml":
-            rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
+        elif parL[0].strip() == "html":
+            rfrontS = docC.coverpg(tocS)
             msgS = docC.dochtml()
+        elif parL[0].strip() == "text":
+            rfrontS = docC.coverpg(tocS)
+            msgS = docC.doctext()
         else:
             pass
     elif cmdS == "REPORT":
-        if parL[0].strip() == "pdf2":
+        if typeS == "pdf2":
             rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
             msgS = docC.reportpdf2()
         elif parL[0].strip() == "rstpdf":
@@ -249,21 +275,4 @@ def W(rS):
         pass
 
     print("\n" + f"{msgS=}")
-    sys.exit()
-
-
-def X(rS):
-    """ skip rivt string - no processing
-
-    Args:
-        rS (str): rivt string
-    """
-
-    rL = rS.split("|")
-    print("\n Section skipped: " + rL[0] + "\n")
-
-
-def Q():
-
-    print("<<<<< exit rivtlib >>>>>")
     sys.exit()

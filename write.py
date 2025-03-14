@@ -4,10 +4,11 @@ import logging
 import warnings
 import subprocess
 from pathlib import Path
+from rivtlib.templates import cover1 as template
 
 
 class CmdW:
-    """ write doc or report
+    """ write docs and report
 
     Commands:
         | DOC | rel. pth |  type, cover
@@ -33,93 +34,33 @@ class CmdW:
         )
         warnings.filterwarnings("ignore")
 
-    def coverpg(self, tocS, copageS):
-        """parse a tagged line
-
-        Args:
-            cmdS (_type_): _description_
-            lineS (_type_): _description_
-
-        Returns:
-            utS: formatted utf string
+    def frontpg(self, tocS):
         """
 
-        projP = self.folderD["projP"]
-        print(f"{projP=}")
+        """
 
-        coverS = """
+        match tocS:
+            case "none":
+                template.coverS = " "
+                template.contentS = " "
+            case "toc":
+                template.coverS = " "
+            case "cover":
+                pass
+            case _:
+                template.coverS = " "
+                template.contentS = " "
 
-My Report Title2
-###################
-
-
-
-subtitle
-++++++++
-
-
-
-.. class:: center
-
-   **My SubTitle2**
-
-   **date and time**
-
-
-
-|
-|
-|
-|
-|
-|
-
-
-.. image:: """ + "../../docs/_styles/rivt01.png" + """
-   :width: 30%
-   :align: center
-"""
-
-        contentS = """
-
-.. raw:: pdf
-
-   PageBreak coverPage 
-
-
-   SetPageCounter 0
-
-
-
-.. contents::   My Document Title 
-
-"""
-
-        mainpageS = """
-
-.. raw:: pdf
-
-   PageBreak mainPage
-
-"""
-
-        if tocS != "toc":
-            contentS = " "
-        if copageS != "cover":
-            coverS = " "
-
-        # print(f"{tocS=}")
-        # print(f"{copageS=}")
-
-        rfrontS = coverS + contentS + mainpageS
+        rfrontS = template.coverS + template.contentS + template.mainpageS
 
         return rfrontS
 
     def doctext(self):
         pass
 
-    def docpdf2(self, rst2P):
+    def docpdf2(self, rst2P, styleS):
         """_summary_
+
         """
 
         pthP = Path(self.folderD["pthS"])
@@ -128,7 +69,8 @@ subtitle
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]    # input
         cmd2S = " -o ../" + str(rst2P) + self.folderD["pdfN"]    # output
         cmd3S = " --config=../docs/_styles/rst2pdf.ini"       # config
-        cmdS = cmd1S + cmd2S + cmd3S
+        cmd4S = " --stylesheets=" + styleS.strip() + ".yaml"
+        cmdS = cmd1S + cmd2S + cmd3S + cmd4S
         print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
 
@@ -137,9 +79,6 @@ subtitle
         msgS = "file written: " + str(insP)
 
         return msgS
-
-    def dochtml(self):
-        pass
 
     def docpdf(self):
         """Modify TeX file to avoid problems with escapes:
@@ -440,6 +379,9 @@ subtitle
                     pass
             time.sleep(1)
             print("INFO: temporary Tex files deleted \n", flush=True)
+
+    def dochtml(self):
+        pass
 
     def reportpdf2(self):
         """
