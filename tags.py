@@ -237,12 +237,12 @@ class Tag:
         # utf
         uS = textwrap.indent(lineS, '     ')
         # prst
-        prS = "\n\n :: \n\n\n" + uS + "\n\n"
+        r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
         # rst
         xrS = ".. raw:: math\n\n   " + lineS + "\n"
 
         # print(uS)
-        return uS, prS
+        return uS, r2S
 
     def plain(self, lineS, folderD, labelD):
         """format plain literal text _[P]

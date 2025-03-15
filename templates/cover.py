@@ -5,7 +5,7 @@ Args:
     cover(str,str) : restructured text cover page string
     content(str) : restructured text table of contents string
     mainPageS() : restructured text contents string 
-    imgS : cover page image in ../../docs/_styles/
+    imgS(str) : cover page image in ../../docs/_styles/
     
 """
 

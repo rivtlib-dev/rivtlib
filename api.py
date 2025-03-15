@@ -214,7 +214,7 @@ def W(rS):
             continue
         elif lS[:2] == "||":
             cL = lS[2:].split("|")
-            print(cL)
+            # print(cL)
             cmdS = cL[0].strip()
             pthS = cL[1].strip()
             parS = cL[2].strip()

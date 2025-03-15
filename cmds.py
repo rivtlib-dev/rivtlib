@@ -117,7 +117,7 @@ class Cmd:
         if parL[2].strip() == "_[F]":
             numS = str(self.labelD["figI"])
             self.labelD["figI"] = int(numS) + 1
-            figS = "Fig. " + numS + "-"
+            figS = "**Fig. " + numS + " -** "
         else:
             figS = " "
         # utf
@@ -127,15 +127,17 @@ class Cmd:
                + "   :width: " + scS + "% \n"
                + "   :align: center \n"
                + "\n\n"
+               + ".. class:: center \n\n"
                + figS + capS + "\n"
                )
         # rSt
-        rS = ("\n\n.. image:: " + insS + "\n"
-              + "   :width: " + scS + "% \n"
-                + "   :align: center \n"
-                + "   :caption: " + figS + capS + "\n"
-                + "\n\n\n"
-              )
+        r2S = ("\n\n.. image:: " + insS + "\n"
+               + "   :width: " + scS + "% \n"
+               + "   :align: center \n"
+               + "\n\n"
+               + ".. class:: center \n\n"
+               + figS + capS + "\n"
+               )
         return uS, r2S
 
     def img2(self, pthS, parS):

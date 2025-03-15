@@ -126,7 +126,7 @@ class RivtParse:
             # print(f"{ulS=}")
             if len(ulS.strip()) < 1 and not blockB:
                 xutfS += "\n"
-                xrstS += "|\n"
+                xrstS += " \n"
                 print(" ")                              # stdout blank
                 continue
             try:

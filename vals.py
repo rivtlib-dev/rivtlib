@@ -101,16 +101,15 @@ class CmdV:
             _type_: _description_
         """
 
-        parL = parS.split(",")
-        if parL[0].strip() == "_[V]":                      # table number
+        if "_[V]" in parS.strip():                      # table number
             vnumI = int(self.labelD["valueI"])
             fillS = str(vnumI).zfill(2)
-            utitlnS = "\nValue Table " + fillS + " - "
-            rtitlnS = "\n**Value Table " + fillS + " -** "
+            utitlnS = "\nValue Table " + fillS + " - " + parS.strip("_[V]")
+            rtitlnS = "\n**Value Table " + fillS + " -** " + parS.strip("_[V]")
             self.labelD["valueI"] = vnumI + 1
         else:
-            utitlnS = " "
-            rtitlnS = " "
+            utitlnS = "\nValue Table  - " + parS.strip()
+            rtitlnS = "\n**Value Table -** " + parS.strip()
 
         insP = Path(self.folderD["projP"])
         insP = Path(Path(insP) / pthS)
@@ -162,13 +161,13 @@ class CmdV:
         alignL = ["left", "right", "right", "left"]
         vC = CmdV(self.folderD, self.labelD, self.rivtpD, self.rivtvD)
         uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)      # format table
-        pthxS = str(Path(*Path(pthS).parts[-3:]))
-
         r2S = rS
-        pS = "[from file: " + pthxS + "]" + "\n\n"
-        uS = uS + pS + utitlnS
-        r2S = r2S + pS + rtitlnS
-        rS = rS + pS + rtitlnS
+
+        # pthxS = str(Path(*Path(pthS).parts[-3:]))
+        pS = "[from file: " + pthS + "]" + "\n\n"
+        uS = utitlnS + pS + uS + "\n"
+        r2S = rtitlnS + pS + r2S + "\n"
+        rS = rtitlnS + pS + rS + "\n"
 
         return uS, r2S
 
@@ -214,11 +213,11 @@ class CmdV:
             pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
-        lineS = textwrap.indent(lineS, '     ')
+        lineS = textwrap.indent(lineS, '    ')
         refS = refS.rjust(self.labelD["widthI"])
         uS = refS + "\n" + lineS + "\n\n"
         # rst2
-        r2S = "\n\n :: \n\n\n" + refS + "\n" + lineS + "\n\n"
+        r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + lineS + "\n\n"
         # rst
         rS = ".. raw:: math\n\n   " + lineS + "\n"
 
@@ -306,7 +305,8 @@ class CmdV:
         output = StringIO()
         output.write(tabulate.tabulate(tblL, tablefmt=tblfmt, headers=hdr1L,
                                        showindex=False,  colalign=alignL))
-        uS = rS = output.getvalue()
+        uS = output.getvalue()
+        rS = output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
 

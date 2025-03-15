@@ -82,13 +82,13 @@ class CmdW:
 
         pthP = Path(self.folderD["pthS"])
         # pthP = os.path.join(pthP, '')
-        print(f"{pthP=}")
+        # print(f"{pthP=}")
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]    # input
         cmd2S = " -o ../" + str(rst2P) + self.folderD["pdfN"]    # output
         cmd3S = " --config=../docs/_styles/rst2pdf.ini"       # config
         cmd4S = " --stylesheets=" + styleS.strip() + ".yaml"
         cmdS = cmd1S + cmd2S + cmd3S + cmd4S
-        print("cmdS=", cmdS)
+        # print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
 
         insP = Path(self.folderD["docsP"], "pdf2", self.folderD["pdfN"])
