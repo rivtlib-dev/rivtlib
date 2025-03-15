@@ -34,9 +34,6 @@ def cover(covtitleS, covsubS, covbottomS, imgS):
 |
 |
 |
-|
-|
-|
 
 
 .. image::  ../../docs/_styles/""" + imgS + """
@@ -49,10 +46,7 @@ def cover(covtitleS, covsubS, covbottomS, imgS):
 |
 |
 |
-|
-|
-|
-|
+
 |
 
 

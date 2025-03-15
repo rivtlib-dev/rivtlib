@@ -60,7 +60,7 @@ else:
     sys.exit()
 
 # print(f"{rivtP=}")
-# print(f"{curP=}")
+# print(f"{rivP=}")
 # print(f"{rivN=}")
 # print(f"{__name__=}")
 

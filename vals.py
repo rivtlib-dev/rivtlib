@@ -127,8 +127,8 @@ class CmdV:
             if len(vaL) < 4:
                 continue
             eqS = vaL[0].strip()
-            varS = vaL[0].split("=")[0].strip()
-            valS = vaL[0].split("=")[1].strip()
+            varS = vaL[0].split(":=")[0].strip()
+            valS = vaL[0].split(":=")[1].strip()
             descripS = vaL[1].strip()
             unit1S, unit2S = vaL[2], vaL[3]
             dec1S, dec2S = vaL[4], vaL[5]
@@ -311,6 +311,7 @@ class CmdV:
         sys.stdout.flush()
 
         refS = parS.split("|")
+        eqS = eqS.replace("=", ":=")
         iS = eqS + "," + ",".join(refS)
         self.labelD["valexpS"] += iS + "\n"
 
