@@ -3,8 +3,6 @@ import sys
 from pathlib import Path
 from fpdf import FPDF
 
-# rivN = "r000-x.py"
-
 def dicts(rivN, rivP, rivtP):
     """dictionaries of parameters
 

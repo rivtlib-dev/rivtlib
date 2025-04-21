@@ -45,6 +45,7 @@ from rivtlib import params, parse, write
 
 global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
+rivN = "r000-x.py"
 curP = Path(os.getcwd())
 rivP = curP
 if __name__ == "rivtlib.api":

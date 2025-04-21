@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from rivtlib import tags, cmds, vals, write
+from rivtlib import tags, cmds, rvvals, rvwrite
 
 
 class RivtParse:
@@ -15,24 +15,13 @@ class RivtParse:
         self.tS = tS
         # print(f"{tS=}")
         if tS == "R":
-            self.cmdL = ["run", "process"]
-            self.tagsD = {}
+
         elif tS == "I":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
-            self.tagsD = {"H]": "hline", "C]": "center", "B]": "centerbold",
-                          "E]": "equa", "F]": "figure", "T]": "table",
-                          "#]": "foot", "D]": "descrip", "S]": "sympy",
-                          "P]": "page", "U]": "url",
-                          "[O]]": "blkcode", "[B]]": "blkbold", "[N]]": "blkind",
-                          "[I]]": "blkital",  "[T]]": "blkitind",
-                          "[L]]": "blklatex",  "[Q]]": "blkquit"}
+  
         elif tS == "V":
-            self.cmdL = ["IMG", "IMG2", "VALUES"]
-            self.tagsD = {"E]": "equa", "F]": "figure", "V]": "value", "S]": "sympy",
-                          "P]": "page", "[V]]": "valblock", "[Q]]": "quit"}
+
         elif tS == "T":
-            self.cmdL = ["python"]
-            self.tagsD = {}
+
         else:
             pass
 

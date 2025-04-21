@@ -31,7 +31,7 @@ from rivtlib.units import *
 tabulate.PRESERVE_WHITESPACE = True
 
 
-class CmdV:
+class RvV:
     """ value commands format to utf8 or reSt
 
     Commands:
