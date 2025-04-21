@@ -1,6 +1,6 @@
 #! python
 """ rivt API
-The API is intialized with
+Initialize the API with
 
     import rivtlib.api as rv
 
@@ -14,8 +14,8 @@ API Functions:
     rv.W(rS) - (Write) Write formatted documents
     rv.Q(rS) - (Quit) Exit rivt processing
 
-where rS is a triple quoted utf-8 string. The rivtlib code base uses
-variable types identified with the last letter of a variable name:
+where rS is a triple quoted utf-8 string. The rivtlib code base identifies
+variable types using the last letter of the variable name:
 
 A = array
 B = boolean
