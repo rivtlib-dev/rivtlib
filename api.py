@@ -27,6 +27,27 @@ L = list
 N = file name
 P = path
 S = string
+
+parse and accumulate a rivt string
+
+    Globals:
+        utfS (str): accumulated utf text string
+        rstS (str): accumulated reSt text string
+        labelD (dict): labels
+        folderD (dict): folders
+        rivtD (dict): values
+
+    Args:
+        rS (str): rivt string
+        tS (str): section type is R,I,V,T,W or X
+
+    Calls:
+        RivtParse (class)
+        parse_str (method)
+
+    Returns:
+        None
+
 """
 
 import __main__
@@ -39,7 +60,7 @@ import logging
 import fnmatch
 import sys
 from rivtlib.units import *
-from rivtlib import params, parse, write
+from rivtlib import params, parse, rv_write
 
 # from rivtlib import write
 
@@ -104,38 +125,6 @@ print(hdutfS)
 utfS += hdutfS + "\n"
 
 
-def rivt_parse(rS, tS):
-    """parse and accumulate a rivt string
-
-    Globals:
-        utfS (str): accumulated utf text string
-        rstS (str): accumulated reSt text string
-        labelD (dict): labels
-        folderD (dict): folders
-        rivtD (dict): values
-
-    Args:
-        rS (str): rivt string
-        tS (str): section type is R,I,V,T,W or X
-
-    Calls:
-        RivtParse (class)
-        parse_str (method)
-
-    Returns:
-        None
-    """
-    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
-
-    rL = rS.split("\n")
-    parseC = parse.RivtParse(tS)
-    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
-        rL, folderD, labelD, rivtpD, rivtvD)
-    utfS += xutfS       # accumulate output strings
-    rstS += xrstS
-    return utfS, rstS
-
-
 def R(rS):
     """ process Run string
 
@@ -145,6 +134,16 @@ def R(rS):
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "R")
+
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
+
+    rL = rS.split("\n")
+    parseC = parse.RivtParse(tS)
+    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
+        rL, folderD, labelD, rivtpD, rivtvD)
+    utfS += xutfS       # accumulate output strings
+    rstS += xrstS
+    return utfS, rstS
 
 
 def I(rS):
@@ -157,6 +156,16 @@ def I(rS):
 
     utfS, rstS = rivt_parse(rS, "I")
 
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
+
+    rL = rS.split("\n")
+    parseC = parse.RivtParse(tS)
+    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
+        rL, folderD, labelD, rivtpD, rivtvD)
+    utfS += xutfS       # accumulate output strings
+    rstS += xrstS
+    return utfS, rstS
+
 
 def V(rS):
     """ format Value string
@@ -168,6 +177,16 @@ def V(rS):
 
     utfS, rstS = rivt_parse(rS, "V")
 
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
+
+    rL = rS.split("\n")
+    parseC = parse.RivtParse(tS)
+    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
+        rL, folderD, labelD, rivtpD, rivtvD)
+    utfS += xutfS       # accumulate output strings
+    rstS += xrstS
+    return utfS, rstS
+
 
 def T(rS):
     """ process Tools string
@@ -178,6 +197,16 @@ def T(rS):
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "T")
+
+    global utfS, rstS, folderD, labelD, rivtpD, rivtvD
+
+    rL = rS.split("\n")
+    parseC = parse.RivtParse(tS)
+    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
+        rL, folderD, labelD, rivtpD, rivtvD)
+    utfS += xutfS       # accumulate output strings
+    rstS += xrstS
+    return utfS, rstS
 
 
 def X(rS):
