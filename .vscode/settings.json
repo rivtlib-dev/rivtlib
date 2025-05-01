@@ -40,30 +40,6 @@
                 "useVsCodeApi": true,
                 "command": "extension.github_page"
             },
-            {
-                "name": "Bookmark",
-                "color": "green",
-                "useVsCodeApi": true,
-                "command": "bookmarks.toggle"
-            },
-            {
-                /* example for esp-idf oriented command 
-                "name": "Flash",
-                "terminalName": "ESP-IDF 4.4 CMD",
-                "color": "blue",
-                "useVsCodeApi": false,
-                "ignoreCwd": true,
-                "ignoreClear": true,
-                "command": "idf.py -p ${port} flash",
-                "extraCommands": [
-                    "idf.py -p ${port} monitor"]*/
-            },
-            { /*
-            "cwd": "/home/custom_folder",  Terminal initial folder 
-            "name": "X",
-            "color": "green",
-                "singleInstance": true,
-            "command": "cargo run ${file}", This is executed in the terminal */},
         ]
     },
     "git.autofetch": false,
