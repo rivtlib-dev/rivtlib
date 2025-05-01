@@ -1,33 +1,148 @@
 {
-    "cSpell.enabled": false,
-    "cSpell.words": [
-        "rivtlib",
-        "rivt",
-        "rivtzip"
-    ],
-    "fsdeploy.nodes": [
-        {
-            "source": "C:/Python313/Lib/site-packages/rivtlib",
-            "target": "c:/git/rivtlib/",
-            "include": "**/*.*",
-            "exclude": "",
-            "deleteTargetOnDeploy": true,
-        }
-    ],
-    "fsdeploy.deployOnSave": true,
-    "fsdeploy.deployWorkspaceOnSave": false,
+    "actionButtons": {
+        "reloadButton": "♻️", /* Custom reload button text */
+        "defaultColor": "#ff0034", /* Can also use string color names */
+        "loadNpmCommands": false, /* Disables automatic generation of actions for npm commands */
+        "commands": [
+            {
+                "name": "RunCell",
+                "color": "red",
+                "useVsCodeApi": true,
+                "command": "jupyter.runcurrentcell",
+            },
+            {
+                "name": "FoldAll",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldAll"
+            },
+            {
+                "name": "FoldX",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldAllExcept"
+            },
+            {
+                "name": "UnFold",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.unfoldAll"
+            },
+            {
+                "name": "UnFoldRecursive",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.unfoldRecursively"
+            },
+            {
+                "name": "GitHubPage",
+                "color": "yellow",
+                "useVsCodeApi": true,
+                "command": "extension.github_page"
+            },
+            {
+                "name": "Bookmark",
+                "color": "green",
+                "useVsCodeApi": true,
+                "command": "bookmarks.toggle"
+            },
+            {
+                /* example for esp-idf oriented command 
+                "name": "Flash",
+                "terminalName": "ESP-IDF 4.4 CMD",
+                "color": "blue",
+                "useVsCodeApi": false,
+                "ignoreCwd": true,
+                "ignoreClear": true,
+                "command": "idf.py -p ${port} flash",
+                "extraCommands": [
+                    "idf.py -p ${port} monitor"]*/
+            },
+            { /*
+            "cwd": "/home/custom_folder",  Terminal initial folder 
+            "name": "X",
+            "color": "green",
+                "singleInstance": true,
+            "command": "cargo run ${file}", This is executed in the terminal */},
+        ]
+    },
+    "git.autofetch": false,
+    "outline.showStrings": false,
+    "editor.foldingImportsByDefault": true,
+    "workbench.sideBar.location": "right",
+    "vsicons.dontShowNewVersionMessage": true,
+    "python.defaultInterpreterPath": "c:\\Python313\\python.exe",
+    "editor.formatOnSave": true,
+    "editor.parameterHints.cycle": false,
+    "editor.hover.enabled": false,
+    "editor.tabCompletion": "on",
+    "editor.minimap.enabled": false,
+    "workbench.startupEditor": "none",
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "editor.codeLens": false,
+    "githubRepositories.indexing.verboseDownloadNotification": false,
+    "ShortcutMenuBar.beautify": false,
+    "ShortcutMenuBar.showCommands": true,
     "ShortcutMenuBar.navigateBack": false,
     "ShortcutMenuBar.navigateForward": false,
-    "ShortcutMenuBar.beautify": false,
+    "editor.rulers": [
+        {
+            "column": 4,
+            "color": "#3d3d3d"
+        },
+        {
+            "column": 80,
+            "color": "#3d3d3d"
+        }
+    ],
+    "ShortcutMenuBar.userButton09Command": "cSpell.toggleEnableSpellChecker",
+    "ShortcutMenuBar.commentLine": true,
+    "ShortcutMenuBar.toggleWordWrap": true,
+    "editor.renderWhitespace": "none",
+    "editor.guides.indentation": false,
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "explorer.confirmDelete": false,
+    "workbench.editorAssociations": {
+        "*.svg": "default"
+    },
+    "git.postCommitCommand": "sync",
+    "explorer.confirmDragAndDrop": false,
+    "ShortcutMenuBar.openSettings": true,
+    "editor.inlayHints.enabled": "off",
+    "editor.suggest.showTypeParameters": false,
+    "editor.parameterHints.enabled": false,
+    "explorer.sortOrder": "type",
+    "toggle.settingTitle": "explorer.sortOrder",
+    "toggle.settingState1": "type",
+    "toggle.settingState2": "default",
+    "cSpell.userWords": [
+        "buildable",
+        "rivt"
+    ],
     "[python]": {
+        "editor.formatOnType": true,
         "editor.defaultFormatter": "ms-python.autopep8"
     },
-    "editor.formatOnSave": false,
-    "editor.parameterHints.enabled": false,
-    "editor.foldingImportsByDefault": true,
-    "triggerTaskOnSave.tasks": {
-        "lintpy": [
-            "**/*.py"
-        ],
-    }
+    "editor.fontSize": 16,
+    "python.terminal.executeInFileDir": true,
+    "projectManager.git.baseFolders": [
+        "c:\\git"
+    ],
+    "terminal.integrated.fontSize": 16,
+    "terminal.integrated.scrollback": 5000,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "editor.mouseWheelZoom": true,
+    "cSpell.enabled": false,
+    "seito-openfile.searchSubFoldersOfWorkspaceFolders": [
+        "rivtprivate/*/"
+    ],
+    "explorer.compactFolders": false,
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.colorCustomizations": {
+        "editor.lineHighlightBorder": "#3743c694"
+    },
+    "git.autoStash": true,
 }
