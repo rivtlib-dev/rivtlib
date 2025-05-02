@@ -179,7 +179,7 @@ def T(rS):
     utfS, rstS = rivt_parse(rS, "T")
 
 
-def X(rS):
+def S(rS):
     """ skip rivt string - no processing
 
     Args:
@@ -188,12 +188,6 @@ def X(rS):
 
     rL = rS.split("|")
     print("\n Section skipped: " + rL[0] + "\n")
-
-
-def Q():
-
-    print("<<<<< exit rivtlib >>>>>")
-    sys.exit()
 
 
 def W(rS):
