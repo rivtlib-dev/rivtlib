@@ -39,7 +39,9 @@ import logging
 import fnmatch
 import sys
 from rivtlib.units import *
-from rivtlib import params, parse, write
+from rivtlib import params, parse
+
+from . import rwrite
 
 # from rivtlib import write
 
@@ -220,7 +222,7 @@ def W(rS):
                 subS = parS
                 botS = cL[3].strip()
                 imgS = cL[4].strip()
-                docC = write.CmdW(folderD, labelD)
+                docC = rwrite.CmdW(folderD, labelD)
                 tcovS, tcontS, tmainS = docC.frontvar(titleS, subS, botS, imgS)
                 # print(tcovS, tcontS, tmainS)
             elif cmdS == "DOC":
@@ -230,7 +232,7 @@ def W(rS):
                 styleS = parL[2].strip()
                 txtP = Path(folderD["docsP"], "text", folderD["txtN"])
                 rstP = Path(folderD["tempP"], folderD["rstN"])
-                docC = write.CmdW(folderD, labelD)
+                docC = rwrite.CmdW(folderD, labelD)
                 if typeS == "pdf2":
                     rfrontS = docC.frontpg(tocS, tcovS, tcontS, tmainS)
                     rstS = rfrontS + "\n" + rstS

@@ -4,7 +4,7 @@ import logging
 import warnings
 import subprocess
 from pathlib import Path
-from rivtlib.templates.cover import cover, content, mainpage
+from templates.pdfcover import cover, content, mainpage
 
 
 class CmdW:

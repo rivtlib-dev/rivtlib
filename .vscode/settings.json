@@ -1,4 +1,12 @@
 {
+    "window.title": "${separator}${activeEditorLong}${separator}${remoteName}$[dirty}",
+    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.colorCustomizations": {
+        "editor.lineHighlightBorder": "#34495d",
+        "list.inactiveSelectionBackground": "#213148",
+    },
     "actionButtons": {
         "reloadButton": "♻️", /* Custom reload button text */
         "defaultColor": "#ff0034", /* Can also use string color names */
@@ -115,10 +123,5 @@
         "rivtprivate/*/"
     ],
     "explorer.compactFolders": false,
-    "workbench.iconTheme": "vscode-icons",
-    "workbench.editor.empty.hint": "hidden",
-    "workbench.colorCustomizations": {
-        "editor.lineHighlightBorder": "#3743c694"
-    },
     "git.autoStash": true,
 }

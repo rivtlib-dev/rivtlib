@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
-from rivtlib import tags, cmds, vals, write
+from rivtlib import tags, cmds
+
+from . import rvals, rwrite
 
 
 class RivtParse:
@@ -140,7 +142,7 @@ class RivtParse:
                     blockB = False
                     if self.tS == "V":                  # valform block
                         blockL = blockS.split("\n")
-                        tvC = vals.TagV(folderD, labelD, rivtpD, rivtvD)
+                        tvC = rvals.TagV(folderD, labelD, rivtpD, rivtvD)
                         uS, rS, folderD, labelD, rivtpD, rivtvD = tvC.tag_parse(
                             tagcmd, blockL)
                         print(uS)                       # stdout valread
@@ -176,7 +178,7 @@ class RivtParse:
                         continue
                     elif self.tS == "V":                # values command
                         valsP = folderD["valsP"]
-                        rvvC = vals.CmdV(folderD, labelD, rivtpD, rivtvD)
+                        rvvC = rvals.CmdV(folderD, labelD, rivtpD, rivtvD)
                         uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
                             cmdS, pthS, parS)
                         print(uS)                       # stdout valread
@@ -215,7 +217,7 @@ class RivtParse:
                 eqL = ulS.split("|", 1)
                 eqS = eqL[0].strip()
                 parS = eqL[1].strip()
-                rvvC = vals.CmdV(folderD, labelD, rivtpD, rivtvD)
+                rvvC = rvals.CmdV(folderD, labelD, rivtpD, rivtvD)
                 uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
                     "equate", eqS, parS)
                 xutfS += uS
