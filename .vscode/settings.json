@@ -7,11 +7,27 @@
         "editor.lineHighlightBorder": "#34495d",
         "list.inactiveSelectionBackground": "#213148",
     },
+    "python.languageServer": "Pylance",
+    "[python]": {
+        "editor.formatOnType": false,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.autopep8",
+        "editor.stickyScroll.enabled": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+    },
     "actionButtons": {
         "reloadButton": "♻️", /* Custom reload button text */
         "defaultColor": "#ff0034", /* Can also use string color names */
         "loadNpmCommands": false, /* Disables automatic generation of actions for npm commands */
         "commands": [
+            {
+                "name": "ToggleSpell",
+                "color": "green",
+                "useVsCodeApi": true,
+                "command": "cSpell.toggleEnableSpellChecker",
+            },
             {
                 "name": "RunCell",
                 "color": "red",
@@ -43,6 +59,12 @@
                 "command": "editor.unfoldRecursively"
             },
             {
+                "name": "ToggleDocStr",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "extension.toggleDocstrings"
+            },
+            {
                 "name": "GitHubPage",
                 "color": "yellow",
                 "useVsCodeApi": true,
@@ -50,13 +72,18 @@
             },
         ]
     },
+    "ShortcutMenuBar.beautify": false,
+    "ShortcutMenuBar.showCommands": true,
+    "ShortcutMenuBar.navigateBack": false,
+    "ShortcutMenuBar.navigateForward": false,
+    "ShortcutMenuBar.commentLine": true,
+    "ShortcutMenuBar.toggleWordWrap": true,
     "git.autofetch": false,
     "outline.showStrings": false,
     "editor.foldingImportsByDefault": true,
     "workbench.sideBar.location": "right",
     "vsicons.dontShowNewVersionMessage": true,
     "python.defaultInterpreterPath": "c:\\Python313\\python.exe",
-    "editor.formatOnSave": true,
     "editor.parameterHints.cycle": false,
     "editor.hover.enabled": false,
     "editor.tabCompletion": "on",
@@ -66,10 +93,6 @@
     "git.confirmSync": false,
     "editor.codeLens": false,
     "githubRepositories.indexing.verboseDownloadNotification": false,
-    "ShortcutMenuBar.beautify": false,
-    "ShortcutMenuBar.showCommands": true,
-    "ShortcutMenuBar.navigateBack": false,
-    "ShortcutMenuBar.navigateForward": false,
     "editor.rulers": [
         {
             "column": 4,
@@ -80,9 +103,6 @@
             "color": "#3d3d3d"
         }
     ],
-    "ShortcutMenuBar.userButton09Command": "cSpell.toggleEnableSpellChecker",
-    "ShortcutMenuBar.commentLine": true,
-    "ShortcutMenuBar.toggleWordWrap": true,
     "editor.renderWhitespace": "none",
     "editor.guides.indentation": false,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
@@ -104,19 +124,12 @@
         "buildable",
         "rivt"
     ],
-    "[python]": {
-        "editor.formatOnType": true,
-        "editor.defaultFormatter": "ms-python.autopep8"
-    },
     "editor.fontSize": 16,
     "python.terminal.executeInFileDir": true,
     "projectManager.git.baseFolders": [
         "c:\\git"
     ],
     "terminal.integrated.fontSize": 16,
-    "terminal.integrated.scrollback": 5000,
-    "editor.formatOnPaste": true,
-    "editor.formatOnType": true,
     "editor.mouseWheelZoom": true,
     "cSpell.enabled": false,
     "seito-openfile.searchSubFoldersOfWorkspaceFolders": [
@@ -124,4 +137,6 @@
     ],
     "explorer.compactFolders": false,
     "git.autoStash": true,
+    "python.analysis.autoFormatStrings": true,
+    "editor.defaultFormatter": "ms-python.black-formatter",
 }

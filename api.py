@@ -1,5 +1,5 @@
 #! python
-""" rivt API
+"""rivt API
 The API is intialized with
 
     import rivtlib.api as rv
@@ -10,12 +10,11 @@ API Functions:
     rv.I(rS) - (Insert) Insert static text, math, images and tables
     rv.V(rS) - (Values) Evaluate values and equations
     rv.T(rS) - (Tools) Execute Python functions and scripts
-    rv.X(rS) - (eXclude) Skip string processing
     rv.W(rS) - (Write) Write formatted documents
-    rv.Q(rS) - (Quit) Exit rivt processing
+    rv.S(rS) - (Skip) Skip string processing of that string
 
-where rS is a triple quoted utf-8 string. The rivtlib code base uses
-variable types identified with the last letter of a variable name:
+where rS is a triple quoted, indented, utf-8 string. This rivtlib code base uses
+the last letter of a variable name to indicate the variable types as follows:
 
 A = array
 B = boolean
@@ -24,41 +23,37 @@ D = dictionary
 F = float
 I = integer
 L = list
-N = file name
-P = path
+N = file name only
+P = file path only (abs or rel)
+PF = path and file name
 S = string
 """
 
+from rivtlib.units import *
+from rivtlib import rwrite, params, parse, log_check
 import __main__
 from pathlib import Path
 from datetime import datetime, time
 from configparser import ConfigParser
-import warnings
 import os
-import logging
 import fnmatch
 import sys
-from rivtlib.units import *
-from rivtlib import params, parse
 
-from . import rwrite
-
-# from rivtlib import write
 
 global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-curP = Path(os.getcwd())
-rivP = curP
+rivtP = Path(os.getcwd())
+rivtN = "not found"
 if __name__ == "rivtlib.api":
     rivtP = Path(__main__.__file__)
-    rivN = rivtP.name
-    if fnmatch.fnmatch(rivN, "r????-*.py"):
-        rivtP = Path(rivP, rivN)
-        folderD, labelD, rivtpD, rivtvD = params.dicts(rivN, rivP, rivtP)
+    rivtN = rivtP.name
+    patternS = "r[0-9][0-9][0-9]0-9]-*.py"
+    if fnmatch.fnmatch(rivtN, patternS):
+        rivtFP = Path(rivtP, rivtN)
+        folderD, labelD, rivtpD, rivtvD = params.dicts(rivtN, rivtP, rivtFP)
 else:
-    print(f"INFO     rivt file - {rivN}")
-    print(f"INFO     The name must match 'rddss-filename.py' where")
-    print(f"INFO     dd and ss are two digit integers")
+    print(f"- The rivt file name is !! {rivtN} !!. The file name must match the")
+    print(f"- pattern 'rddss-anyname.py', where dd and ss are two-digit integers")
     sys.exit()
 
 # print(f"{rivtP=}")
@@ -69,22 +64,13 @@ else:
 # initialize logging
 modnameS = __name__.split(".")[1]
 # print(f"{modnameS=}")
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)-8s  " + modnameS +
-    "   %(levelname)-8s %(message)s",
-    datefmt="%m-%d %H:%M",
-    filename=folderD["errlogP"],
-    filemode="w",
-)
-warnings.filterwarnings("ignore")
-# warnings.simplefilter(action="ignore", category=FutureWarning)
+log_rivt(rivtP, modnameS, folderD)
 
-# read init file
+# read doc init file
 config = ConfigParser()
-config.read(Path(folderD["projP"], "rivt-config.ini"))
-headS = config.get('report', 'title')
-footS = config.get('utf', 'foot1')
+config.read(Path(folderD["projP"], "rivt-doc.ini"))
+headS = config.get("report", "title")
+footS = config.get("utf", "foot1"        )
 
 # initialize strings, config
 rstS = """"""
@@ -92,10 +78,10 @@ utfS = """"""
 xrstS = """"""
 xutfS = """"""
 timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
-titleL = rivN.split("-")                            # subdivision title
+titleL = rivN.split("-")  # subdivision title
 titleS = titleL[1].split(".")[0]
 titleS = titleS.title()
-dnumS = (titleL[0].split('r'))[1]
+dnumS = (titleL[0].split("r"))[1]
 headS = "[" + dnumS + "]  " + titleS.strip()
 bordrS = labelD["widthI"] * "="
 time1S = timeS.rjust(labelD["widthI"])
@@ -131,14 +117,15 @@ def rivt_parse(rS, tS):
     rL = rS.split("\n")
     parseC = parse.RivtParse(tS)
     xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
-        rL, folderD, labelD, rivtpD, rivtvD)
-    utfS += xutfS       # accumulate output strings
+        rL, folderD, labelD, rivtpD, rivtvD
+    )
+    utfS += xutfS  # accumulate output strings
     rstS += xrstS
     return utfS, rstS
 
 
 def R(rS):
-    """ process Run string
+    """process Run string
 
     Args:
         rS (str): rivt string
@@ -149,7 +136,7 @@ def R(rS):
 
 
 def I(rS):
-    """ format Insert string
+    """format Insert string
 
     Args:
         rS (str): rivt string
@@ -160,7 +147,7 @@ def I(rS):
 
 
 def V(rS):
-    """ format Value string
+    """format Value string
 
     Args:
         rS (str): rivt string
@@ -171,7 +158,7 @@ def V(rS):
 
 
 def T(rS):
-    """ process Tools string
+    """process Tools string
 
     Args:
         rS (str): rivt string
@@ -182,7 +169,7 @@ def T(rS):
 
 
 def W(rS):
-    """ write output files
+    """write output files
 
     Args:
         rS (str): rivt string
@@ -236,9 +223,9 @@ def W(rS):
                 if typeS == "pdf2":
                     rfrontS = docC.frontpg(tocS, tcovS, tcontS, tmainS)
                     rstS = rfrontS + "\n" + rstS
-                    with open(txtP, 'w', encoding="utf-8") as file:
+                    with open(txtP, "w", encoding="utf-8") as file:
                         file.write(utfS)
-                    with open(rstP, 'w', encoding="utf-8") as file:
+                    with open(rstP, "w", encoding="utf-8") as file:
                         file.write(rstS)
                     msgS = docC.docpdf2(pthS, styleS)
                 elif typeS == "pdf":
@@ -277,7 +264,7 @@ def W(rS):
 
 
 def S(rS):
-    """ skip rivt string - no processing
+    """skip rivt string - no processing
 
     Args:
         rS (str): rivt string
@@ -285,4 +272,3 @@ def S(rS):
 
     rL = rS.split("|")
     print("\n Section skipped: " + rL[0] + "\n")
-
