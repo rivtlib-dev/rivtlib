@@ -1,6 +1,6 @@
 # python #!
-import fnmatch
 import csv
+import fnmatch
 import logging
 import re
 import sys
@@ -16,9 +16,9 @@ import numpy.linalg as la
 import pandas as pd
 import sympy as sp
 import tabulate
+from numpy import *
 from PIL import Image
 from reportlab.lib.utils import ImageReader
-from numpy import *
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
@@ -31,27 +31,24 @@ tabulate.PRESERVE_WHITESPACE = True
 
 class Cmd:
     """
-        insert commands that format to utf8 or reSt
+    insert commands that format to utf8 or reSt
 
-        || APPEND | rel. pth | num; nonum                      .pdf
-        || IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
-        || IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
-        || TEXT | rel. pth |  plain; rivt                      .txt
-        || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
+    || APPEND | rel. pth | num; nonum                      .pdf
+    || IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
+    || IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
+    || TEXT | rel. pth |  plain; rivt                      .txt
+    || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
     """
 
-    def __init__(self,  folderD, labelD):
-        """commands that format to utf and reSt
-
-        """
+    def __init__(self, folderD, labelD):
+        """commands that format to utf and reSt"""
         self.folderD = folderD
         self.labelD = labelD
         errlogP = folderD["errlogP"]
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS +
-            "   %(levelname)-8s %(message)s",
+            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
             filename=errlogP,
             filemode="w",
@@ -69,7 +66,7 @@ class Cmd:
             utS: formatted utf string
         """
 
-        cC = globals()['Cmd'](self.folderD, self.labelD)
+        cC = globals()["Cmd"](self.folderD, self.labelD)
         ccmdS = cmdS.lower()
         functag = getattr(cC, ccmdS)
         uS, rS = functag(pthS, parS)
@@ -81,17 +78,15 @@ class Cmd:
         return uS, rS, self.folderD, self.labelD
 
     def append(self, pthS, parS):
-        """_summary_
-        """
+        """_summary_"""
         pass
 
     def prepend(self, pthS, parS):
-        """_summary_
-        """
+        """_summary_"""
         pass
 
     def img(self, pthS, parS):
-        """ insert image from file
+        """insert image from file
 
         Args:
             pthS (str): relative file path
@@ -123,25 +118,39 @@ class Cmd:
         # utf
         uS = figS + capS + " [file: " + pthS + " ] \n"
         # rst2
-        r2S = ("\n\n.. image:: " + insS + "\n"
-               + "   :width: " + scS + "% \n"
-               + "   :align: center \n"
-               + "\n\n"
-               + ".. class:: center \n\n"
-               + figS + capS + "\n"
-               )
+        r2S = (
+            "\n\n.. image:: "
+            + insS
+            + "\n"
+            + "   :width: "
+            + scS
+            + "% \n"
+            + "   :align: center \n"
+            + "\n\n"
+            + ".. class:: center \n\n"
+            + figS
+            + capS
+            + "\n"
+        )
         # rSt
-        r2S = ("\n\n.. image:: " + insS + "\n"
-               + "   :width: " + scS + "% \n"
-               + "   :align: center \n"
-               + "\n\n"
-               + ".. class:: center \n\n"
-               + figS + capS + "\n"
-               )
+        r2S = (
+            "\n\n.. image:: "
+            + insS
+            + "\n"
+            + "   :width: "
+            + scS
+            + "% \n"
+            + "   :align: center \n"
+            + "\n\n"
+            + ".. class:: center \n\n"
+            + figS
+            + capS
+            + "\n"
+        )
         return uS, r2S
 
     def img2(self, pthS, parS):
-        """ insert side by side images from files
+        """insert side by side images from files
 
         Args:
             pthS(str): relative file path
@@ -171,34 +180,35 @@ class Cmd:
         except:
             pass
         uS = "<" + cap1S + " : " + str(file1P) + "> \n"
-        rS = ("\n.. image:: "
-              + pthS + "\n"
-              + "   :scale: "
-              + scale1S + "%" + "\n"
-              + "   :align: center"
-              + "\n\n"
-              )
+        rS = (
+            "\n.. image:: "
+            + pthS
+            + "\n"
+            + "   :scale: "
+            + scale1S
+            + "%"
+            + "\n"
+            + "   :align: center"
+            + "\n\n"
+        )
 
         return uS, rS
 
     def table(self, pthS, parS):
-        """insert table from csv, xlsx or reSt file
-
-        """
+        """insert table from csv, xlsx or reSt file"""
         # print(f"{pthS=}")
         uS = rS = ""
-        pthP = Path(pthS)                                  # path
-        extS = pthP.suffix[1:]                             # file extension
+        pthP = Path(pthS)  # path
+        extS = pthP.suffix[1:]  # file extension
         parL = parS.split(",")
-        titleS = parL[0].strip()                           # title
+        titleS = parL[0].strip()  # title
         if titleS == "-":
             titleS = " "
-        maxwI = int(parL[1].strip())                       # max col. width
-        alnS = parL[2].strip()                             # col. alignment
-        rowS = parL[3].strip()                                # read rows
-        alignD = {"s": "", "d": "decimal",
-                  "c": "center", "r": "right", "l": "left"}
-        if parL[4].strip() == "_[T]":                      # table number
+        maxwI = int(parL[1].strip())  # max col. width
+        alnS = parL[2].strip()  # col. alignment
+        rowS = parL[3].strip()  # read rows
+        alignD = {"s": "", "d": "decimal", "c": "center", "r": "right", "l": "left"}
+        if parL[4].strip() == "_[T]":  # table number
             tnumI = int(self.labelD["tableI"])
             fillS = str(tnumI).zfill(2)
             utitlnS = "\nTable " + fillS + " - "
@@ -214,20 +224,20 @@ class Cmd:
         insP = Path(Path(insP) / pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + pthS + "]" + "\n\n"
-        utlS = utitlnS + titleS + pS                       # file path text
+        utlS = utitlnS + titleS + pS  # file path text
         rtlS = rtitlnS + titleS + pS
 
         readL = []
-        if extS == "csv":                                  # read csv file
+        if extS == "csv":  # read csv file
             with open(insP, "r") as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
                     # print(f"{row=}")
-                    if row and row[0].startswith('#'):
+                    if row and row[0].startswith("#"):
                         continue
                     else:
                         readL.append(row)
-        elif extS == "xlsx":                               # read xls file
+        elif extS == "xlsx":  # read xls file
             pDF1 = pd.read_excel(pthS, header=None)
             readL = pDF1.values.tolist()
         else:
@@ -237,9 +247,16 @@ class Cmd:
         old_stdout = sys.stdout
         output = StringIO()
         alignS = alignD[alnS]
-        output.write(tabulate.tabulate(
-            readL, tablefmt="rst", headers="firstrow",
-            numalign="decimal", maxcolwidths=maxwI, stralign=alignS))
+        output.write(
+            tabulate.tabulate(
+                readL,
+                tablefmt="rst",
+                headers="firstrow",
+                numalign="decimal",
+                maxcolwidths=maxwI,
+                stralign=alignS,
+            )
+        )
         uS = rS = output.getvalue()
         sys.stdout = old_stdout
 
@@ -261,10 +278,10 @@ class Cmd:
 
         # print(f"{pthS=}")
         uS = rS = ""
-        pthP = Path(pthS)                                  # path
-        extS = pthP.suffix[1:]                             # file extension
+        pthP = Path(pthS)  # path
+        extS = pthP.suffix[1:]  # file extension
         parL = parS.split(",")
-        typeS = parL[0].strip()                            # title
+        typeS = parL[0].strip()  # title
         insP = Path(self.folderD["projP"])
         insP = Path(Path(insP) / pthS)
         insS = str(insP.as_posix())

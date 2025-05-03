@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
-from rivtlib import tags, cmds
+
+from rivtlib import cmds, tags
+
 from . import rvals, rwrite
 
 
@@ -8,7 +10,8 @@ class RivtParse:
     """format rivt-strings to utf and rst docs"""
 
     def __init__(self, tS):
-        """format header string
+        """
+        format header string
 
         Args:
             tS (str): section type

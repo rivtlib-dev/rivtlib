@@ -52,31 +52,24 @@ if __name__ == "rivtlib.api":
         rivtFP = Path(rivtP, rivtN)
         folderD, labelD, rivtpD, rivtvD = params.dicts(rivtN, rivtP, rivtFP)
 else:
-    print(f"-  The rivt file name is !! {rivtN} !!. The file name must match the")
-    print("""-   pattern"rddss-anyname.py , where dd and ss are two-digit integers""")
+    print(f"- The rivt file name is !! {rivtN} !!. The file name must match the")
+    print("""- pattern  "rddss-anyname.py" , where dd and ss are two-digit integers""")
     sys.exit()
-
-# print(f"{rivtP=}")
-# print(f"{rivP=}")
-# print(f"{rivN=}")
-# print(f"{__name__=}")
 
 # initialize logging
 modnameS = __name__.split(".")[1]
+log_check.log_bak(rivtFP, modnameS, folderD)
+
+# print(f"{rivtFP=}")
+# print(f"{rivN=}")
+# print(f"{__name__=}")
 # print(f"{modnameS=}")
-log_check.log_rivt(rivtP, modnameS, folderD)
 
-# read doc init file
-config = ConfigParser()
-config.read(Path(folderD["projP"], "rivt-doc.ini"))
-headS = config.get("report", "title")
-footS = config.get("utf", "foot1")
-
-# initialize strings, config
-rstS = """"""
-utfS = """"""
-xrstS = """"""
-xutfS = """"""
+# initialize strings
+rstS = """"""  # cumulative rest string
+utfS = """"""  # cumulative utf string
+xrstS = """"""  # api function string - rest
+xutfS = """"""  # api function string - utf
 timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
 titleL = rivtN.split("-")  # subdivision title
 titleS = titleL[1].split(".")[0]
@@ -85,21 +78,28 @@ dnumS = (titleL[0].split("r"))[1]
 headS = "[" + dnumS + "]  " + titleS.strip()
 bordrS = labelD["widthI"] * "="
 time1S = timeS.rjust(labelD["widthI"])
+# read init file - for docs overrides
+config = ConfigParser()
+config.read(Path(folderD["projP"], "rivt-doc.ini"))
+headS = config.get("report", "title")
+footS = config.get("utf", "foot1")
+# subdivision heading - for stdoout
 hdutfS = time1S + "\n" + headS + "\n" + bordrS + "\n"
-# stdout subdivision heading
-print(hdutfS)
 utfS += hdutfS + "\n"
+# print(hdutfS)
 
 
 def rivt_parse(rS, tS):
-    """parse and accumulate a rivt string
+    """
+    parse and accumulate a rivt string
 
     Globals:
-        utfS (str): accumulated utf text string
-        rstS (str): accumulated reSt text string
-        labelD (dict): labels
-        folderD (dict): folders
-        rivtD (dict): values
+        utfS (str): accumulated utf string
+        rstS (str): accumulated reSt string
+        labelD (dict): labels for formatting
+        folderD (dict): folder and file paths
+        rivtvD (dict): calculation values
+        rivtpD (dict): printing parameters
 
     Args:
         rS (str): rivt string
@@ -110,8 +110,10 @@ def rivt_parse(rS, tS):
         parse_str (method)
 
     Returns:
-        None
+        utfS (str): accumulating utf output string
+        rstS (str): accumulating reSt string
     """
+
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     rL = rS.split("\n")
@@ -121,55 +123,65 @@ def rivt_parse(rS, tS):
     )
     utfS += xutfS  # accumulate output strings
     rstS += xrstS
+
     return utfS, rstS
 
 
 def R(rS):
-    """process Run string
+    """
+    process Run string
 
     Args:
         rS (str): rivt string
     """
+
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "R")
 
 
 def I(rS):
-    """format Insert string
+    """
+    format Insert string
 
     Args:
         rS (str): rivt string
     """
+
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "I")
 
 
 def V(rS):
-    """format Value string
+    """
+    format Value string
 
     Args:
         rS (str): rivt string
     """
+
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "V")
 
 
 def T(rS):
-    """process Tools string
+    """
+    process Tools string
 
     Args:
         rS (str): rivt string
     """
+
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
     utfS, rstS = rivt_parse(rS, "T")
 
 
 def W(rS):
-    """write output files
+    """
+    write output files
 
     Args:
         rS (str): rivt string

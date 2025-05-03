@@ -1,14 +1,18 @@
-import time
-import os
 import logging
-import warnings
+import os
 import subprocess
+import time
+import warnings
 from pathlib import Path
-from templates.pdfcover import cover, content, mainpage
+
+from fpdf import FPDF
+
+from templates.pdfcover import content, cover, mainpage
 
 
 class CmdW:
-    """ write docs and report
+    """
+    write docs
 
     Commands:
         | DOC | rel. pth |  type, cover
@@ -16,10 +20,8 @@ class CmdW:
         | APPEND | rel. pth |  title
     """
 
-    def __init__(self,  folderD, labelD):
-        """commands that format to utf and reSt
-
-        """
+    def __init__(self, folderD, labelD):
+        """commands that format to utf and reSt"""
 
         self.folderD = folderD
         self.labelD = labelD
@@ -30,8 +32,7 @@ class CmdW:
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS +
-            "   %(levelname)-8s %(message)s",
+            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
             filename=errlogP,
             filemode="w",
@@ -54,9 +55,7 @@ class CmdW:
         return tcovS, tcontS, tmainS
 
     def frontpg(self, tocS, tcovS, tcontS, tmainS):
-        """ assemble front pages
-
-        """
+        """assemble front pages"""
 
         match tocS:
             case "none":
@@ -76,16 +75,14 @@ class CmdW:
         pass
 
     def docpdf2(self, rst2P, styleS):
-        """_summary_
-
-        """
+        """_summary_"""
 
         pthP = Path(self.folderD["pthS"])
         # pthP = os.path.join(pthP, '')
         # print(f"{pthP=}")
-        cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]    # input
-        cmd2S = " -o ../" + str(rst2P) + self.folderD["pdfN"]    # output
-        cmd3S = " --config=../docs/_styles/rst2pdf.ini"       # config
+        cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]  # input
+        cmd2S = " -o ../" + str(rst2P) + self.folderD["pdfN"]  # output
+        cmd3S = " --config=../docs/_styles/rst2pdf.ini"  # config
         cmd4S = " --stylesheets=" + styleS.strip() + ".yaml"
         cmdS = cmd1S + cmd2S + cmd3S + cmd4S
         # print("cmdS=", cmdS)
@@ -123,13 +120,16 @@ class CmdW:
             texf = f2.read()
 
         # modify "at" command
-        texf = texf.replace("""\\begin{document}""",
-                            """\\renewcommand{\contentsname}{""" + doctitleS
-                            + "}\n" +
-                            """\\begin{document}\n""" +
-                            """\\makeatletter\n""" +
-                            """\\renewcommand\@dotsep{10000}""" +
-                            """\\makeatother\n""")
+        texf = texf.replace(
+            """\\begin{document}""",
+            """\\renewcommand{\contentsname}{"""
+            + doctitleS
+            + "}\n"
+            + """\\begin{document}\n"""
+            + """\\makeatletter\n"""
+            + """\\renewcommand\@dotsep{10000}"""
+            + """\\makeatother\n""",
+        )
 
         # add table of contents, figures and tables
         # texf = texf.replace("""\\begin{document}""",
@@ -148,19 +148,21 @@ class CmdW:
         texf = texf.replace("?x?", """\\""")
         texf = texf.replace(
             """fancyhead[L]{\leftmark}""",
-            """fancyhead[L]{\\normalsize\\bfseries  """ + doctitleS + "}")
+            """fancyhead[L]{\\normalsize\\bfseries  """ + doctitleS + "}",
+        )
         texf = texf.replace("x*x*x", "[" + labelD["docnumS"] + "]")
         texf = texf.replace("""\\begin{tabular}""", "%% ")
         texf = texf.replace("""\\end{tabular}""", "%% ")
         texf = texf.replace(
             """\\begin{document}""",
-            """\\begin{document}\n\\setcounter{page}{""" + startS + "}\n")
+            """\\begin{document}\n\\setcounter{page}{""" + startS + "}\n",
+        )
 
         with open(tfileP, "w", encoding="md-8") as f2:
             f2.write(texf)
 
-        # with open(tfileP, 'w') as texout:
-        #    print(texf, file=texout)
+            # with open(tfileP, 'w') as texout:
+            #    print(texf, file=texout)
 
             pdfD = {
                 "xpdfP": Path(tempP, docbaseS + ".pdf"),
@@ -267,7 +269,7 @@ class CmdW:
         os.chdir(tempP)
         texfS = str(pdfD["xtexP"])
         # pdf1 = 'latexmk -xelatex -quiet -f ' + texfS + " > latex-log.txt"
-        pdf1 = 'xelatex -interaction=batchmode ' + texfS
+        pdf1 = "xelatex -interaction=batchmode " + texfS
         # print(f"{pdf1=}"")
         os.system(pdf1)
         srcS = ".".join([docbaseS, "pdf"])
@@ -305,7 +307,7 @@ class CmdW:
         texfileP = Path(tempP, docbaseS + ".tex")
         rstfileP = Path(tempP, docbaseS + ".rst")
 
-        with open(rstfileP, "w", encoding='md-8') as f2:
+        with open(rstfileP, "w", encoding="md-8") as f2:
             f2.write(rstS)
 
         tex1S = "".join(
@@ -329,7 +331,7 @@ class CmdW:
             logging.info(f"tex file written: {texfileP=}")
             print(f"tex file written: {texfileP=}")
         except SystemExit as e:
-            logging.exception('tex file not written')
+            logging.exception("tex file not written")
             logging.error(str(e))
             sys.exit("tex file write failed")
 
@@ -437,7 +439,7 @@ class CmdW:
 
         .. raw:: pdf
 
-        PageBreak coverPage 
+        PageBreak coverPage
 
 
         .. contents::
@@ -453,9 +455,7 @@ class CmdW:
         pass
 
     def reporthtml(self):
-        """
-
-        """
+        """ """
         pass
 
     def reportpdf(self, rL):

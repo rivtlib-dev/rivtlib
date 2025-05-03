@@ -1,23 +1,22 @@
 import os
 import sys
 from pathlib import Path
-from fpdf import FPDF
-
 
 """folders and global dictionaries"""
 
-rivN = "r000-x.py"
+rivtP = Path(os.getcwd())
+rivtN = "not found"
 # input paths
-baseS = rivN.split(".py")[0]
+baseS = rivtN.split(".py")[0]
 titleS = baseS.split("-")[1]
 dnumS = baseS.split("-")[0][1:3]
-projP = Path(os.path.dirname(curP))
-bakP = Path(curP / ".".join((baseS, "bak")))
+projP = Path(os.path.dirname(rivtP))
+bakP = Path(rivtP / ".".join((baseS, "bak")))
 prfxS = baseS[0:7]
 toolsP = Path(projP, "tools")
 docsP = Path(projP, "docs")
-insP = Path(curP / ("ins" + dnumS))
-valsP = Path(curP / ("vals" + dnumS))
+insP = Path(rivtP / ("ins" + dnumS))
+valsP = Path(rivtP / ("vals" + dnumS))
 print(f"{insP=}")
 print(f"{valsP=}")
 # output paths
@@ -47,6 +46,7 @@ for item in [
     "tempP",
 ]:
     folderD[item] = eval(item)
+
 labelD = {}
 labelD = {
     "baseS": baseS,  # file base name
@@ -162,7 +162,7 @@ def dicts(rivN, rivP, rivtP):
         "coverS",
     }
 
-    rivtpD = {}
-    rivtvD = {}
+    rivtpD = {}  # rivt print dictionary
+    rivtvD = {}  # rivt values dictionary
 
     return folderD, labelD, rivtpD, rivtvD
