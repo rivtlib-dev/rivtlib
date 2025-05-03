@@ -7,16 +7,15 @@
         "editor.lineHighlightBorder": "#34495d",
         "list.inactiveSelectionBackground": "#213148",
     },
-    "python.languageServer": "Pylance",
+    "python.languageServer": "None",
+    
     "[python]": {
-        "editor.formatOnType": false,
+        "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "ms-python.autopep8",
+        "editor.formatOnType": false,
         "editor.stickyScroll.enabled": true,
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
-        },
     },
+    
     "actionButtons": {
         "reloadButton": "♻️", /* Custom reload button text */
         "defaultColor": "#ff0034", /* Can also use string color names */
@@ -138,5 +137,5 @@
     "explorer.compactFolders": false,
     "git.autoStash": true,
     "python.analysis.autoFormatStrings": true,
-    "editor.defaultFormatter": "ms-python.black-formatter",
+
 }

@@ -29,16 +29,16 @@ PF = path and file name
 S = string
 """
 
-from rivtlib.units import *
-from rivtlib import rwrite, params, parse, log_check
-import __main__
-from pathlib import Path
-from datetime import datetime, time
-from configparser import ConfigParser
-import os
 import fnmatch
+import os
 import sys
+from configparser import ConfigParser
+from datetime import datetime
+from pathlib import Path
 
+import __main__
+from rivtlib import log_check, params, parse, rwrite
+from rivtlib.units import *  # noqa: F403
 
 global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
@@ -52,8 +52,8 @@ if __name__ == "rivtlib.api":
         rivtFP = Path(rivtP, rivtN)
         folderD, labelD, rivtpD, rivtvD = params.dicts(rivtN, rivtP, rivtFP)
 else:
-    print(f"- The rivt file name is !! {rivtN} !!. The file name must match the")
-    print(f"- pattern 'rddss-anyname.py', where dd and ss are two-digit integers")
+    print(f"-  The rivt file name is !! {rivtN} !!. The file name must match the")
+    print("""-   pattern"rddss-anyname.py , where dd and ss are two-digit integers""")
     sys.exit()
 
 # print(f"{rivtP=}")
@@ -64,13 +64,13 @@ else:
 # initialize logging
 modnameS = __name__.split(".")[1]
 # print(f"{modnameS=}")
-log_rivt(rivtP, modnameS, folderD)
+log_check.log_rivt(rivtP, modnameS, folderD)
 
 # read doc init file
 config = ConfigParser()
 config.read(Path(folderD["projP"], "rivt-doc.ini"))
 headS = config.get("report", "title")
-footS = config.get("utf", "foot1"        )
+footS = config.get("utf", "foot1")
 
 # initialize strings, config
 rstS = """"""
@@ -78,7 +78,7 @@ utfS = """"""
 xrstS = """"""
 xutfS = """"""
 timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
-titleL = rivN.split("-")  # subdivision title
+titleL = rivtN.split("-")  # subdivision title
 titleS = titleL[1].split(".")[0]
 titleS = titleS.title()
 dnumS = (titleL[0].split("r"))[1]

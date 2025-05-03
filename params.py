@@ -35,32 +35,40 @@ print(f"{rivtP=}")
 # global dicts
 rivtD = {}
 folderD = {}
-for item in ["rivtP", "docsP", "readmeP", "reportP",
-             "valsP", "insP", "errlogP", "styleP", "tempP"]:
+for item in [
+    "rivtP",
+    "docsP",
+    "readmeP",
+    "reportP",
+    "valsP",
+    "insP",
+    "errlogP",
+    "styleP",
+    "tempP",
+]:
     folderD[item] = eval(item)
 labelD = {}
 labelD = {
-    "baseS": baseS,                         # file base name
-    "titleS": titleS,                       # document title
-    "docnumS": prfxS,                       # doc number
-    "sectS": "",                            # section title
-    "secnumI": 0,                           # section number
-    "widthI": 80,                           # print width
-    "equI": 1,                              # equation number
-    "tableI": 1,                            # table number
-    "figI": 1,                              # figure number
-    "pageI": 1,                             # starting page number
-    "noteL": [0],                           # footnote counter
-    "footL": [1],                           # foot counter
-    "unitS": "M,M",                         # units
-    "descS": "2",                           # description or decimal places
-    "headrS": "",                           # header string
-    "footrS": "",                           # footer string
-    "tocB": False,                          # table of contents
-    "docstrB": False,                       # print doc strings
-    "subB": False                           # sub values in equations
+    "baseS": baseS,  # file base name
+    "titleS": titleS,  # document title
+    "docnumS": prfxS,  # doc number
+    "sectS": "",  # section title
+    "secnumI": 0,  # section number
+    "widthI": 80,  # print width
+    "equI": 1,  # equation number
+    "tableI": 1,  # table number
+    "figI": 1,  # figure number
+    "pageI": 1,  # starting page number
+    "noteL": [0],  # footnote counter
+    "footL": [1],  # foot counter
+    "unitS": "M,M",  # units
+    "descS": "2",  # description or decimal places
+    "headrS": "",  # header string
+    "footrS": "",  # footer string
+    "tocB": False,  # table of contents
+    "docstrB": False,  # print doc strings
+    "subB": False,  # sub values in equations
 }
-
 
 
 def dicts(rivN, rivP, rivtP):
@@ -88,7 +96,6 @@ def dicts(rivN, rivP, rivtP):
     rstN = baseS + ".rst"
     txtN = baseS + ".txt"
     prfxS = baseS[1:5]
-    # input paths
     projP = Path(os.path.dirname(rivP))
     bakP = Path(rivP / ".".join((baseS, "bak")))
     toolsP = Path(projP, "tools")
@@ -106,37 +113,54 @@ def dicts(rivN, rivP, rivtP):
     readmeP = Path(projP, "README.txt")
     ossP = Path(projP / "oss")
     pthS = " "
-    labelD = {
-        "rivN": rivN,                           # file name
-        "divnumS": divnumS,                     # div number
-        "baseS": baseS,                         # file base name
-        "titleS": titleS,                       # document title
-        "docnumS": prfxS,                       # doc number
-        "sectS": "",                            # section title
-        "secnumI": 0,                           # section number
-        "widthI": 80,                           # print width
-        "equI": 1,                              # equation number
-        "tableI": 1,                            # table number
-        "figI": 1,                              # figure number
-        "valueI": 1,                            # value number
-        "pageI": 1,                             # starting page number
-        "noteL": [0],                           # footnote counter
-        "footL": [1],                           # foot counter
-        "descS": "2",                           # description or decimal places
-        "headrS": "",                           # header string
-        "footrS": "",                           # footer string
-        "tocB": False,                          # table of contents
-        "docstrB": False,                       # print doc strings
-        "subB": False,                          # sub values in equations
-        "valexpS": ""                           # list of values for export
-        "coverS"
-    }
 
     folderD = {}
-    for item in ["rivP", "rivtP", "docsP", "readmeP", "reportP", "projP", "docsP",
-                 "pthS", "rstN", "rstpN", "valN", "pdfN", "txtN", "errlogP",
-                 "styleP",  "tempP", "valsP", ]:
+    for item in [
+        "rivP",
+        "rivtP",
+        "docsP",
+        "readmeP",
+        "reportP",
+        "projP",
+        "docsP",
+        "pthS",
+        "rstN",
+        "rstpN",
+        "valN",
+        "pdfN",
+        "txtN",
+        "errlogP",
+        "styleP",
+        "tempP",
+        "valsP",
+    ]:
         folderD[item] = eval(item)
+
+    labelD = {
+        "rivN": rivN,  # file name
+        "divnumS": divnumS,  # div number
+        "baseS": baseS,  # file base name
+        "titleS": titleS,  # document title
+        "docnumS": prfxS,  # doc number
+        "sectS": "",  # section title
+        "secnumI": 0,  # section number
+        "widthI": 80,  # print width
+        "equI": 1,  # equation number
+        "tableI": 1,  # table number
+        "figI": 1,  # figure number
+        "valueI": 1,  # value number
+        "pageI": 1,  # starting page number
+        "noteL": [0],  # footnote counter
+        "footL": [1],  # foot counter
+        "descS": "2",  # description or decimal places
+        "headrS": "",  # header string
+        "footrS": "",  # footer string
+        "tocB": False,  # table of contents
+        "docstrB": False,  # print doc strings
+        "subB": False,  # sub values in equations
+        "valexpS": ""  # list of values for export
+        "coverS",
+    }
 
     rivtpD = {}
     rivtvD = {}
