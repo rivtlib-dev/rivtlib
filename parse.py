@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-
+from datetime import datetime, time
 from rivtlib import cmds, tags
 
 from . import rvals, rwrite
@@ -11,7 +11,6 @@ class RivtParse:
 
     def __init__(self, tS):
         """
-        format header string
 
         Args:
             tS (str): section type
@@ -24,23 +23,21 @@ class RivtParse:
         elif tS == "I":
             self.cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
             self.tagsD = {
-                "H]": "hline",
-                "C]": "center",
                 "B]": "centerbold",
+                "C]": "center",
+                "D]": "descrip",
                 "E]": "equa",
                 "F]": "figure",
-                "T]": "table",
-                "#]": "foot",
-                "D]": "descrip",
-                "S]": "sympy",
+                "H]": "hline",
                 "P]": "page",
+                "S]": "sympy",
+                "T]": "table",
                 "U]": "url",
-                "[O]]": "blkcode",
-                "[B]]": "blkbold",
-                "[N]]": "blkind",
-                "[I]]": "blkital",
-                "[T]]": "blkitind",
+                "#]": "foot",
+                "[B]]": "blkindbld",
+                "[I]]": "blkindit",
                 "[L]]": "blklatex",
+                "[O]]": "blkcode",
                 "[Q]]": "blkquit",
             }
         elif tS == "V":
@@ -51,57 +48,60 @@ class RivtParse:
                 "V]": "value",
                 "S]": "sympy",
                 "P]": "page",
-                "[V]]": "valblock",
-                "[Q]]": "quit",
+                "[V]]": "blkval",
+                "[Q]]": "blkquit",
             }
         elif tS == "T":
             self.cmdL = ["python"]
             self.tagsD = {}
+        elif tS == "W":
+            self.cmdL = ["publish", "pend"]
+            self.tagsD = {}
         else:
             pass
 
-    def asterstrip(self, txtS):
-        """strip (*) from reSt for text output
+    def symstrip(self, txtS):
+        """strip leading spaces,  strip * from utf doc string
 
         Args:
-            txtS (str): line of text
+            txtS (str): line of rivt text
 
         Returns:
-            str: stripped (*) line of text
+            str: stripped line - utf output
         """
-        txtrS = txtS
+        # bold markup
+        txtaS = txtS
         txt1L = re.findall(r"\*\*(.*?)\*\*", txtS)
-        # print(f"{txt1L=}")
         if len(txt1L) > 0:
             for tS in txt1L:
                 t1S = "**" + tS + "**"
-                txtrS = txtS.replace(t1S, tS)
+                txtaS = txtS.replace(t1S, tS)
         else:
             pass
-
-        txt2L = re.findall(r"\*(.*?)\*", txtrS)
-        # print(f"{txt2L=}")
+        # italic markup
+        txt2L = re.findall(r"\*(.*?)\*", txtaS)
         if len(txt2L) > 0:
             for tS in txt2L:
                 t2S = "*" + tS + "*"
-                txtrS = txtrS.replace(t2S, tS)
+                txtrS = txtaS.replace(t2S, tS)
         else:
             txtrS = txtrS
+        # print(f"{txt1L=}")
 
         return txtrS
 
-    def parse_str(self, strL, folderD, labelD, rivtpD, rivtvD):
-        """add header and parse section contents
+    def parse_sec(self, strL, folderD, labelD, rivtpD, rivtvD):
+        """parse section
 
         Args:
-            strL (str): rivt string list
+            strL (list): section string
 
         Returns:
-            xutfS (str): utf formatted rivt section string
-            xrstS (str): rest formatted rivt section string
-            folderD (dict): folder path dictionary
-            labelD (dict): label dictionary
-            rivtD (dict): rivt dictionary
+            xutfS (str): utf formatted section string
+            xrstS (str): rest formatted section string
+            folderD (dict): folder paths
+            labelD (dict): labels
+            rivtD (dict): rivt objects
         """
 
         # ulS = current line
@@ -262,5 +262,11 @@ class RivtParse:
         if self.tS == "V":
             with open(folderD["valP"], "w") as file:  # export value file
                 file.write(labelD["valexpS"])
+
+        if self.tS == "T":
+            pass
+
+        if self.tS == "W":
+            rwrite()
 
         return (xutfS, xrstS, folderD, labelD, rivtpD, rivtvD)

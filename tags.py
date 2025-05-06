@@ -32,34 +32,32 @@ tabulate.PRESERVE_WHITESPACE = True
 
 class Tag:
     """
-       format to utf8 or reSt
+    formatting tags
 
-        Functions:
-             _[1-6]                  headings
-             _[#]                    foot
-             _[D]                    descrip
-             _[C]                    center
-             _[S]                    sympy
-             _[N]                    number (sympy)
-             _[E]                    equation
-             _[F]                    figure
-             _[T]                    table
-             _[H]                    hline
-             _[G]                    page
-             _[K]                    url, reference
-             _[[N]]                  indblk
-             _[[O]]                  codeblk (literal)
-             _[[B]]                  boldblk (latex pdf)
-             _[[L]]                  latexblk (latex pdf)
-             _[[I]]                  italblk (latex pdf)
-             _[[T]]                  itinblk (latex pdf)
-             _[[Q]]                  quit
+    Function list:
+        foot                    _[#]
+        descrip                 _[D]
+        center                  _[C]
+        sympy                   _[S]
+        sympy label             _[L]
+        equation                _[E]
+        figure                  _[F]
+        table                   _[T]
+        hline                   _[H]
+        page                    _[P]
+        url, reference          _[U]
+        eval                     :=
+        valuesblk               _[[V]]
+        codeblk                 _[[C]]
+        literalblock            _[[L]]
+        bldindblk (pdf)         _[[B]]
+        italindblk (pdf)        _[[I]]
+        latexblk (pdf)          _[[X]]
+        quitblk                 _[[Q]]
     """
 
-    def __init__(self,  folderD, labelD):
-        """format tags - utf and reSt
-
-        """
+    def __init__(self, folderD, labelD):
+        """format tags - utf and reSt"""
         self.folderD = folderD
         self.labelD = labelD
         # print(folderD)
@@ -67,8 +65,7 @@ class Tag:
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS +
-            "   %(levelname)-8s %(message)s",
+            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
             filename=errlogP,
             filemode="w",
@@ -96,7 +93,7 @@ class Tag:
         return uS, rS, self.folderD, self.labelD
 
     def equa(self, lineS):
-        """ format equation label _[E]
+        """format equation label _[E]
 
         Args:
             lineS (str): _description_
@@ -108,7 +105,7 @@ class Tag:
         wI = self.labelD["widthI"]
         # utf
         fillS = "\nE" + str(enumI).zfill(2)
-        uS = fillS + " - " + lineS+"\n"
+        uS = fillS + " - " + lineS + "\n"
         # rst
         fillS = "\n**E" + str(enumI).zfill(2) + "** - "
         rS = fillS + "   " + lineS + "\n"
@@ -173,12 +170,12 @@ class Tag:
         return lineS + "\n"
 
     def foot(self):
-        """ footnote number _[#]
+        """footnote number _[#]
 
         Args:
             lineS (str): rivt line
         Returns:
-            str, str: formatted utf, reSt 
+            str, str: formatted utf, reSt
         """
         ftnumI = self.labelD["footL"].pop(0)
         self.labelD["noteL"].append(ftnumI + 1)
@@ -188,13 +185,13 @@ class Tag:
         return lineS
 
     def description(self, lineS):
-        """ footnote description _[D]
+        """footnote description _[D]
 
         Args:
             lineS (str): rivt line
         Returns:
-            str: formatted utf 
-            str: formatted reSt 
+            str: formatted utf
+            str: formatted reSt
         """
         ftnumI = self.labelD["noteL"].pop(0)
         lineS = "[" + str(ftnumI) + "] " + self.lineS
@@ -202,30 +199,30 @@ class Tag:
         return lineS
 
     def center(self, lineS):
-        """ center text _[C]
+        """center text _[C]
 
         Args:
             lineS (str): rivt line
         Returns:
-            str, str: formatted utf, reSt 
+            str, str: formatted utf, reSt
         """
         # utf
         uS = lineS.center(int(self.labelD["widthI"])) + "\n"
         # rst
         rS = lineS.center(int(self.labelD["widthI"])) + "\n"
         # tex
-        tS = "\n::\n\n" + lineS.center(int(self.labelD['widthI'])) + "\n"
+        tS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
 
         return uS, rS
 
     def sympy(self, lineS):
-        """ format sympy math _[S]
+        """format sympy math _[S]
 
 
         Args:
             lineS (str): rivt line
         Returns:
-            str, str: formatted utf, reSt 
+            str, str: formatted utf, reSt
         """
         spS = lineS.strip()
         try:
@@ -235,7 +232,7 @@ class Tag:
             pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
-        uS = textwrap.indent(lineS, '     ')
+        uS = textwrap.indent(lineS, "     ")
         # prst
         r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
         # rst
@@ -280,9 +277,16 @@ class Tag:
         """
         pagenoS = str(self.labelD["pageI"])
         rvtS = self.labelD["headuS"].replace("p##", pagenoS)
-        self.labelD["pageI"] = int(pagenoS)+1
-        lineS = "\n"+"_" * self.labelD["widthI"] + "\n" + rvtS +\
-                "\n"+"_" * self.labelD["widthI"] + "\n"
+        self.labelD["pageI"] = int(pagenoS) + 1
+        lineS = (
+            "\n"
+            + "_" * self.labelD["widthI"]
+            + "\n"
+            + rvtS
+            + "\n"
+            + "_" * self.labelD["widthI"]
+            + "\n"
+        )
         return "\n" + rvtS
 
     def blkplain(self, lineS, folderD, labelD):

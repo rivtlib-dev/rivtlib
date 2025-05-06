@@ -1,38 +1,29 @@
-import fnmatch
 import csv
 import logging
-import re
 import sys
+import textwrap
 import warnings
-from datetime import datetime, time
+
 from io import StringIO
 from pathlib import Path
-import textwrap
 
-import IPython
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
-import numpy.linalg as la
-import pandas as pd
-
+import sympy as sp
 import tabulate
-from PIL import Image
 from IPython.display import Image as _Image
 from IPython.display import display as _display
-from numpy import *
-import sympy as sp
+from numpy import *  # noqa: F403
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib import tags, cmds
-from rivtlib.units import *
+from rivtlib import cmds, tags
+from rivtlib.units import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
 
 class CmdV:
-    """ value commands format to utf8 or reSt
+    """value commands format to utf8 or reSt
 
     Commands:
         a = 1+1 | unit | reference
@@ -53,17 +44,6 @@ class CmdV:
         self.rivtpD = rivtpD
         self.folderD = folderD
         self.labelD = labelD
-        errlogP = folderD["errlogP"]
-        modnameS = __name__.split(".")[1]
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS +
-            "   %(levelname)-8s %(message)s",
-            datefmt="%m-%d %H:%M",
-            filename=errlogP,
-            filemode="w",
-        )
-        warnings.filterwarnings("ignore")
 
     def cmd_parse(self, cmdS, pthS, parS):
         """parse tagged line
@@ -81,8 +61,7 @@ class CmdV:
         # print(f"{pthS=}")
         # print(f"{parS=}")
 
-        cC = globals()['CmdV'](self.folderD, self.labelD,
-                               self.rivtpD, self.rivtvD)
+        cC = globals()["CmdV"](self.folderD, self.labelD, self.rivtpD, self.rivtvD)
         ccmdS = cmdS.lower()
         functag = getattr(cC, ccmdS)
         uS, rS = functag(pthS, parS)
@@ -91,7 +70,7 @@ class CmdV:
         return uS, rS, self.folderD, self.labelD, self.rivtpD, self.rivtvD
 
     def values(self, pthS, parS):
-        """ import values from csv files, update rivtD
+        """import values from csv files, update rivtD
 
         Args:
             lineS (_type_): _description_
@@ -101,7 +80,7 @@ class CmdV:
             _type_: _description_
         """
 
-        if "_[V]" in parS.strip():                      # table number
+        if "_[V]" in parS.strip():  # table number
             vnumI = int(self.labelD["valueI"])
             fillS = str(vnumI).zfill(2)
             utitlnS = "\nValue Table " + fillS + " - " + parS.strip("_[V]")
@@ -118,9 +97,9 @@ class CmdV:
         with open(insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         # print(f"{readL=}")
-        for iL in readL:                           # add to valexp
+        for iL in readL:  # add to valexp
             iS = ",".join(iL)
-            self.labelD["valexpS"] += iS+"\n"
+            self.labelD["valexpS"] += iS + "\n"
         tbL = []
         for vaL in readL:
             # print(f"{vaL=}")
@@ -156,11 +135,11 @@ class CmdV:
                 val2U = str(valU)
             tbL.append([varS, val1U, val2U, descripS])
 
-        tblfmt = 'rst'
+        tblfmt = "rst"
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
         vC = CmdV(self.folderD, self.labelD, self.rivtpD, self.rivtvD)
-        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)      # format table
+        uS, rS = vC.valtable(tbL, hdrvL, alignL, tblfmt)  # format table
         r2S = rS
 
         # pthxS = str(Path(*Path(pthS).parts[-3:]))
@@ -172,17 +151,16 @@ class CmdV:
         return uS, r2S
 
     def valtable(self, tbL, hdrL, alignL, tblfmt):
-        """ format table
-
-        """
+        """format table"""
         # print(f"{tbL=}")
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
         output.write(
             tabulate.tabulate(
-                tbL, tablefmt=tblfmt, headers=hdrL,
-                showindex=False,  colalign=alignL))
+                tbL, tablefmt=tblfmt, headers=hdrL, showindex=False, colalign=alignL
+            )
+        )
         uS = r2S = rS = output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
@@ -213,7 +191,7 @@ class CmdV:
             pass
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # utf
-        lineS = textwrap.indent(lineS, '    ')
+        lineS = textwrap.indent(lineS, "    ")
         refS = refS.rjust(self.labelD["widthI"])
         uS = refS + "\n" + lineS + "\n\n"
         # rst2
@@ -297,14 +275,17 @@ class CmdV:
         tblL = [tbl1L]
         tblL.append(tbl2L)
         alignL = []
-        tblfmt = 'rst'
+        tblfmt = "rst"
         for nI in range(numvarI):
             alignL.append("center")
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
-        output.write(tabulate.tabulate(tblL, tablefmt=tblfmt, headers=hdr1L,
-                                       showindex=False,  colalign=alignL))
+        output.write(
+            tabulate.tabulate(
+                tblL, tablefmt=tblfmt, headers=hdr1L, showindex=False, colalign=alignL
+            )
+        )
         uS = output.getvalue()
         rS = output.getvalue()
         sys.stdout = old_stdout
@@ -330,10 +311,8 @@ class TagV:
             _[[Q]]                  quit
     """
 
-    def __init__(self,  folderD, labelD, rivtpD, rivtvD):
-        """tags that format to utf and reSt
-
-        """
+    def __init__(self, folderD, labelD, rivtpD, rivtvD):
+        """tags that format to utf and reSt"""
         self.rivtpD = rivtpD
         self.rivtvD = rivtvD
         self.folderD = folderD
@@ -343,8 +322,7 @@ class TagV:
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS +
-            "   %(levelname)-8s %(message)s",
+            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
             filename=errlogP,
             filemode="w",
@@ -428,7 +406,7 @@ class TagV:
             iS = ",".join(vaL)
             self.labelD["valexpS"] += iS + "\n"
 
-        tblfmt = 'rst'
+        tblfmt = "rst"
         hdrvL = ["variable", "value", "[value]", "description"]
         alignL = ["left", "right", "right", "left"]
 

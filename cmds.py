@@ -31,13 +31,17 @@ tabulate.PRESERVE_WHITESPACE = True
 
 class Cmd:
     """
-    insert commands that format to utf8 or reSt
+    commands
 
+    | IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
+    | IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
+    | TEXT | rel. pth |  plain; rivt                      .txt
+    | TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
+    | VALUES | rel. pth | col width, l;c;r                .csv, .txt, .xls
+    || PUBLISH | rel. pth | col width, l;c;r               .csv, .txt, .xls
+    || PREPEND | rel. pth | num; nonum                     .pdf
     || APPEND | rel. pth | num; nonum                      .pdf
-    || IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
-    || IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
-    || TEXT | rel. pth |  plain; rivt                      .txt
-    || TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
+
     """
 
     def __init__(self, folderD, labelD):

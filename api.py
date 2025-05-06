@@ -4,29 +4,31 @@ The API is intialized with
 
     import rivtlib.api as rv
 
-API Functions:
+The API functions are:
 
-    rv.R(rS) - (Run) Execute shell scripts
-    rv.I(rS) - (Insert) Insert static text, math, images and tables
-    rv.V(rS) - (Values) Evaluate values and equations
-    rv.T(rS) - (Tools) Execute Python functions and scripts
-    rv.W(rS) - (Write) Write formatted documents
-    rv.S(rS) - (Skip) Skip string processing of that string
+    rv.R(sS) - (Run) Execute shell scripts
+    rv.I(sS) - (Insert) Insert static text, math, images and tables
+    rv.V(sS) - (Values) Evaluate values and equations
+    rv.T(sS) - (Tools) Execute Python functions and scripts
+    rv.W(sS) - (Write) Write formatted documents
+    rv.S(sS) - (Skip) Skip string processing of that string
 
-where rS is a triple quoted, indented, utf-8 string. This rivtlib code base uses
+where sS is a triple quoted, indented, utf-8 string. This rivtlib code base uses
 the last letter of a variable name to indicate the variable types as follows:
 
-A = array
-B = boolean
-C = class instance
-D = dictionary
-F = float
-I = integer
-L = list
-N = file name only
-P = file path only (abs or rel)
-PF = path and file name
-S = string
+Variable type suffix:
+
+    A = array
+    B = boolean
+    C = class instance
+    D = dictionary
+    F = float
+    I = integer
+    L = list
+    N = file name only
+    P = file path only (abs or rel)
+    PF = path and file name
+    S = string
 """
 
 import fnmatch
@@ -52,8 +54,8 @@ if __name__ == "rivtlib.api":
         rivtFP = Path(rivtP, rivtN)
         folderD, labelD, rivtpD, rivtvD = params.dicts(rivtN, rivtP, rivtFP)
 else:
-    print(f"- The rivt file name is !! {rivtN} !!. The file name must match the")
-    print("""- pattern  "rddss-anyname.py" , where dd and ss are two-digit integers""")
+    print(f"- The rivt file name is - {rivtN} -. The file name must match the")
+    print("""- pattern "rddss-anyname.py" , where dd and ss are two-digit integer""")
     sys.exit()
 
 # initialize logging
@@ -76,120 +78,121 @@ titleS = titleL[1].split(".")[0]
 titleS = titleS.title()
 dnumS = (titleL[0].split("r"))[1]
 headS = "[" + dnumS + "]  " + titleS.strip()
-bordrS = labelD["widthI"] * "="
+bordsS = labelD["widthI"] * "="
 time1S = timeS.rjust(labelD["widthI"])
-# read init file - for docs overrides
+# read init file - for doc overrides
 config = ConfigParser()
 config.read(Path(folderD["projP"], "rivt-doc.ini"))
 headS = config.get("report", "title")
 footS = config.get("utf", "foot1")
 # subdivision heading - for stdoout
-hdutfS = time1S + "\n" + headS + "\n" + bordrS + "\n"
+hdutfS = time1S + "\n" + headS + "\n" + bordsS + "\n"
 utfS += hdutfS + "\n"
 # print(hdutfS)
 
 
-def rivt_parse(rS, tS):
+def rivt_parse(sS, tS):
     """
-    parse and accumulate a rivt string
+    parse section strings to doc strings and accumulate
 
     Globals:
-        utfS (str): accumulated utf string
-        rstS (str): accumulated reSt string
+        utfS (str): utf doc
+        rStS (str): reSt doc
         labelD (dict): labels for formatting
         folderD (dict): folder and file paths
         rivtvD (dict): calculation values
         rivtpD (dict): printing parameters
 
     Args:
-        rS (str): rivt string
-        tS (str): section type is R,I,V,T,W or X
+        sS (str): rivt section
+        tS (str): section type (R,I,V,T,W or S)
 
     Calls:
         RivtParse (class)
-        parse_str (method)
+        parse_sec (method)
 
     Returns:
-        utfS (str): accumulating utf output string
-        rstS (str): accumulating reSt string
+        utfS (str): utf output
+        rstS (str): reSt output
     """
 
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    rL = rS.split("\n")
+    rL = sS.split("\n")
     parseC = parse.RivtParse(tS)
-    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_str(
+    xutfS, xrstS, folderD, labelD, rivtpD, rivtvD = parseC.parse_sec(
         rL, folderD, labelD, rivtpD, rivtvD
     )
-    utfS += xutfS  # accumulate output strings
+    # accumulate doc strings
+    utfS += xutfS
     rstS += xrstS
 
     return utfS, rstS
 
 
-def R(rS):
+def R(sS):
     """
     process Run string
 
     Args:
-        rS (str): rivt string
+        sS (str): section string
     """
 
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    utfS, rstS = rivt_parse(rS, "R")
+    utfS, rstS = rivt_parse(sS, "R")
 
 
-def I(rS):
+def I(sS):
     """
     format Insert string
 
     Args:
-        rS (str): rivt string
+        sS (str): section string
     """
 
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    utfS, rstS = rivt_parse(rS, "I")
+    utfS, rstS = rivt_parse(sS, "I")
 
 
-def V(rS):
+def V(sS):
     """
     format Value string
 
     Args:
-        rS (str): rivt string
+        sS (str): section string
     """
 
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    utfS, rstS = rivt_parse(rS, "V")
+    utfS, rstS = rivt_parse(sS, "V")
 
 
-def T(rS):
+def T(sS):
     """
     process Tools string
 
     Args:
-        rS (str): rivt string
+        sS (str): section string
     """
 
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    utfS, rstS = rivt_parse(rS, "T")
+    utfS, rstS = rivt_parse(sS, "T")
 
 
-def W(rS):
+def W(sS):
     """
     write output files
 
     Args:
-        rS (str): rivt string
+        sS (str): section string
     """
     global utfS, rstS, folderD, labelD, rivtpD, rivtvD
 
-    rsL = rS.split("\n")
-    for lS in rsL:
+    sSL = sS.split("\n")
+    for lS in sSL:
         cmdS = ""
         # print(f"{lS[:2]=}")
         if len(lS) == 0:
@@ -201,15 +204,15 @@ def W(rS):
             # print(cL)
             cmdS = cL[0].strip()
             pthS = cL[1].strip()
-            parS = cL[2].strip()
+            pasS = cL[2].strip()
 
-            # rstP = Path(folderD["rivP"], "temp", folderD["rstN"])
+            # sStP = Path(folderD["rivP"], "temp", folderD["sStN"])
             # pdf2P = Path(folderD["tempP"], folderD["pdfN"])
 
-            # print(f"{rstP=}")
+            # print(f"{sStP=}")
             # print(f"{cmdS=}")
             # print(f"{pthS=}")
-            # print(f"{parS=}")
+            # print(f"{pasS=}")
 
             msgS = "end of file "
             if cmdS == "APPEND":
@@ -218,26 +221,26 @@ def W(rS):
                 pass
             elif cmdS == "COVER":
                 titleS = pthS
-                subS = parS
+                subS = pasS
                 botS = cL[3].strip()
                 imgS = cL[4].strip()
                 docC = rwrite.CmdW(folderD, labelD)
                 tcovS, tcontS, tmainS = docC.frontvar(titleS, subS, botS, imgS)
                 # print(tcovS, tcontS, tmainS)
             elif cmdS == "DOC":
-                parL = parS.split(",")
+                parL = pasS.split(",")
                 typeS = parL[0].strip()
                 tocS = parL[1].strip()
                 styleS = parL[2].strip()
                 txtP = Path(folderD["docsP"], "text", folderD["txtN"])
-                rstP = Path(folderD["tempP"], folderD["rstN"])
+                sStP = Path(folderD["tempP"], folderD["sStN"])
                 docC = rwrite.CmdW(folderD, labelD)
                 if typeS == "pdf2":
                     rfrontS = docC.frontpg(tocS, tcovS, tcontS, tmainS)
                     rstS = rfrontS + "\n" + rstS
                     with open(txtP, "w", encoding="utf-8") as file:
                         file.write(utfS)
-                    with open(rstP, "w", encoding="utf-8") as file:
+                    with open(sStP, "w", encoding="utf-8") as file:
                         file.write(rstS)
                     msgS = docC.docpdf2(pthS, styleS)
                 elif typeS == "pdf":
@@ -260,10 +263,10 @@ def W(rS):
                 if typeS == "pdf2":
                     rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
                     msgS = docC.reportpdf2()
-                elif parL[0].strip() == "rstpdf":
+                elif parL[0].strip() == "sStpdf":
                     rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
                     msgS = docC.reportpdf()
-                elif parL[0].strip() == "rsthtml":
+                elif parL[0].strip() == "sSthtml":
                     rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
                     msgS = docC.reporthtml()
                 else:
@@ -275,12 +278,12 @@ def W(rS):
     sys.exit()
 
 
-def S(rS):
-    """skip rivt string - no processing
+def S(sS):
+    """skip section string - no processing
 
     Args:
-        rS (str): rivt string
+        sS (str): section string
     """
 
-    rL = rS.split("|")
+    rL = sS.split("|")
     print("\n Section skipped: " + rL[0] + "\n")

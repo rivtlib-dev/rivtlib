@@ -2,6 +2,11 @@ import logging
 import warnings
 from pathlib import Path
 
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+import numpy.linalg as la
+import pandas as pd
+
 
 def log_bak(rivtFP, modnameS, folderD):
     """
@@ -17,6 +22,17 @@ def log_bak(rivtFP, modnameS, folderD):
     )
     warnings.filterwarnings("ignore")
     # warnings.simplefilter(action="ignore", category=FutureWarning)
+
+    errlogP = folderD["errlogP"]
+    modnameS = __name__.split(".")[1]
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+        datefmt="%m-%d %H:%M",
+        filename=errlogP,
+        filemode="w",
+    )
+    warnings.filterwarnings("ignore")
 
     docshortP = Path(folderD["docP"].parts[-2:])
     bakshortP = Path(folderD["bakP"].parts[-2:])

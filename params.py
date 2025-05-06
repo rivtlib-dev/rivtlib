@@ -31,88 +31,52 @@ valfileS = baseS.replace("riv", "val") + ".csv"
 readmeP = Path(projP, "README.txt")
 print(f"{projP=}")
 print(f"{rivtP=}")
-# global dicts
-rivtD = {}
-folderD = {}
-for item in [
-    "rivtP",
-    "docsP",
-    "readmeP",
-    "reportP",
-    "valsP",
-    "insP",
-    "errlogP",
-    "styleP",
-    "tempP",
-]:
-    folderD[item] = eval(item)
 
-labelD = {}
-labelD = {
-    "baseS": baseS,  # file base name
-    "titleS": titleS,  # document title
-    "docnumS": prfxS,  # doc number
-    "sectS": "",  # section title
-    "secnumI": 0,  # section number
-    "widthI": 80,  # print width
-    "equI": 1,  # equation number
-    "tableI": 1,  # table number
-    "figI": 1,  # figure number
-    "pageI": 1,  # starting page number
-    "noteL": [0],  # footnote counter
-    "footL": [1],  # foot counter
-    "unitS": "M,M",  # units
-    "descS": "2",  # description or decimal places
-    "headrS": "",  # header string
-    "footrS": "",  # footer string
-    "tocB": False,  # table of contents
-    "docstrB": False,  # print doc strings
-    "subB": False,  # sub values in equations
-}
+# input paths
+pthS = " "
+rivbaseS = rivtnS.split(".py")[0]
+titleS = rivbaseS.split("-")[1]
+divnumS = rivbaseS.split("-")[0][1:3]
+valN = rivbaseS.split("-")[0]
+valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
+pdfN = rivbaseS + ".pdf"
+rstpN = rivbaseS + ".rst"
+rstN = rivbaseS + ".rst"
+txtN = rivbaseS + ".txt"
+prfxS = rivbaseS[1:5]
+projP = Path(os.path.dirname(rivtP))
+bakP = Path(rivtP / ".".join((rivbaseS, "bak")))
+toolsP = Path(projP, "tools")
+docsP = Path(projP, "docs")
+styleP = Path(docsP, "styles")
+# output paths
+pypathS = os.path.dirname(sys.executable)
+rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
+reportP = Path(projP, "docs")
+xrivtP = Path(projP, "xrivt")
+tempP = Path(rivtP, "temp")
+errlogP = Path(tempP, "rivt-log.txt")
+valsP = Path(projP, "vals")
+valP = Path(valsP, valN)
+readmeP = Path(projP, "README.txt")
+ossP = Path(projP / "oss")
 
 
-def dicts(rivN, rivP, rivtP):
+def dicts(rivtnS, rivtP, rivtfP):
     """dictionaries of parameters
 
     Args:
-        rivN (_type_): _description_
-        rivP (_type_): _description_
-        rivtP (_type_): _description_
+        rivtS (str): rivt file name
+        rivtP (str): rivt file path
+        rivtfP (str): rivt file full path
 
     Returns:
         folderD (dict): dictionary of paths
-        folderD (dict): dictionary of paths
-        folderD (dict): dictionary of paths
+        lablelD (dict): dictionary of paths
+        rivtD (dict): dictionary of paths
     """
 
-    # input paths
-    baseS = rivN.split(".py")[0]
-    titleS = baseS.split("-")[1]
-    divnumS = baseS.split("-")[0][1:3]
-    valN = baseS.split("-")[0]
-    valN = valN.replace("r", "v", 1) + "-" + "qqqqqq" + ".csv"
-    pdfN = baseS + ".pdf"
-    rstpN = baseS + ".rst"
-    rstN = baseS + ".rst"
-    txtN = baseS + ".txt"
-    prfxS = baseS[1:5]
-    projP = Path(os.path.dirname(rivP))
-    bakP = Path(rivP / ".".join((baseS, "bak")))
-    toolsP = Path(projP, "tools")
-    docsP = Path(projP, "docs")
-    styleP = Path(docsP, "styles")
-    # output paths
-    pypathS = os.path.dirname(sys.executable)
-    rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
-    reportP = Path(projP, "docs")
-    xrivtP = Path(projP, "xrivt")
-    tempP = Path(rivP, "temp")
-    errlogP = Path(tempP, "rivt-log.txt")
-    valsP = Path(projP, "vals")
-    valP = Path(valsP, valN)
-    readmeP = Path(projP, "README.txt")
-    ossP = Path(projP / "oss")
-    pthS = " "
+    rivtvD = {}  # rivt values dictionary
 
     folderD = {}
     for item in [
@@ -131,13 +95,17 @@ def dicts(rivN, rivP, rivtP):
         "txtN",
         "errlogP",
         "styleP",
-        "tempP",
         "valsP",
+        "rivtP",
+        "valsP",
+        "insP",
+        "styleP",
+        "tempP",
     ]:
         folderD[item] = eval(item)
 
     labelD = {
-        "rivN": rivN,  # file name
+        "rivN": rivtN,  # file name
         "divnumS": divnumS,  # div number
         "baseS": baseS,  # file base name
         "titleS": titleS,  # document title
@@ -159,10 +127,25 @@ def dicts(rivN, rivP, rivtP):
         "docstrB": False,  # print doc strings
         "subB": False,  # sub values in equations
         "valexpS": ""  # list of values for export
-        "coverS",
+        "baseS": baseS,  # file base name
+        "titleS": titleS,  # document title
+        "docnumS": prfxS,  # doc number
+        "sectS": "",  # section title
+        "secnumI": 0,  # section number
+        "widthI": 80,  # print width
+        "equI": 1,  # equation number
+        "tableI": 1,  # table number
+        "figI": 1,  # figure number
+        "pageI": 1,  # starting page number
+        "noteL": [0],  # footnote counter
+        "footL": [1],  # foot counter
+        "unitS": "M,M",  # units
+        "descS": "2",  # description or decimal places
+        "headrS": "",  # header string
+        "footrS": "",  # footer string
+        "tocB": False,  # table of contents
+        "docstrB": False,  # print doc strings
+        "subB": False,  # sub values in equations
     }
 
-    rivtpD = {}  # rivt print dictionary
-    rivtvD = {}  # rivt values dictionary
-
-    return folderD, labelD, rivtpD, rivtvD
+    return folderD, labelD, rivtvD
