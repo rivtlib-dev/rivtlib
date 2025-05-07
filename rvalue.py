@@ -21,6 +21,22 @@ from rivtlib.units import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
+"""
+        elif stS == "V":
+            self.cmdL = ["IMG", "IMG2", "VALUES"]
+            self.tagsD = {
+                "E]": "equation",
+                "F]": "figure",
+                "S]": "sympy",
+                "L]": "slabel",
+                "T]": "table",
+                "H]": "hline",
+                "P]": "page",
+                ":=": "equals",
+                "V]]": "valuesblk",
+            }
+"""
+
 
 class CmdV:
     """value commands format to utf8 or reSt

@@ -97,7 +97,7 @@ def doc_hdr():
 
 def doc_parse(sS, tS):
     """
-    parse section strings to doc strings and accumulate
+    parse section strings to doc strings
 
     Globals:
         utfS (str): utf doc
@@ -123,7 +123,7 @@ def doc_parse(sS, tS):
 
     sL = sS.split("\n")  # convert section to list
     secC = parse.Section(tS, sL)
-    sutfS, srstS, xrtfS, folderD, labelD, rivtpD, rivtvD = secC.parse_sec(
+    sutfS, srstS, xrtfS, folderD, labelD, rivtD = secC.section(
         sL, folderD, labelD, rivtD
     )
     utfS += sutfS  # accumulate doc strings

@@ -7,7 +7,7 @@ from rivtlib import cmds, rinsert, rrun, rtool, rvalue, rwrite, tags
 
 
 class Section:
-    """format section string to utf, rest, xerst doc string"""
+    """section string to utf, rest and xrst doc string"""
 
     def __init__(self, stS, sL):
         """
@@ -16,54 +16,8 @@ class Section:
             stS (str): section type
             sL (list): section lines
         """
-        self.stS = stS
-        self.sL = sL
-        # print(f"{tS=}")
-        if stS == "R":
-            self.cmdL = ["RUN", "PROCESS"]
-            self.tagsD = {}
-        elif stS == "I":
-            self.cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
-            self.tagsD = {
-                "C]": "center",
-                "D]": "descrip",
-                "E]": "equation",
-                "#]": "foot",
-                "F]": "figure",
-                "S]": "sympy",
-                "L]": "slabel",
-                "T]": "table",
-                "H]": "hline",
-                "P]": "page",
-                "U]": "url",
-                "B]]": "bldindblk",
-                "C]]": "codeblk",
-                "I]]": "italindblk",
-                "L]]": "literalblock",
-                "X]]": "latexblk",
-            }
-
-        elif stS == "V":
-            self.cmdL = ["IMG", "IMG2", "VALUES"]
-            self.tagsD = {
-                "E]": "equation",
-                "F]": "figure",
-                "S]": "sympy",
-                "L]": "slabel",
-                "T]": "table",
-                "H]": "hline",
-                "P]": "page",
-                ":=": "equals",
-                "V]]": "valuesblk",
-            }
-        elif stS == "T":
-            self.cmdL = ["python"]
-            self.tagsD = {}
-        else:
-            pass
 
     def stitle(self, shS):
-
         hL = shS.split("|")
 
         if hS.strip()[0:2] == "--":
@@ -82,55 +36,58 @@ class Section:
             bordrS = labelD["widthI"] * "-"
             hdutfS = "\n" + headS + "\n" + bordrS + "\n"
             hdrstS = "\n" + headS + "\n" + bordrS + "\n"
+            hdrxtS = "\n" + headS + "\n" + bordrS + "\n"
 
             return hdutfS, hdrstS, hdrstS
 
             # print(hdutfS, hdrstS, hdrstS)
-        return hdutfS, hdrstS, hdrstS
+        return hdutfS, hdrstS, hdxstS
 
-    def symstrip(self, txtS):
-        """strip leading spaces; # comment ; strip * from utf string
+    def sstrip(self, sL):
+        """strip -> leading spaces, # comment, * from utf string
 
         Args:
             txtS (str): line of rivt text
 
         Returns:
-            str: stripped line - utf output
+           sustfS (str) : stripped line - utf output
+           sustfS (str) : stripped line - utf output
+           sustfS (str) : stripped line - utf output
         """
         # bold markup
-        txtaS = txtS
-        txt1L = re.findall(r"\*\*(.*?)\*\*", txtS)
-        if len(txt1L) > 0:
-            for tS in txt1L:
-                t1S = "**" + tS + "**"
-                txtaS = txtS.replace(t1S, tS)
-        else:
-            pass
-        # italic markup
-        txt2L = re.findall(r"\*(.*?)\*", txtaS)
-        if len(txt2L) > 0:
-            for tS in txt2L:
-                t2S = "*" + tS + "*"
-                txtrS = txtaS.replace(t2S, tS)
-        else:
-            txtrS = txtrS
-        # print(f"{txt1L=}")
+        for slS in sL:
+            txtaS = txtS
+            txt1L = re.findall(r"\*\*(.*?)\*\*", txtS)
+            if len(txt1L) > 0:
+                for tS in txt1L:
+                    t1S = "**" + tS + "**"
+                    txtaS = txtS.replace(t1S, tS)
+            else:
+                pass
+            # italic markup
+            txt2L = re.findall(r"\*(.*?)\*", txtaS)
+            if len(txt2L) > 0:
+                for tS in txt2L:
+                    t2S = "*" + tS + "*"
+                    txtrS = txtaS.replace(t2S, tS)
+            else:
+                txtrS = txtrS
+            # print(f"{txt1L=}")
 
-        try:
             if slS[0] == "#":  # skip comments
-        except:
-            pass
+                pass
 
         return sutfS, srstS, xrstS
 
-    def parse_sec(self, strL, folderD, labelD, rivtD):
+    def section(self, strL, folderD, labelD, rivtD):
         """parse section
 
         Args:
             strL (list): section string
 
         Returns:
-            xutfS (str): utf formatted section string
+            sutfS (str): utf formatted section string
+            srstS (str): rest formatted section string
             xrstS (str): rest formatted section string
             folderD (dict): folder paths
             labelD (dict): labels
@@ -147,10 +104,10 @@ class Section:
         xrstS = """"""  # tex doc section
 
         sutfS, srstS, xrstS = self.stitle(self, self.sL[0])  # section title
-        ssL = self.symstrip(self, self.sL[1:]) # preprocess section
+        ssL = self.sstrip(self, self.sL[1:])  # preprocess section
 
         for slS in ssL[1:]:  # loop over section lines
-            # print(f"{ulS=}")
+            # print(f"{slS=}")
             if len(slS.strip()) < 1 and not blockB:
                 sutfS += "\n"
                 srstS += " \n"
@@ -167,9 +124,8 @@ class Section:
                     sutfS += uS + "\n"
                     srstS += rS + "\n"
                     xrstS += xS + "\n"
+                    blockS = """"""
                     continue
-                blockS = """"""
-                continue
             elif ulS[0:1] == "|":  # commands
                 if ulS[0:2] == "||":
                     parL = ulS[2:].split("|")
@@ -182,7 +138,8 @@ class Section:
                 if cmdS in self.cmdL:
                     comC = cmds.Cmd(folderD, labelD, rivtD)
                     uS, rS, xS, folderD, labelD, rivtvD = comC.cmd_parse(
-                            cmdS, pthS, parS)
+                        cmdS, pthS, parS
+                    )
             elif "_[" in ulS:  # tags
                 ulL = ulS.split("_[")  # split tag
                 lineS = ulL[0].strip()
@@ -197,8 +154,8 @@ class Section:
                         xutfS += uS + "\n"
                         xrstS += rS + "\n"
                         continue
-                    else:   # block start
-                        blockS = ""  
+                    else:  # block start
+                        blockS = ""
                         blockB = True
                         try:
                             xutfS += lineS + "\n"
@@ -207,10 +164,10 @@ class Section:
                             continue
                 else:
                     pass
-            elif ":=" in ulS :  # equals tag
+            elif ":=" in ulS:  # equals tag
                 tagS = ulL[1].strip()
                 tnameS = self.tagsD[":="]  # get tag name
-                if ":=" in self.tagsD[tagS]:                    
+                if ":=" in self.tagsD[tagS]:
                     eqL = ulS.split("|", 1)
                     eqS = eqL[0].strip()
                     parS = eqL[1].strip()
@@ -235,6 +192,5 @@ class Section:
 
         if self.tS == "T":
             rtool()
-
 
         return (sutfS, srstS, xrstS, folderD, labelD, rivtD)
