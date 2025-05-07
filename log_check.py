@@ -2,11 +2,6 @@ import logging
 import warnings
 from pathlib import Path
 
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
-import numpy.linalg as la
-import pandas as pd
-
 
 def log_bak(rivtFP, modnameS, folderD):
     """

@@ -2,7 +2,6 @@ import os
 import sys
 from pathlib import Path
 
-
 """folders and global dictionaries"""
 
 rivtP = Path(os.getcwd())
@@ -48,9 +47,9 @@ ossP = Path(projP / "oss")
 # print(f"{insP=}")
 # print(f"{valsP=}")
 
-rivtvD = {}  # rivt values 
+rivtvD = {}  # calculated values
 
-folderD = {}  # folders 
+folderD = {}  # folders
 for item in [
     "docsP",
     "errlogP",
@@ -76,7 +75,7 @@ for item in [
 
 labelD = {}  # parameters and labels
 labelD = {
-    "baseS": baseS,  # file base name
+    "baseS": rbaseS,  # file base name
     "rivtnS": rivtnS,  # file name
     "divnumS": divnumS,  # div number
     "docnumS": prfxS,  # doc number
@@ -97,24 +96,6 @@ labelD = {
     "tocB": False,  # table of contents
     "docstrB": False,  # print doc strings
     "subB": False,  # sub values in equations
-    "valexpS": ""  # list of values for export
-    "baseS": baseS,  # file base name
-    "titleS": titleS,  # document title
-    "docnumS": prfxS,  # doc number
-    "sectS": "",  # section title
-    "secnumI": 0,  # section number
-    "widthI": 80,  # print width
-    "equI": 1,  # equation number
-    "tableI": 1,  # table number
-    "figI": 1,  # figure number
-    "pageI": 1,  # starting page number
-    "noteL": [0],  # footnote counter
-    "footL": [1],  # foot counter
+    "valexpS": "",  # list of values for export
     "unitS": "M,M",  # units
-    "descS": "2",  # description or decimal places
-    "headrS": "",  # header string
-    "footrS": "",  # footer string
-    "tocB": False,  # table of contents
-    "docstrB": False,  # print doc strings
-    "subB": False,  # sub values in equations
 }

@@ -34,6 +34,8 @@ Variable type suffix:
 import fnmatch
 import os
 import sys
+from configparser import ConfigParser
+from datetime import datetime
 from pathlib import Path
 
 import __main__
@@ -76,23 +78,32 @@ xrstS = """"""  # reSt-tex section string
 
 def doc_hdr():
     # init file - (headings and doc overrides)
-    config = ConfigParser()
-    config.read(Path(projP, "rivt-doc.ini"))
-    headS = config.get("report", "title")
-    footS = config.get("utf", "foot1")
-    timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
 
     hdutfS = ""
     hdrstS = ""
     hdrxtS = ""
 
+    timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
+
+    config = ConfigParser()
+    config.read(Path(projP, "rivt-doc.ini"))
+    headS = config.get("report", "title")
+    footS = config.get("utf", "foot1")
+
     titleL = rivtnS.split("-")[1]  # subdivision title
     titleS = titleL[1].split(".")[0]
     titleS = titleS.title()
     borderS = "=" * 80
+
     dnumS = (titleL[0].split("r"))[1]
     hdutfS = timeS + "\n" + headS + "\n" + borderS + "\n"
     utfS += hdutfS + "\n"
+
+    utfS += sutfS  # accumulate doc strings
+    rstS += srstS
+    xtfS += xrstS
+
+    return utfS, rstS, xtfS
 
 
 def doc_parse(sS, tS):
@@ -122,7 +133,7 @@ def doc_parse(sS, tS):
     global utfS, rstS, xtfS, folderD, labelD, rivtD
 
     sL = sS.split("\n")  # convert section to list
-    secC = parse.Section(tS, sL)
+    secC = parse.Section(tS, sL, labelD)
     sutfS, srstS, xrtfS, folderD, labelD, rivtD = secC.section(
         sL, folderD, labelD, rivtD
     )
