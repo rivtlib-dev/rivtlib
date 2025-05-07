@@ -19,13 +19,13 @@ import sympy as sp
 import tabulate
 from IPython.display import Image as _Image
 from IPython.display import display as _display
-from numpy import *
+from numpy import *  # noqa: F403
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib.units import *
-from rivtlib import cmds
+from rivtlib.units import *  # noqa: F403
+
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -35,25 +35,42 @@ class Tag:
     formatting tags
 
     Function list:
-        foot                    _[#]
-        descrip                 _[D]
-        center                  _[C]
-        sympy                   _[S]
-        sympy label             _[L]
-        equation                _[E]
-        figure                  _[F]
-        table                   _[T]
-        hline                   _[H]
-        page                    _[P]
-        url, reference          _[U]
-        eval                     :=
-        valuesblk               _[[V]]
-        codeblk                 _[[C]]
-        literalblock            _[[L]]
-        bldindblk (pdf)         _[[B]]
-        italindblk (pdf)        _[[I]]
-        latexblk (pdf)          _[[X]]
-        quitblk                 _[[Q]]
+
+    _[C]     center
+    _[D]     descrip
+    _[E]     equation
+    _[#]     foot
+    _[F]     figure
+    _[S]     sympy
+    _[L]     sympy label
+    _[T]     table
+    _[H]     hline
+    _[P]     page
+    _[U]     url
+     :=      equals
+    _[[B]]   bldindblk
+    _[[C]]   codeblk
+    _[[I]]   italindblk
+    _[[L]]   literalblock
+    _[[X]]   latexblk
+    _[[V]]   valuesblk
+    _[[Q]]
+
+    try:
+        valN = folderD["valN"]  # value export file
+        valN = valN.replace("qqqqqq", str(snumI))
+        valsP = folderD["valsP"]
+        valP = Path(valsP, valN)
+        folderD["valP"] = valP
+    except:
+        pass
+    # print(strL)
+    # print(f"{self.tS=}")
+
+        if self.tS == "V":
+        with open(folderD["valP"], "w") as file:  # export value file
+            file.write(labelD["valexpS"])
+
     """
 
     def __init__(self, folderD, labelD):
@@ -92,7 +109,7 @@ class Tag:
         # print(f"{lineS=}")
         return uS, rS, self.folderD, self.labelD
 
-    def equa(self, lineS):
+    def equals(self, lineS):
         """format equation label _[E]
 
         Args:
@@ -288,6 +305,9 @@ class Tag:
             + "\n"
         )
         return "\n" + rvtS
+
+    def blocks(self, blockS):
+        return uS, rS, xS
 
     def blkplain(self, lineS, folderD, labelD):
         """format block plain [[]]

@@ -38,9 +38,35 @@ class Cmd:
     | TEXT | rel. pth |  plain; rivt                      .txt
     | TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
     | VALUES | rel. pth | col width, l;c;r                .csv, .txt, .xls
-    || PUBLISH | rel. pth | col width, l;c;r               .csv, .txt, .xls
-    || PREPEND | rel. pth | num; nonum                     .pdf
-    || APPEND | rel. pth | num; nonum                      .pdf
+    || PUBLISH | rel. pth | col width, l;c;r              .csv, .txt, .xls
+    || PREPEND | rel. pth | num; nonum                    .pdf
+    || APPEND | rel. pth | num; nonum                     .pdf
+
+                    if self.tS == "R":  # run commands
+                        pass
+                    elif self.tS == "I":  # insert commands
+                        rviC = cmds.Cmd(folderD, labelD)
+                        uS, rS, folderD, labelD = rviC.cmd_parse(cmdS, pthS, parS)
+                        print(uS)  # stdout command
+                        xutfS += uS
+                        xrstS += rS
+                        continue
+                    elif self.tS == "V":  # values command
+                        valsP = folderD["valsP"]
+                        rvvC = rvals.CmdV(folderD, labelD, rivtpD, rivtvD)
+                        uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
+                            cmdS, pthS, parS
+                        )
+                        print(uS)  # stdout valread
+                        xutfS += uS
+                        xrstS += rS
+                        continue
+                    elif self.tS == "T":  # tools command
+                        continue
+                    else:
+                        pass
+
+
 
     """
 

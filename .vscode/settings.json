@@ -8,6 +8,7 @@
         "list.inactiveSelectionBackground": "#213148",
     },
     "python.languageServer": "Pylance",
+    "ruff.configuration": "--preview",
     
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
@@ -144,5 +145,8 @@
     "git.autoStash": true,
     "python.analysis.autoFormatStrings": true,
     "autoDocstring.startOnNewLine": true,
+    "rewrap.wrappingColumn": 80,
+    "rewrap.wholeComment": false,
+
 
 }
