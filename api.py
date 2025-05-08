@@ -34,6 +34,7 @@ Variable type suffix:
 import fnmatch
 import os
 import sys
+import logging
 from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
@@ -75,6 +76,14 @@ srstS = """"""  # reSt section string
 sutfS = """"""  # utf section string
 xrstS = """"""  # reSt-tex section string
 
+# write backup doc file
+with open(rivtfP, "r") as f2:
+    rivtS = f2.read()
+with open(folderD["bakP"], "w") as f3:
+    f3.write(rivtS)
+logging.info(f"""rivt backup: [{bakshortP}]""")
+print(" ")
+
 
 def doc_hdr():
     # init file - (headings and doc overrides)
@@ -103,7 +112,7 @@ def doc_hdr():
     rstS += srstS
     xtfS += xrstS
 
-    return utfS, rstS, xtfS
+    return utfS, rstS, xstS
 
 
 def doc_parse(sS, tS):
@@ -130,7 +139,7 @@ def doc_parse(sS, tS):
         rstS (str): reSt output
     """
 
-    global utfS, rstS, xtfS, folderD, labelD, rivtD
+    global utfS, rstS, xstS, folderD, labelD, rivtD
 
     sL = sS.split("\n")  # convert section to list
     secC = parse.Section(tS, sL, labelD)
@@ -152,7 +161,7 @@ def R(sS):
         sS (str): section string
     """
 
-    global utfS, rstS, xtfS, folderD, labelD, rivtD
+    global utfS, rstS, xstS, folderD, labelD, rivtD
 
     utfS, rstS, xtfS = doc_parse(sS, "R")
 
@@ -165,7 +174,7 @@ def I(sS):  # noqa: E743
         sS (str): section string
     """
 
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, xstS, folderD, labelD, rivtD
 
     utfS, rstS = doc_parse(sS, "I")
 
@@ -178,7 +187,7 @@ def V(sS):
         sS (str): section string
     """
 
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, xstS, folderD, labelD, rivtD
 
     utfS, rstS = doc_parse(sS, "V")
 
@@ -191,7 +200,7 @@ def T(sS):
         sS (str): section string
     """
 
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, xstS, folderD, labelD, rivtD
 
     utfS, rstS = doc_parse(sS, "T")
 
@@ -209,15 +218,17 @@ def S(sS):
 
 def W(sS):
     """
-    write output files
+    write output doc files
 
     Args:
         sS (str): section string
     """
-    global utfS, rstS, folderD, labelD, rivtD
+    global utfS, rstS, xsts, folderD, labelD, rivtD
 
-    sSL = sS.split("\n")
-    for lS in sSL:
+    rivtL = rivtS.split("\n")
+    # 1. remove W function write that rivt temp file and execute
+    # 2. execute rest of file and process doc temp files through W commands
+    for lS in rivtL:
         cmdS = ""
         # print(f"{lS[:2]=}")
         if len(lS) == 0:
@@ -260,7 +271,7 @@ def W(sS):
                 txtP = Path(folderD["docsP"], "text", folderD["txtN"])
                 sStP = Path(folderD["tempP"], folderD["sStN"])
                 docC = rwrite.CmdW(folderD, labelD)
-                if typeS == "pdf2":
+                if typeS == "pdf":
                     rfrontS = docC.frontpg(tocS, tcovS, tcontS, tmainS)
                     rstS = rfrontS + "\n" + rstS
                     with open(txtP, "w", encoding="utf-8") as file:
@@ -268,7 +279,7 @@ def W(sS):
                     with open(sStP, "w", encoding="utf-8") as file:
                         file.write(rstS)
                     msgS = docC.docpdf2(pthS, styleS)
-                elif typeS == "pdf":
+                elif typeS == "pdfx":
                     rfrontS = docC.coverpg(tocS)
                     msgS = docC.docpdf()
                 elif typeS == "html":
@@ -284,18 +295,6 @@ def W(sS):
                 tmainS = " "
                 rfrontS = " "
                 # print(f"{rfrontS=}")
-            elif cmdS == "REPORT":
-                if typeS == "pdf2":
-                    rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
-                    msgS = docC.reportpdf2()
-                elif parL[0].strip() == "sStpdf":
-                    rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
-                    msgS = docC.reportpdf()
-                elif parL[0].strip() == "sSthtml":
-                    rfrontS = docC.coverpg(parL[1].strip(), parL[2].strip())
-                    msgS = docC.reporthtml()
-                else:
-                    pass
         else:
             pass
 

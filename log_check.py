@@ -1,51 +1,28 @@
 import logging
 import warnings
 from pathlib import Path
+from rivtlib import folderD
 
+errlogP = folderD["errlogP"]
+modnameS = __name__.split(".")[1]
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+    datefmt="%m-%d %H:%M",
+    filename=errlogP,
+    filemode="w",
+)
+warnings.filterwarnings("ignore")
 
-def log_bak(rivtFP, modnameS, folderD):
-    """
-    start logging and write doc bak file
-    """
+docshortP = Path(folderD["docP"].parts[-2:])
+bakshortP = Path(folderD["bakP"].parts[-2:])
 
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-        datefmt="%m-%d %H:%M",
-        filename=folderD["errlogP"],
-        filemode="w",
-    )
-    warnings.filterwarnings("ignore")
-    # warnings.simplefilter(action="ignore", category=FutureWarning)
-
-    errlogP = folderD["errlogP"]
-    modnameS = __name__.split(".")[1]
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-        datefmt="%m-%d %H:%M",
-        filename=errlogP,
-        filemode="w",
-    )
-    warnings.filterwarnings("ignore")
-
-    docshortP = Path(folderD["docP"].parts[-2:])
-    bakshortP = Path(folderD["bakP"].parts[-2:])
-
-    if folderD["docP"].exists():
-        logging.info(f"""rivt file : [{folderD["docS"]}]""")
-        logging.info(f"""rivt path : [{folderD["docP"]}]""")
-        print(f"""rivt short path : [{docshortP}]""")
-    else:
-        logging.info(f"""rivt file path not found: {folderD["docP"]}""")
-
-    # write backup doc file
-    with open(rivtFP, "r") as f2:
-        rivtS = f2.read()
-    with open(folderD["bakP"], "w") as f3:
-        f3.write(rivtS)
-    logging.info(f"""rivt backup: [{bakshortP}]""")
-    print(" ")
+if folderD["docP"].exists():
+    logging.info(f"""rivt file : [{folderD["docS"]}]""")
+    logging.info(f"""rivt path : [{folderD["docP"]}]""")
+    print(f"""rivt short path : [{docshortP}]""")
+else:
+    logging.info(f"""rivt file path not found: {folderD["docP"]}""")
 
 
 class UnumError(Exception):
