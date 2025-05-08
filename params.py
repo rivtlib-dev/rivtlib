@@ -2,7 +2,42 @@ import os
 import sys
 from pathlib import Path
 
-"""folders and global dictionaries"""
+"""
+dictionaries and lists
+
+
+tags and commands
+
+    _[C]     center
+    _[D]     descrip
+    _[E]     equation
+    _[#]     foot
+    _[F]     figure
+    _[S]     sympy
+    _[L]     sympy label
+    _[T]     table
+    _[H]     hline
+    _[P]     page
+    _[U]     url
+     :=      equals
+    _[[B]]   bldindblk
+    _[[C]]   codeblk
+    _[[I]]   italindblk
+    _[[L]]   literalblock
+    _[[X]]   latexblk
+    _[[V]]   valuesblk
+    _[[Q]]
+
+    | IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
+    | IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
+    | TEXT | rel. pth |  plain; rivt                      .txt
+    | TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
+    | VALUES | rel. pth | col width, l;c;r                .csv, .txt, .xls
+    || PUBLISH | rel. pth | col width, l;c;r              .csv, .txt, .xls
+    || PREPEND | rel. pth | num; nonum                    .pdf
+    || APPEND | rel. pth | num; nonum                     .pdf
+
+"""
 
 rivtP = Path(os.getcwd())
 rivtnS = "not found"
@@ -99,3 +134,74 @@ labelD = {
     "valexpS": "",  # list of values for export
     "unitS": "M,M",  # units
 }
+
+
+def rtag_cmd():
+    """
+    Run function
+    """
+
+    cmdL = [1]
+    tagsD = {"a": 1}
+
+    return tagsD, cmdL
+
+
+def itag_cmd():
+    """
+    Insert function
+    """
+
+    cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
+    tagsD = {
+        "#]": "foot",
+        "C]": "center",
+        "D]": "descrip",
+        "E]": "equation",
+        "F]": "figure",
+        "S]": "sympy",
+        "L]": "slabel",
+        "T]": "table",
+        "H]": "hline",
+        "P]": "page",
+        "U]": "url",
+        "B]]": "bldindblk",
+        "C]]": "codeblk",
+        "I]]": "italindblk",
+        "L]]": "literalblock",
+        "X]]": "latexblk",
+    }
+
+    return tagsD, cmdL
+
+
+def vtag_cmd():
+    """
+    Value function
+    """
+
+    cmdL = ["IMG", "IMG2", "VALUES"]
+    tagsD = {
+        "E]": "equation",
+        "F]": "figure",
+        "S]": "sympy",
+        "L]": "slabel",
+        "T]": "table",
+        "H]": "hline",
+        "P]": "page",
+        ":=": "equals",
+        "V]]": "valuesblk",
+    }
+
+    return tagsD, cmdL
+
+
+def ttag_cmd():
+    """
+    Tools function
+    """
+
+    cmdL = [2]
+    tagsD = {"b": 2}
+
+    return tagsD, cmdL

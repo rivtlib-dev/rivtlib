@@ -40,7 +40,7 @@ from datetime import datetime
 from pathlib import Path
 
 import __main__
-from rivtlib import log_check, params, parse, rwrite
+from rivtlib import log_check, parse, rwrite
 from rivtlib.units import *  # noqa: F403
 
 # get rivt file and path

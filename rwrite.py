@@ -39,6 +39,14 @@ class CmdW:
         )
         warnings.filterwarnings("ignore")
 
+    def append(self, pthS, parS):
+        """_summary_"""
+        pass
+
+    def prepend(self, pthS, parS):
+        """_summary_"""
+        pass
+
     def frontvar(self, titleS, subS, botS, imageS):
         """_summary_
 

@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from rivtlib import cmds, rinsert, rrun, rtool, rvalue, tags
+from rivtlib import cmds, params, tags
 
 
 class Section:
@@ -9,7 +9,7 @@ class Section:
 
     def __init__(self, stS, sL, labelD):
         """
-        preprocess section strings
+        preprocess section headers and strings
 
         Args:
             stS (str): section type
@@ -20,7 +20,8 @@ class Section:
         srstS = ""
         xrstS = ""
         ssL = []
-        # write section header
+
+        # section header
         hL = sL[0].split("|")
         labelD["docS"] = hL[0].strip()  # section title
         labelD["xch"] = hL[1].strip()  # xchange flag
@@ -35,9 +36,9 @@ class Section:
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
             xrstS = "\n" + headS + "\n" + bordrS + "\n"
-            # print(hdutfS, hdrstS, hdrstS)
+            # print(sutfS, srstS, xrstS)
 
-        # strip leading spaces, # comments, * markup for utf doc string
+        # strip leading spaces, # comments, * markup for utf doc
         for slS in sL[1:]:
             if slS[0] == "#":  # comments
                 continue
@@ -70,12 +71,12 @@ class Section:
         """parse section
 
         Args:
-            strL (list): section string
+            self.ssL (list): preprocessed section list
 
         Returns:
-            sutfS (str): utf doc string
-            srstS (str): rest doc string
-            xrstS (str): tex doc string
+            sutfS (str): utf doc section
+            srstS (str): rest doc section
+            xrstS (str): tex doc section
             folderD (dict): folder paths
             labelD (dict): labels
             rivtD (dict): calculated values
@@ -83,12 +84,8 @@ class Section:
         """
         blockB = False  # block flag
         blockS = """"""  # block accumulator
-        uS = """"""  # utf doc line
-        rS = """"""  # rest doc line
-        xS = """"""  # tex doc line
-        sutfS = """"""  # utf doc
-        srstS = """"""  # rst doc
-        xrstS = """"""  # tex doc
+        uS = rS = xS = """"""  # doc line
+        sutfS = srstS = xrstS = """"""  # utf doc
 
         for slS in self.ssL:  # loop over section lines
             # print(f"{slS=}")
@@ -110,7 +107,17 @@ class Section:
                     xrstS += xS + "\n"
                     blockS = """"""
                     continue
-            elif slS[0:1] == "|":  # commands
+            if self.stS == "R":
+                tagD, cmdL = params.rtag_cmd()
+            elif self.stS == "I":
+                tagD, cmdL = params.itag_cmd()
+            elif self.stS == "V":
+                tagD, cmdL = params.vtag_cmd()
+            elif self.stS == "T":
+                tagD, cmdL = params.ttag_cmd()
+            else:
+                pass
+            if slS[0:1] == "|":  # commands
                 if slS[0:2] == "||":
                     parL = slS[2:].split("|")
                 else:
@@ -119,7 +126,7 @@ class Section:
                 pthS = parL[1].strip()
                 parS = parL[2].strip()
                 # print(cmdS, pthS, parS)
-                if cmdS in self.cmdL:
+                if cmdS in cmdL:
                     comC = cmds.Cmd(folderD, labelD, rivtD)
                     uS, rS, xS, folderD, labelD, rivtvD = comC.cmd_parse(
                         cmdS, pthS, parS

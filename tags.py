@@ -24,6 +24,7 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
+from rivtlib import cmds
 from rivtlib.units import *  # noqa: F403
 
 
@@ -34,7 +35,7 @@ class Tag:
     """
     formatting tags
 
-    Function list:
+    Function Name list:
 
     _[C]     center
     _[D]     descrip
@@ -48,12 +49,12 @@ class Tag:
     _[P]     page
     _[U]     url
      :=      equals
-    _[[B]]   bldindblk
-    _[[C]]   codeblk
-    _[[I]]   italindblk
-    _[[L]]   literalblock
-    _[[X]]   latexblk
-    _[[V]]   valuesblk
+    color _[[B]]   bldindblk
+    color _[[C]]   codeblk
+    color _[[I]]   italindblk
+    color _[[L]]   literalblock
+    color _[[X]]   latexblk
+    title _[[V]]   valuesblk
     _[[Q]]
 
     try:
@@ -78,6 +79,7 @@ class Tag:
         self.folderD = folderD
         self.labelD = labelD
         # print(folderD)
+
         errlogP = folderD["errlogP"]
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
