@@ -99,12 +99,13 @@ class Section:
                 blockS += slS + "\n"
                 if blockB and ("_[[Q]]" in slS):  # block end
                     blockB = False
-                    tC = tags.Tag()
-                    uS, rS, xS = tags.blocks(self.tS, blockS)
+                    tC = tags.Tag(folderD, labelD, rivtD)
+                    uS, rS, xS = tC.blocktags(tagS, blockS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
                     srstS += rS + "\n"
                     xrstS += xS + "\n"
+                    tagS = ""
                     blockS = """"""
                     continue
             if self.stS == "R":
@@ -117,6 +118,7 @@ class Section:
                 tagD, cmdL = params.ttag_cmd()
             else:
                 pass
+
             if slS[0:1] == "|":  # commands
                 if slS[0:2] == "||":
                     parL = slS[2:].split("|")
@@ -131,8 +133,13 @@ class Section:
                     uS, rS, xS, folderD, labelD, rivtvD = comC.cmd_parse(
                         cmdS, pthS, parS
                     )
+                    sutfS += uS + "\n"
+                    srstS += rS + "\n"
+                    xrstS += xS + "\n"
+                    print(uS)  # STDOUT- command
+                    continue
             elif "_[" in slS:  # tags
-                slL = slS.split("_[")  # split tag
+                slL = slS.split("_[")
                 lineS = slL[0].strip()
                 tagS = slL[1].strip()
                 tnameS = self.tagsD[tagS]  # get tag name
@@ -146,12 +153,13 @@ class Section:
                         xrstS += xS + "\n"
                         print(uS)  # STDOUT- tagged line
                         continue
-                    else:  # block start
+                    else:  # block tag - start
                         blockS = ""
                         blockB = True
                         blockS += lineS + "\n"
                 else:
                     pass
+
             elif ":=" in slS:  # equals tag
                 tagS = slL[1].strip()
                 tnameS = self.tagsD[":="]  # get tag name
@@ -159,22 +167,23 @@ class Section:
                     eqL = slS.split("|", 1)
                     eqS = eqL[0].strip()
                     parS = eqL[1].strip()
-                    rvvC = rvals.CmdV(folderD, labelD, rivtD)
-                    uS, rS, folderD, labelD, rivtvD = rvvC.cmd_parse(
-                        "equate", eqS, parS
+                    comC = cmds.Cmd(folderD, labelD, rivtD)
+                    uS, rS, xS, folderD, labelD, rivtvD = comC.cmd_parse(
+                        cmdS, eqS, parS
                     )
-                xutfS += uS
-                xrstS += rS
-                print(uS)  # STDOUT equation
-                uS, rS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
-                    "equtable", eqS, parS
-                )
-                print(uS)  # STDOUT equals table
-                xutfS += uS
-                xrstS += rS
+                    sutfS += uS + "\n"
+                    srstS += rS + "\n"
+                    xrstS += xS + "\n"
+                    print(uS)  # STDOUT equation
+                    uS, rS, xS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
+                        "equtable", eqS, parS
+                    )
+                    print(uS)  # STDOUT equation table
+                    xutfS += uS
+                    xrstS += rS
             else:
                 xrstS += slS + "\n"
-                print(ulS)  # STDOUT - line as is
-                xutfS += ulS + "\n"
+                print(slS)  # STDOUT - line as is
+                xutfS += slS + "\n"
 
-        return (sutfS, srstS, xrstS, folderD, labelD, rivtD)
+        return sutfS, srstS, xrstS, folderD, labelD, rivtD

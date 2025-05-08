@@ -72,12 +72,19 @@ class Tag:
         with open(folderD["valP"], "w") as file:  # export value file
             file.write(labelD["valexpS"])
 
+
+        tC = Tag(self.folderD, self.labelD)
+        tcmdS = str(tagcmdS)
+        functag = getattr(tC, tcmdS)
+        uS, rS = functag(lineS)
+
     """
 
-    def __init__(self, folderD, labelD):
+    def __init__(self, folderD, labelD, rivtD):
         """format tags - utf and reSt"""
         self.folderD = folderD
         self.labelD = labelD
+        self.rivtD = rivtD
         # print(folderD)
 
         errlogP = folderD["errlogP"]
@@ -91,332 +98,211 @@ class Tag:
         )
         warnings.filterwarnings("ignore")
 
-    def tag_parse(self, tagcmdS, lineS):
-        """parse a tagged line
+    def linetags(self, tagS, lineS):
+        """ """
 
-        Args:
-            tagcmd (_type_): _description_
-            lineS (_type_): _description_
+        if tagS == "C]":
+            """ center line """
 
-        Returns:
-            utS: formatted utf string
-        """
+            uS = lineS.center(int(self.labelD["widthI"])) + "\n"
+            rS = lineS.center(int(self.labelD["widthI"])) + "\n"
+            tS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
 
-        tC = Tag(self.folderD, self.labelD)
-        tcmdS = str(tagcmdS)
-        functag = getattr(tC, tcmdS)
-        uS, rS = functag(lineS)
+            return uS, rS, tS
 
-        # print(f"{tcmdS=}")
-        # print(f"{lineS=}")
-        return uS, rS, self.folderD, self.labelD
+        elif tagS == "D]":
+            """ footnote description"""
+            ftnumI = self.labelD["noteL"].pop(0)
 
-    def equals(self, lineS):
-        """format equation label _[E]
+            uS, rS, tS = "[" + str(ftnumI) + "] " + lineS
 
-        Args:
-            lineS (str): _description_
-        Returns:
-            str : _description_
-        """
-        enumI = int(self.labelD["equI"])
-        self.labelD["equI"] = enumI + 1
-        wI = self.labelD["widthI"]
-        # utf
-        fillS = "\nE" + str(enumI).zfill(2)
-        uS = fillS + " - " + lineS + "\n"
-        # rst
-        fillS = "\n**E" + str(enumI).zfill(2) + "** - "
-        rS = fillS + "   " + lineS + "\n"
-        # tex
-        tS = uS
+            return uS, rS, tS
 
-        return uS, rS
+        elif tagS == "E]":
+            """ equation label """
+            enumI = int(self.labelD["equI"])
+            self.labelD["equI"] = enumI + 1
+            wI = self.labelD["widthI"]
+            fillS = "\nE" + str(enumI).zfill(2)
 
-    def table(self, lineS):
-        """format table title _[T]
+            uS = fillS + " - " + lineS + "\n"
+            fillS = "\n**E" + str(enumI).zfill(2) + "** - "
+            rS = fillS + "   " + lineS + "\n"
+            tS = uS
 
-        Args:
-            lineS (_type_): _description_
-        Returns:
-            _type_: _description_
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        fillS = str(tnumI).zfill(2)
-        # utf
-        uS = "\nTable " + str(tnumI) + ": " + lineS
-        # rst2
-        r2S = "\n**Table " + fillS + "**: " + lineS
-        # rst
-        rS = "\n**Table " + fillS + "**: " + lineS
+            return uS, rS, tS
 
-        return uS, r2S
+        elif tagS == "F]":
+            """ figure caption"""
+            fnumI = int(self.labelD["figI"])
+            self.labelD["figI"] = fnumI + 1
 
-    def value(self, lineS):
-        """format value title _[T]
+            uS = rS = tS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
 
-        Args:
-            lineS (_type_): _description_
-        Returns:
-            _type_: _description_
-        """
-        vnumI = int(self.labelD["valueI"])
-        self.labelD["tableI"] = vnumI + 1
-        fillS = str(vnumI).zfill(2)
-        # utf
-        uS = "\nValue Table " + str(vnumI) + ": " + lineS
-        # rst2
-        r2S = "\n**Value Table " + fillS + "**: " + lineS
-        # rst
-        rS = "\n**Value Table " + fillS + "**: " + lineS
+            return uS, rS, tS
 
-        return uS, r2S
+        elif tagS == "#]":
+            """ footnote number """
+            ftnumI = self.labelD["footL"].pop(0)
+            self.labelD["noteL"].append(ftnumI + 1)
+            self.labelD["footL"].append(ftnumI + 1)
 
-    def figure(self, lineS):
-        """utf figure caption _[F]
+            uS = rS = tS = lineS.replace("*]", "[" + str(ftnumI) + "]")
 
-        Args:
-            lineS (_type_): _description_
+            return uS, rS, tS
 
-        Returns:
-            _type_: _description_
-        """
-        fnumI = int(self.labelD["figI"])
-        self.labelD["figI"] = fnumI + 1
-        lineS = "Fig. " + str(fnumI) + " - " + self.lineS
+        elif tagS == "S]":
+            spS = lineS.strip()
+            try:
+                spL = spS.split("=")
+                spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            except:
+                pass
+            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
 
-        return lineS + "\n"
+            uS = textwrap.indent(lineS, "     ")
+            rS = "\n\n.. code:: \n\n\n" + uS + "\n\n"
+            tS = ".. raw:: math\n\n   " + lineS + "\n"
 
-    def foot(self):
-        """footnote number _[#]
+            return uS, rS, tS
 
-        Args:
-            lineS (str): rivt line
-        Returns:
-            str, str: formatted utf, reSt
-        """
-        ftnumI = self.labelD["footL"].pop(0)
-        self.labelD["noteL"].append(ftnumI + 1)
-        self.labelD["footL"].append(ftnumI + 1)
-        lineS = self.lineS.replace("*]", "[" + str(ftnumI) + "]")
-        print(lineS)
-        return lineS
+        elif tagS == "T]":
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            fillS = str(tnumI).zfill(2)
+            uS = "\nTable " + str(tnumI) + ": " + lineS
+            rS = "\n**Table " + fillS + "**: " + lineS
+            tS = "\n**Table " + fillS + "**: " + lineS
 
-    def description(self, lineS):
-        """footnote description _[D]
+            return uS, rS, tS
 
-        Args:
-            lineS (str): rivt line
-        Returns:
-            str: formatted utf
-            str: formatted reSt
-        """
-        ftnumI = self.labelD["noteL"].pop(0)
-        lineS = "[" + str(ftnumI) + "] " + self.lineS
+        elif tagS == "U]":
+            lineL = self.lineS.split(",")
+            lineS = ".. _" + lineL[0] + ": " + lineL[1]
 
-        return lineS
+            return lineS
 
-    def center(self, lineS):
-        """center text _[C]
+        elif tagS == "H]":
+            uS = "-" * 80
+            rS = "-" * 80
+            tS = "-" * 80
 
-        Args:
-            lineS (str): rivt line
-        Returns:
-            str, str: formatted utf, reSt
-        """
-        # utf
-        uS = lineS.center(int(self.labelD["widthI"])) + "\n"
-        # rst
-        rS = lineS.center(int(self.labelD["widthI"])) + "\n"
-        # tex
-        tS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
+            return uS, rS, tS
 
-        return uS, rS
+        elif tagS == "P]":
+            pagenoS = str(self.labelD["pageI"])
+            rvtS = self.labelD["headuS"].replace("p##", pagenoS)
+            self.labelD["pageI"] = int(pagenoS) + 1
+            lineS = (
+                "\n"
+                + "_" * self.labelD["widthI"]
+                + "\n"
+                + rvtS
+                + "\n"
+                + "_" * self.labelD["widthI"]
+                + "\n"
+            )
 
-    def sympy(self, lineS):
-        """format sympy math _[S]
+            return "\n" + rvtS
 
-
-        Args:
-            lineS (str): rivt line
-        Returns:
-            str, str: formatted utf, reSt
-        """
-        spS = lineS.strip()
-        try:
-            spL = spS.split("=")
-            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-        except:
+        else:
             pass
-        lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        # utf
-        uS = textwrap.indent(lineS, "     ")
-        # prst
-        r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
-        # rst
-        xrS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        # print(uS)
-        return uS, r2S
-
-    def plain(self, lineS, folderD, labelD):
-        """format plain literal text _[P]
-
-        :param lineS: _description_
-        :type lineS: _type_
+    def blocktags(self, tagS, lineS):
         """
-        print(self.lineS)
-        return self.lineS
 
-    def link(self, lineS, folderD, labelD):
-        """format url or internal link _[LINK]
+        color _[[B]]   bldindblk
+        color _[[C]]   codeblk
+        color _[[I]]   italindblk
+        color _[[L]]   literalblock
+        color _[[N]]   indentblock
+        color _[[X]]   latexblk
+        title _[[V]]   valuesblk
 
-        :return: _description_
-        :rtype: _type_
+        Args:
+            tagS (_type_): _description_
+            blockS (_type_): _description_
+            folderD (_type_): _description_
+            labelD (_type_): _description_
+            rivtD (_type_): _description_
+
+        Returns:
+            _type_: _description_
         """
-        lineL = self.lineS.split(",")
-        lineS = ".. _" + lineL[0] + ": " + lineL[1]
-        print(lineS)
-        return lineS
 
-    def hline(self, lineS, folderD, labelD):
-        """horizontal line _[H]
+        if tagS == "[B]]":
+            """ bold indent block """
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            # utf
+            luS = "Table " + str(tnumI) + " - " + lineS
+            # rst
+            lrS = "\n" + "Table " + fillS + ": " + lineS
 
-        :return lineS: underline
-        :rtype: str
-        """
-        return self.lineS
+            # print("***sympy***", f"{luS=}", f"{lrS=}")
+            return luS, lrS
 
-    def page(self, lineS, folderD, labelD):
-        """insert new page header _[PAGE]
+        elif tagS == "[I]]":
+            """ italic indent block """
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + lineS
+            lrS = "\n" + "Table " + fillS + ": " + lineS
 
-        :return lineS: page header
-        :rtype: str
-        """
-        pagenoS = str(self.labelD["pageI"])
-        rvtS = self.labelD["headuS"].replace("p##", pagenoS)
-        self.labelD["pageI"] = int(pagenoS) + 1
-        lineS = (
-            "\n"
-            + "_" * self.labelD["widthI"]
-            + "\n"
-            + rvtS
-            + "\n"
-            + "_" * self.labelD["widthI"]
-            + "\n"
-        )
-        return "\n" + rvtS
+            # print("***sympy***", f"{luS=}", f"{lrS=}")
+            return luS, lrS
 
-    def blocks(self, blockS):
-        return uS, rS, xS
+        elif tagS == "[L]]":
+            """ literal block """
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + lineS
+            lrS = "\n" + "Table " + fillS + ": " + lineS
 
-    def blkplain(self, lineS, folderD, labelD):
-        """format block plain [[]]
+            # print("***sympy***", f"{luS=}", f"{lrS=}")
+            return luS, lrS
 
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "Table " + fillS + ": " + lineS
+        elif tagS == "[O]]":
+            """ code block """
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + lineS
+            lrS = "\n" + "Table " + fillS + ": " + lineS
 
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
-        return luS, lrS
+            # print("***sympy***", f"{luS=}", f"{lrS=}")
+            return luS, lrS
 
-    def blkcode(self, lineS, folderD, labelD):
-        """format block code _[[C]]
+        elif tagS == "[N]]":
+            """ indent block """
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + lineS
+            lrS = "\n" + "Table " + fillS + ": " + lineS
 
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "Table " + fillS + ": " + lineS
+            # print("***sympy***", f"{luS=}", f"{lrS=}")
+            return luS, lrS
 
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
-        return luS, lrS
+        elif tagS == "[X]]":
+            """ latex block """
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            # utf
+            luS = "Table " + str(tnumI) + " - " + lineS
+            # rst
+            lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
 
-    def blkbold(self, lineS, folderD, labelD):
-        """format block bold  _[[B]]
+            return luS, lrS
 
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "Table " + fillS + ": " + lineS
+        elif tagS == "[V]]":
+            """ values block """
+            vnumI = int(self.labelD["valueI"])
+            self.labelD["tableI"] = vnumI + 1
+            fillS = str(vnumI).zfill(2)
+            uS = "\nValue Table " + str(vnumI) + ": " + lineS
+            r2S = "\n**Value Table " + fillS + "**: " + lineS
+            rS = "\n**Value Table " + fillS + "**: " + lineS
 
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
-        return luS, lrS
+            return uS, r2S
 
-    def blkital(self, lineS, folderD, labelD):
-        """format block italic (oblique) _[[O]]
-
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "Table " + fillS + ": " + lineS
-
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
-        return luS, lrS
-
-    def blkspace(self, lineS, folderD, labelD):
-        """format block indent _[[S]]
-
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "Table " + fillS + ": " + lineS
-
-        # print("***sympy***", f"{luS=}", f"{lrS=}")
-        return luS, lrS
-
-    def blkitind(self, lineS, folderD, labelD):
-        """format italic indent block [[I]]
-
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
-
-        return luS, lrS
-
-    def blklatex(self, lineS, folderD, labelD):
-        """format latex block [[L]]
-
-        :return lineS: md table title
-        :rtype: str
-        """
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        # utf
-        luS = "Table " + str(tnumI) + " - " + lineS
-        # rst
-        lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
-
-        return luS, lrS
+        else:
+            pass
