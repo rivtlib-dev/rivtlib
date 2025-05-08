@@ -4,6 +4,8 @@ import subprocess
 import time
 import warnings
 from pathlib import Path
+from reportlab.lib.utils import ImageReader
+
 
 from fpdf import FPDF
 

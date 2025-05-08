@@ -82,10 +82,11 @@ class Section:
             rivtD (dict): calculated values
 
         """
-        blockB = False  # block flag
-        blockS = """"""  # block accumulator
+        blockB = False
+        blockS = """"""
+        tagS = ""
         uS = rS = xS = """"""  # doc line
-        sutfS = srstS = xrstS = """"""  # utf doc
+        sutfS = srstS = xrstS = """"""  # doc section
 
         for slS in self.ssL:  # loop over section lines
             # print(f"{slS=}")
@@ -130,14 +131,13 @@ class Section:
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:
                     comC = cmds.Cmd(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD = comC.cmd_parse(
-                        cmdS, pthS, parS
-                    )
+                    uS, rS, xS, folderD, labelD, rivtvD = comC.cmand(cmdS, pthS, parS)
                     sutfS += uS + "\n"
                     srstS += rS + "\n"
                     xrstS += xS + "\n"
                     print(uS)  # STDOUT- command
                     continue
+
             elif "_[" in slS:  # tags
                 slL = slS.split("_[")
                 lineS = slL[0].strip()
@@ -145,9 +145,9 @@ class Section:
                 tnameS = self.tagsD[tagS]  # get tag name
                 if tagS in self.tagsD:  # filter tags
                     # print(f"{tagS=}")
-                    tC = tags.Tag(folderD, labelD)
+                    tC = tags.Tag(folderD, labelD, rivtD)
                     if len(tagS) < 3:  # line tag
-                        uS, rS, xS, folderD, labelD = tC.tag_parse(tnameS, lineS)
+                        uS, rS, xS, folderD, labelD, rivtD = tC.linetags(tnameS, lineS)
                         sutfS += uS + "\n"
                         srstS += rS + "\n"
                         xrstS += xS + "\n"
@@ -157,8 +157,7 @@ class Section:
                         blockS = ""
                         blockB = True
                         blockS += lineS + "\n"
-                else:
-                    pass
+                        continue
 
             elif ":=" in slS:  # equals tag
                 tagS = slL[1].strip()
@@ -181,7 +180,8 @@ class Section:
                     print(uS)  # STDOUT equation table
                     xutfS += uS
                     xrstS += rS
-            else:
+
+            else:  # everything else
                 xrstS += slS + "\n"
                 print(slS)  # STDOUT - line as is
                 xutfS += slS + "\n"

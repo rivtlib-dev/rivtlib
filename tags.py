@@ -1,32 +1,18 @@
 #
-import fnmatch
-import csv
 import logging
-import re
-import sys
+import textwrap
 import warnings
 from datetime import datetime, time
 from io import StringIO
 from pathlib import Path
-import textwrap
 
-import IPython
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
-import numpy.linalg as la
-import pandas as pd
-import sympy as sp
 import tabulate
-from IPython.display import Image as _Image
-from IPython.display import display as _display
 from numpy import *  # noqa: F403
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib import cmds
 from rivtlib.units import *  # noqa: F403
-
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -81,7 +67,14 @@ class Tag:
     """
 
     def __init__(self, folderD, labelD, rivtD):
-        """format tags - utf and reSt"""
+        """
+        format tags - utf and reSt
+
+        folderD (_type_): _description_
+        labelD (_type_): _description_
+        rivtD (_type_): _description_
+
+        """
         self.folderD = folderD
         self.labelD = labelD
         self.rivtD = rivtD
@@ -221,10 +214,7 @@ class Tag:
 
         Args:
             tagS (_type_): _description_
-            blockS (_type_): _description_
-            folderD (_type_): _description_
-            labelD (_type_): _description_
-            rivtD (_type_): _description_
+            lineS (_type_): _description_
 
         Returns:
             _type_: _description_

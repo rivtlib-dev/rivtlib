@@ -1,24 +1,21 @@
 # python #!
 import csv
-import fnmatch
 import logging
-import re
 import sys
 import warnings
-from datetime import datetime, time
 from io import StringIO
 from pathlib import Path
 
-import IPython
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy.linalg as la
 import pandas as pd
 import sympy as sp
 import tabulate
+from IPython.display import Image as _Image
+from IPython.display import display as _display
 from numpy import *  # noqa: F403
 from PIL import Image
-from reportlab.lib.utils import ImageReader
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
@@ -109,114 +106,80 @@ class Cmd:
 
         return uS, rS, self.folderD, self.labelD self.rivtD
 
-    def img(self, pthS, parS):
-        """insert image from file
+    def cmand(self, cmdS, pthS, parS):
+        
+        if cmdS == "IMG":
 
-        Args:
-            pthS (str): relative file path
-            parS (str): parameters
+            print(f"{parS=}")
+            print(f"{pthS=}")
+            parL = parS.split(",")
+            capS = parL[0].strip()
+            scS = parL[1].strip()
+            insP = Path(self.folderD["projP"] / pthS)
+            insS = str(insP.as_posix())
+            pS = " [file: " + pthS + "]" + "\n\n"
+            # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
+            if capS == "-":
+                capS = " "
+            if parL[2].strip() == "_[F]":
+                numS = str(self.labelD["figI"])
+                self.labelD["figI"] = int(numS) + 1
+                figS = "**Fig. " + numS + " -** "
+            else:
+                figS = " "
+            try:
+                img1 = Image.open(pthS)
+                _display(img1)
+            except:
+                pass
+            uS = figS + capS + " [file: " + pthS + " ] \n"
+            rS = (
+                "\n\n.. image:: " + insS + "\n"
+                + "   :width: " + scS + "% \n"
+                + "   :align: center \n\n\n"
+                + ".. class:: center \n\n"
+                + figS + capS + "\n")
+            xS = (
+                "\n\n.. image:: " + insS + "\n"
+                + "   :width: " + scS + "% \n"
+                + "   :align: center \n\n\n"
+                + ".. class:: center \n\n"
+                + figS + capS + "\n")
 
-        Returns:
-            uS (str): formatted utf string
-            r2S (str): formatted rst2 string
-            rS (str): formatted reSt string
-        """
-        print(f"{parS=}")
-        print(f"{pthS=}")
-        parL = parS.split(",")
-        capS = parL[0].strip()
-        scS = parL[1].strip()
-        insP = Path(self.folderD["projP"])
-        insP = Path(Path(insP) / pthS)
-        insS = str(insP.as_posix())
-        pS = " [file: " + pthS + "]" + "\n\n"
-        # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
-        if capS == "-":
-            capS = " "
-        if parL[2].strip() == "_[F]":
-            numS = str(self.labelD["figI"])
-            self.labelD["figI"] = int(numS) + 1
-            figS = "**Fig. " + numS + " -** "
-        else:
-            figS = " "
-        # utf
-        uS = figS + capS + " [file: " + pthS + " ] \n"
-        # rst2
-        r2S = (
-            "\n\n.. image:: "
-            + insS
-            + "\n"
-            + "   :width: "
-            + scS
-            + "% \n"
-            + "   :align: center \n"
-            + "\n\n"
-            + ".. class:: center \n\n"
-            + figS
-            + capS
-            + "\n"
-        )
-        # rSt
-        r2S = (
-            "\n\n.. image:: "
-            + insS
-            + "\n"
-            + "   :width: "
-            + scS
-            + "% \n"
-            + "   :align: center \n"
-            + "\n\n"
-            + ".. class:: center \n\n"
-            + figS
-            + capS
-            + "\n"
-        )
-        return uS, r2S
+            return uS, rS, xS
 
-    def img2(self, pthS, parS):
-        """insert side by side images from files
+        if cmdS == "IMG2":
+            """insert side by side images from files """
 
-        Args:
-            pthS(str): relative file path
-            parS(str): parameters
+            # print(f"{parS=}")
+            parL = parS.split(",")
+            fileL = pthS.split(",")
+            file1P = Path(fileL[0])
+            file2P = Path(fileL[1])
+            cap1S = parL[0].strip()
+            cap2S = parL[1].strip()
+            scale1S = parL[2].strip()
+            scale2S = parL[3].strip()
+            figS = "Fig. "
+            if parL[2] == "_[F]":
+                numS = str(self.labelD["fnum"])
+                self.labelD["fnum"] = int(numS) + 1
+                figS = figS + numS + cap1S
 
-        Returns:
-            uS(str): formatted utf string
-            rS(str): formatted reSt string
-        """
-        # print(f"{parS=}")
-        parL = parS.split(",")
-        fileL = pthS.split(",")
-        file1P = Path(fileL[0])
-        file2P = Path(fileL[1])
-        cap1S = parL[0].strip()
-        cap2S = parL[1].strip()
-        scale1S = parL[2].strip()
-        scale2S = parL[3].strip()
-        figS = "Fig. "
-        if parL[2] == "_[F]":
-            numS = str(self.labelD["fnum"])
-            self.labelD["fnum"] = int(numS) + 1
-            figS = figS + numS + cap1S
-        try:
-            img1 = Image.open(pthS)
-            _display(img1)
-        except:
-            pass
-        uS = "<" + cap1S + " : " + str(file1P) + "> \n"
-        rS = (
-            "\n.. image:: "
-            + pthS
-            + "\n"
-            + "   :scale: "
-            + scale1S
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n"
-        )
+            uS = "<" + cap1S + " : " + str(file1P) + "> \n"
+            rS = (
+                "\n.. image:: "
+                + pthS
+                + "\n"
+                + "   :scale: "
+                + scale1S
+                + "%"
+                + "\n"
+                + "   :align: center"
+                + "\n\n"
+            )
 
-        return uS, rS
+            return uS, rS
 
     def table(self, pthS, parS):
         """insert table from csv, xlsx or reSt file"""
