@@ -67,7 +67,7 @@ class Section:
         self.srstS = srstS  # rst doc
         self.xrstS = xrstS  # tex doc
 
-    def section(self, folderD, labelD, rivtD):
+    def section(self, tagL, cmdL, folderD, labelD, rivtD):
         """parse section
 
         Args:
@@ -101,7 +101,7 @@ class Section:
                 if blockB and ("_[[Q]]" in slS):  # block end
                     blockB = False
                     tC = tags.Tag(folderD, labelD, rivtD)
-                    uS, rS, xS = tC.blocktags(tagS, blockS)
+                    uS, rS, xS = tC.blocktag(tagS, blockS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
                     srstS += rS + "\n"
@@ -109,17 +109,6 @@ class Section:
                     tagS = ""
                     blockS = """"""
                     continue
-            if self.stS == "R":
-                tagD, cmdL = params.rtag_cmd()
-            elif self.stS == "I":
-                tagD, cmdL = params.itag_cmd()
-            elif self.stS == "V":
-                tagD, cmdL = params.vtag_cmd()
-            elif self.stS == "T":
-                tagD, cmdL = params.ttag_cmd()
-            else:
-                pass
-
             if slS[0:1] == "|":  # commands
                 if slS[0:2] == "||":
                     parL = slS[2:].split("|")
@@ -129,7 +118,7 @@ class Section:
                 pthS = parL[1].strip()
                 parS = parL[2].strip()
                 # print(cmdS, pthS, parS)
-                if cmdS in cmdL:
+                if cmdS in cmdL:  # check list
                     comC = cmds.Cmd(folderD, labelD, rivtD)
                     uS, rS, xS, folderD, labelD, rivtvD = comC.cmand(cmdS, pthS, parS)
                     sutfS += uS + "\n"
@@ -142,12 +131,11 @@ class Section:
                 slL = slS.split("_[")
                 lineS = slL[0].strip()
                 tagS = slL[1].strip()
-                tnameS = self.tagsD[tagS]  # get tag name
-                if tagS in self.tagsD:  # filter tags
+                if tagS in tagL:  # check list
                     # print(f"{tagS=}")
                     tC = tags.Tag(folderD, labelD, rivtD)
                     if len(tagS) < 3:  # line tag
-                        uS, rS, xS, folderD, labelD, rivtD = tC.linetags(tnameS, lineS)
+                        uS, rS, xS, folderD, labelD, rivtD = tC.linetag(tagS, lineS)
                         sutfS += uS + "\n"
                         srstS += rS + "\n"
                         xrstS += xS + "\n"

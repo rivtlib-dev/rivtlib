@@ -79,7 +79,7 @@ class Tag:
         )
         warnings.filterwarnings("ignore")
 
-    def linetags(self, tagS, lineS):
+    def linetag(self, tagS, lineS):
         """format line tags
 
         text        _[C]    center
@@ -88,7 +88,7 @@ class Tag:
         text        _[#]    footnote
         caption     _[F]    figure caption
         equation    _[S]    sympy
-        equation    _[L]    sympy with label
+        equation    _[Y]    sympy with label
         title       _[T]    table title
         url, label  _[U]    url
         a := 1       :=     evaluate equation
@@ -107,40 +107,39 @@ class Tag:
             """ center a line """
             uS = lineS.center(int(self.labelD["widthI"])) + "\n"
             rS = lineS.center(int(self.labelD["widthI"])) + "\n"
-            tS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
+            xS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
 
-            return uS, rS, tS
+            return uS, rS, xS
 
         elif tagS == "D]":
             """ footnote description """
             ftnumI = self.labelD["noteL"].pop(0)
 
-            uS, rS, tS = "[" + str(ftnumI) + "] " + lineS
+            uS, rS, xS = "[" + str(ftnumI) + "] " + lineS
 
-            return uS, rS, tS
+            return uS, rS, xS
 
         elif tagS == "E]":
             """ equation label """
             enumI = int(self.labelD["equI"])
             self.labelD["equI"] = enumI + 1
-            wI = self.labelD["widthI"]
             fillS = "\nE" + str(enumI).zfill(2)
 
             uS = fillS + " - " + lineS + "\n"
             fillS = "\n**E" + str(enumI).zfill(2) + "** - "
             rS = fillS + "   " + lineS + "\n"
-            tS = uS
+            xS = uS
 
-            return uS, rS, tS
+            return uS, rS, xS
 
         elif tagS == "F]":
             """ figure caption"""
             fnumI = int(self.labelD["figI"])
             self.labelD["figI"] = fnumI + 1
 
-            uS = rS = tS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
+            uS = rS = xS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
 
-            return uS, rS, tS
+            return uS, rS, xS
 
         elif tagS == "#]":
             """ footnote number """
@@ -150,7 +149,7 @@ class Tag:
 
             uS = rS = tS = lineS.replace("*]", "[" + str(ftnumI) + "]")
 
-            return uS, rS, tS
+            return uS, rS, xS
 
         elif tagS == "S]":
             """ format equation with sympy """
@@ -166,7 +165,23 @@ class Tag:
             rS = "\n\n.. code:: \n\n\n" + uS + "\n\n"
             tS = ".. raw:: math\n\n   " + lineS + "\n"
 
-            return uS, rS, tS
+            return uS, rS, xS
+
+        elif tagS == "Y]":
+            """ format and label equation with sympy """
+            spS = lineS.strip()
+            try:
+                spL = spS.split("=")
+                spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            except:
+                pass
+            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+
+            uS = textwrap.indent(lineS, "     ")
+            rS = "\n\n.. code:: \n\n\n" + uS + "\n\n"
+            tS = ".. raw:: math\n\n   " + lineS + "\n"
+
+            return uS, rS, xS
 
         elif tagS == "T]":
             """ format table title """
@@ -177,7 +192,7 @@ class Tag:
             rS = "\n**Table " + fillS + "**: " + lineS
             xS = "\n**Table " + fillS + "**: " + lineS
 
-            return uS, rS, tS
+            return uS, rS, xS
 
         elif tagS == "U]":
             """ format url """
@@ -192,7 +207,7 @@ class Tag:
             rS = "-" * 80
             xS = "-" * 80
 
-            return uS, rS, tS
+            return uS, rS, xS
 
         elif tagS == "P]":
             """ format new page """
@@ -216,7 +231,7 @@ class Tag:
 
         return uS, rS, xS
 
-    def blocktags(self, tagS, lineS):
+    def blocktag(self, tagS, lineS):
         """
 
         color _[[B]]   bldindblk

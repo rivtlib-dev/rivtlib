@@ -115,14 +115,15 @@ def doc_hdr():
     return utfS, rstS, xstS
 
 
-def doc_parse(sS, tS):
+def doc_parse(sS, tS, tagL, cmdL):
     """
-    parse section strings to doc strings
+    parses section strings to doc strings
 
     Globals:
-        utfS (str): utf doc
-        rStS (str): reSt doc
-        labelD (dict): labels for formatting
+        utfS (str): utf doc string
+        rstS (str): rst2pdf doc string
+        xstS (str): latex doc string
+        labelD (dict): formatting labels
         folderD (dict): folder and file paths
         rivtD (dict): calculated values
 
@@ -143,19 +144,18 @@ def doc_parse(sS, tS):
 
     sL = sS.split("\n")  # convert section to list
     secC = parse.Section(tS, sL, labelD)
-    sutfS, srstS, xrtfS, folderD, labelD, rivtD = secC.section(
-        sL, folderD, labelD, rivtD
+    sutfS, srstS, sxstS, folderD, labelD, rivtD = secC.section(
+        tagL, cmdL, folderD, labelD, rivtD
     )
     utfS += sutfS  # accumulate doc strings
     rstS += srstS
-    xtfS += xrstS
+    xstS += sxstS
 
-    return utfS, rstS, xtfS
+    return utfS, rstS, xstS
 
 
 def R(sS):
-    """
-    process Run string
+    """convert Run string
 
     Args:
         sS (str): section string
@@ -163,12 +163,14 @@ def R(sS):
 
     global utfS, rstS, xstS, folderD, labelD, rivtD
 
-    utfS, rstS, xtfS = doc_parse(sS, "R")
+    cmdL = ["IMG"]
+    tagL = ["E]"]
+
+    utfS, rstS, xstS = doc_parse(sS, "R", tagL, cmdL)
 
 
 def I(sS):  # noqa: E743
-    """
-    format Insert string
+    """convert Insert string
 
     Args:
         sS (str): section string
@@ -176,12 +178,16 @@ def I(sS):  # noqa: E743
 
     global utfS, rstS, xstS, folderD, labelD, rivtD
 
-    utfS, rstS = doc_parse(sS, "I")
+    cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
+    tag1 = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
+    tag2 = ["B]]", "C]]", "I]]", "L]]", "X]]"]
+    tagL = tag1 + tag2
+
+    utfS, rstS, xstS = doc_parse(sS, "I", tagL, cmdL)
 
 
 def V(sS):
-    """
-    format Value string
+    """convert Value string
 
     Args:
         sS (str): section string
@@ -189,12 +195,14 @@ def V(sS):
 
     global utfS, rstS, xstS, folderD, labelD, rivtD
 
-    utfS, rstS = doc_parse(sS, "V")
+    cmdL = ["IMG", "IMG2", "VALUES"]
+    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", ":=", "[V]]"]
+
+    utfS, rstS, xstS = doc_parse(sS, "V", tagL, cmdL)
 
 
 def T(sS):
-    """
-    process Tools string
+    """convert Tools string
 
     Args:
         sS (str): section string
@@ -202,7 +210,10 @@ def T(sS):
 
     global utfS, rstS, xstS, folderD, labelD, rivtD
 
-    utfS, rstS = doc_parse(sS, "T")
+    cmdL = ["IMG"]
+    tagL = ["E]"]
+
+    utfS, rstS, xstS = doc_parse(sS, "T", tagL, cmdL)
 
 
 def S(sS):
@@ -217,8 +228,7 @@ def S(sS):
 
 
 def W(sS):
-    """
-    write output doc files
+    """write doc files
 
     Args:
         sS (str): section string
