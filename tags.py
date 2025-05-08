@@ -21,26 +21,14 @@ class Tag:
     """
     formatting tags
 
-    Function Name list:
 
-    _[C]     center
-    _[D]     descrip
-    _[E]     equation
-    _[#]     foot
-    _[F]     figure
-    _[S]     sympy
-    _[L]     sympy label
-    _[T]     table
-    _[H]     hline
-    _[P]     page
-    _[U]     url
-     :=      equals
-    color _[[B]]   bldindblk
-    color _[[C]]   codeblk
-    color _[[I]]   italindblk
-    color _[[L]]   literalblock
-    color _[[X]]   latexblk
-    title _[[V]]   valuesblk
+    blocks:
+    hexcolor _[[B]]   bldindblk
+    hexcolor _[[C]]   codeblk
+    hexcolor _[[I]]   italindblk
+    hexcolor _[[L]]   literalblock
+    hexcolor _[[X]]   latexblk
+    title  _[[V]]     valuesblk
     _[[Q]]
 
     try:
@@ -92,11 +80,31 @@ class Tag:
         warnings.filterwarnings("ignore")
 
     def linetags(self, tagS, lineS):
-        """ """
+        """format line tags
+
+        text        _[C]    center
+        text        _[D]    footnote description
+        label       _[E]    equation label
+        text        _[#]    footnote
+        caption     _[F]    figure caption
+        equation    _[S]    sympy
+        equation    _[L]    sympy with label
+        title       _[T]    table title
+        url, label  _[U]    url
+        a := 1       :=     evaluate equation
+        ----                horizontal line
+        _[P]                new page
+
+        Args:
+            tagS (str): tag symbol
+            lineS (str): line from rivt section
+
+        Returns:
+            tuple : formatted doc strings
+        """
 
         if tagS == "C]":
-            """ center line """
-
+            """ center a line """
             uS = lineS.center(int(self.labelD["widthI"])) + "\n"
             rS = lineS.center(int(self.labelD["widthI"])) + "\n"
             tS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
@@ -104,7 +112,7 @@ class Tag:
             return uS, rS, tS
 
         elif tagS == "D]":
-            """ footnote description"""
+            """ footnote description """
             ftnumI = self.labelD["noteL"].pop(0)
 
             uS, rS, tS = "[" + str(ftnumI) + "] " + lineS
@@ -145,6 +153,7 @@ class Tag:
             return uS, rS, tS
 
         elif tagS == "S]":
+            """ format equation with sympy """
             spS = lineS.strip()
             try:
                 spL = spS.split("=")
@@ -160,29 +169,33 @@ class Tag:
             return uS, rS, tS
 
         elif tagS == "T]":
+            """ format table title """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
             fillS = str(tnumI).zfill(2)
             uS = "\nTable " + str(tnumI) + ": " + lineS
             rS = "\n**Table " + fillS + "**: " + lineS
-            tS = "\n**Table " + fillS + "**: " + lineS
+            xS = "\n**Table " + fillS + "**: " + lineS
 
             return uS, rS, tS
 
         elif tagS == "U]":
+            """ format url """
             lineL = self.lineS.split(",")
             lineS = ".. _" + lineL[0] + ": " + lineL[1]
 
             return lineS
 
-        elif tagS == "H]":
+        elif tagS == "----":
+            """ format horizontal line """
             uS = "-" * 80
             rS = "-" * 80
-            tS = "-" * 80
+            xS = "-" * 80
 
             return uS, rS, tS
 
         elif tagS == "P]":
+            """ format new page """
             pagenoS = str(self.labelD["pageI"])
             rvtS = self.labelD["headuS"].replace("p##", pagenoS)
             self.labelD["pageI"] = int(pagenoS) + 1
@@ -200,6 +213,8 @@ class Tag:
 
         else:
             pass
+
+        return uS, rS, xS
 
     def blocktags(self, tagS, lineS):
         """

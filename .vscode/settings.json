@@ -144,7 +144,7 @@
     "explorer.compactFolders": false,
     "git.autoStash": true,
     "python.analysis.autoFormatStrings": true,
-    "autoDocstring.startOnNewLine": true,
+    "autoDocstring.startOnNewLine": false,
     "rewrap.wrappingColumn": 80,
     "rewrap.wholeComment": false,
 
