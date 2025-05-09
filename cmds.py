@@ -28,14 +28,13 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmd:
-    """
-    commands
+    """commands
 
-    | IMG  | rel. pth | caption, scale, (**[_F]**)        .png, .jpg
-    | IMG2  | rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
-    | TEXT | rel. pth |  plain; rivt                      .txt
-    | TABLE | rel. pth | col width, l;c;r                 .csv, .txt, .xls
-    | VALUES | rel. pth | col width, l;c;r                .csv, .txt, .xls
+    |IMG| rel. pth | caption, scale, (**[_F]**)        .png, .jpg
+    |IMG2| rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
+    |TEXT| rel. pth |  plain; rivt                      .txt
+    |TABLE| rel. pth | col width, l;c;r                 .csv, .txt, .xls
+    |VALUE| rel. pth | col width, l;c;r                .csv, .txt, .xls
 
         cC = globals()["CmdV"](self.folderD, self.labelD, self.rivtD)
         ccmdS = cmdS.lower()
@@ -45,7 +44,7 @@ class Cmd:
     """
 
     def __init__(self, folderD, labelD, rivtD):
-        """format commands"""
+        """command dictionaries"""
         self.folderD = folderD
         self.labelD = labelD
         self.rivtD = rivtD
@@ -62,10 +61,10 @@ class Cmd:
         warnings.filterwarnings("ignore")
 
     def comm(self, cmdS, pthS, parS):
-        """commands parsed"""
+        """command parsing"""
 
         if cmdS == "IMG":
-            """ insert image """
+            """ image insert """
 
             print(f"{parS=}")
             print(f"{pthS=}")
@@ -107,7 +106,7 @@ class Cmd:
             return uS, rS, xS
 
         if cmdS == "IMG2":
-            """insert side by side images from files """
+            """image insert side by side """
 
             # print(f"{parS=}")
             parL = parS.split(",")
@@ -213,14 +212,13 @@ class Cmd:
             return uS, rS, xS
 
         if cmdS == "TEXT":
-            """text insert"""
+            """text file insert"""
 
             # print(f"{pthS=}")
-            uS = rS = ""
+            uS = rS = xS = ""
             pthP = Path(pthS)  # path
             extS = pthP.suffix[1:]  # file extension
             parL = parS.split(",")
-            typeS = parL[0].strip()  # title
             insP = Path(self.folderD["projP"])
             insP = Path(Path(insP) / pthS)
             insS = str(insP.as_posix())
@@ -231,23 +229,19 @@ class Cmd:
                 fileL = fileO.readlines()
 
             uS = pS.rjust(self.labelD["widthI"]) + ubS
-            r2S = pS + rb2S
             rS = pS + rb2S
+            xS = pS + rb2S
 
-            return uS, r2S
+            return uS, rS, xS
 
         if cmdS == "VALUE":
-            """values from csv files"""
+            """values file insert"""
 
-            if "_[V]" in parS.strip():  # table number
-                vnumI = int(self.labelD["valueI"])
-                fillS = str(vnumI).zfill(2)
-                utitlnS = "\nValue Table " + fillS + " - " + parS.strip("_[V]")
-                rtitlnS = "\n**Value Table " + fillS + " -** " + parS.strip("_[V]")
-                self.labelD["valueI"] = vnumI + 1
-            else:
-                utitlnS = "\nValue Table  - " + parS.strip()
-                rtitlnS = "\n**Value Table -** " + parS.strip()
+            vnumI = int(self.labelD["valueI"])
+            fillS = str(vnumI).zfill(2)
+            utitlnS = "\nValue Table " + fillS + " - " + parS.strip("_[V]")
+            rtitlnS = "\n**Value Table " + fillS + " -** " + parS.strip("_[V]")
+            self.labelD["valueI"] = vnumI + 1
 
             insP = Path(self.folderD["projP"])
             insP = Path(Path(insP) / pthS)
@@ -309,7 +303,7 @@ class Cmd:
                     colalign=alignL,
                 )
             )
-            uS = r2S = rS = output.getvalue()
+            uS = rS = xS = output.getvalue()
             sys.stdout = old_stdout
             sys.stdout.flush()
 
@@ -320,25 +314,3 @@ class Cmd:
             xS = rtitlnS + pS + rS + "\n"
 
             return uS, rS, xS
-
-    def equate(self, eqS, parS):
-        """format equation ' = '
-
-        Args:
-            lineS (_type_): _description_
-            labelD (_type_): _description_
-            folderD (_type_): _description_
-        Returns:
-            _type_: _description_
-        """
-
-    def equtable(self, eqS, parS):
-        """format equation table, update rivtD
-
-        Args:
-            eqS (_type_): _description_
-            parS (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """

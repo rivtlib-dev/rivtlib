@@ -91,8 +91,8 @@ class Tag:
         title       _[T]    table title
         url, label  _[U]    url
         a := 1       :=     evaluate equation
-        ----                horizontal line
-        _[P]                new page
+        _[----------]       horizontal line
+        _[==========]       new page
 
         Args:
             tagS (str): tag symbol
@@ -200,7 +200,7 @@ class Tag:
 
             return lineS
 
-        elif tagS == "----":
+        elif tagS[:10] == "----------":
             """ format horizontal line """
             uS = "-" * 80
             rS = "-" * 80
@@ -208,7 +208,7 @@ class Tag:
 
             return uS, rS, xS
 
-        elif tagS == "P]":
+        elif tagS[:10] == "==========":
             """ format new page """
             pagenoS = str(self.labelD["pageI"])
             rvtS = self.labelD["headuS"].replace("p##", pagenoS)
@@ -225,10 +225,7 @@ class Tag:
 
             return "\n" + rvtS
 
-        else:
-            pass
-
-        if tagS == ":=":
+        elif tagS == ":=":
             """ equation evluate and format """
             wI = self.labelD["widthI"]
 
@@ -341,6 +338,9 @@ class Tag:
             self.labelD["valexpS"] += iS + "\n"
 
             return uS, rS
+
+        else:
+            pass
 
     def blocktag(self, tagS, blockS):
         """
