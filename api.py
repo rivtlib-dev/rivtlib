@@ -200,6 +200,8 @@ def V(sS):
 
     utfS, rstS, xstS = doc_parse(sS, "V", tagL, cmdL)
 
+    # write rivtD or rivtvL to csv file
+
 
 def T(sS):
     """convert Tools string

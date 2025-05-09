@@ -12,7 +12,7 @@ from fpdf import FPDF
 from templates.pdfcover import content, cover, mainpage
 
 
-class CmdW:
+class Write:
     """
     write docs
 

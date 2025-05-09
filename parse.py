@@ -122,7 +122,7 @@ class Section:
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
                     comC = cmds.Cmd(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD = comC.cmand(cmdS, pthS, parS)
+                    uS, rS, xS, folderD, labelD, rivtvD = comC.comm(cmdS, pthS, parS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
                     srstS += xS + "\n"
