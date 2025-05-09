@@ -5,7 +5,7 @@ from rivtlib import cmds, params, tags
 
 
 class Section:
-    """section string to utf, rst and xrst doc string"""
+    """converts section string to utf and rest doc strings"""
 
     def __init__(self, stS, sL, labelD):
         """
@@ -16,10 +16,10 @@ class Section:
             sL (list): rivt section lines
 
         """
-        sutfS = ""
-        srstS = ""
-        xrstS = ""
-        ssL = []
+        sutfS = ""  # utf doc
+        srs2S = ""  # rst2pdf doc
+        srstS = ""  # rest doc
+        spL = []  # preprocessed lines
 
         # section header
         hL = sL[0].split("|")
@@ -34,8 +34,8 @@ class Section:
             headS = snumS + " " + hL[0].strip()
             bordrS = labelD["widthI"] * "-"
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
+            srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
-            xrstS = "\n" + headS + "\n" + bordrS + "\n"
             # print(sutfS, srstS, xrstS)
 
         # strip leading spaces, # comments, * markup for utf doc
@@ -47,31 +47,31 @@ class Section:
                 for tS in txt1L:
                     t1S = "**" + tS + "**"
                     txtaS = slS.replace(t1S, tS)
-                    ssL.append(txtaS)
+                    spL.append(txtaS)
             else:
-                ssL.append(slS)
+                spL.append(slS)
 
             txt2L = re.findall(r"\*(.*?)\*", slS)  # italic
             if len(txt2L) > 0:
                 for tS in txt2L:
                     t2S = "*" + tS + "*"
                     txtrS = slS.replace(t2S, tS)
-                    ssL.append(txtrS)
+                    spL.append(txtrS)
             else:
-                ssL.append(slS)
+                spL.append(slS)
             # print(f"{txt1L=}")
 
-        self.ssL = ssL  # stripped list
+        self.spL = spL  # preprocessed list
         self.stS = stS  # section type
         self.sutfS = sutfS  # utf doc
-        self.srstS = srstS  # rst doc
-        self.xrstS = xrstS  # tex doc
+        self.srs2S = srs2S  # rst2pdf doc
+        self.srstS = srstS  # rest doc
 
     def section(self, tagL, cmdL, folderD, labelD, rivtD):
         """parse section
 
         Args:
-            self.ssL (list): preprocessed section list
+            self.spL (list): preprocessed section list
 
         Returns:
             sutfS (str): utf doc section
@@ -86,14 +86,16 @@ class Section:
         blockS = """"""
         tagS = ""
         uS = rS = xS = """"""  # doc line
-        sutfS = srstS = xrstS = """"""  # doc section
+        sutfS = self.sutfS
+        srs2S = self.srs2S
+        srstS = self.srstS
 
-        for slS in self.ssL:  # loop over section lines
+        for slS in self.spL:  # loop over section lines
             # print(f"{slS=}")
             if len(slS.strip()) < 1 and not blockB:
                 sutfS += "\n"
+                srs2S += " \n"
                 srstS += " \n"
-                xrstS += " \n"
                 print(" ")  # STDOUT- blank line
                 continue
             if blockB:  # block accumulate
@@ -104,8 +106,8 @@ class Section:
                     uS, rS, xS = tC.blocktag(tagS, blockS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
-                    srstS += rS + "\n"
-                    xrstS += xS + "\n"
+                    srs2S += rS + "\n"
+                    srstS += xS + "\n"
                     tagS = ""
                     blockS = """"""
                     continue
@@ -122,8 +124,8 @@ class Section:
                     comC = cmds.Cmd(folderD, labelD, rivtD)
                     uS, rS, xS, folderD, labelD, rivtvD = comC.cmand(cmdS, pthS, parS)
                     sutfS += uS + "\n"
-                    srstS += rS + "\n"
-                    xrstS += xS + "\n"
+                    srs2S += rS + "\n"
+                    srstS += xS + "\n"
                     print(uS)  # STDOUT- command
                     continue
 
@@ -137,8 +139,8 @@ class Section:
                     if len(tagS) < 3:  # line tag
                         uS, rS, xS, folderD, labelD, rivtD = tC.linetag(tagS, lineS)
                         sutfS += uS + "\n"
-                        srstS += rS + "\n"
-                        xrstS += xS + "\n"
+                        srs2S += rS + "\n"
+                        srstS += xS + "\n"
                         print(uS)  # STDOUT- tagged line
                         continue
                     else:  # block tag - start
@@ -146,32 +148,28 @@ class Section:
                         blockB = True
                         blockS += lineS + "\n"
                         continue
-
             elif ":=" in slS:  # equals tag
-                tagS = slL[1].strip()
-                tnameS = self.tagsD[":="]  # get tag name
-                if ":=" in self.tagsD[tagS]:
+                if ":=" in tagS:
                     eqL = slS.split("|", 1)
                     eqS = eqL[0].strip()
                     parS = eqL[1].strip()
                     comC = cmds.Cmd(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD = comC.cmd_parse(
-                        cmdS, eqS, parS
-                    )
+                    uS, rS, xS, folderD, labelD, rivtvD = comC.valtag(cmdS, eqS, parS)
                     sutfS += uS + "\n"
-                    srstS += rS + "\n"
-                    xrstS += xS + "\n"
+                    srs2S += rS + "\n"
+                    srstS += xS + "\n"
                     print(uS)  # STDOUT equation
-                    uS, rS, xS, folderD, labelD, rivtpD, rivtvD = rvvC.cmd_parse(
+                    uS, rS, xS, folderD, labelD, rivtD = comC.valtag(
                         "equtable", eqS, parS
                     )
+                    sutfS += uS + "\n"
+                    srs2S += rS + "\n"
+                    srstS += xS + "\n"
                     print(uS)  # STDOUT equation table
-                    xutfS += uS
-                    xrstS += rS
-
             else:  # everything else
-                xrstS += slS + "\n"
+                sutfS += slS + "\n"
+                srs2S += slS + "\n"
+                srstS += slS + "\n"
                 print(slS)  # STDOUT - line as is
-                xutfS += slS + "\n"
 
-        return sutfS, srstS, xrstS, folderD, labelD, rivtD
+        return sutfS, srs2S, srstS, folderD, labelD, rivtD
