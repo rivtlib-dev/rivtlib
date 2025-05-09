@@ -1,9 +1,12 @@
+import fnmatch
 import os
 import sys
 from pathlib import Path
 
+import __main__
+
 """
-Parameters 
+File and label parameters 
 
     Labels (dict)
     ==============
@@ -72,8 +75,11 @@ Parameters
 """
 
 rivtP = Path(os.getcwd())
-rivtnS = "not found"
 projP = Path(os.path.dirname(rivtP))
+rivtnS = "xx-xx.py"
+rivtfP = "rivt/path"
+modnameS = __name__.split(".")[1]
+
 
 # read paths
 pthS = " "
@@ -86,9 +92,11 @@ rstnS = rbaseS + ".rst"
 txtnS = rbaseS + ".txt"
 pdfnS = rbaseS + ".pdf"
 htmnS = rbaseS + ".html"
+baknS = rbaseS + "bak"
+docP = Path(projP, "doc")
+bakfP = Path(rivtP, baknS)
 divnumS = "d" + dnumS + "-"
 valnS = prfxS.replace("r", "v") + ".csv"
-docP = Path(projP, "doc")
 srcP = insP = Path(projP, "src")
 insP = Path(srcP, "ins")
 valsP = Path(srcP, "vls")
@@ -118,25 +126,23 @@ rivtvD = {}  # calculated values
 
 folderD = {}  # folders
 for item in [
-    "docsP",
+    "docP",
+    "bakfP",
     "errlogP",
     "insP",
     "pthS",
     "projP",
-    "pdfN",
+    "pdfnS",
     "rivtP",
-    "rivtfP",
-    "rstN",
-    "rstpN",
     "readmeP",
     "reportP",
     "styleP",
-    "styleP",
+    "valsP",
     "tempP",
-    "txtN",
-    "valN",
-    "valsP",
-    "valsP",
+    "rivtnS",
+    "rstnS",
+    "txtnS",
+    "valnS",
 ]:
     folderD[item] = eval(item)
 

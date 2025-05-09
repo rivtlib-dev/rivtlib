@@ -32,41 +32,48 @@ Variable type suffix:
 """
 
 import fnmatch
+import logging
 import os
 import sys
-import logging
 from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
 
 import __main__
-from rivtlib import log_check, parse, rwrite
+from rivtlib import parse, rwrite
+from rivtlib.params import *  # noqa: F403
 from rivtlib.units import *  # noqa: F403
 
-# get rivt file and path
+
 rivtP = Path(os.getcwd())
-rivtnS = "not found"
 projP = Path(os.path.dirname(rivtP))
+rivtnS = "xx-xx.py"
+rivtfP = "rivt/path"
+modnameS = __name__.split(".")[1]
 
 if __name__ == "rivtlib.api":
-    rivtP = Path(__main__.__file__)
-    rivtnS = rivtP.name
+    rivtfP = Path(__main__.__file__)
+    rivtnS = rivtfP.name
     patternS = "r[0-9][0-9][0-9]0-9]-*.py"
     if fnmatch.fnmatch(rivtnS, patternS):
         rivtfP = Path(rivtP, rivtnS)
 else:
     print(f"""The rivt file name is - {rivtnS} -. The file name pattern must""")
-    print("""match "rddss-anyname.py", where dd and ss are two-digit integer""")
+    print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
     sys.exit()
 
-# initialize logging
-modnameS = __name__.split(".")[1]
-log_check.log_bak(rivtfP, modnameS, folderD)
+print("\n ===================")
+print(f"{rivtfP=}")
+print(f"{rivtP=}")
+print(f"{rivtnS=}")
+print(f"{__name__=}")
+print(f"{modnameS=}")
+print("\n ===================")
 
-# print(f"{rivtfP=}")
-# print(f"{rivtN=}")
-# print(f"{__name__=}")
-# print(f"{modnameS=}")
+
+# initialize logging
+# log_check.log_bak(rivtfP, modnameS, folderD)
+
 
 # output strings
 rstS = """"""  # cumulative rest string
@@ -79,10 +86,10 @@ xrstS = """"""  # reSt-tex section string
 # write backup doc file
 with open(rivtfP, "r") as f2:
     rivtS = f2.read()
-with open(folderD["bakP"], "w") as f3:
+with open(folderD["bakfP"], "w") as f3:
     f3.write(rivtS)
-logging.info(f"""rivt backup: [{bakshortP}]""")
-print(" ")
+# logging.info(f"""rivt backup: [{bakshortP}]""")
+print("**** backup written ")
 
 
 def doc_hdr():

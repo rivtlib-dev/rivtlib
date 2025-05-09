@@ -26,7 +26,7 @@ class Section:
         labelD["docS"] = hL[0].strip()  # section title
         labelD["xch"] = hL[1].strip()  # xchange flag
         labelD["color"] = hL[2].strip()  # background color
-        if hL.strip()[0:2] == "--":
+        if hL[0].strip()[0:2] == "--":
             labelD["docS"] = hL[2:].strip()  # section title
         else:
             snumI = labelD["secnumI"] = labelD["secnumI"] + 1
@@ -40,7 +40,16 @@ class Section:
 
         # strip leading spaces, # comments, * markup for utf doc
         for slS in sL[1:]:
-            if slS[0] == "#":  # comments
+            try:
+                slS = slS[4:]
+            except:
+                slS = slS
+            print("----", slS)
+            try:
+                if slS[0] == "#":  # comments
+                    continue
+            except:
+                print("\n s")
                 continue
             txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # bold
             if len(txt1L) > 0:

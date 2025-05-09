@@ -1,7 +1,7 @@
 import logging
 import warnings
 from pathlib import Path
-from rivtlib import folderD
+from rivtlib.params import *  # noqa: F403
 
 errlogP = folderD["errlogP"]
 modnameS = __name__.split(".")[1]
@@ -14,13 +14,15 @@ logging.basicConfig(
 )
 warnings.filterwarnings("ignore")
 
-docshortP = Path(folderD["docP"].parts[-2:])
-bakshortP = Path(folderD["bakP"].parts[-2:])
-
+p = folderD["rivtP"]
+rshortP = Path(*p.parts[-2:])
 if folderD["docP"].exists():
-    logging.info(f"""rivt file : [{folderD["docS"]}]""")
-    logging.info(f"""rivt path : [{folderD["docP"]}]""")
-    print(f"""rivt short path : [{docshortP}]""")
+    logging.info(f"""rivt file : {folderD["rivtnS"]}""")
+    logging.info(f"""rivt path : {folderD["rivtP"]}""")
+    print("\n")
+    print(f"""rivt short path : {rshortP}""")
+    print("\n")
+
 else:
     logging.info(f"""rivt file path not found: {folderD["docP"]}""")
 
