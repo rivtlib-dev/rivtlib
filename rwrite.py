@@ -9,7 +9,7 @@ from reportlab.lib.utils import ImageReader
 
 from fpdf import FPDF
 
-from templates.pdfcover import content, cover, mainpage
+# from templates.pdfcover import content, cover, mainpage
 
 
 class Write:

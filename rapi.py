@@ -40,12 +40,9 @@ from datetime import datetime
 from pathlib import Path
 
 import __main__
-from rivtlib import rwrite
-from rparam import *  # noqa: F403
-from runits import *
-
-from . import rparse  # noqa: F403
-
+from rivtlib import rwrite, rparse
+from rivtlib.rparam import *  # noqa: F403
+from rivtlib.runits import *  # noqa: F403
 
 rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))

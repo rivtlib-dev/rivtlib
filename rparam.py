@@ -1,9 +1,7 @@
-import fnmatch
 import os
 import sys
 from pathlib import Path
 
-import __main__
 
 """
 File and label parameters 
