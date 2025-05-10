@@ -1,7 +1,9 @@
 import re
 from pathlib import Path
 
-from rivtlib import cmds, params, tags
+from . import rcmd, rtag
+
+from . import rparam
 
 
 class Section:
@@ -111,7 +113,7 @@ class Section:
                 blockS += slS + "\n"
                 if blockB and ("_[[Q]]" in slS):  # block end
                     blockB = False
-                    tC = tags.Tag(folderD, labelD, rivtD)
+                    tC = rtag.Tag(folderD, labelD, rivtD)
                     uS, rS, xS = tC.blocktag(tagS, blockS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
@@ -130,7 +132,7 @@ class Section:
                 parS = parL[2].strip()
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
-                    comC = cmds.Cmd(folderD, labelD, rivtD)
+                    comC = rcmd.Cmd(folderD, labelD, rivtD)
                     uS, rS, xS, folderD, labelD, rivtvD = comC.comm(cmdS, pthS, parS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
@@ -144,7 +146,7 @@ class Section:
                 tagS = slL[1].strip()
                 if tagS in tagL:  # check list
                     # print(f"{tagS=}")
-                    tC = tags.Tag(folderD, labelD, rivtD)
+                    tC = rtag.Tag(folderD, labelD, rivtD)
                     if len(tagS) < 3:  # line tag
                         uS, rS, xS, folderD, labelD, rivtD = tC.linetag(tagS, lineS)
                         sutfS += uS + "\n"
@@ -162,7 +164,7 @@ class Section:
                     eqL = slS.split("|", 1)
                     eqS = eqL[0].strip()
                     parS = eqL[1].strip()
-                    comC = cmds.Cmd(folderD, labelD, rivtD)
+                    comC = rcmd.Cmd(folderD, labelD, rivtD)
                     uS, rS, xS, folderD, labelD, rivtvD = comC.valtag(cmdS, eqS, parS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"

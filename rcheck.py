@@ -1,7 +1,7 @@
 import logging
 import warnings
 from pathlib import Path
-from rivtlib.params import *  # noqa: F403
+from rparam import *  # noqa: F403
 
 errlogP = folderD["errlogP"]
 modnameS = __name__.split(".")[1]

@@ -40,9 +40,11 @@ from datetime import datetime
 from pathlib import Path
 
 import __main__
-from rivtlib import parse, rwrite
-from rivtlib.params import *  # noqa: F403
-from rivtlib.units import *  # noqa: F403
+from rivtlib import rwrite
+from rparam import *  # noqa: F403
+from runits import *
+
+from . import rparse  # noqa: F403
 
 
 rivtP = Path(os.getcwd())
@@ -150,7 +152,7 @@ def doc_parse(sS, tS, tagL, cmdL):
     global utfS, rstS, xstS, folderD, labelD, rivtD
 
     sL = sS.split("\n")  # convert section to list
-    secC = parse.Section(tS, sL, labelD)
+    secC = rparse.Section(tS, sL, labelD)
     sutfS, srstS, sxstS, folderD, labelD, rivtD = secC.section(
         tagL, cmdL, folderD, labelD, rivtD
     )

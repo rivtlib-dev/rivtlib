@@ -21,8 +21,8 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib import tags
-from rivtlib.units import *  # noqa: F403
+from . import rtag
+from runits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
