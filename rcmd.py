@@ -69,9 +69,14 @@ class Cmd:
 
         if cmdS == "IMG":
             """ image insert """
-
-            print(f"{parS=}")
-            print(f"{pthS=}")
+            if "_[F]" in parS:
+                numS = str(self.labelD["figI"])
+                self.labelD["figI"] = int(numS) + 1
+                figS = "**Fig. " + numS + " -** "
+            else:
+                figS = " "
+            # print(f"{parS=}")
+            # print(f"{pthS=}")
             parL = parS.split(",")
             capS = parL[0].strip()
             scS = parL[1].strip()
@@ -81,12 +86,6 @@ class Cmd:
             # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
             if capS == "-":
                 capS = " "
-            if parL[2].strip() == "_[F]":
-                numS = str(self.labelD["figI"])
-                self.labelD["figI"] = int(numS) + 1
-                figS = "**Fig. " + numS + " -** "
-            else:
-                figS = " "
             try:
                 img1 = Image.open(pthS)
                 _display(img1)
