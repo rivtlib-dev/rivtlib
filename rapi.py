@@ -13,6 +13,14 @@ API functions :
     rv.W(sS) - (Write) Write formatted documents
     rv.S(sS) - (Skip) Skip string processing of that string
 
+Globals:
+    utfS (str): utf doc string
+    rstS (str): rst2pdf doc string
+    xstS (str): latex doc string
+    labelD (dict): formatting labels
+    folderD (dict): folder and file paths
+    rivtD (dict): calculated values
+
 where sS is a triple quoted, indented, utf-8 section string. This rivtlib code
 base uses the last letter of a variable name to indicate the variable types as
 follows:
@@ -30,14 +38,6 @@ Variable type suffix:
     P = path
     S = string
 
-Globals:
-    utfS (str): utf doc string
-    rstS (str): rst2pdf doc string
-    xstS (str): latex doc string
-    labelD (dict): formatting labels
-    folderD (dict): folder and file paths
-    rivtD (dict): calculated values
-
 """
 
 import fnmatch
@@ -49,7 +49,7 @@ from datetime import datetime
 from pathlib import Path
 
 import __main__
-from rivtlib import rwrite, rparse
+from rivtlib import rparse, rwrite
 from rivtlib.rparam import *  # noqa: F403
 from rivtlib.runits import *  # noqa: F403
 
@@ -101,14 +101,14 @@ print("**** backup written ")
 def doc_hdr():
     # init file - (headings and doc overrides)
 
-    hdutfS = ""
-    hdrstS = ""
-    hdrxtS = ""
+    dutfS = ""
+    drs2S = ""
+    drstS = ""
 
-    config = ConfigParser()
-    config.read(Path(projP, "rivt-doc.ini"))
-    headS = config.get("report", "title")
-    footS = config.get("utf", "foot1")
+    # config = ConfigParser()
+    # config.read(Path(projP, "rivt-doc.ini"))
+    # headS = config.get("report", "title")
+    # footS = config.get("utf", "foot1")
 
     titleL = rivtnS.split("-")  # subdivision title
     titleS = titleL[1].split(".")[0]
@@ -117,13 +117,14 @@ def doc_hdr():
 
     timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
     borderS = "=" * 80
-    hdutfS = timeS + "   " + headS + "\n" + borderS + "\n"
+    dutfS = "\n\n" + timeS + "   " + headS + "\n" + borderS + "\n"
 
-    utfS += sutfS  # accumulate doc strings
-    rstS += srstS
-    xtfS += xrstS
+    print(dutfS)  # STDOOUT doc heading
+    dutfS = dutfS  # accumulate doc strings
+    drs2S = dutfS
+    drstS = dutfS
 
-    return utfS, rstS, sxtS
+    return dutfS, drs2S, drstS
 
 
 def doc_parse(sS, tS, tagL, cmdL):
@@ -143,17 +144,21 @@ def doc_parse(sS, tS, tagL, cmdL):
         rstS (str): reSt output
     """
 
-    global utfS, rstS, xstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
     sL = sS.split("\n")  # convert section to list
     secC = rparse.Section(tS, sL, folderD, labelD, rivtD)
-    sutfS, srstS, sxstS, folderD, labelD, rivtD = secC.section(tagL, cmdL)
+    sutfS, srs2S, srstS, folderD, labelD, rivtD = secC.section(tagL, cmdL)
 
-    utfS += sutfS  # accumulate doc strings
-    rstS += srstS
-    sxtS += sxstS
+    dutfS += sutfS  # accumulate doc strings
+    drs2S += srs2S
+    drstS += srstS
 
-    return utfS, rstS, sxtS
+    return dutfS, drs2S, drstS
+
+
+# format doc header
+dutfS, drs2S, drstS = doc_hdr()
 
 
 def R(sS):
@@ -163,12 +168,12 @@ def R(sS):
         sS (str): section string
     """
 
-    global utfS, rstS, xstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
     cmdL = ["IMG"]
     tagL = ["E]"]
 
-    utfS, rstS, xstS = doc_parse(sS, "R", tagL, cmdL)
+    dutfS, drs2S, drstS = doc_parse(sS, "R", tagL, cmdL)
 
 
 def I(sS):  # noqa: E743
@@ -178,14 +183,14 @@ def I(sS):  # noqa: E743
         sS (str): section string
     """
 
-    global utfS, rstS, xstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
     cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
     tag1 = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
     tag2 = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tag1 + tag2
 
-    utfS, rstS, xstS = doc_parse(sS, "I", tagL, cmdL)
+    dutfS, drs2S, drstS = doc_parse(sS, "I", tagL, cmdL)
 
 
 def V(sS):
@@ -195,12 +200,12 @@ def V(sS):
         sS (str): section string
     """
 
-    global utfS, rstS, xstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
     cmdL = ["IMG", "IMG2", "VALUES"]
     tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", ":=", "[V]]"]
 
-    utfS, rstS, xstS = doc_parse(sS, "V", tagL, cmdL)
+    dutfS, drs2S, drstS = doc_parse(sS, "V", tagL, cmdL)
 
     # write rivtD or rivtvL to csv file
 
@@ -212,12 +217,12 @@ def T(sS):
         sS (str): section string
     """
 
-    global utfS, rstS, xstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
     cmdL = ["IMG"]
     tagL = ["E]"]
 
-    utfS, rstS, xstS = doc_parse(sS, "T", tagL, cmdL)
+    dutfS, drs2S, drstS = doc_parse(sS, "T", tagL, cmdL)
 
 
 def S(sS):
@@ -228,7 +233,7 @@ def S(sS):
     """
 
     shL = sS.split("|")
-    print("\n Section skipped: " + shL[0] + "\n")
+    print("\n[" + shL[0] + "] : section skipped " + "\n")
 
 
 def W(sS):
@@ -237,7 +242,7 @@ def W(sS):
     Args:
         sS (str): section string
     """
-    global utfS, rstS, xsts, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
     rivtL = rivtS.split("\n")
     # 1. remove W function write that rivt temp file and execute

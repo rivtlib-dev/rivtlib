@@ -47,38 +47,18 @@ class Section:
             self.sutfS = sutfS  # utf doc
             self.srs2S = srs2S  # rst2pdf doc
             self.srstS = srstS  # rest doc
-            print(sutfS)  # STDOUT header
+            print(sutfS)  # STDOUT section header
 
         # strip leading spaces and comments from section
+        spL = []
         for slS in sL[1:]:
-            txt1L = []
-            txt2L = []
             if len(slS) < 5:
                 slS = "\n"
                 spL.append(slS)
                 continue
-            slS = slS[4:]
             if slS[0] == "#":
                 continue
-
-            # strip * markup for utf doc
-            txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # bold
-            if len(txt1L) > 0:
-                for tS in txt1L:
-                    t1S = "**" + tS + "**"
-                    txtaS = slS.replace(t1S, tS)
-                spL.append(txtaS)
-            else:
-                spL.append(slS)
-            txt2L = re.findall(r"\*(.*?)\*", slS)  # italic
-            if len(txt2L) > 0:
-                for tS in txt2L:
-                    t2S = "*" + tS + "*"
-                    txtrS = slS.replace(t2S, tS)
-                spL.append(txtrS)
-            else:
-                spL.append(slS)
-            # print(f"{txt1L=}")
+            spL.append(slS[4:])
 
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
@@ -110,7 +90,27 @@ class Section:
         rivtD = self.rivtD
 
         for slS in self.spL:  # loop over section lines
+            # txt1L = []
+            # txt2L = []
             # print(f"{slS=}")
+            # txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # strip bold
+            # if len(txt1L) > 0:
+            #     for tS in txt1L:
+            #         t1S = "**" + tS + "**"
+            #         txtaS = slS.replace(t1S, tS)
+            #     spL.append(txtaS)
+            # else:
+            #     spL.append(slS)
+            # txt2L = re.findall(r"\*(.*?)\*", slS)  # strip italic
+            # if len(txt2L) > 0:
+            #     for tS in txt2L:
+            #         t2S = "*" + tS + "*"
+            #         txtrS = slS.replace(t2S, tS)
+            #     spL.append(txtrS)
+            # else:
+            #     spL.append(slS)
+            # print(f"{txt1L=}")
+
             if len(slS.strip()) < 1 and not blockB:
                 sutfS += "\n"
                 srs2S += " \n"
