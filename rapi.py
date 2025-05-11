@@ -29,6 +29,15 @@ Variable type suffix:
     N = file name only
     P = path
     S = string
+
+Globals:
+    utfS (str): utf doc string
+    rstS (str): rst2pdf doc string
+    xstS (str): latex doc string
+    labelD (dict): formatting labels
+    folderD (dict): folder and file paths
+    rivtD (dict): calculated values
+
 """
 
 import fnmatch
@@ -61,13 +70,11 @@ else:
     print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
     sys.exit()
 
-print("\n ===================")
-print(f"{rivtfP=}")
-print(f"{rivtP=}")
-print(f"{rivtnS=}")
-print(f"{__name__=}")
-print(f"{modnameS=}")
-print("\n ===================")
+# print(f"{rivtfP=}")
+# print(f"{rivtP=}")
+# print(f"{rivtnS=}")
+# print(f"{__name__=}")
+# print(f"{modnameS=}")
 
 
 # initialize logging
@@ -98,40 +105,30 @@ def doc_hdr():
     hdrstS = ""
     hdrxtS = ""
 
-    timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
-
     config = ConfigParser()
     config.read(Path(projP, "rivt-doc.ini"))
     headS = config.get("report", "title")
     footS = config.get("utf", "foot1")
 
-    titleL = rivtnS.split("-")[1]  # subdivision title
+    titleL = rivtnS.split("-")  # subdivision title
     titleS = titleL[1].split(".")[0]
-    titleS = titleS.title()
-    borderS = "=" * 80
+    dnumS = titleL[0].split("r")[1]
+    headS = dnumS + "   " + titleS
 
-    dnumS = (titleL[0].split("r"))[1]
-    hdutfS = timeS + "\n" + headS + "\n" + borderS + "\n"
-    utfS += hdutfS + "\n"
+    timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
+    borderS = "=" * 80
+    hdutfS = timeS + "   " + headS + "\n" + borderS + "\n"
 
     utfS += sutfS  # accumulate doc strings
     rstS += srstS
     xtfS += xrstS
 
-    return utfS, rstS, xstS
+    return utfS, rstS, sxtS
 
 
 def doc_parse(sS, tS, tagL, cmdL):
     """
     parses section strings to doc strings
-
-    Globals:
-        utfS (str): utf doc string
-        rstS (str): rst2pdf doc string
-        xstS (str): latex doc string
-        labelD (dict): formatting labels
-        folderD (dict): folder and file paths
-        rivtD (dict): calculated values
 
     Args:
         sS (str): rivt section
@@ -149,15 +146,14 @@ def doc_parse(sS, tS, tagL, cmdL):
     global utfS, rstS, xstS, folderD, labelD, rivtD
 
     sL = sS.split("\n")  # convert section to list
-    secC = rparse.Section(tS, sL, labelD)
-    sutfS, srstS, sxstS, folderD, labelD, rivtD = secC.section(
-        tagL, cmdL, folderD, labelD, rivtD
-    )
+    secC = rparse.Section(tS, sL, folderD, labelD, rivtD)
+    sutfS, srstS, sxstS, folderD, labelD, rivtD = secC.section(tagL, cmdL)
+
     utfS += sutfS  # accumulate doc strings
     rstS += srstS
-    xstS += sxstS
+    sxtS += sxstS
 
-    return utfS, rstS, xstS
+    return utfS, rstS, sxtS
 
 
 def R(sS):

@@ -21,19 +21,20 @@ class Section:
         srstS = ""  # rest doc
         spL = []  # preprocessed lines
         self.folderD = folderD
+        self.labelD = labelD
+        self.rivtD = rivtD
 
         # section header
         hL = sL[0].split("|")
-        labelD["docS"] = hL[0].strip()  # section title
-        labelD["xch"] = hL[1].strip()  # xchange flag
-        labelD["color"] = hL[2].strip()  # background color
         if hL[0].strip()[0:2] == "--":
             labelD["docS"] = hL[2:].strip()  # section title
             sutfS = "\n"
             srs2S = "\n"
             srstS = "\n"
         else:
-            labelD["docS"] = hL[2:].strip()  # section title
+            labelD["xch"] = hL[1].strip()  # xchange flag
+            labelD["color"] = hL[2].strip()  # background color
+            labelD["docS"] = hL[0].strip()  # section title
             snumI = labelD["secnumI"] = labelD["secnumI"] + 1
             snumS = "[ " + str(snumI) + " ]"
             headS = snumS + " " + hL[0].strip()
@@ -46,9 +47,12 @@ class Section:
             self.sutfS = sutfS  # utf doc
             self.srs2S = srs2S  # rst2pdf doc
             self.srstS = srstS  # rest doc
+            print(sutfS)  # STDOUT header
 
         # strip leading spaces and comments from section
         for slS in sL[1:]:
+            txt1L = []
+            txt2L = []
             if len(slS) < 5:
                 slS = "\n"
                 spL.append(slS)
@@ -56,6 +60,7 @@ class Section:
             slS = slS[4:]
             if slS[0] == "#":
                 continue
+
             # strip * markup for utf doc
             txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # bold
             if len(txt1L) > 0:
@@ -77,9 +82,6 @@ class Section:
 
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
-        self.sutfS += sutfS  # utf doc
-        self.srs2S += srs2S  # rst2pdf doc
-        self.srstS += srstS  # rest doc
 
     def section(self, tagL, cmdL):
         """parse section
@@ -104,6 +106,8 @@ class Section:
         srs2S = self.srs2S
         srstS = self.srstS
         folderD = self.folderD
+        labelD = self.labelD
+        rivtD = self.rivtD
 
         for slS in self.spL:  # loop over section lines
             # print(f"{slS=}")

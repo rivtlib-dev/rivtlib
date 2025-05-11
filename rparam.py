@@ -75,11 +75,11 @@ File and label parameters
 rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))
 rivtnS = "xx-xx.py"
-rivtfP = "rivt/path"
+rivtfP = "yy/"
 modnameS = __name__.split(".")[1]
 
 
-# read paths
+# read file paths
 pthS = " "
 rbaseS = rivtnS.split(".")[0]
 prfxS = rivtnS[0:5]
@@ -102,7 +102,7 @@ toolsP = Path(srcP, "vls")
 styleP = Path(docP, "styles")
 titleS = rivtnS.split("-")[1]
 
-# write paths
+# write file paths
 rbakP = Path(rivtP, rbaseS + ".bak")
 pypathS = os.path.dirname(sys.executable)
 rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")

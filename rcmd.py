@@ -63,6 +63,10 @@ class Cmd:
     def comd(self, cmdS, pthS, parS):
         """command parsing"""
 
+        folderD = self.folderD
+        labelD = self.labelD
+        rivtD = self.rivtD
+
         if cmdS == "IMG":
             """ image insert """
 
@@ -71,7 +75,7 @@ class Cmd:
             parL = parS.split(",")
             capS = parL[0].strip()
             scS = parL[1].strip()
-            insP = Path(self.folderD["projP"] / pthS)
+            insP = Path(folderD["projP"] / pthS)
             insS = str(insP.as_posix())
             pS = " [file: " + pthS + "]" + "\n\n"
             # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
@@ -103,9 +107,7 @@ class Cmd:
                 + "\n"
             )
 
-            return uS, rS, xS
-
-        if cmdS == "IMG2":
+        elif cmdS == "IMG2":
             """image insert side by side """
 
             # print(f"{parS=}")
@@ -136,12 +138,20 @@ class Cmd:
                 + "\n\n"
             )
 
-            return uS, rS, xS
-
-        if cmdS == "TABLE":
+        elif cmdS == "TABLE":
             """table insert"""
 
             # print(f"{pthS=}")
+            if "_[T]" in parS:
+                tnumI = int(self.labelD["tableI"])
+                fillS = str(tnumI).zfill(2)
+                utitlnS = "\nTable " + fillS + " - "
+                rtitlnS = "\n**Table " + fillS + " -** "
+                self.labelD["tableI"] = tnumI + 1
+                parS = (parS.replace("_[T]", " ")).strip()
+            else:
+                utitlnS = " "
+                rtitlnS = " "
             uS = rS = ""
             pthP = Path(pthS)  # path
             extS = pthP.suffix[1:]  # file extension
@@ -153,15 +163,6 @@ class Cmd:
             alnS = parL[2].strip()  # col. alignment
             rowS = parL[3].strip()  # read rows
             alignD = {"s": "", "d": "decimal", "c": "center", "r": "right", "l": "left"}
-            if parL[4].strip() == "_[T]":  # table number
-                tnumI = int(self.labelD["tableI"])
-                fillS = str(tnumI).zfill(2)
-                utitlnS = "\nTable " + fillS + " - "
-                rtitlnS = "\n**Table " + fillS + " -** "
-                self.labelD["tableI"] = tnumI + 1
-            else:
-                utitlnS = " "
-                rtitlnS = " "
 
             # pthxP = Path(*Path(pthS).parts[-3:])
             # pthxS = str(pthxP.as_posix())
@@ -186,7 +187,7 @@ class Cmd:
                 pDF1 = pd.read_excel(pthS, header=None)
                 readL = pDF1.values.tolist()
             else:
-                return
+                pass
 
             sys.stdout.flush()
             old_stdout = sys.stdout
@@ -209,9 +210,7 @@ class Cmd:
             rS = rtlS + rS + "\n"
             xS = rtlS + rS + "\n"
 
-            return uS, rS, xS
-
-        if cmdS == "TEXT":
+        elif cmdS == "TEXT":
             """text file insert"""
 
             # print(f"{pthS=}")
@@ -228,22 +227,20 @@ class Cmd:
             with open(insP, "r") as fileO:
                 fileL = fileO.readlines()
 
-            uS = pS.rjust(self.labelD["widthI"]) + ubS
+            uS = pS.rjust(labelD["widthI"]) + ubS
             rS = pS + rb2S
             xS = pS + rb2S
 
-            return uS, rS, xS
-
-        if cmdS == "VALUE":
+        elif cmdS == "VALUE":
             """values file insert"""
 
-            vnumI = int(self.labelD["valueI"])
+            vnumI = int(labelD["valueI"])
             fillS = str(vnumI).zfill(2)
             utitlnS = "\nValue Table " + fillS + " - " + parS.strip("_[V]")
             rtitlnS = "\n**Value Table " + fillS + " -** " + parS.strip("_[V]")
-            self.labelD["valueI"] = vnumI + 1
+            labelD["valueI"] = vnumI + 1
 
-            insP = Path(self.folderD["projP"])
+            insP = Path(folderD["projP"])
             insP = Path(Path(insP) / pthS)
             insS = str(insP.as_posix())
             pS = " [file: " + pthS + "]" + "\n\n"
@@ -252,7 +249,7 @@ class Cmd:
             # print(f"{readL=}")
             for iL in readL:  # add to valexp
                 iS = ",".join(iL)
-                self.labelD["valexpS"] += iS + "\n"
+                labelD["valexpS"] += iS + "\n"
             tbL = []
             for vaL in readL:
                 # print(f"{vaL=}")
@@ -264,7 +261,7 @@ class Cmd:
                 descripS = vaL[1].strip()
                 unit1S, unit2S = vaL[2], vaL[3]
                 dec1S, dec2S = vaL[4], vaL[5]
-                self.rivtpD[varS] = valS, unit1S, unit2S, dec1S, dec2S
+                rivtD[varS] = valS, unit1S, unit2S, dec1S, dec2S
                 if unit1S != "-":
                     if type(eval(valS)) == list:
                         val1U = array(eval(valS)) * eval(unit1S)
@@ -310,7 +307,7 @@ class Cmd:
             # pthxS = str(Path(*Path(pthS).parts[-3:]))
             pS = "[from file: " + pthS + "]" + "\n\n"
             uS = utitlnS + pS + uS + "\n"
-            rS = rtitlnS + pS + r2S + "\n"
+            rS = rtitlnS + pS + rS + "\n"
             xS = rtitlnS + pS + rS + "\n"
 
-            return uS, rS, xS
+        return uS, rS, xS, folderD, labelD, rivtD
