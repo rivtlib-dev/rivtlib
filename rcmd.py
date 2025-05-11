@@ -21,8 +21,8 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from . import rtag
-from runits import *  # noqa: F403
+from rivtlib import rtag
+from rivtlib.runits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -60,7 +60,7 @@ class Cmd:
         )
         warnings.filterwarnings("ignore")
 
-    def comm(self, cmdS, pthS, parS):
+    def comd(self, cmdS, pthS, parS):
         """command parsing"""
 
         if cmdS == "IMG":

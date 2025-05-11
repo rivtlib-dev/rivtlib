@@ -50,7 +50,7 @@ rivtnS = "xx-xx.py"
 rivtfP = "rivt/path"
 modnameS = __name__.split(".")[1]
 
-if __name__ == "rivtlib.api":
+if __name__ == "rivtlib.rapi":
     rivtfP = Path(__main__.__file__)
     rivtnS = rivtfP.name
     patternS = "r[0-9][0-9][0-9]0-9]-*.py"

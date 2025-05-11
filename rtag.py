@@ -13,7 +13,7 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from runits import *  # noqa: F403
+from rivtlib.runits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -108,7 +108,7 @@ class Tag:
             rS = lineS.center(int(self.labelD["widthI"])) + "\n"
             xS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "D]":
             """ footnote description """
@@ -116,7 +116,7 @@ class Tag:
 
             uS, rS, xS = "[" + str(ftnumI) + "] " + lineS
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "E]":
             """ equation label """
@@ -129,7 +129,7 @@ class Tag:
             rS = fillS + "   " + lineS + "\n"
             xS = uS
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "F]":
             """ figure caption"""
@@ -138,7 +138,7 @@ class Tag:
 
             uS = rS = xS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "#]":
             """ footnote number """
@@ -148,7 +148,7 @@ class Tag:
 
             uS = rS = tS = lineS.replace("*]", "[" + str(ftnumI) + "]")
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "S]":
             """ format equation with sympy """
@@ -164,7 +164,7 @@ class Tag:
             rS = "\n\n.. code:: \n\n\n" + uS + "\n\n"
             tS = ".. raw:: math\n\n   " + lineS + "\n"
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "Y]":
             """ format and label equation with sympy """
@@ -180,7 +180,7 @@ class Tag:
             rS = "\n\n.. code:: \n\n\n" + uS + "\n\n"
             tS = ".. raw:: math\n\n   " + lineS + "\n"
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "T]":
             """ format table title """
@@ -191,7 +191,7 @@ class Tag:
             rS = "\n**Table " + fillS + "**: " + lineS
             xS = "\n**Table " + fillS + "**: " + lineS
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "U]":
             """ format url """
@@ -206,7 +206,7 @@ class Tag:
             rS = "-" * 80
             xS = "-" * 80
 
-            return uS, rS, xS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS[:10] == "==========":
             """ format new page """
@@ -337,7 +337,7 @@ class Tag:
             iS = eqS + "," + ",".join(refS)
             self.labelD["valexpS"] += iS + "\n"
 
-            return uS, rS
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         else:
             pass

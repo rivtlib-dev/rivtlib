@@ -120,7 +120,7 @@ ossP = Path(projP / "oss")
 # print(f"{insP=}")
 # print(f"{valsP=}")
 
-rivtvD = {}  # calculated values
+rivtD = {}  # calculated values
 
 folderD = {}  # folders
 for item in [
