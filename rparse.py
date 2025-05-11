@@ -7,9 +7,9 @@ from rivtlib import rcmd, rtag
 class Section:
     """converts section string to utf and rest doc strings"""
 
-    def __init__(self, stS, sL, labelD):
+    def __init__(self, stS, sL, folderD, labelD, rivtD):
         """
-        preprocess section headers and strings
+        preprocess section headers and section string
 
         Args:
             stS (str): section type
@@ -20,6 +20,7 @@ class Section:
         srs2S = ""  # rst2pdf doc
         srstS = ""  # rest doc
         spL = []  # preprocessed lines
+        self.folderD = folderD
 
         # section header
         hL = sL[0].split("|")
@@ -28,7 +29,11 @@ class Section:
         labelD["color"] = hL[2].strip()  # background color
         if hL[0].strip()[0:2] == "--":
             labelD["docS"] = hL[2:].strip()  # section title
+            sutfS = "\n"
+            srs2S = "\n"
+            srstS = "\n"
         else:
+            labelD["docS"] = hL[2:].strip()  # section title
             snumI = labelD["secnumI"] = labelD["secnumI"] + 1
             snumS = "[ " + str(snumI) + " ]"
             headS = snumS + " " + hL[0].strip()
@@ -36,20 +41,22 @@ class Section:
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
+
+            # print(sutfS, srs2S, srstS)
             self.sutfS = sutfS  # utf doc
             self.srs2S = srs2S  # rst2pdf doc
             self.srstS = srstS  # rest doc
-            # print(sutfS, srs2S, srstS)
 
-        # strip leading spaces, # comments, * markup for utf doc
+        # strip leading spaces and comments from section
         for slS in sL[1:]:
             if len(slS) < 5:
                 slS = "\n"
                 spL.append(slS)
                 continue
             slS = slS[4:]
-            if slS[0] == "#":  # comments
+            if slS[0] == "#":
                 continue
+            # strip * markup for utf doc
             txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # bold
             if len(txt1L) > 0:
                 for tS in txt1L:
@@ -58,7 +65,6 @@ class Section:
                 spL.append(txtaS)
             else:
                 spL.append(slS)
-
             txt2L = re.findall(r"\*(.*?)\*", slS)  # italic
             if len(txt2L) > 0:
                 for tS in txt2L:
@@ -75,7 +81,7 @@ class Section:
         self.srs2S += srs2S  # rst2pdf doc
         self.srstS += srstS  # rest doc
 
-    def section(self, tagL, cmdL, folderD, labelD, rivtD):
+    def section(self, tagL, cmdL):
         """parse section
 
         Args:
@@ -94,6 +100,10 @@ class Section:
         blockS = """"""
         tagS = ""
         uS = rS = xS = """"""  # doc line
+        sutfS = self.sutfS
+        srs2S = self.srs2S
+        srstS = self.srstS
+        folderD = self.folderD
 
         for slS in self.spL:  # loop over section lines
             # print(f"{slS=}")
@@ -176,4 +186,4 @@ class Section:
                 self.srstS += slS + "\n"
                 print(slS)  # STDOUT - line as is
 
-        return self.sutfS, self.srs2S, self.srstS, folderD, labelD, rivtD
+        return sutfS, srs2S, srstS, folderD, labelD, rivtD
