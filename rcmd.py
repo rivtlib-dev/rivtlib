@@ -80,7 +80,7 @@ class Cmd:
             parL = parS.split(",")
             capS = parL[0].strip()
             scS = parL[1].strip()
-            insP = Path(folderD["projP"] / pthS)
+            insP = Path(folderD["projP"] / "src" / pthS)
             insS = str(insP.as_posix())
             pS = " [file: " + pthS + "]" + "\n\n"
             # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
@@ -160,18 +160,18 @@ class Cmd:
                 titleS = " "
             maxwI = int(parL[1].strip())  # max col. width
             alnS = parL[2].strip()  # col. alignment
-            rowS = parL[3].strip()  # read rows
+            rowL = eval(parL[3].strip())  # rows
+            if len(rowL) == 0:
+                pass
             alignD = {"s": "", "d": "decimal", "c": "center", "r": "right", "l": "left"}
-
             # pthxP = Path(*Path(pthS).parts[-3:])
             # pthxS = str(pthxP.as_posix())
             insP = Path(self.folderD["projP"])
-            insP = Path(Path(insP) / pthS)
+            insP = Path(Path(insP) / "src" / pthS)
             insS = str(insP.as_posix())
             pS = " [file: " + pthS + "]" + "\n\n"
             utlS = utitlnS + titleS + pS  # file path text
             rtlS = rtitlnS + titleS + pS
-
             readL = []
             if extS == "csv":  # read csv file
                 with open(insP, "r") as csvfile:
@@ -218,17 +218,17 @@ class Cmd:
             extS = pthP.suffix[1:]  # file extension
             parL = parS.split(",")
             insP = Path(self.folderD["projP"])
-            insP = Path(Path(insP) / pthS)
+            insP = Path(Path(insP) / "src" / pthS)
             insS = str(insP.as_posix())
             pS = " [file: " + pthS + "]" + "\n\n"
             # pthxP = Path(*Path(pthS).parts[-3:])
 
             with open(insP, "r") as fileO:
-                fileL = fileO.readlines()
+                fileS = fileO.read()
 
-            uS = pS.rjust(labelD["widthI"]) + ubS
-            rS = pS + rb2S
-            xS = pS + rb2S
+            uS = fileS
+            rS = fileS
+            xS = fileS
 
         elif cmdS == "VALUE":
             """values file insert"""
@@ -240,7 +240,7 @@ class Cmd:
             labelD["valueI"] = vnumI + 1
 
             insP = Path(folderD["projP"])
-            insP = Path(Path(insP) / pthS)
+            insP = Path(Path(insP) / "src" / pthS)
             insS = str(insP.as_posix())
             pS = " [file: " + pthS + "]" + "\n\n"
             with open(insP, "r") as csvfile:

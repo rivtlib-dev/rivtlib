@@ -7,6 +7,7 @@ from datetime import datetime, time
 from io import StringIO
 from pathlib import Path
 
+import sympy as sp
 import tabulate
 from numpy import *  # noqa: F403
 from sympy.abc import _clash2
@@ -161,10 +162,10 @@ class Tag:
             lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
 
             uS = textwrap.indent(lineS, "     ")
-            rS = "\n\n.. code:: \n\n\n" + uS + "\n\n"
-            tS = ".. raw:: math\n\n   " + lineS + "\n"
+            r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
+            rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            return uS, r2S, rS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "Y]":
             """ format and label equation with sympy """
@@ -177,10 +178,10 @@ class Tag:
             lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
 
             uS = textwrap.indent(lineS, "     ")
-            rS = "\n\n.. code:: \n\n\n" + uS + "\n\n"
-            tS = ".. raw:: math\n\n   " + lineS + "\n"
+            r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
+            rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            return uS, r2S, rS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "T]":
             """ format table title """
