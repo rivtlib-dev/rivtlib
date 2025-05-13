@@ -263,7 +263,7 @@ class Tag:
             dec1S, dec2S = decL[0].strip(), decL[1].strip()
             if unit1S != "-":
                 try:
-                    exec(eqS, globals(), self.rivtvD)
+                    exec(eqS, globals(), self.rivtD)
                     # print(f"{self.rivtvD=}")
                 except ValueError as ve:
                     print(f"A ValueError occurred: {ve}")
@@ -291,7 +291,7 @@ class Tag:
                 hdr1L.append(str(vS))
             fmt1S = "%." + dec1S + "f"
             fmt2S = "%." + dec2S + "f"
-            varU = eval(varS, globals(), self.rivtvD)
+            varU = eval(varS, globals(), self.rivtD)
             varU.set_format(value_format=fmt1S, auto_norm=True)
             val1U = str(varU.cast_unit(eval(unit1S)))
             val2U = str(varU.cast_unit(eval(unit2S)))
@@ -500,11 +500,11 @@ class Tag:
                     colalign=alignL,
                 )
             )
-            uS = rS = xS = output.getvalue()
+            uS = rS = xS = output.getvalue() + "\n"
             sys.stdout = old_stdout
             sys.stdout.flush()
 
-            return uS + "\n", rS + "\n", xS + "\n"
+            return (uS, rS, xS, self.folderD, self.labelD, self.rivtD)
 
         else:
             pass

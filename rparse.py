@@ -115,7 +115,7 @@ class Section:
                 if blockB and ("_[[Q]]" in slS):  # block end
                     blockB = False
                     tC = rtag.Tag(folderD, labelD, rivtD)
-                    uS, rS, xS = tC.blocktag(tagS, blockS)
+                    uS, rS, xS, folderD, labelD, rivtD = tC.blocktag(tagS, blockS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
