@@ -27,7 +27,7 @@ class Section:
         # section header
         hL = sL[0].split("|")
         if hL[0].strip()[0:2] == "--":
-            labelD["docS"] = hL[2:].strip()  # section title
+            labelD["docS"] = hL[0].split("--")[1][1]  # section title
             sutfS = "\n"
             srs2S = "\n"
             srstS = "\n"
@@ -43,11 +43,11 @@ class Section:
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
 
-            # print(sutfS, srs2S, srstS)
-            self.sutfS = sutfS  # utf doc
-            self.srs2S = srs2S  # rst2pdf doc
-            self.srstS = srstS  # rest doc
-            print(sutfS)  # STDOUT section header
+        # print(sutfS, srs2S, srstS)
+        self.sutfS = sutfS  # utf doc
+        self.srs2S = srs2S  # rst2pdf doc
+        self.srstS = srstS  # rest doc
+        print(sutfS)  # STDOUT section header
 
         # strip leading spaces and comments from section
         spL = []
@@ -56,7 +56,7 @@ class Section:
                 slS = "\n"
                 spL.append(slS)
                 continue
-            if slS[0] == "#":
+            if "#" in slS[:5]:
                 continue
             spL.append(slS[4:])
 
@@ -90,27 +90,20 @@ class Section:
         rivtD = self.rivtD
 
         for slS in self.spL:  # loop over section lines
-            # txt1L = []
-            # txt2L = []
-            # print(f"{slS=}")
-            # txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # strip bold
-            # if len(txt1L) > 0:
-            #     for tS in txt1L:
-            #         t1S = "**" + tS + "**"
-            #         txtaS = slS.replace(t1S, tS)
-            #     spL.append(txtaS)
-            # else:
-            #     spL.append(slS)
-            # txt2L = re.findall(r"\*(.*?)\*", slS)  # strip italic
-            # if len(txt2L) > 0:
-            #     for tS in txt2L:
-            #         t2S = "*" + tS + "*"
-            #         txtrS = slS.replace(t2S, tS)
-            #     spL.append(txtrS)
-            # else:
-            #     spL.append(slS)
-            # print(f"{txt1L=}")
-
+            if self.stS == "I":
+                txt2L = []
+                # print(f"{slS=}")
+                txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # strip bold
+                if len(txt1L) > 0:
+                    for tS in txt1L:
+                        t1S = "**" + tS + "**"
+                        slS = slS.replace(t1S, tS)
+                txt2L = re.findall(r"\*(.*?)\*", slS)  # strip italic
+                if len(txt2L) > 0:
+                    for tS in txt2L:
+                        t2S = "*" + tS + "*"
+                        slS = slS.replace(t2S, tS)
+                # print(f"{txt1L=}")
             if len(slS.strip()) < 1 and not blockB:
                 sutfS += "\n"
                 srs2S += " \n"

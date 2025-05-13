@@ -450,11 +450,11 @@ class Tag:
                 eqS = eqS.replace(":=", "=")
                 varS = eqS.split("=")[0].strip()
                 valS = eqS.split("=")[1].strip()
-                descripS = vaL[1].strip()
-                unitL = vaL[2].split(",")
+                unitL = vaL[1].split(",")
                 unit1S, unit2S = unitL[0], unitL[1]
-                decL = vaL[3].split(",")
+                decL = vaL[2].split(",")
                 dec1S, dec2S = decL[0], decL[1]
+                descripS = vaL[3].strip()
                 if unit1S != "-":
                     try:
                         exec(eqS, globals(), self.rivtD)
@@ -462,7 +462,7 @@ class Tag:
                         print(f"A ValueError occurred: {ve}")
                     except Exception as e:
                         print(f"An unexpected error occurred: {e}")
-                    valU = eval(varS, {}, self.rivtvD)
+                    valU = eval(varS, {}, self.rivtD)
                     val1U = str(valU.cast_unit(eval(unit1S)))
                     val2U = str(valU.cast_unit(eval(unit2S)))
                     # print(f"{self.rivtvD=}")
@@ -483,10 +483,6 @@ class Tag:
                     continue
                 iS = ",".join(vaL)
                 self.labelD["valexpS"] += iS + "\n"
-
-            # export value file
-            with open(self.folderD["valP"], "w") as file:
-                file.write(self.labelD["valexpS"])
 
             # write value table
             tblfmt = "rst"

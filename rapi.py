@@ -209,6 +209,10 @@ def V(sS):
 
     # write rivtD or rivtvL to csv file
 
+    # export value file
+    # with open(self.folderD["valP"], "w") as file:
+    #    file.write(self.labelD["valexpS"])
+
 
 def T(sS):
     """convert Tools string
