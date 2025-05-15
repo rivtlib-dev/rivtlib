@@ -1,5 +1,4 @@
 import re
-from pathlib import Path
 
 from rivtlib import rcmd, rtag
 
@@ -76,12 +75,14 @@ class Section:
             folderD (dict): folder paths
             labelD (dict): labels
             rivtD (dict): calculated values
-
         """
+
+        rivtL = []
         blockB = False
         blockS = """"""
         tagS = ""
-        uS = rS = xS = """"""  # doc line
+        uS = rS = xS = """"""  # returned doc line
+
         sutfS = self.sutfS
         srs2S = self.srs2S
         srstS = self.srstS
@@ -89,7 +90,7 @@ class Section:
         labelD = self.labelD
         rivtD = self.rivtD
 
-        for slS in self.spL:  # loop over section lines
+        for slS in self.spL:  # loop over rivt section lines
             if self.stS == "I":
                 txt2L = []
                 # print(f"{slS=}")
@@ -115,7 +116,9 @@ class Section:
                 if blockB and ("_[[Q]]" in slS):  # block end
                     blockB = False
                     tC = rtag.Tag(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtD = tC.blocktag(tagS, blockS)
+                    uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.blocktag(
+                        tagS, blockS, rivtL
+                    )
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
@@ -134,7 +137,9 @@ class Section:
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
                     cmC = rcmd.Cmd(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD = cmC.comd(cmdS, pthS, parS)
+                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.comd(
+                        cmdS, pthS, parS, rivtL
+                    )
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
                     srstS += xS + "\n"
@@ -148,7 +153,9 @@ class Section:
                     # print(f"{tagS=}")
                     tC = rtag.Tag(folderD, labelD, rivtD)
                     if len(tagS) < 3:  # line tag
-                        uS, rS, xS, folderD, labelD, rivtD = tC.linetag(tagS, lineS)
+                        uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.linetag(
+                            tagS, lineS, rivtL
+                        )
                         sutfS += uS + "\n"
                         srs2S += rS + "\n"
                         srstS += xS + "\n"
@@ -158,29 +165,19 @@ class Section:
                         blockS = ""
                         blockB = True
                         blockS += lineS + "\n"
-                        continue
-            elif ":=" in slS:  # equals tag
-                if ":=" in tagS:
-                    eqL = slS.split("|", 1)
-                    eqS = eqL[0].strip()
-                    parS = eqL[1].strip()
-                    comC = rcmd.Cmd(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD = comC.valtag(cmdS, eqS, parS)
-                    sutfS += uS + "\n"
-                    srs2S += rS + "\n"
-                    srstS += xS + "\n"
-                    print(uS)  # STDOUT equation
-                    uS, rS, xS, folderD, labelD, rivtD = comC.valtag(
-                        "equtable", eqS, parS
+            elif ":=" in slS:
+                if ":=" in tagL:
+                    tagS = ":="
+                    tC = rtag.Tag(folderD, labelD, rivtD)
+                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.linetag(
+                        tagS, slS, rivtL
                     )
-                    sutfS += uS + "\n"
-                    srs2S += rS + "\n"
-                    srstS += xS + "\n"
-                    print(uS)  # STDOUT equation table
+                    print(uS)  # STDOUT- tagged line
+                    continue
             else:  # everything else
                 self.sutfS += slS + "\n"
                 self.srs2S += slS + "\n"
                 self.srstS += slS + "\n"
                 print(slS)  # STDOUT - line as is
 
-        return sutfS, srs2S, srstS, folderD, labelD, rivtD
+        return sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL

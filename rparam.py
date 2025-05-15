@@ -78,7 +78,6 @@ rivtnS = "xx-xx.py"
 rivtfP = "yy/"
 modnameS = __name__.split(".")[1]
 
-
 # read file paths
 pthS = " "
 rbaseS = rivtnS.split(".")[0]

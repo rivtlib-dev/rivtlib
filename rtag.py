@@ -79,7 +79,7 @@ class Tag:
         )
         warnings.filterwarnings("ignore")
 
-    def linetag(self, tagS, lineS):
+    def linetag(self, tagS, lineS, rivtL):
         """format line tags
 
         text        _[C]    center
@@ -92,8 +92,8 @@ class Tag:
         title       _[T]    table title
         url, label  _[U]    url
         a := 1       :=     evaluate equation
-        _[----------]       horizontal line
-        _[==========]       new page
+        _[-----]            horizontal line
+        _[=====]            new page
 
         Args:
             tagS (str): tag symbol
@@ -106,40 +106,31 @@ class Tag:
         if tagS == "C]":
             """ center a line """
             uS = lineS.center(int(self.labelD["widthI"])) + "\n"
-            rS = lineS.center(int(self.labelD["widthI"])) + "\n"
-            xS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
-
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            r2S = lineS.center(int(self.labelD["widthI"])) + "\n"
+            rS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
 
         elif tagS == "D]":
             """ footnote description """
             ftnumI = self.labelD["noteL"].pop(0)
 
-            uS, rS, xS = "[" + str(ftnumI) + "] " + lineS
-
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            uS, r2S, rS = "[" + str(ftnumI) + "] " + lineS
 
         elif tagS == "E]":
             """ equation label """
             enumI = int(self.labelD["equI"])
             self.labelD["equI"] = enumI + 1
-            fillS = "\nE" + str(enumI).zfill(2)
+            fillS = "E" + str(enumI).zfill(2)
+            uS = lineS + " - " + fillS + "\n"
 
-            uS = fillS + " - " + lineS + "\n"
-            fillS = "\n**E" + str(enumI).zfill(2) + "** - "
-            rS = fillS + "   " + lineS + "\n"
-            xS = uS
-
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            fillS = "**E" + str(enumI).zfill(2) + "**"
+            rS = r2S = lineS + " - " + fillS + "\n"
 
         elif tagS == "F]":
             """ figure caption"""
             fnumI = int(self.labelD["figI"])
             self.labelD["figI"] = fnumI + 1
 
-            uS = rS = xS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
-
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            uS = r2S = rS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
 
         elif tagS == "#]":
             """ footnote number """
@@ -147,9 +138,7 @@ class Tag:
             self.labelD["noteL"].append(ftnumI + 1)
             self.labelD["footL"].append(ftnumI + 1)
 
-            uS = rS = tS = lineS.replace("*]", "[" + str(ftnumI) + "]")
-
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            uS = r2S = rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
 
         elif tagS == "S]":
             """ format equation with sympy """
@@ -165,8 +154,6 @@ class Tag:
             r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
             rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-            return uS, r2S, rS, self.folderD, self.labelD, self.rivtD
-
         elif tagS == "Y]":
             """ format and label equation with sympy """
             spS = lineS.strip()
@@ -181,138 +168,127 @@ class Tag:
             r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
             rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-            return uS, r2S, rS, self.folderD, self.labelD, self.rivtD
-
         elif tagS == "T]":
             """ format table title """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
             fillS = str(tnumI).zfill(2)
             uS = "\nTable " + str(tnumI) + ": " + lineS
+            r2S = "\n**Table " + fillS + "**: " + lineS
             rS = "\n**Table " + fillS + "**: " + lineS
-            xS = "\n**Table " + fillS + "**: " + lineS
-
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
 
         elif tagS == "U]":
             """ format url """
             lineL = self.lineS.split(",")
-            lineS = ".. _" + lineL[0] + ": " + lineL[1]
+            uS = r2S = rS = ".. _" + lineL[0] + ": " + lineL[1]
 
-            return lineS
-
-        elif tagS[:10] == "----------":
+        elif tagS[:5] == "-----":
             """ format horizontal line """
             uS = "-" * 80
+            r2S = "-" * 80
             rS = "-" * 80
-            xS = "-" * 80
 
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
-
-        elif tagS[:10] == "==========":
+        elif tagS[:5] == "=====":
             """ format new page """
             pagenoS = str(self.labelD["pageI"])
-            rvtS = self.labelD["headuS"].replace("p##", pagenoS)
+            uS = self.labelD["headuS"].replace("p##", pagenoS)
             self.labelD["pageI"] = int(pagenoS) + 1
-            lineS = (
+            r2S = rS = (
                 "\n"
                 + "_" * self.labelD["widthI"]
                 + "\n"
-                + rvtS
+                + uS
                 + "\n"
                 + "_" * self.labelD["widthI"]
                 + "\n"
             )
 
-            return "\n" + rvtS
-
         elif tagS == ":=":
             """ equation evluate and format """
-            wI = self.labelD["widthI"]
 
-            spS = eqS.strip()
-            spS = spS.replace(":=", "=")
-            refS = parS.split("|")[0].strip()
-            try:
-                spL = spS.split("=")
-                spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            except:
-                pass
-            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-            # utf
-            lineS = textwrap.indent(lineS, "    ")
+            tbl1L = []
+            hdr1L = []
+            wI = self.labelD["widthI"]
+            lpL = lineS.split("|")
+            eqS = lpL[0]
+            eqS = eqS.replace(":=", "=").strip()
+            parL = lpL[1:]
+            unit1S, unit2S = parL[0].split(",")
+            dec1S, dec2S = parL[1].split(",")
+            refS = parL[2].strip()
+            unit1S, unit2S = unit1S.strip(), unit2S.strip()
+            dec1S, dec2S = dec1S.strip(), dec2S.strip()
+            fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+            fmt2S = "Unum.set_format(value_format='%." + dec2S + "f', auto_norm=True)"
+
+            # equation as string
+            spL = eqS.split("=")
+            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+            eq1S = textwrap.indent(eq1S, "    ")
             refS = refS.rjust(self.labelD["widthI"])
             uS = refS + "\n" + lineS + "\n\n"
-            # rst2
-            r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + lineS + "\n\n"
-            # rst
-            rS = ".. raw:: math\n\n   " + lineS + "\n"
+            r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
+            rS = ".. raw:: math\n\n   " + eqS + "\n"
 
-            # write equation table
-            vaL = []
-            wI = self.labelD["widthI"]
-            eqS = eqS.strip()
-            eqS = eqS.replace(":=", "=")
-            refS = parS.split("|")
-            varS = eqS.split("=")[0].strip()
-            valS = eqS.split("=")[1].strip()
-            descripS = refS[0].strip()
-            unitL = refS[1].split(",")
-            unit1S, unit2S = unitL[0].strip(), unitL[1].strip()
-            decL = refS[2].split(",")
-            dec1S, dec2S = decL[0].strip(), decL[1].strip()
+            # print("a1", eval("area2", {}, self.rivtD))
+            # print("e1", eval("floordl1", {}, self.rivtD))
+            # print("unit", unit1S)
+            # print("rivtD", self.rivtD)
+            # print("----")
+
+            # exec(eqS, globals(), self.rivtD)
             if unit1S != "-":
-                try:
-                    exec(eqS, globals(), self.rivtD)
-                    # print(f"{self.rivtvD=}")
-                except ValueError as ve:
-                    print(f"A ValueError occurred: {ve}")
-                except Exception as e:
-                    print(f"An unexpected error occurred: {e}")
+                exec(eqS, globals(), self.rivtD)
             else:
-                try:
-                    exec(eqS, globals(), self.rivtD)
-                except ValueError as ve:
-                    print(f"A ValueError occurred: {ve}")
-                except Exception as e:
-                    print(f"An unexpected error occurred: {e}")
-                valU = eval(varS, globals(), self.rivtD)
-                val1U = str(valU)
-                val2U = str(valU)
-            eqxS = eqS.split("=")[1]
-            symeqO = sp.sympify(eqxS, _clash2, evaluate=False)
+                cmdS = spL[0] + " = " + spL[1]
+                exec(cmdS, globals(), self.rivtD)
+
+            # rivtL and rivtD append
+            eqvS = eqS.replace("|", ",")
+            rivtL.append(eqvS)
+            valU = eval(spL[0], globals(), self.rivtD)
+            self.rivtD[spL[0]] = valU
+            print("valu", valU)
+            # equation and table elements
+            symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
             symaO = symeqO.atoms(sp.Symbol)
-            numvarI = len(symaO) + 1
-            tbl1L = []
-            tbl2L = []
-            hdr1L = []
-            hdr1L.append(varS)
+            hdr1L.append(spL[0])
+            hdr1L.append("[" + spL[0] + "]")
             for vS in symaO:
                 hdr1L.append(str(vS))
-            fmt1S = "%." + dec1S + "f"
-            fmt2S = "%." + dec2S + "f"
-            varU = eval(varS, globals(), self.rivtD)
-            varU.set_format(value_format=fmt1S, auto_norm=True)
-            val1U = str(varU.cast_unit(eval(unit1S)))
-            val2U = str(varU.cast_unit(eval(unit2S)))
-            tbl1L.append(val1U)
-            tbl2L.append(val2U)
-            self.rivtpD[varS] = (val1U, unit1S, unit2S, dec1S, dec2S)
+            numvarI = len(symaO) + 2
+            print("header----------", hdr1L)
+
+            # eval value
+            eval(fmt1S)
+            val1U = valU.cast_unit(eval(unit1S))
+            print(val1U, type(val1U))
+            print(val1U)
+            val2U = valU.cast_unit(eval(unit2S))
+            tbl1L.append(str(val1U))
+            tbl1L.append(str(val2U))
+            print("table--------------", tbl1L)
+
+            # loop over variables
+            eval(fmt2S)
             for aO in symaO:
                 # print(self.rivtpD)
-                unit1S = self.rivtpD[str(aO)][1]
-                unit2S = self.rivtpD[str(aO)][2]
-                a1U = eval(str(aO), globals(), self.rivtvD)
-                a1U.set_format(value_format=fmt2S, auto_norm=True)
-                val1U = str(a1U.cast_unit(eval(unit1S)))
-                a2U = eval(str(aO), globals(), self.rivtvD)
-                a2U.set_format(value_format=fmt2S, auto_norm=True)
-                val2U = str(a2U.cast_unit(eval(unit2S)))
-                tbl1L.append(val1U)
-                tbl2L.append(val2U)
-            tblL = [tbl1L]
-            tblL.append(tbl2L)
+                # unit1S = self.rivtD[str(aO)][1]
+                # unit2S = self.rivtD[str(aO)][2]
+                a1U = eval(str(aO), globals(), self.rivtD)
+                print("ao", aO, a1U)
+                # a2U = eval(str(aO), globals(), self.rivtD)
+                # a2U.set_format(value_format=fmt2S, auto_norm=True)
+                # val2U = str(a2U.cast_unit(eval(unit2S)))
+                # tbl1L.append(val1U)
+                # tbl2L.append(val2U)
+                tbl1L.append(str(a1U))
+
+            # write table
+            # sprint(tbl1L)
             alignL = []
+            tblL = [tbl1L]
             tblfmt = "rst"
             for nI in range(numvarI):
                 alignL.append("center")
@@ -329,21 +305,22 @@ class Tag:
                 )
             )
             uS = output.getvalue()
+            r2S = output.getvalue()
             rS = output.getvalue()
             sys.stdout = old_stdout
             sys.stdout.flush()
 
-            refS = parS.split("|")
-            eqS = eqS.replace("=", ":=")
-            iS = eqS + "," + ",".join(refS)
-            self.labelD["valexpS"] += iS + "\n"
-
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD
+            # refS = parS.split("|")
+            # eqS = eqS.replace("=", ":=")
+            # iS = eqS + "," + ",".join(refS)
+            # self.labelD["valexpS"] += iS + "\n"
 
         else:
             pass
 
-    def blocktag(self, tagS, blockS):
+        return uS, r2S, rS, self.folderD, self.labelD, self.rivtD, rivtL
+
+    def blocktag(self, tagS, blockS, rivtL):
         """
 
         color _[[B]]   bldindblk
@@ -369,9 +346,9 @@ class Tag:
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
             # utf
-            luS = "Table " + str(tnumI) + " - " + lineS
+            luS = "Table " + str(tnumI) + " - " + blockS
             # rst
-            lrS = "\n" + "Table " + fillS + ": " + lineS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
 
             # print("***sympy***", f"{luS=}", f"{lrS=}")
             return luS, lrS
@@ -380,8 +357,8 @@ class Tag:
             """ italic indent block """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + lineS
-            lrS = "\n" + "Table " + fillS + ": " + lineS
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
 
             # print("***sympy***", f"{luS=}", f"{lrS=}")
             return luS, lrS
@@ -390,8 +367,8 @@ class Tag:
             """ literal block """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + lineS
-            lrS = "\n" + "Table " + fillS + ": " + lineS
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
 
             # print("***sympy***", f"{luS=}", f"{lrS=}")
             return luS, lrS
@@ -400,8 +377,8 @@ class Tag:
             """ code block """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + lineS
-            lrS = "\n" + "Table " + fillS + ": " + lineS
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
 
             # print("***sympy***", f"{luS=}", f"{lrS=}")
             return luS, lrS
@@ -410,8 +387,8 @@ class Tag:
             """ indent block """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + lineS
-            lrS = "\n" + "Table " + fillS + ": " + lineS
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
 
             # print("***sympy***", f"{luS=}", f"{lrS=}")
             return luS, lrS
@@ -420,10 +397,8 @@ class Tag:
             """ latex block """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
-            # utf
-            luS = "Table " + str(tnumI) + " - " + lineS
-            # rst
-            lrS = "\n" + "**" + "Table " + fillS + ": " + lineS
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
 
             return luS, lrS
 
@@ -432,20 +407,20 @@ class Tag:
             vnumI = int(self.labelD["valueI"])
             self.labelD["valueI"] = vnumI + 1
             fillS = str(vnumI).zfill(2)
+            tbL = []
             uS = "\nValue Table " + str(vnumI) + ": " + blockL[0]
             rS = "\n**Value Table " + fillS + "**: " + blockL[0]
             xS = "\n**Value Table " + fillS + "**: " + blockL[0]
-            tbL = []
 
             # print(f"{blockL=}")
             for vaS in blockL[1:]:
-                # print(f"{vaS=}")
                 vaL = vaS.split("|")
-                # print(f"{vaL=}")
                 if len(vaL) != 4 or len(vaL[0]) < 1:
                     continue
                 if ":=" not in vaL[0]:
                     continue
+                # print(f"{vaS=}")
+                # print(f"{vaL=}")
                 eqS = vaL[0].strip()
                 eqS = eqS.replace(":=", "=")
                 varS = eqS.split("=")[0].strip()
@@ -455,6 +430,12 @@ class Tag:
                 decL = vaL[2].split(",")
                 dec1S, dec2S = decL[0], decL[1]
                 descripS = vaL[3].strip()
+
+                # rivtL append
+                eqvS = eqS.replace("|", ",")
+                rivtL.append(eqvS)
+
+                # rivtD append
                 if unit1S != "-":
                     try:
                         exec(eqS, globals(), self.rivtD)
@@ -465,6 +446,8 @@ class Tag:
                     valU = eval(varS, {}, self.rivtD)
                     val1U = str(valU.cast_unit(eval(unit1S)))
                     val2U = str(valU.cast_unit(eval(unit2S)))
+                    # rivtD append
+                    self.rivtD[varS] = val1U
                     # print(f"{self.rivtvD=}")
                 else:
                     cmdS = varS + " = " + valS
@@ -473,16 +456,7 @@ class Tag:
                     val1U = str(valU)
                     val2U = str(valU)
                 tbL.append([varS, val1U, val2U, descripS])
-                self.rivtD[varS] = valS, unit1S, unit2S, dec1S, dec2S
-
-            for vaS in blockL:
-                vaL = vaS.split("|")
-                if len(vaL) != 4 or len(vaL[0]) < 1:
-                    continue
-                if "=" not in vaL[0]:
-                    continue
-                iS = ",".join(vaL)
-                self.labelD["valexpS"] += iS + "\n"
+                self.rivtD[varS] = valU
 
             # write value table
             tblfmt = "rst"
@@ -504,7 +478,7 @@ class Tag:
             sys.stdout = old_stdout
             sys.stdout.flush()
 
-            return (uS, rS, xS, self.folderD, self.labelD, self.rivtD)
+            return uS, rS, xS, self.folderD, self.labelD, self.rivtD, rivtL
 
         else:
             pass

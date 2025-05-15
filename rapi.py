@@ -77,27 +77,6 @@ else:
 # print(f"{modnameS=}")
 
 
-# initialize logging
-# log_check.log_bak(rivtfP, modnameS, folderD)
-
-
-# output strings
-rstS = """"""  # cumulative rest string
-utfS = """"""  # cumulative utf string
-xtfS = """"""  # cumulative tex string
-srstS = """"""  # reSt section string
-sutfS = """"""  # utf section string
-xrstS = """"""  # reSt-tex section string
-
-# write backup doc file
-with open(rivtfP, "r") as f2:
-    rivtS = f2.read()
-with open(folderD["bakfP"], "w") as f3:
-    f3.write(rivtS)
-# logging.info(f"""rivt backup: [{bakshortP}]""")
-print("**** backup written ")
-
-
 def doc_hdr():
     # init file - (headings and doc overrides)
 
@@ -146,19 +125,37 @@ def doc_parse(sS, tS, tagL, cmdL):
 
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
-    sL = sS.split("\n")  # convert section to list
+    sL = sS.split("\n")
     secC = rparse.Section(tS, sL, folderD, labelD, rivtD)
-    sutfS, srs2S, srstS, folderD, labelD, rivtD = secC.section(tagL, cmdL)
+    sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL = secC.section(tagL, cmdL)
 
-    dutfS += sutfS  # accumulate doc strings
+    # accumulate doc strings
+    dutfS += sutfS
     drs2S += srs2S
     drstS += srstS
 
-    return dutfS, drs2S, drstS
+    return dutfS, drs2S, drstS, rivtL
 
 
-# format doc header
-dutfS, drs2S, drstS = doc_hdr()
+# initialize logging
+# log_check.log_bak(rivtfP, modnameS, folderD)
+
+# output strings
+rstS = """"""  # cumulative rest string
+utfS = """"""  # cumulative utf string
+xtfS = """"""  # cumulative tex string
+srstS = """"""  # reSt section string
+sutfS = """"""  # utf section string
+xrstS = """"""  # reSt-tex section string
+
+# write backup rivt file
+with open(rivtfP, "r") as f2:
+    rivtS = f2.read()
+with open(folderD["bakfP"], "w") as f3:
+    f3.write(rivtS)
+print("**** backup written ")  # logging.info(f"""rivt backup: [{bakshortP}]""")
+
+dutfS, drs2S, drstS = doc_hdr()  # format doc header
 
 
 def R(sS):
@@ -169,11 +166,6 @@ def R(sS):
     """
 
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-
-    cmdL = ["IMG"]
-    tagL = ["E]"]
-
-    dutfS, drs2S, drstS = doc_parse(sS, "R", tagL, cmdL)
 
 
 def I(sS):  # noqa: E743
@@ -190,7 +182,7 @@ def I(sS):  # noqa: E743
     tag2 = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tag1 + tag2
 
-    dutfS, drs2S, drstS = doc_parse(sS, "I", tagL, cmdL)
+    dutfS, drs2S, drstS, rivtL = doc_parse(sS, "I", tagL, cmdL)
 
 
 def V(sS):
@@ -202,12 +194,12 @@ def V(sS):
 
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
-    cmdL = ["IMG", "IMG2", "VALUES"]
+    cmdL = ["IMG", "IMG2", "VALUE"]
     tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", ":=", "[V]]"]
 
-    dutfS, drs2S, drstS = doc_parse(sS, "V", tagL, cmdL)
+    dutfS, drs2S, drstS, rivtL = doc_parse(sS, "V", tagL, cmdL)
 
-    # write rivtD or rivtvL to csv file
+    # write rivtvL to csv file
 
     # export value file
     # with open(self.folderD["valP"], "w") as file:
@@ -222,11 +214,6 @@ def T(sS):
     """
 
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-
-    cmdL = ["IMG"]
-    tagL = ["E]"]
-
-    dutfS, drs2S, drstS = doc_parse(sS, "T", tagL, cmdL)
 
 
 def S(sS):

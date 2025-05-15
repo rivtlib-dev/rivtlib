@@ -21,7 +21,6 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
-from rivtlib import rtag
 from rivtlib.runits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
@@ -60,7 +59,7 @@ class Cmd:
         )
         warnings.filterwarnings("ignore")
 
-    def comd(self, cmdS, pthS, parS):
+    def comd(self, cmdS, pthS, parS, rivtL):
         """command parsing"""
 
         folderD = self.folderD
@@ -231,7 +230,7 @@ class Cmd:
             xS = fileS
 
         elif cmdS == "VALUE":
-            """values file insert"""
+            """insert values file"""
 
             vnumI = int(labelD["valueI"])
             fillS = str(vnumI).zfill(2)
@@ -245,22 +244,18 @@ class Cmd:
             pS = " [file: " + pthS + "]" + "\n\n"
             with open(insP, "r") as csvfile:
                 readL = list(csv.reader(csvfile))
-            # print(f"{readL=}")
-            for iL in readL:  # add to valexp
-                iS = ",".join(iL)
-                labelD["valexpS"] += iS + "\n"
+            print(f"{readL=}")
             tbL = []
             for vaL in readL:
-                # print(f"{vaL=}")
-                if len(vaL) < 4:
+                print(f"{vaL=}")
+                if len(vaL) < 6:
                     continue
                 eqS = vaL[0].strip()
-                varS = vaL[0].split(":=")[0].strip()
-                valS = vaL[0].split(":=")[1].strip()
-                descripS = vaL[1].strip()
-                unit1S, unit2S = vaL[2], vaL[3]
-                dec1S, dec2S = vaL[4], vaL[5]
-                rivtD[varS] = valS, unit1S, unit2S, dec1S, dec2S
+                varS = vaL[0].split("=")[0].strip()
+                valS = vaL[0].split("=")[1].strip()
+                unit1S, unit2S = vaL[1], vaL[2]
+                dec1S, dec2S = vaL[3], vaL[4]
+                descripS = vaL[5].strip()
                 if unit1S != "-":
                     if type(eval(valS)) == list:
                         val1U = array(eval(valS)) * eval(unit1S)
@@ -268,12 +263,12 @@ class Cmd:
                     else:
                         eqS = varS + " = " + valS
                         try:
-                            exec(eqS, globals(), self.rivtvD)
+                            exec(eqS, globals(), self.rivtD)
                         except ValueError as ve:
                             print(f"A ValueError occurred: {ve}")
                         except Exception as e:
                             print(f"An unexpected error occurred: {e}")
-                        valU = eval(varS, globals(), self.rivtvD)
+                        valU = eval(varS, globals(), self.rivtD)
                         val1U = str(valU.cast_unit(eval(unit1S)))
                         val2U = str(valU.cast_unit(eval(unit2S)))
                 else:
@@ -309,4 +304,4 @@ class Cmd:
             rS = rtitlnS + pS + rS + "\n"
             xS = rtitlnS + pS + rS + "\n"
 
-        return uS, rS, xS, folderD, labelD, rivtD
+        return uS, rS, xS, folderD, labelD, rivtD, rivtL
