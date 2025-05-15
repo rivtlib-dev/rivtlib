@@ -120,7 +120,7 @@ class Tag:
             enumI = int(self.labelD["equI"])
             self.labelD["equI"] = enumI + 1
             fillS = "E" + str(enumI).zfill(2)
-            uS = lineS + " - " + fillS + "\n"
+            uS = fillS + " - " + lineS
 
             fillS = "**E" + str(enumI).zfill(2) + "**"
             rS = r2S = lineS + " - " + fillS + "\n"
@@ -182,7 +182,7 @@ class Tag:
             lineL = self.lineS.split(",")
             uS = r2S = rS = ".. _" + lineL[0] + ": " + lineL[1]
 
-        elif tagS[:5] == "-----":
+        elif tagS[:5] == "------":
             """ format horizontal line """
             uS = "-" * 80
             r2S = "-" * 80
@@ -223,7 +223,7 @@ class Tag:
             # equation as string
             spL = eqS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+            eq1S = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
             eq1S = textwrap.indent(eq1S, "    ")
             refS = refS.rjust(self.labelD["widthI"])
 
@@ -332,18 +332,12 @@ class Tag:
             # rst
             lrS = "\n" + "Table " + fillS + ": " + blockS
 
-            # print("***sympy***", f"{luS=}", f"{lrS=}")
-            return luS, lrS
-
         elif tagS == "[I]]":
             """ italic indent block """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
             luS = "Table " + str(tnumI) + " - " + blockS
             lrS = "\n" + "Table " + fillS + ": " + blockS
-
-            # print("***sympy***", f"{luS=}", f"{lrS=}")
-            return luS, lrS
 
         elif tagS == "[L]]":
             """ literal block """
@@ -352,28 +346,23 @@ class Tag:
             luS = "Table " + str(tnumI) + " - " + blockS
             lrS = "\n" + "Table " + fillS + ": " + blockS
 
-            # print("***sympy***", f"{luS=}", f"{lrS=}")
-            return luS, lrS
-
         elif tagS == "[O]]":
             """ code block """
-            tnumI = int(self.labelD["tableI"])
-            self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + blockS
-            lrS = "\n" + "Table " + fillS + ": " + blockS
+            iS = ""
+            for s in blockL:
+                s = "    " + s + "\n"
+                iS += s
 
-            # print("***sympy***", f"{luS=}", f"{lrS=}")
-            return luS, lrS
+            uS = r2S = rS = iS
 
         elif tagS == "[N]]":
             """ indent block """
-            tnumI = int(self.labelD["tableI"])
-            self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + blockS
-            lrS = "\n" + "Table " + fillS + ": " + blockS
+            iS = ""
+            for s in blockL:
+                s = "    " + s + "\n"
+                iS += s
 
-            # print("***sympy***", f"{luS=}", f"{lrS=}")
-            return luS, lrS
+            uS = r2S = rS = iS
 
         elif tagS == "[X]]":
             """ latex block """
@@ -382,10 +371,9 @@ class Tag:
             luS = "Table " + str(tnumI) + " - " + blockS
             lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
 
-            return luS, lrS
-
         elif tagS == "[V]]":
             """ values block """
+
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
             fillS = str(tnumI).zfill(2)

@@ -44,9 +44,9 @@ File and label parameters
     | TEXT | rel. pth |  plain; rivt                  .txt
     | TABLE | rel. pth | col width, l;c;r ([_T])      .csv, .txt, .xls
     | VALUES | rel. pth | col width, l;c;r            .csv, .txt, .xls
-    || PUBLISH | rel. pth | txt, pdf, pdfx, html
-    || PREPEND | rel. pth | num; nonum                .pdf
-    || APPEND | rel. pth | num; nonum                 .pdf
+    | PUBLISH | rel. pth | txt, pdf, pdfx, html
+    | PREPEND | rel. pth | num; nonum                .pdf
+    | APPEND | rel. pth | num; nonum                 .pdf
 
 
     tags (dictionary)
@@ -57,19 +57,20 @@ File and label parameters
     _[#]     foot
     _[F]     figure
     _[S]     sympy
-    _[L]     sympy label
+    _[L]     sympy with label
     _[T]     table
-    _[H]     hline
-    _[P]     page
     _[U]     url
+    _[------]     horizontal line
+    _[======]     new page
      :=      equals
-    _[[B]]   bldindblk
-    _[[C]]   codeblk
-    _[[I]]   italindblk
-    _[[L]]   literalblock
+    _[[B]]   bld ind blk
+    _[[I]]   ital ind blk
+    _[[L]]   literal block
+    _[[N]]   indent block
+    _[[O]]   code blk
     _[[X]]   latexblk
     _[[V]]   valuesblk
-    _[[Q]
+    _[[Q]    quit
 
 
 """
