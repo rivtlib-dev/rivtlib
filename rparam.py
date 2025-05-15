@@ -1,7 +1,9 @@
+import fnmatch
 import os
 import sys
 from pathlib import Path
 
+import __main__
 
 """
 File and label parameters 
@@ -74,9 +76,25 @@ File and label parameters
 
 rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))
-rivtnS = "xx-xx.py"
-rivtfP = "yy/"
 modnameS = __name__.split(".")[1]
+
+if __name__ == "rivtlib.rparam":
+    rivtfP = Path(__main__.__file__)
+    rivtnS = rivtfP.name
+    patternS = "r[0-9][0-9][0-9]0-9]-*.py"
+    if fnmatch.fnmatch(rivtnS, patternS):
+        rivtfP = Path(rivtP, rivtnS)
+else:
+    print(f"""The rivt file name is - {rivtnS} -. The file name pattern must""")
+    print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
+    sys.exit()
+
+# print(f"{rivtfP=}")
+# print(f"{rivtP=}")
+# print(f"{rivtnS=}")
+# print(f"{__name__=}")
+# print(f"{modnameS=}")
+
 
 # read file paths
 pthS = " "
@@ -93,13 +111,12 @@ baknS = rbaseS + "bak"
 docP = Path(projP, "doc")
 bakfP = Path(rivtP, baknS)
 divnumS = "d" + dnumS + "-"
-valnS = prfxS.replace("r", "v") + ".csv"
 srcP = insP = Path(projP, "src")
 insP = Path(srcP, "ins")
-valsP = Path(srcP, "vls")
 toolsP = Path(srcP, "vls")
 styleP = Path(docP, "styles")
 titleS = rivtnS.split("-")[1]
+
 
 # write file paths
 rbakP = Path(rivtP, rbaseS + ".bak")
@@ -111,8 +128,11 @@ styleP = Path(projP, "doc", "style")
 reportP = Path(projP, "report")
 readmeP = Path(projP, "README.txt")
 reportP = Path(projP, "docs")
-valsP = Path(projP, "vals")
 ossP = Path(projP / "oss")
+valnS = prfxS.replace("r", "v")
+
+# read/write paths
+valP = Path(srcP, "v" + dnumS)
 
 # print(f"{projP=}")
 # print(f"{rivtP=}")
@@ -134,12 +154,12 @@ for item in [
     "readmeP",
     "reportP",
     "styleP",
-    "valsP",
     "tempP",
     "rivtnS",
     "rstnS",
     "txtnS",
     "valnS",
+    "valP",
 ]:
     folderD[item] = eval(item)
 
@@ -156,7 +176,6 @@ labelD = {
     "equI": 1,  # equation number
     "tableI": 1,  # table number
     "figI": 1,  # figure number
-    "valueI": 1,  # value number
     "pageI": 1,  # starting page number
     "noteL": [0],  # footnote counter
     "footL": [1],  # foot counter

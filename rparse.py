@@ -34,7 +34,8 @@ class Section:
             labelD["xch"] = hL[1].strip()  # xchange flag
             labelD["color"] = hL[2].strip()  # background color
             labelD["docS"] = hL[0].strip()  # section title
-            snumI = labelD["secnumI"] = labelD["secnumI"] + 1
+            snumI = labelD["secnumI"] + 1
+            labelD["secnumI"] = snumI
             snumS = "[ " + str(snumI) + " ]"
             headS = snumS + " " + hL[0].strip()
             bordrS = labelD["widthI"] * "-"

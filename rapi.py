@@ -40,7 +40,6 @@ Variable type suffix:
 
 """
 
-import fnmatch
 import logging
 import os
 import sys
@@ -48,33 +47,10 @@ from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
 
-import __main__
+
 from rivtlib import rparse, rwrite
 from rivtlib.rparam import *  # noqa: F403
 from rivtlib.runits import *  # noqa: F403
-
-rivtP = Path(os.getcwd())
-projP = Path(os.path.dirname(rivtP))
-rivtnS = "xx-xx.py"
-rivtfP = "rivt/path"
-modnameS = __name__.split(".")[1]
-
-if __name__ == "rivtlib.rapi":
-    rivtfP = Path(__main__.__file__)
-    rivtnS = rivtfP.name
-    patternS = "r[0-9][0-9][0-9]0-9]-*.py"
-    if fnmatch.fnmatch(rivtnS, patternS):
-        rivtfP = Path(rivtP, rivtnS)
-else:
-    print(f"""The rivt file name is - {rivtnS} -. The file name pattern must""")
-    print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
-    sys.exit()
-
-# print(f"{rivtfP=}")
-# print(f"{rivtP=}")
-# print(f"{rivtnS=}")
-# print(f"{__name__=}")
-# print(f"{modnameS=}")
 
 
 def doc_hdr():
@@ -137,8 +113,15 @@ def doc_parse(sS, tS, tagL, cmdL):
     return dutfS, drs2S, drstS, rivtL
 
 
-# initialize logging
-# log_check.log_bak(rivtfP, modnameS, folderD)
+# write backup rivt file
+def rivt_bak(rivtfP):
+    """write rivt backup file"""
+    with open(rivtfP, "r") as f2:
+        rivtS = f2.read()
+    with open(folderD["bakfP"], "w") as f3:
+        f3.write(rivtS)
+    print("**** backup written ")  # logging.info(f"""rivt backup: [{bakshortP}]""")
+
 
 # output strings
 rstS = """"""  # cumulative rest string
@@ -148,14 +131,9 @@ srstS = """"""  # reSt section string
 sutfS = """"""  # utf section string
 xrstS = """"""  # reSt-tex section string
 
-# write backup rivt file
-with open(rivtfP, "r") as f2:
-    rivtS = f2.read()
-with open(folderD["bakfP"], "w") as f3:
-    f3.write(rivtS)
-print("**** backup written ")  # logging.info(f"""rivt backup: [{bakshortP}]""")
-
-dutfS, drs2S, drstS = doc_hdr()  # format doc header
+rivt_bak(rivtfP)  # rivt backup file
+dutfS, drs2S, drstS = doc_hdr()  # doc header
+# log_check.log_bak(rivtfP, modnameS, folderD) # initialize logging
 
 
 def R(sS):
@@ -199,11 +177,10 @@ def V(sS):
 
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "V", tagL, cmdL)
 
-    # write rivtvL to csv file
-
-    # export value file
-    # with open(self.folderD["valP"], "w") as file:
-    #    file.write(self.labelD["valexpS"])
+    fileS = folderD["valnS"] + "-" + str(labelD["secnumI"]) + ".csv"
+    fileP = Path(folderD["valP"], fileS)
+    with open(fileP, "w") as file1:
+        file1.write("\n".join(rivtL))
 
 
 def T(sS):

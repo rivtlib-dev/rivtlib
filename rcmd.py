@@ -2,20 +2,20 @@
 import csv
 import logging
 import sys
-import warnings
 import textwrap
+import warnings
 from io import StringIO
 from pathlib import Path
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import numpy as np
 import numpy.linalg as la
 import pandas as pd
 import sympy as sp
 import tabulate
 from IPython.display import Image as _Image
 from IPython.display import display as _display
-from numpy import *  # noqa: F403
 from PIL import Image
 from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
@@ -232,11 +232,11 @@ class Cmd:
         elif cmdS == "VALUE":
             """insert values file"""
 
-            vnumI = int(labelD["valueI"])
-            fillS = str(vnumI).zfill(2)
-            utitlnS = "\nValue Table " + fillS + " - " + parS.strip("_[V]")
-            rtitlnS = "\n**Value Table " + fillS + " -** " + parS.strip("_[V]")
-            labelD["valueI"] = vnumI + 1
+            tnumI = int(labelD["tableI"])
+            labelD["tableI"] = tnumI + 1
+            fillS = str(tnumI).zfill(2)
+            utitlnS = "\nTable " + fillS + " - " + parS.strip("_[T]")
+            rtitlnS = "\n**Table " + fillS + " -** " + parS.strip("_[T]")
 
             insP = Path(folderD["projP"])
             insP = Path(Path(insP) / "src" / pthS)
@@ -244,21 +244,25 @@ class Cmd:
             pS = " [file: " + pthS + "]" + "\n\n"
             with open(insP, "r") as csvfile:
                 readL = list(csv.reader(csvfile))
-            print(f"{readL=}")
+            # print(f"{readL=}")
             tbL = []
             for vaL in readL:
-                print(f"{vaL=}")
-                if len(vaL) < 6:
+                # print(f"{vaL=}")
+                if len(vaL) != 5:
                     continue
                 eqS = vaL[0].strip()
                 varS = vaL[0].split("=")[0].strip()
                 valS = vaL[0].split("=")[1].strip()
                 unit1S, unit2S = vaL[1], vaL[2]
-                dec1S, dec2S = vaL[3], vaL[4]
-                descripS = vaL[5].strip()
+                dec1S, descripS = vaL[3].strip(), vaL[4].strip()
+                fmt1S = (
+                    "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+                )
+                eval(fmt1S)
+
                 if unit1S != "-":
-                    if type(eval(valS)) == list:
-                        val1U = array(eval(valS)) * eval(unit1S)
+                    if isinstance(eval(valS), list):
+                        val1U = np.array(eval(valS)) * eval(unit1S)
                         val2U = [varS.cast_unit(eval(unit2S)) for varS in val1U]
                     else:
                         eqS = varS + " = " + valS
@@ -279,6 +283,7 @@ class Cmd:
                     val2U = str(valU)
                 tbL.append([varS, val1U, val2U, descripS])
 
+            # print("tbl", tbL)
             tblfmt = "rst"
             hdrvL = ["variable", "value", "[value]", "description"]
             alignL = ["left", "right", "right", "left"]

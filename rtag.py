@@ -213,9 +213,8 @@ class Tag:
             eqS = lpL[0]
             eqS = eqS.replace(":=", "=").strip()
             parL = lpL[1:]
-            unit1S, unit2S = parL[0].split(",")
-            dec1S, dec2S = parL[1].split(",")
-            refS = parL[2].strip()
+            unit1S, unit2S, dec1S, dec2S = parL[0].split(",")
+            refS = parL[1].strip()
             unit1S, unit2S = unit1S.strip(), unit2S.strip()
             dec1S, dec2S = dec1S.strip(), dec2S.strip()
             fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
@@ -227,17 +226,11 @@ class Tag:
             eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
             eq1S = textwrap.indent(eq1S, "    ")
             refS = refS.rjust(self.labelD["widthI"])
-            uS = refS + "\n" + lineS + "\n\n"
+
+            uS = refS + "\n" + eq1S + "\n\n"
             r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
             rS = ".. raw:: math\n\n   " + eqS + "\n"
 
-            # print("a1", eval("area2", {}, self.rivtD))
-            # print("e1", eval("floordl1", {}, self.rivtD))
-            # print("unit", unit1S)
-            # print("rivtD", self.rivtD)
-            # print("----")
-
-            # exec(eqS, globals(), self.rivtD)
             if unit1S != "-":
                 exec(eqS, globals(), self.rivtD)
             else:
@@ -245,11 +238,15 @@ class Tag:
                 exec(cmdS, globals(), self.rivtD)
 
             # rivtL and rivtD append
-            eqvS = eqS.replace("|", ",")
-            rivtL.append(eqvS)
             valU = eval(spL[0], globals(), self.rivtD)
             self.rivtD[spL[0]] = valU
-            print("valu", valU)
+            vxS = str(valU).strip()
+            vxL = vxS.split(" ")
+            exS = vxL[0] + " * " + vxL[1].upper()
+            ex2S = spL[0].strip() + " = " + exS
+            exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
+            rivtL.append(exvS)
+
             # equation and table elements
             symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
             symaO = symeqO.atoms(sp.Symbol)
@@ -258,35 +255,25 @@ class Tag:
             for vS in symaO:
                 hdr1L.append(str(vS))
             numvarI = len(symaO) + 2
-            print("header----------", hdr1L)
+            # print("header----------", hdr1L)
 
             # eval value
             eval(fmt1S)
             val1U = valU.cast_unit(eval(unit1S))
-            print(val1U, type(val1U))
-            print(val1U)
             val2U = valU.cast_unit(eval(unit2S))
             tbl1L.append(str(val1U))
             tbl1L.append(str(val2U))
-            print("table--------------", tbl1L)
+            # print("table--------------", tbl1L)
 
             # loop over variables
             eval(fmt2S)
             for aO in symaO:
-                # print(self.rivtpD)
-                # unit1S = self.rivtD[str(aO)][1]
-                # unit2S = self.rivtD[str(aO)][2]
                 a1U = eval(str(aO), globals(), self.rivtD)
-                print("ao", aO, a1U)
-                # a2U = eval(str(aO), globals(), self.rivtD)
-                # a2U.set_format(value_format=fmt2S, auto_norm=True)
-                # val2U = str(a2U.cast_unit(eval(unit2S)))
-                # tbl1L.append(val1U)
-                # tbl2L.append(val2U)
                 tbl1L.append(str(a1U))
+                # print("ao", aO, a1U)
 
             # write table
-            # sprint(tbl1L)
+            # print(tbl1L)
             alignL = []
             tblL = [tbl1L]
             tblfmt = "rst"
@@ -304,16 +291,11 @@ class Tag:
                     colalign=alignL,
                 )
             )
-            uS = output.getvalue()
-            r2S = output.getvalue()
-            rS = output.getvalue()
+            uS += output.getvalue()
+            r2S += output.getvalue()
+            rS += output.getvalue()
             sys.stdout = old_stdout
             sys.stdout.flush()
-
-            # refS = parS.split("|")
-            # eqS = eqS.replace("=", ":=")
-            # iS = eqS + "," + ",".join(refS)
-            # self.labelD["valexpS"] += iS + "\n"
 
         else:
             pass
@@ -404,18 +386,18 @@ class Tag:
 
         elif tagS == "[V]]":
             """ values block """
-            vnumI = int(self.labelD["valueI"])
-            self.labelD["valueI"] = vnumI + 1
-            fillS = str(vnumI).zfill(2)
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            fillS = str(tnumI).zfill(2)
             tbL = []
-            uS = "\nValue Table " + str(vnumI) + ": " + blockL[0]
-            rS = "\n**Value Table " + fillS + "**: " + blockL[0]
-            xS = "\n**Value Table " + fillS + "**: " + blockL[0]
+            uS = "\nTable " + fillS + " - " + blockL[0] + "\n\n"
+            r2S = "\n**Table " + fillS + "**: " + blockL[0] + "\n\n"
+            rS = "\n**Table " + fillS + "**: " + blockL[0] + "\n\n"
 
             # print(f"{blockL=}")
             for vaS in blockL[1:]:
                 vaL = vaS.split("|")
-                if len(vaL) != 4 or len(vaL[0]) < 1:
+                if len(vaL) != 3:
                     continue
                 if ":=" not in vaL[0]:
                     continue
@@ -426,14 +408,20 @@ class Tag:
                 varS = eqS.split("=")[0].strip()
                 valS = eqS.split("=")[1].strip()
                 unitL = vaL[1].split(",")
-                unit1S, unit2S = unitL[0], unitL[1]
-                decL = vaL[2].split(",")
-                dec1S, dec2S = decL[0], decL[1]
-                descripS = vaL[3].strip()
+                unit1S, unit2S, dec1S = (
+                    unitL[0].strip(),
+                    unitL[1].strip(),
+                    unitL[2].strip(),
+                )
+                descripS = vaL[2].strip()
+                fmt1S = (
+                    "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+                )
+                eval(fmt1S)
 
                 # rivtL append
-                eqvS = eqS.replace("|", ",")
-                rivtL.append(eqvS)
+                exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
+                rivtL.append(exvS)
 
                 # rivtD append
                 if unit1S != "-":
@@ -446,7 +434,6 @@ class Tag:
                     valU = eval(varS, {}, self.rivtD)
                     val1U = str(valU.cast_unit(eval(unit1S)))
                     val2U = str(valU.cast_unit(eval(unit2S)))
-                    # rivtD append
                     self.rivtD[varS] = val1U
                     # print(f"{self.rivtvD=}")
                 else:
@@ -474,11 +461,13 @@ class Tag:
                     colalign=alignL,
                 )
             )
-            uS = rS = xS = output.getvalue() + "\n"
+            uS += output.getvalue() + "\n"
+            r2S += output.getvalue() + "\n"
+            rS += output.getvalue() + "\n"
             sys.stdout = old_stdout
             sys.stdout.flush()
 
-            return uS, rS, xS, self.folderD, self.labelD, self.rivtD, rivtL
+            return uS, r2S, rS, self.folderD, self.labelD, self.rivtD, rivtL
 
         else:
             pass
