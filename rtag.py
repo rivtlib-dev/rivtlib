@@ -148,11 +148,11 @@ class Tag:
                 spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
             except:
                 pass
-            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+            lineS = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
 
             uS = textwrap.indent(lineS, "     ")
             r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
-            rS = ".. raw:: math\n\n   " + lineS + "\n"
+            rS = ".. raw:: math\n\n   " + uS + "\n"
 
         elif tagS == "Y]":
             """ format and label equation with sympy """
