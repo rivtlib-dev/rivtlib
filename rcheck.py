@@ -1,32 +1,3 @@
-import logging
-import warnings
-from pathlib import Path
-from rivtlib.rparam import *  # noqa: F403
-
-errlogP = folderD["errlogP"]
-modnameS = __name__.split(".")[1]
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-    datefmt="%m-%d %H:%M",
-    filename=errlogP,
-    filemode="w",
-)
-warnings.filterwarnings("ignore")
-
-p = folderD["rivtP"]
-rshortP = Path(*p.parts[-2:])
-if folderD["docP"].exists():
-    logging.info(f"""rivt file : {folderD["rivtnS"]}""")
-    logging.info(f"""rivt path : {folderD["rivtP"]}""")
-    print("\n")
-    print(f"""rivt short path : {rshortP}""")
-    print("\n")
-
-else:
-    logging.info(f"""rivt file path not found: {folderD["docP"]}""")
-
-
 class UnumError(Exception):
     """
     A Unum error occurred that was unrelated to dimensional errors.

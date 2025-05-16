@@ -1,12 +1,5 @@
-import fnmatch
-import os
-import sys
-from pathlib import Path
-
-import __main__
-
 """
-File and label parameters 
+File and label parameters
 
     Labels (dict)
     ==============
@@ -26,13 +19,11 @@ File and label parameters
     "pageI": 1,  # starting page number
     "noteL": [0],  # footnote counter
     "footL": [1],  # foot counter
-    "descS": "2",  # description or decimal places
+    "descS": "2",  # description
     "headrS": "",  # header string
     "footrS": "",  # footer string
     "tocB": False,  # table of contents
     "docstrB": False,  # print doc strings
-    "subB": False,  # sub values in equations
-    "valexpS": "",  # list of values for export
     "unitS": "M,M",  # units
 
 
@@ -75,6 +66,15 @@ File and label parameters
 
 """
 
+import fnmatch
+import logging
+import os
+import sys
+import warnings
+from pathlib import Path
+
+import __main__
+
 rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))
 modnameS = __name__.split(".")[1]
@@ -97,6 +97,18 @@ else:
 # print(f"{modnameS=}")
 
 
+errlogP = Path(rivtP, "temp", "rivt-log.txt")
+modnameS = __name__.split(".")[1]
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+    datefmt="%m-%d %H:%M",
+    filename=errlogP,
+    filemode="w",
+)
+warnings.filterwarnings("ignore")
+
+
 # read file paths
 pthS = " "
 rbaseS = rivtnS.split(".")[0]
@@ -108,7 +120,7 @@ rstnS = rbaseS + ".rst"
 txtnS = rbaseS + ".txt"
 pdfnS = rbaseS + ".pdf"
 htmnS = rbaseS + ".html"
-baknS = rbaseS + "bak"
+baknS = rbaseS + ".bak"
 docP = Path(projP, "doc")
 bakfP = Path(rivtP, baknS)
 divnumS = "d" + dnumS + "-"
@@ -124,7 +136,6 @@ rbakP = Path(rivtP, rbaseS + ".bak")
 pypathS = os.path.dirname(sys.executable)
 rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 tempP = Path(rivtP, "temp")
-errlogP = Path(tempP, "rivt-log.txt")
 styleP = Path(projP, "doc", "style")
 reportP = Path(projP, "report")
 readmeP = Path(projP, "README.txt")

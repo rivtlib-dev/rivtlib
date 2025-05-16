@@ -1,11 +1,10 @@
 #! python
 """rivt API
-API is implemented with :
+API implemented with :
 
-    import rivtlib.api as rv
+import rivtlib.rapi as rv
 
-API functions :
-
+API functions:
     rv.R(sS) - (Run) Execute shell scripts
     rv.I(sS) - (Insert) Insert static text, math, images and tables
     rv.V(sS) - (Values) Evaluate values and equations
@@ -40,20 +39,25 @@ Variable type suffix:
 
 """
 
-import logging
-import os
 import sys
-from configparser import ConfigParser
+import logging
 from datetime import datetime
 from pathlib import Path
 
-
-from rivtlib import rparse, rwrite
+from rivtlib import rcheck, rparse, rwrite
 from rivtlib.rparam import *  # noqa: F403
 from rivtlib.runits import *  # noqa: F403
 
+logging.info(f"""rivt file : {folderD["rivtnS"]}""")
+logging.info(f"""rivt path : {folderD["rivtP"]}""")
+
 
 def doc_hdr():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     # init file - (headings and doc overrides)
 
     dutfS = ""
@@ -113,27 +117,19 @@ def doc_parse(sS, tS, tagL, cmdL):
     return dutfS, drs2S, drstS, rivtL
 
 
-# write backup rivt file
 def rivt_bak(rivtfP):
     """write rivt backup file"""
     with open(rivtfP, "r") as f2:
         rivtS = f2.read()
     with open(folderD["bakfP"], "w") as f3:
         f3.write(rivtS)
-    print("**** backup written ")  # logging.info(f"""rivt backup: [{bakshortP}]""")
+    logging.info(f"""rivt backup : {folderD["bakfP"]}""")
 
-
-# output strings
-rstS = """"""  # cumulative rest string
-utfS = """"""  # cumulative utf string
-xtfS = """"""  # cumulative tex string
-srstS = """"""  # reSt section string
-sutfS = """"""  # utf section string
-xrstS = """"""  # reSt-tex section string
 
 rivt_bak(rivtfP)  # rivt backup file
+
+
 dutfS, drs2S, drstS = doc_hdr()  # doc header
-# log_check.log_bak(rivtfP, modnameS, folderD) # initialize logging
 
 
 def R(sS):

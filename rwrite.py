@@ -5,7 +5,7 @@ import time
 import warnings
 from pathlib import Path
 from reportlab.lib.utils import ImageReader
-
+from configparser import ConfigParser
 
 from fpdf import FPDF
 

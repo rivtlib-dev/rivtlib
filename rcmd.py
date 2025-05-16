@@ -29,16 +29,11 @@ tabulate.PRESERVE_WHITESPACE = True
 class Cmd:
     """commands
 
-    |IMG| rel. pth | caption, scale, (**[_F]**)        .png, .jpg
-    |IMG2| rel. pth | c1, c2, s1, s2, (**[_F]**)       .png, .jpg
-    |TEXT| rel. pth |  plain; rivt                      .txt
-    |TABLE| rel. pth | col width, l;c;r                 .csv, .txt, .xls
-    |VALUE| rel. pth | col width, l;c;r                .csv, .txt, .xls
-
-        cC = globals()["CmdV"](self.folderD, self.labelD, self.rivtD)
-        ccmdS = cmdS.lower()
-        functag = getattr(cC, ccmdS)
-        uS, rS = functag(pthS, parS)
+    |IMG| rel. pth | caption, scale, (_[F])        .png, .jpg
+    |IMG2| rel. pth | c1, c2, s1, s2, (_[F])       .png, .jpg
+    |TABLE| rel. pth | col width, l;c;r (_[T])     .csv, .txt, .xls
+    |TEXT| rel. pth |  plain; rivt                 .txt
+    |VALUE| rel. pth | col width, l;c;r (_[T])     .csv
 
     """
 
@@ -59,7 +54,7 @@ class Cmd:
         )
         warnings.filterwarnings("ignore")
 
-    def comd(self, cmdS, pthS, parS, rivtL):
+    def cmds(self, cmdS, pthS, parS, rivtL):
         """command parsing"""
 
         folderD = self.folderD

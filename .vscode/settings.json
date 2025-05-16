@@ -7,6 +7,15 @@
         "editor.lineHighlightBorder": "#34495d",
         "list.inactiveSelectionBackground": "#213148",
     },
+        "fsdeploy.nodes": [
+        {
+            "source": "C:/Python313/Lib/site-packages/rivtlib/",
+            "target": "C:/git/rivtlib",
+            "include": "**/*.*",
+            "exclude": "",
+            "deleteTargetOnDeploy": true,
+        }
+    ],
     "python.languageServer": "Pylance",
     "ruff.configuration": "--preview",
     
@@ -76,7 +85,15 @@
                 "useVsCodeApi": true,
                 "command": "extension.github_page"
             },
+            {
+                "name": "ExplorerSort",
+                "color": "yellow",
+                "useVsCodeApi": true,
+                "command": "extension.toggleExplorerSortOrder",
+            },
+
         ]
+            
     },
     "ShortcutMenuBar.beautify": false,
     "ShortcutMenuBar.showCommands": true,
@@ -124,9 +141,6 @@
     "editor.suggest.showTypeParameters": false,
     "editor.parameterHints.enabled": false,
     "explorer.sortOrder": "type",
-    "toggle.settingTitle": "explorer.sortOrder",
-    "toggle.settingState1": "type",
-    "toggle.settingState2": "default",
     "cSpell.userWords": [
         "buildable",
         "rivt"

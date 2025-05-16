@@ -1,5 +1,8 @@
 import re
+import logging
+import warnings
 
+from pathlib import Path
 from rivtlib import rcmd, rtag
 
 
@@ -15,6 +18,19 @@ class Section:
             sL (list): rivt section lines
 
         """
+
+        errlogP = Path(folderD["rivtP"], "temp", "rivt-log.txt")
+        modnameS = __name__.split(".")[1]
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+            datefmt="%m-%d %H:%M",
+            filename=errlogP,
+            filemode="w",
+        )
+        warnings.filterwarnings("ignore")
+        self.logging = logging
+
         sutfS = ""  # utf doc
         srs2S = ""  # rst2pdf doc
         srstS = ""  # rest doc
@@ -60,6 +76,7 @@ class Section:
                 continue
             spL.append(slS[4:])
 
+        self.logging.info(f"rivt function : {stS}")
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
 
@@ -128,17 +145,15 @@ class Section:
                     blockS = """"""
                     continue
             elif slS[0:1] == "|":  # commands
-                if slS[0:2] == "||":
-                    parL = slS[2:].split("|")
-                else:
-                    parL = slS[1:].split("|")
+                parL = slS[1:].split("|")
                 cmdS = parL[0].strip()
                 pthS = parL[1].strip()
                 parS = parL[2].strip()
+                self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
                     cmC = rcmd.Cmd(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.comd(
+                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmds(
                         cmdS, pthS, parS, rivtL
                     )
                     sutfS += uS + "\n"
@@ -150,6 +165,7 @@ class Section:
                 slL = slS.split("_[")
                 lineS = slL[0].strip()
                 tagS = slL[1].strip()
+                self.logging.info(f"tag : _[{tagS}")
                 if tagS in tagL:  # check list
                     # print(f"{tagS=}")
                     tC = rtag.Tag(folderD, labelD, rivtD)
