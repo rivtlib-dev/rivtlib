@@ -6,7 +6,8 @@ from .exceptions import *
 BASIC_UNIT = 0
 
 UnitDefinition = collections.namedtuple(
-    'UnitDefinition', ['definition', 'level', 'name'])
+    "UnitDefinition", ["definition", "level", "name"]
+)
 
 
 class UnitTable(dict):
@@ -25,7 +26,7 @@ class UnitTable(dict):
     def is_derived(self, symbol):
         return not self.is_basic(symbol)
 
-    def new_unit(self, symbol, definition=BASIC_UNIT, name=''):
+    def new_unit(self, symbol, definition=BASIC_UNIT, name=""):
         if symbol in self:
             raise NameConflictError(symbol)
 
@@ -47,30 +48,30 @@ UNIT_TABLE = UnitTable()
 new_unit = UNIT_TABLE.new_unit
 
 _SUPERSCRIPT_NUMBERS = {
-    '0': '\u2070',
-    '1': '\u00B9',
-    '2': '\u00B2',
-    '3': '\u00B3',
-    '4': '\u2074',
-    '5': '\u2075',
-    '6': '\u2076',
-    '7': '\u2077',
-    '8': '\u2078',
-    '9': '\u2079',
-    '-': '\u207B',
+    "0": "\u2070",
+    "1": "\u00b9",
+    "2": "\u00b2",
+    "3": "\u00b3",
+    "4": "\u2074",
+    "5": "\u2075",
+    "6": "\u2076",
+    "7": "\u2077",
+    "8": "\u2078",
+    "9": "\u2079",
+    "-": "\u207b",
 }
 
-_DOT = '\u00B7'
+_DOT = "\u00b7"
 
 
 class Formatter(object):
     DEFAULT_CONFIG = dict(
         mul_separator=_DOT,
-        div_separator='/',
-        unit_format='%s',
-        value_format='%s',
-        indent=' ',
-        unitless='[-]',
+        div_separator="/",
+        unit_format="%s",
+        value_format="%s",
+        indent=" ",
+        unitless="[-]",
         auto_norm=False,
         unit=None,
         superscript=True,
@@ -85,8 +86,9 @@ class Formatter(object):
         not_allowed_keywords = set(kwargs) - set(self._config)
 
         if not_allowed_keywords:
-            raise TypeError("Not allowed keywords: %s" %
-                            ', '.join(not_allowed_keywords))
+            raise TypeError(
+                "Not allowed keywords: %s" % ", ".join(not_allowed_keywords)
+            )
 
         self._config.update(kwargs)
 
@@ -104,32 +106,43 @@ class Formatter(object):
         units = sorted(unit.items())
 
         formatted = (
-            self._format_only_mul_separator(units) if not self['div_separator'] else
-            self._format_with_div_separator(units)
+            self._format_only_mul_separator(units)
+            if not self["div_separator"]
+            else self._format_with_div_separator(units)
         )
 
-        return self['unitless'] if not formatted else self['unit_format'] % formatted
+        return self["unitless"] if not formatted else self["unit_format"] % formatted
 
     def _format_only_mul_separator(self, units):
-        return self['mul_separator'].join(self._format_exponent(u, exp) for u, exp in units)
+        return self["mul_separator"].join(
+            self._format_exponent(u, exp) for u, exp in units
+        )
 
     def _format_with_div_separator(self, units):
-        return self['div_separator'].join([
-            self['mul_separator'].join(self._format_exponent(
-                u, exp) for u, exp in units if exp > 0) or '1',
-            self['mul_separator'].join(self._format_exponent(
-                u, -exp) for u, exp in units if exp < 0)
-        ]).rstrip(self['div_separator'] + '1')
+        return (
+            self["div_separator"]
+            .join(
+                [
+                    self["mul_separator"].join(
+                        self._format_exponent(u, exp) for u, exp in units if exp > 0
+                    )
+                    or "1",
+                    self["mul_separator"].join(
+                        self._format_exponent(u, -exp) for u, exp in units if exp < 0
+                    ),
+                ]
+            )
+            .rstrip(self["div_separator"] + "1")
+        )
 
     def _format_exponent(self, symbol, exp):
         if exp != 1:
             exp_text = six.text_type(exp)
 
-            if self['superscript']:
-                exp_text = ''.join([_SUPERSCRIPT_NUMBERS.get(c, c)
-                                    for c in exp_text])
+            if self["superscript"]:
+                exp_text = "".join([_SUPERSCRIPT_NUMBERS.get(c, c) for c in exp_text])
         else:
-            exp_text = ''
+            exp_text = ""
 
         return symbol + exp_text
 
@@ -137,7 +150,7 @@ class Formatter(object):
         return value.format_number(self._format_number)
 
     def _format_number(self, value):
-        return self['value_format'] % value
+        return self["value_format"] % value
 
     def format(self, value):
         """
@@ -147,17 +160,21 @@ class Formatter(object):
         """
         value = Unum.uniform(value)
 
-        if self['auto_norm'] and not value._normal:
+        if self["auto_norm"] and not value._normal:
             value.simplify_unit(True)
             value._normal = True
 
-        if self['unit'] is not None:
-            value = value.cast_unit(self['unit'])
+        if self["unit"] is not None:
+            value = value.cast_unit(self["unit"])
 
-        if not self['always_display_number'] and value.is_unit():
+        if not self["always_display_number"] and value.is_unit():
             return self.format_unit(value)
 
-        return self['indent'].join([self.format_number(value), self.format_unit(value)]).strip()
+        return (
+            self["indent"]
+            .join([self.format_number(value), self.format_unit(value)])
+            .strip()
+        )
 
     __call__ = format
 
@@ -177,7 +194,7 @@ class Unum(object):
     string representation.
     """
 
-    __slots__ = ('_value', '_unit', '_normal')
+    __slots__ = ("_value", "_unit", "_normal")
 
     @staticmethod
     def uniform(value):
@@ -258,7 +275,7 @@ class Unum(object):
 
         exponent = self._unit[symbol]
 
-        res = self.copy() * definition ** exponent
+        res = self.copy() * definition**exponent
         del res._unit[symbol]
         return res
 
@@ -283,22 +300,31 @@ class Unum(object):
             for subst_dict, subst_unum in subst_unums:
                 for symbol, exponent in subst_unum._derived_units():
                     new_subst_dict = subst_dict.copy()
-                    new_subst_dict[symbol] = exponent + \
-                        new_subst_dict.get(symbol, 0)
+                    new_subst_dict[symbol] = exponent + new_subst_dict.get(symbol, 0)
 
-                    if all(new_subst_dict != subst_dict2 for subst_dict2, subst_unum2 in new_subst_unums):
+                    if all(
+                        new_subst_dict != subst_dict2
+                        for subst_dict2, subst_unum2 in new_subst_unums
+                    ):
                         reduced = subst_unum.replaced(
-                            symbol, UNIT_TABLE.get_definition(symbol))  # replace by definition
+                            symbol, UNIT_TABLE.get_definition(symbol)
+                        )  # replace by definition
                         new_subst_unums.append((new_subst_dict, reduced))
 
                         new_length = len(reduced._unit)
-                        if new_length < previous_length and not (forDisplay and new_length == 0 and previous_length == 1):
+                        if new_length < previous_length and not (
+                            forDisplay and new_length == 0 and previous_length == 1
+                        ):
                             self._value, self._unit = reduced._value, reduced._unit
                             previous_length = new_length
         return self
 
     def _derived_units(self):
-        return [(symbol, self._unit[symbol]) for symbol in self._unit if UNIT_TABLE.is_derived(symbol)]
+        return [
+            (symbol, self._unit[symbol])
+            for symbol in self._unit
+            if UNIT_TABLE.is_derived(symbol)
+        ]
 
     def assert_no_unit(self):
         """
@@ -365,8 +391,9 @@ class Unum(object):
 
         s_length, o_length = len(s._unit), len(o._unit)
 
-        revert = (s_length > o_length or
-                  (s_length == o_length and s.max_level() < o.max_level()))
+        revert = s_length > o_length or (
+            s_length == o_length and s.max_level() < o.max_level()
+        )
 
         if revert:
             s, o = o, s
@@ -464,7 +491,7 @@ class Unum(object):
                 unit[u] *= other._value
         else:
             unit = None
-        return Unum(self._value ** other._value, unit)
+        return Unum(self._value**other._value, unit)
 
     @uniform_unum
     def __lt__(self, other):

@@ -1,19 +1,166 @@
 {
-    "cSpell.words": [
-        "rivtlib",
-        "rivt",
-        "rivtzip"
-    ],
-    "fsdeploy.nodes": [
+    "window.title": "${separator}${activeEditorLong}${separator}${remoteName}$[dirty}",
+    "workbench.colorTheme": "GitHub Dark",
+    "workbench.iconTheme": "vs-seti",
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.colorCustomizations": {
+        "editor.lineHighlightBorder": "#34495d",
+        "list.inactiveSelectionBackground": "#213148",
+    },
+        "fsdeploy.nodes": [
         {
-            "source": "c:/git/rivtlib/",
-            "target": "C:/Python313/Lib/site-packages/rivtlib",
+            "source": "C:/Python313/Lib/site-packages/rivtlib/",
+            "target": "C:/git/rivtlib",
             "include": "**/*.*",
-            "exclude": "**/.vscode/*.*",
+            "exclude": "",
             "deleteTargetOnDeploy": true,
         }
     ],
-    "fsdeploy.deployOnSave": true,
-    "fsdeploy.deployWorkspaceOnSave": false,
-    "autoDocstring.includeName": true
+    "python.languageServer": "Pylance",
+    "ruff.configuration": "--preview",
+    
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": false,
+        "editor.stickyScroll.enabled": true,
+    },
+    
+    "actionButtons": {
+        "reloadButton": "♻️", /* Custom reload button text */
+        "defaultColor": "#ff0034", /* Can also use string color names */
+        "loadNpmCommands": false, /* Disables automatic generation of actions for npm commands */
+        "commands": [
+            {
+                "name": "ToggleSpell",
+                "color": "green",
+                "useVsCodeApi": true,
+                "command": "cSpell.toggleEnableSpellChecker",
+            },
+            {
+                "name": "RunCell",
+                "color": "red",
+                "useVsCodeApi": true,
+                "command": "jupyter.runcurrentcell",
+            },
+            {
+                "name": "RuffImports",
+                "color": "red",
+                "useVsCodeApi": true,
+                "command": "ruff.executeOrganizeImports",
+            },
+            {
+                "name": "FoldAll",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldAll"
+            },
+            {
+                "name": "FoldX",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldAllExcept"
+            },
+            {
+                "name": "UnFold",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.unfoldAll"
+            },
+            {
+                "name": "UnFoldRecursive",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.unfoldRecursively"
+            },
+            {
+                "name": "ToggleDocStr",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "extension.toggleDocstrings"
+            },
+            {
+                "name": "GitHubPage",
+                "color": "yellow",
+                "useVsCodeApi": true,
+                "command": "extension.github_page"
+            },
+            {
+                "name": "ExplorerSort",
+                "color": "yellow",
+                "useVsCodeApi": true,
+                "command": "extension.toggleExplorerSortOrder",
+            },
+
+        ]
+            
+    },
+    "ShortcutMenuBar.beautify": false,
+    "ShortcutMenuBar.showCommands": true,
+    "ShortcutMenuBar.navigateBack": false,
+    "ShortcutMenuBar.navigateForward": false,
+    "ShortcutMenuBar.commentLine": true,
+    "ShortcutMenuBar.toggleWordWrap": true,
+    "ShortcutMenuBar.openSettings": true,
+    "git.autofetch": false,
+    "outline.showStrings": false,
+    "editor.foldingImportsByDefault": true,
+    "workbench.sideBar.location": "right",
+    "vsicons.dontShowNewVersionMessage": true,
+    "python.defaultInterpreterPath": "c:\\Python313\\python.exe",
+    "editor.parameterHints.cycle": false,
+    "editor.hover.enabled": false,
+    "editor.tabCompletion": "on",
+    "editor.minimap.enabled": false,
+    "workbench.startupEditor": "none",
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "editor.codeLens": false,
+    "githubRepositories.indexing.verboseDownloadNotification": false,
+    "editor.rulers": [
+        {
+            "column": 4,
+            "color": "#3d3d3d"
+        },
+        {
+            "column": 80,
+            "color": "#3d3d3d"
+        }
+    ],
+    "editor.renderWhitespace": "none",
+    "editor.guides.indentation": false,
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "explorer.confirmDelete": false,
+    "workbench.editorAssociations": {
+        "*.svg": "default"
+    },
+    "git.postCommitCommand": "sync",
+    "explorer.confirmDragAndDrop": false,
+
+    "editor.inlayHints.enabled": "off",
+    "editor.suggest.showTypeParameters": false,
+    "editor.parameterHints.enabled": false,
+    "explorer.sortOrder": "type",
+    "cSpell.userWords": [
+        "buildable",
+        "rivt"
+    ],
+    "editor.fontSize": 16,
+    "python.terminal.executeInFileDir": true,
+    "projectManager.git.baseFolders": [
+        "c:\\git"
+    ],
+    "terminal.integrated.fontSize": 16,
+    "editor.mouseWheelZoom": true,
+    "seito-openfile.searchSubFoldersOfWorkspaceFolders": [
+        "rivtprivate/*/"
+    ],
+    "explorer.compactFolders": false,
+    "git.autoStash": true,
+    "python.analysis.autoFormatStrings": true,
+    "autoDocstring.startOnNewLine": false,
+    "rewrap.wrappingColumn": 80,
+    "rewrap.wholeComment": false,
+
+
 }
