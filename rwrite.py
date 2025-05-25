@@ -14,7 +14,7 @@ from fpdf import FPDF
 
 class Write:
     """
-    write docs
+    write text, rstpdf, texpdf and html docs
 
     Commands:
         | DOC | rel. pth |  type, cover
