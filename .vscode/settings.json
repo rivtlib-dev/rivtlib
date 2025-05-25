@@ -1,7 +1,12 @@
 {
     "window.title": "${separator}${activeEditorLong}${separator}${remoteName}$[dirty}",
+<<<<<<< HEAD
     "workbench.colorTheme": "GitHub Dark",
     "workbench.iconTheme": "vs-seti",
+=======
+    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.iconTheme": "vscode-icons",
+>>>>>>> 9792e999fd29be05bdd949c5d1f3e270d1eb7642
     "workbench.editor.empty.hint": "hidden",
     "workbench.colorCustomizations": {
         "editor.lineHighlightBorder": "#34495d",

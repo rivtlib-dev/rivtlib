@@ -19,18 +19,19 @@ In this case output files will also be in the current file folder. See the
 This code base uses a last-letter naming convention for indicating variable
 types where:
 
-A = array 
-B = boolean 
-C = class instance 
-D = dictionary 
-F = float 
-I = integer 
+A = array
+B = boolean
+C = class instance
+D = dictionary
+F = float
+I = integer
 L = list
-N = file name 
-P = path 
+N = file name
+P = path
 S = string
 
 """
+
 __version__ = "a.b.c"
 __author__ = "rhholand"
 
@@ -62,6 +63,6 @@ def cmdhelp():
 if __name__ == "__main__":
     try:
         argfileS = sys.argv[1]
-        import rivtlib.api
+        import rapi
     except:
         cmdhelp()

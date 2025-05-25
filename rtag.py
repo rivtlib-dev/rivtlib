@@ -21,7 +21,11 @@ tabulate.PRESERVE_WHITESPACE = True
 
 class Tag:
     """
+<<<<<<< HEAD
     tag formatting
+=======
+    formatting tags
+>>>>>>> 9792e999fd29be05bdd949c5d1f3e270d1eb7642
 
 
     blocks:

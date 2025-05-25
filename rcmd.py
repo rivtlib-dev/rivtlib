@@ -21,7 +21,11 @@ from sympy.abc import _clash2
 from sympy.core.alphabets import greeks
 from sympy.parsing.latex import parse_latex
 
+<<<<<<< HEAD
 from rivtlib.runit import *  # noqa: F403
+=======
+from rivtlib.runits import *  # noqa: F403
+>>>>>>> 9792e999fd29be05bdd949c5d1f3e270d1eb7642
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -101,7 +105,11 @@ class Cmd:
             )
 
         elif cmdS == "IMG2":
+<<<<<<< HEAD
             """ adjacent images insert """
+=======
+            """image insert side by side """
+>>>>>>> 9792e999fd29be05bdd949c5d1f3e270d1eb7642
 
             # print(f"{parS=}")
             parL = parS.split(",")
