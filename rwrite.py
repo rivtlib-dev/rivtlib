@@ -18,18 +18,22 @@ class Write:
 
     Commands:
         | DOC | rel. pth |  type, cover
-        | REPORT | rel. pth |  type, cover
         | APPEND | rel. pth |  title
+        | PREPEND | rel. pth |  title
+
     """
 
-    def __init__(self, folderD, labelD):
-        """commands that format to utf and reSt"""
+    def __init__(self, folderD, labelD, dtypS, iniS):
+        """set doc type and init"""
 
         self.folderD = folderD
         self.labelD = labelD
-        self.cover = cover
-        self.content = content
-        self.mainpage = mainpage
+        self.yamlP = Path(
+            folderD["projP"], "docs", dtypS.strip(), iniS.strip() + ".yaml"
+        )
+        self.iniP = Path(
+            folderD["projP"], "docs", dtypS.strip(), dtypS.strip() + ".ini"
+        )
         errlogP = folderD["errlogP"]
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
@@ -84,7 +88,7 @@ class Write:
     def doctext(self):
         pass
 
-    def docpdf2(self, rst2P, styleS):
+    def rstpdf(self, rst2P, styleS):
         """_summary_"""
 
         pthP = Path(self.folderD["pthS"])
@@ -92,7 +96,7 @@ class Write:
         # print(f"{pthP=}")
         cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]  # input
         cmd2S = " -o ../" + str(rst2P) + self.folderD["pdfN"]  # output
-        cmd3S = " --config=../docs/_styles/rst2pdf.ini"  # config
+        cmd3S = " --config=../docs/rst2pdf/style/rst2pdf.ini"  # config
         cmd4S = " --stylesheets=" + styleS.strip() + ".yaml"
         cmdS = cmd1S + cmd2S + cmd3S + cmd4S
         # print("cmdS=", cmdS)
@@ -104,7 +108,7 @@ class Write:
 
         return msgS
 
-    def docpdf(self):
+    def texpdf(self):
         """Modify TeX file to avoid problems with escapes:
 
         -  Replace marker "aaxbb " inserted by rivt with

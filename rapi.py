@@ -51,6 +51,12 @@ from rivtlib.runits import *  # noqa: F403
 logging.info(f"""rivt file : {folderD["rivtnS"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
 
+with open(rivtfP, "r") as f2:
+    rivtS = f2.read()
+with open(folderD["bakfP"], "w") as f3:
+    f3.write(rivtS)
+logging.info(f"""rivt backup : {folderD["bakfP"]}""")
+
 
 def doc_hdr():
     """_summary_
@@ -115,18 +121,6 @@ def doc_parse(sS, tS, tagL, cmdL):
     drstS += srstS
 
     return dutfS, drs2S, drstS, rivtL
-
-
-def rivt_bak(rivtfP):
-    """write rivt backup file"""
-    with open(rivtfP, "r") as f2:
-        rivtS = f2.read()
-    with open(folderD["bakfP"], "w") as f3:
-        f3.write(rivtS)
-    logging.info(f"""rivt backup : {folderD["bakfP"]}""")
-
-
-rivt_bak(rivtfP)  # rivt backup file
 
 
 dutfS, drs2S, drstS = doc_hdr()  # doc header
@@ -208,78 +202,5 @@ def W(sS):
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
-    rivtL = rivtS.split("\n")
-    # 1. remove W function write that rivt temp file and execute
-    # 2. execute rest of file and process doc temp files through W commands
-    for lS in rivtL:
-        cmdS = ""
-        # print(f"{lS[:2]=}")
-        if len(lS) == 0:
-            continue
-        if lS[0] == "#":
-            continue
-        elif lS[:2] == "||":
-            cL = lS[2:].split("|")
-            # print(cL)
-            cmdS = cL[0].strip()
-            pthS = cL[1].strip()
-            pasS = cL[2].strip()
-
-            # sStP = Path(folderD["rivP"], "temp", folderD["sStN"])
-            # pdf2P = Path(folderD["tempP"], folderD["pdfN"])
-
-            # print(f"{sStP=}")
-            # print(f"{cmdS=}")
-            # print(f"{pthS=}")
-            # print(f"{pasS=}")
-
-            msgS = "end of file "
-            if cmdS == "APPEND":
-                pass
-            elif cmdS == "PREPEND":
-                pass
-            elif cmdS == "COVER":
-                titleS = pthS
-                subS = pasS
-                botS = cL[3].strip()
-                imgS = cL[4].strip()
-                docC = rwrite.CmdW(folderD, labelD)
-                tcovS, tcontS, tmainS = docC.frontvar(titleS, subS, botS, imgS)
-                # print(tcovS, tcontS, tmainS)
-            elif cmdS == "DOC":
-                parL = pasS.split(",")
-                typeS = parL[0].strip()
-                tocS = parL[1].strip()
-                styleS = parL[2].strip()
-                txtP = Path(folderD["docsP"], "text", folderD["txtN"])
-                sStP = Path(folderD["tempP"], folderD["sStN"])
-                docC = rwrite.CmdW(folderD, labelD)
-                if typeS == "pdf":
-                    rfrontS = docC.frontpg(tocS, tcovS, tcontS, tmainS)
-                    rstS = rfrontS + "\n" + rstS
-                    with open(txtP, "w", encoding="utf-8") as file:
-                        file.write(utfS)
-                    with open(sStP, "w", encoding="utf-8") as file:
-                        file.write(rstS)
-                    msgS = docC.docpdf2(pthS, styleS)
-                elif typeS == "pdfx":
-                    rfrontS = docC.coverpg(tocS)
-                    msgS = docC.docpdf()
-                elif typeS == "html":
-                    rfrontS = docC.coverpg(tocS)
-                    msgS = docC.dochtml()
-                elif typeS == "text":
-                    rfrontS = docC.coverpg(tocS)
-                    msgS = docC.doctext()
-                else:
-                    pass
-                tcovS = " "
-                tcontS = " "
-                tmainS = " "
-                rfrontS = " "
-                # print(f"{rfrontS=}")
-        else:
-            pass
-
+    msgS = "docs written"
     print("\n" + f"{msgS=}")
-    sys.exit()
