@@ -77,9 +77,9 @@ class Cmd:
             insP = Path(folderD["projP"] / "src" / pthS)
             insS = str(insP.as_posix())
             pS = " [file: " + pthS + "]" + "\n\n"
-            # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
             if capS == "-":
                 capS = " "
+            # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
             try:
                 img1 = Image.open(pthS)
                 _display(img1)

@@ -24,17 +24,14 @@ class Write:
 
     """
 
-    def __init__(self, folderD, labelD, dtypS, iniS):
+    def __init__(self, folderD, labelD, dtypeS, styleS):
         """set doc type and init"""
 
+        self.dtypeS = dtypeS
         self.folderD = folderD
         self.labelD = labelD
-        self.yamlP = Path(
-            folderD["projP"], "docs", dtypS.strip(), iniS.strip() + ".yaml"
-        )
-        self.iniP = Path(
-            folderD["projP"], "docs", dtypS.strip(), dtypS.strip() + ".ini"
-        )
+        self.yamlP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".yaml")
+        self.iniP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".ini")
         errlogP = folderD["errlogP"]
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
