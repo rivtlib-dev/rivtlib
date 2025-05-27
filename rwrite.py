@@ -14,12 +14,13 @@ from fpdf import FPDF
 
 class Write:
     """
-    write text, rstpdf, texpdf and html docs
+    write docs (text, rstpdf, texpdf, html)
 
     Commands:
-        | DOC | rel. pth |  type, cover
-        | APPEND | rel. pth |  title
-        | PREPEND | rel. pth |  title
+        |DOC| rel. pth | type, init
+        |APPEND| rel. pth | divider; nodivider
+        |PREPEND| rel. pth | divider; nodivider
+        |REPORT| rel. pth | overwrite; nowrite
 
     """
 
