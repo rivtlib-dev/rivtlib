@@ -43,6 +43,11 @@ class Write:
         )
         warnings.filterwarnings("ignore")
 
+    def wcmd(self):
+
+        if 
+    
+    
     def append(self, pthS, parS):
         """_summary_"""
         pass

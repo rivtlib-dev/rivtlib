@@ -3,9 +3,7 @@ import logging
 import sys
 import textwrap
 import warnings
-from datetime import datetime, time
 from io import StringIO
-from pathlib import Path
 
 import sympy as sp
 import tabulate
@@ -21,21 +19,8 @@ tabulate.PRESERVE_WHITESPACE = True
 
 class Tag:
     """
-<<<<<<< HEAD
-    tag formatting
-=======
-    formatting tags
->>>>>>> 9792e999fd29be05bdd949c5d1f3e270d1eb7642
+    format tags
 
-
-    blocks:
-    hexcolor _[[B]]   bldindblk
-    hexcolor _[[C]]   codeblk
-    hexcolor _[[I]]   italindblk
-    hexcolor _[[L]]   literalblock
-    hexcolor _[[X]]   latexblk
-    title  _[[V]]     valuesblk
-    _[[Q]]
 
     try:
         valN = folderD["valN"]  # value export file
@@ -60,7 +45,7 @@ class Tag:
 
     def __init__(self, folderD, labelD, rivtD):
         """
-        format tags - utf and reSt
+        format tags TO utf, rst and reSt
 
         folderD (_type_): _description_
         labelD (_type_): _description_
@@ -84,68 +69,56 @@ class Tag:
         warnings.filterwarnings("ignore")
 
     def linetag(self, tagS, lineS, rivtL):
-        """format line tags
+        """format lines
 
         text        _[C]    center
-        text        _[D]    footnote description
-        label       _[E]    equation label
         text        _[#]    footnote
-        caption     _[F]    figure caption
+        text        _[D]    footnote description
+        label       _[E]    equation label and number
+        caption     _[F]    figure caption and number
+        equation    _[N]    sympy with equation number
         equation    _[S]    sympy
-        equation    _[Y]    sympy with label
-        title       _[T]    table title
+        title       _[T]    table title and number
         url, label  _[U]    url
+        _[-----]            horizontal line (5 - min.)
+        _[=====]            new page (5 = min.)
         a := 1       :=     evaluate equation
-        _[-----]            horizontal line
-        _[=====]            new page
 
         Args:
             tagS (str): tag symbol
-            lineS (str): line from rivt section
+            lineS (str): line of text
+            rivtL (str): values for export
 
         Returns:
-            tuple : formatted doc strings
+            _type_: _description_
+            uS, r2S, rS, self.folderD, self.labelD, self.rivtD, rivtL
+
         """
 
         if tagS == "C]":
-            """ center a line """
             uS = lineS.center(int(self.labelD["widthI"])) + "\n"
             r2S = lineS.center(int(self.labelD["widthI"])) + "\n"
             rS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
-
+        elif tagS == "#]":
+            ftnumI = self.labelD["footL"].pop(0)
+            self.labelD["noteL"].append(ftnumI + 1)
+            self.labelD["footL"].append(ftnumI + 1)
+            uS = r2S = rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         elif tagS == "D]":
-            """ footnote description """
             ftnumI = self.labelD["noteL"].pop(0)
-
             uS, r2S, rS = "[" + str(ftnumI) + "] " + lineS
-
         elif tagS == "E]":
-            """ equation label """
             enumI = int(self.labelD["equI"])
             self.labelD["equI"] = enumI + 1
             fillS = "E" + str(enumI).zfill(2)
             uS = fillS + " - " + lineS
-
             fillS = "**E" + str(enumI).zfill(2) + "**"
             rS = r2S = lineS + " - " + fillS + "\n"
-
         elif tagS == "F]":
-            """ figure caption"""
             fnumI = int(self.labelD["figI"])
             self.labelD["figI"] = fnumI + 1
-
             uS = r2S = rS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
-
-        elif tagS == "#]":
-            """ footnote number """
-            ftnumI = self.labelD["footL"].pop(0)
-            self.labelD["noteL"].append(ftnumI + 1)
-            self.labelD["footL"].append(ftnumI + 1)
-
-            uS = r2S = rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
-
         elif tagS == "S]":
-            """ format equation with sympy """
             spS = lineS.strip()
             try:
                 spL = spS.split("=")
@@ -153,13 +126,20 @@ class Tag:
             except:
                 pass
             lineS = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
-
             uS = textwrap.indent(lineS, "     ")
             r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
             rS = ".. raw:: math\n\n   " + uS + "\n"
-
+        elif tagS == "T]":
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            fillS = str(tnumI).zfill(2)
+            uS = "\nTable " + str(tnumI) + ": " + lineS
+            r2S = "\n**Table " + fillS + "**: " + lineS
+            rS = "\n**Table " + fillS + "**: " + lineS
+        elif tagS == "U]":
+            lineL = self.lineS.split(",")
+            uS = r2S = rS = ".. _" + lineL[0] + ": " + lineL[1]
         elif tagS == "Y]":
-            """ format and label equation with sympy """
             spS = lineS.strip()
             try:
                 spL = spS.split("=")
@@ -172,28 +152,11 @@ class Tag:
             r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
             rS = ".. raw:: math\n\n   " + lineS + "\n"
 
-        elif tagS == "T]":
-            """ format table title """
-            tnumI = int(self.labelD["tableI"])
-            self.labelD["tableI"] = tnumI + 1
-            fillS = str(tnumI).zfill(2)
-            uS = "\nTable " + str(tnumI) + ": " + lineS
-            r2S = "\n**Table " + fillS + "**: " + lineS
-            rS = "\n**Table " + fillS + "**: " + lineS
-
-        elif tagS == "U]":
-            """ format url """
-            lineL = self.lineS.split(",")
-            uS = r2S = rS = ".. _" + lineL[0] + ": " + lineL[1]
-
         elif tagS[:5] == "------":
-            """ format horizontal line """
             uS = "-" * 80
             r2S = "-" * 80
             rS = "-" * 80
-
         elif tagS[:5] == "=====":
-            """ format new page """
             pagenoS = str(self.labelD["pageI"])
             uS = self.labelD["headuS"].replace("p##", pagenoS)
             self.labelD["pageI"] = int(pagenoS) + 1
@@ -208,8 +171,6 @@ class Tag:
             )
 
         elif tagS == ":=":
-            """ equation evluate and format """
-
             tbl1L = []
             hdr1L = []
             wI = self.labelD["widthI"]
@@ -300,35 +261,38 @@ class Tag:
             rS += output.getvalue()
             sys.stdout = old_stdout
             sys.stdout.flush()
-
         else:
             pass
 
         return uS, r2S, rS, self.folderD, self.labelD, self.rivtD, rivtL
 
     def blocktag(self, tagS, blockS, rivtL):
-        """
+        """format blocks
 
-        color _[[B]]   bldindblk
-        color _[[C]]   codeblk
-        color _[[I]]   italindblk
-        color _[[L]]   literalblock
-        color _[[N]]   indentblock
-        color _[[X]]   latexblk
-        title _[[V]]   valuesblk
+        optional title _[[B]]   bold indent
+        optional title _[[I]]   italic indent
+        optional title _[[L]]   literal
+        optional title _[[O]]   indent
+        optional title _[[P]]   plain
+        optional title _[[X]]   latex
+
+        title _[[V]]   values with table number
+
+        optional color _[[Q]]   quit
 
         Args:
-            tagS (_type_): _description_
-            lineS (_type_): _description_
+            tagS (str): tag symbol
+            blockS (str): block of text
+            rivtL (str): values for export
 
         Returns:
             _type_: _description_
+            uS, r2S, rS, self.folderD, self.labelD, self.rivtD, rivtL
         """
 
         blockL = blockS.split("\n")
 
         if tagS == "[B]]":
-            """ bold indent block """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
             # utf
@@ -336,28 +300,31 @@ class Tag:
             # rst
             lrS = "\n" + "Table " + fillS + ": " + blockS
 
-        elif tagS == "[I]]":
-            """ italic indent block """
-            tnumI = int(self.labelD["tableI"])
-            self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + blockS
-            lrS = "\n" + "Table " + fillS + ": " + blockS
+        elif tagS == "[C]]":
+            """code block"""
 
-        elif tagS == "[L]]":
-            """ literal block """
-            tnumI = int(self.labelD["tableI"])
-            self.labelD["tableI"] = tnumI + 1
-            luS = "Table " + str(tnumI) + " - " + blockS
-            lrS = "\n" + "Table " + fillS + ": " + blockS
-
-        elif tagS == "[O]]":
-            """ code block """
             iS = ""
             for s in blockL:
                 s = "    " + s + "\n"
                 iS += s
 
             uS = r2S = rS = iS
+
+        elif tagS == "[I]]":
+            """italic-indent block"""
+
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
+
+        elif tagS == "[L]]":
+            """literal block"""
+
+            tnumI = int(self.labelD["tableI"])
+            self.labelD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
 
         elif tagS == "[N]]":
             """ indent block """
@@ -376,8 +343,9 @@ class Tag:
             lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
 
         elif tagS == "[V]]":
-            """ values block """
-
+            """values block 
+            
+            """
             tnumI = int(self.labelD["tableI"])
             self.labelD["tableI"] = tnumI + 1
             fillS = str(tnumI).zfill(2)
