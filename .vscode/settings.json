@@ -1,12 +1,7 @@
 {
     "window.title": "${separator}${activeEditorLong}${separator}${remoteName}$[dirty}",
-<<<<<<< HEAD
-    "workbench.colorTheme": "GitHub Dark",
-    "workbench.iconTheme": "vs-seti",
-=======
     "workbench.colorTheme": "Default Dark Modern",
     "workbench.iconTheme": "vscode-icons",
->>>>>>> 9792e999fd29be05bdd949c5d1f3e270d1eb7642
     "workbench.editor.empty.hint": "hidden",
     "workbench.colorCustomizations": {
         "editor.lineHighlightBorder": "#34495d",
@@ -15,7 +10,7 @@
         "fsdeploy.nodes": [
         {
             "source": "C:/Python313/Lib/site-packages/rivtlib/",
-            "target": "C:/git/rivtlib",
+            "target": "C:/git/git-rivtlib",
             "include": "**/*.*",
             "exclude": "",
             "deleteTargetOnDeploy": true,
@@ -79,6 +74,12 @@
                 "command": "editor.unfoldRecursively"
             },
             {
+                "name": "FoldRegions",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldAllMarkerRegions",
+            },
+            {
                 "name": "ToggleDocStr",
                 "color": "orange",
                 "useVsCodeApi": true,
@@ -109,7 +110,6 @@
     "ShortcutMenuBar.openSettings": true,
     "git.autofetch": false,
     "outline.showStrings": false,
-    "editor.foldingImportsByDefault": true,
     "workbench.sideBar.location": "right",
     "vsicons.dontShowNewVersionMessage": true,
     "python.defaultInterpreterPath": "c:\\Python313\\python.exe",
@@ -163,9 +163,7 @@
     "explorer.compactFolders": false,
     "git.autoStash": true,
     "python.analysis.autoFormatStrings": true,
-    "autoDocstring.startOnNewLine": false,
     "rewrap.wrappingColumn": 80,
     "rewrap.wholeComment": false,
-
-
+    "editor.foldingImportsByDefault": true,
 }

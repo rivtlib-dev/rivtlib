@@ -25,22 +25,30 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmdr:
-    "commands (type is read)"
+    """commands (type is read)
+
+    IMG - insert image from file
+    IMG2 - insert side by side images from files
+    TABLE - insert table from file
+    TEXT - insert text from file
+    VALUE - insert values from file
+    """
 
     def __init__(self, folderD, labelD, rivtD, rivtL, parL):
-        """format commands
-
-        IMG - insert image from file
-        IMG2 - insert side by side images from files
-        TABLE - insert table from file
-        TEXT - insert text from file
-        VALUE - insert values from file
+        """command object (type is read)
 
         Args:
-            folderD (_type_): _description_
-            labelD (_type_): _description_
-            rivtD (_type_): _description_
+            folderD (dict): folders
+            labelD (dict): labels
+            rivtD (dict): values
+            rivtL (list): values for export
+            parL (list): command parameters
 
+
+        Vars:
+            uS (str): utf string
+            rS (str): rst2pdf string
+            xS (str): reST string
         """
 
         self.folderD = folderD
@@ -54,7 +62,7 @@ class Cmdr:
         self.xS = ""
 
     def cmdrx(self, cmdS):
-        """parse commands
+        """parse a read command
 
         Command:
             |IMG| rel. pth | scale, caption (_[F])             .png, .jpg
@@ -63,9 +71,12 @@ class Cmdr:
             |TEXT| rel. pth |  plain; rivt                     .txt
             |VALUE| rel. pth | col width, l;c;r, title (_[T])  .csv
 
-        Return:
-            uS, rS, xS, folderD, labelD, rivtD, rivtL
 
+        Args:
+            cmdS (str): command
+
+        Returns:
+            uS, rS, xS, folderD, labelD, rivtD, rivtL
         """
 
         getattr(self, cmdS)
@@ -81,7 +92,7 @@ class Cmdr:
         )
 
     def IMG(self, cmdS):
-        """image command
+        """insert image
 
         |IMG| rel. pth | scale, caption (_[F])
         """
@@ -124,7 +135,7 @@ class Cmdr:
         )
 
     def IMG2(self, cmdS):
-        """side by side image command"""
+        """insert side by side images"""
 
         # print(f"{parS=}")
         parL = self.parS.split(",")
@@ -155,7 +166,7 @@ class Cmdr:
         )
 
     def TABLE(self, cmdS):
-        """table command"""
+        """insert table"""
 
         # print(f"{pthS=}")
         if "_[T]" in self.parS:
@@ -225,7 +236,7 @@ class Cmdr:
         self.xS = rtlS + rS + "\n"
 
     def TEXT(self, cmdS):
-        """text command"""
+        """insert text"""
 
         # print(f"{pthS=}")
         uS = rS = xS = ""
@@ -244,7 +255,7 @@ class Cmdr:
         self.xS = fileS
 
     def VALUE(self, cmdS):
-        """value command"""
+        """insert values"""
 
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1

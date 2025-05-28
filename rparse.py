@@ -164,9 +164,7 @@ class Section:
                     # print(f"{tagS=}")
                     tC = rtag.Tag(folderD, labelD, rivtD)
                     if len(tagS) < 3:  # line tag
-                        uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.taglx(
-                            tagS, lineS, rivtL
-                        )
+                        uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.taglx(tagS)
                         sutfS += uS + "\n"
                         srs2S += rS + "\n"
                         srstS += xS + "\n"
@@ -180,9 +178,7 @@ class Section:
                 if ":=" in tagL:
                     tagS = ":="
                     tC = rtag.Tag(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.taglx(
-                        tagS, slS, rivtL
-                    )
+                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.taglx(tagS)
                     print(uS)  # STDOUT- tagged line
                     continue
             else:  # everything else

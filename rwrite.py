@@ -15,12 +15,21 @@ from fpdf import FPDF
 class Cmdw:
     """commands (type is write)
 
-    write docs (text, rstpdf, texpdf, html)
-
+    DOC - write doc of specified type
+    APPEND - append pdf to doc
+    PREPEND - prepend pdf to doc
+    REPORT - generate a report template file
     """
 
     def __init__(self, folderD, labelD, dtypeS, styleS):
-        """set doc type and init"""
+        """command object (type is write)
+
+        Args:
+            folderD (_type_): _description_
+            labelD (_type_): _description_
+            dtypeS (_type_): _description_
+            styleS (_type_): _description_
+        """
 
         self.dtypeS = dtypeS
         self.folderD = folderD
@@ -29,7 +38,7 @@ class Cmdw:
         self.iniP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".ini")
 
     def cmdwx(self, cmdS):
-        """parse commands
+        """parse a write command
 
         Commands:
             |DOC| rel. pth | type, init
@@ -37,9 +46,14 @@ class Cmdw:
             |PREPEND| rel. pth | divider; nodivider
             |REPORT| rel. pth | overwrite; nowrite
 
+        Args:
+            cmdS (str): command
+
         """
 
         getattr(self, cmdS)
+
+        return
 
     def append(self, pthS, parS):
         """_summary_"""
