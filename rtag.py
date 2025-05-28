@@ -21,7 +21,6 @@ class Tag:
     """
     format tags
 
-
     try:
         valN = folderD["valN"]  # value export file
         valN = valN.replace("qqqqqq", str(snumI))
@@ -32,9 +31,6 @@ class Tag:
         pass
     # print(strL)
     # print(f"{self.tS=}")
-
-
-
 
         tC = Tag(self.folderD, self.labelD)
         tcmdS = str(tagcmdS)
@@ -57,18 +53,7 @@ class Tag:
         self.rivtD = rivtD
         # print(folderD)
 
-        errlogP = folderD["errlogP"]
-        modnameS = __name__.split(".")[1]
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-            datefmt="%m-%d %H:%M",
-            filename=errlogP,
-            filemode="w",
-        )
-        warnings.filterwarnings("ignore")
-
-    def linetag(self, tagS, lineS, rivtL):
+    def taglx(self, tagS, lineS, rivtL):
         """format lines
 
         text        _[C]    center
@@ -118,13 +103,18 @@ class Tag:
             fnumI = int(self.labelD["figI"])
             self.labelD["figI"] = fnumI + 1
             uS = r2S = rS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
+        elif tagS == "N]":
+            spS = lineS.strip()
+            spL = spS.split("=")
+            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+            uS = textwrap.indent(lineS, "     ")
+            r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
+            rS = ".. raw:: math\n\n   " + lineS + "\n"
         elif tagS == "S]":
             spS = lineS.strip()
-            try:
-                spL = spS.split("=")
-                spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            except:
-                pass
+            spL = spS.split("=")
+            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
             lineS = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
             uS = textwrap.indent(lineS, "     ")
             r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
@@ -139,19 +129,6 @@ class Tag:
         elif tagS == "U]":
             lineL = self.lineS.split(",")
             uS = r2S = rS = ".. _" + lineL[0] + ": " + lineL[1]
-        elif tagS == "Y]":
-            spS = lineS.strip()
-            try:
-                spL = spS.split("=")
-                spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            except:
-                pass
-            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-
-            uS = textwrap.indent(lineS, "     ")
-            r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
-            rS = ".. raw:: math\n\n   " + lineS + "\n"
-
         elif tagS[:5] == "------":
             uS = "-" * 80
             r2S = "-" * 80
@@ -169,7 +146,6 @@ class Tag:
                 + "_" * self.labelD["widthI"]
                 + "\n"
             )
-
         elif tagS == ":=":
             tbl1L = []
             hdr1L = []
@@ -184,24 +160,20 @@ class Tag:
             dec1S, dec2S = dec1S.strip(), dec2S.strip()
             fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
             fmt2S = "Unum.set_format(value_format='%." + dec2S + "f', auto_norm=True)"
-
             # equation as string
             spL = eqS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
             eq1S = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
             eq1S = textwrap.indent(eq1S, "    ")
             refS = refS.rjust(self.labelD["widthI"])
-
             uS = refS + "\n" + eq1S + "\n\n"
             r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
             rS = ".. raw:: math\n\n   " + eqS + "\n"
-
             if unit1S != "-":
                 exec(eqS, globals(), self.rivtD)
             else:
                 cmdS = spL[0] + " = " + spL[1]
                 exec(cmdS, globals(), self.rivtD)
-
             # rivtL and rivtD append
             valU = eval(spL[0], globals(), self.rivtD)
             self.rivtD[spL[0]] = valU
@@ -211,7 +183,6 @@ class Tag:
             ex2S = spL[0].strip() + " = " + exS
             exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
             rivtL.append(exvS)
-
             # equation and table elements
             symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
             symaO = symeqO.atoms(sp.Symbol)
@@ -221,7 +192,6 @@ class Tag:
                 hdr1L.append(str(vS))
             numvarI = len(symaO) + 2
             # print("header----------", hdr1L)
-
             # eval value
             eval(fmt1S)
             val1U = valU.cast_unit(eval(unit1S))
@@ -229,14 +199,12 @@ class Tag:
             tbl1L.append(str(val1U))
             tbl1L.append(str(val2U))
             # print("table--------------", tbl1L)
-
             # loop over variables
             eval(fmt2S)
             for aO in symaO:
                 a1U = eval(str(aO), globals(), self.rivtD)
                 tbl1L.append(str(a1U))
                 # print("ao", aO, a1U)
-
             # write table
             # print(tbl1L)
             alignL = []
@@ -266,7 +234,7 @@ class Tag:
 
         return uS, r2S, rS, self.folderD, self.labelD, self.rivtD, rivtL
 
-    def blocktag(self, tagS, blockS, rivtL):
+    def tagbx(self, tagS, blockS, rivtL):
         """format blocks
 
         optional title _[[B]]   bold indent

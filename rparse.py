@@ -131,12 +131,10 @@ class Section:
                 continue
             elif blockB:  # block accumulate
                 blockS += slS + "\n"
-                if blockB and ("_[[Q]]" in slS):  # block end
+                if blockB and ("_[[Q]]" in slS):  # end of block
                     blockB = False
-                    tC = rtag.Tag(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.blocktag(
-                        tagS, blockS, rivtL
-                    )
+                    tC = rtag.Tag(folderD, labelD, rivtD, blockS, rivtL)
+                    uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.tagbx(tagS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
@@ -147,15 +145,11 @@ class Section:
             elif slS[0:1] == "|":  # commands
                 parL = slS[1:].split("|")
                 cmdS = parL[0].strip()
-                pthS = parL[1].strip()
-                parS = parL[2].strip()
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
-                    cmC = rcmd.Cmd(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmds(
-                        cmdS, pthS, parS, rivtL
-                    )
+                    cmC = rcmd.Cmdr(folderD, labelD, rivtD, rivtL, parL)
+                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmdrx(cmdS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
                     srstS += xS + "\n"
@@ -170,7 +164,7 @@ class Section:
                     # print(f"{tagS=}")
                     tC = rtag.Tag(folderD, labelD, rivtD)
                     if len(tagS) < 3:  # line tag
-                        uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.linetag(
+                        uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.taglx(
                             tagS, lineS, rivtL
                         )
                         sutfS += uS + "\n"
@@ -186,7 +180,7 @@ class Section:
                 if ":=" in tagL:
                     tagS = ":="
                     tC = rtag.Tag(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.linetag(
+                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.taglx(
                         tagS, slS, rivtL
                     )
                     print(uS)  # STDOUT- tagged line

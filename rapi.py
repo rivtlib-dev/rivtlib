@@ -44,18 +44,18 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from rivtlib import rcheck, rparse, rwrite
+from rivtlib import rparse, rwrite
 from rivtlib.rparam import *  # noqa: F403
 from rivtlib.runits import *  # noqa: F403
 
 logging.info(f"""rivt file : {folderD["rivtnS"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
 
-with open(rivtfP, "r") as f2:
+with open(rivtfP, "r") as f2:  # noqa: F405
     rivtS = f2.read()
-with open(folderD["bakfP"], "w") as f3:
+with open(folderD["bakfP"], "w") as f3:  # noqa: F405
     f3.write(rivtS)
-logging.info(f"""rivt backup : {folderD["bakfP"]}""")
+logging.info(f"""rivt backup : {folderD["bakfP"]}""")  # noqa: F405
 
 
 def doc_hdr():
@@ -94,19 +94,19 @@ def doc_hdr():
 
 def doc_parse(sS, tS, tagL, cmdL):
     """
-    parses section strings to doc strings
+    section strings to doc strings
 
     Args:
         sS (str): rivt section
         tS (str): section type (R,I,V,T,W,S)
 
     Calls:
-        RivtParse (class)
-        parse_sec (method)
+        Section (class), section (method)
 
     Returns:
-        utfS (str): utf output
-        rstS (str): reSt output
+        sutfS (str): utf output
+        srs2S (str): rst2pdf output
+        srstS (str): reSt output
     """
 
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
@@ -204,3 +204,4 @@ def W(sS):
 
     msgS = "docs written"
     print("\n" + f"{msgS=}")
+    sys.exit()

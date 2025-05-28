@@ -12,15 +12,10 @@ from fpdf import FPDF
 # from templates.pdfcover import content, cover, mainpage
 
 
-class Write:
-    """
-    write docs (text, rstpdf, texpdf, html)
+class Cmdw:
+    """commands (type is write)
 
-    Commands:
-        |DOC| rel. pth | type, init
-        |APPEND| rel. pth | divider; nodivider
-        |PREPEND| rel. pth | divider; nodivider
-        |REPORT| rel. pth | overwrite; nowrite
+    write docs (text, rstpdf, texpdf, html)
 
     """
 
@@ -32,22 +27,20 @@ class Write:
         self.labelD = labelD
         self.yamlP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".yaml")
         self.iniP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".ini")
-        errlogP = folderD["errlogP"]
-        modnameS = __name__.split(".")[1]
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-            datefmt="%m-%d %H:%M",
-            filename=errlogP,
-            filemode="w",
-        )
-        warnings.filterwarnings("ignore")
 
-    def wcmd(self):
+    def cmdwx(self, cmdS):
+        """parse commands
 
-        if 
-    
-    
+        Commands:
+            |DOC| rel. pth | type, init
+            |APPEND| rel. pth | divider; nodivider
+            |PREPEND| rel. pth | divider; nodivider
+            |REPORT| rel. pth | overwrite; nowrite
+
+        """
+
+        getattr(self, cmdS)
+
     def append(self, pthS, parS):
         """_summary_"""
         pass
