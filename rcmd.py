@@ -36,21 +36,18 @@ class Cmdr:
 
     def __init__(self, folderD, labelD, rivtD, rivtL, parL):
         """command object (type is read)
-
         Args:
             folderD (dict): folders
             labelD (dict): labels
             rivtD (dict): values
             rivtL (list): values for export
             parL (list): command parameters
-
-
         Vars:
             uS (str): utf string
             rS (str): rst2pdf string
             xS (str): reST string
         """
-
+        # region
         self.folderD = folderD
         self.labelD = labelD
         self.rivtD = rivtD
@@ -60,25 +57,22 @@ class Cmdr:
         self.uS = ""
         self.rS = ""
         self.xS = ""
+        # endregion
 
     def cmdrx(self, cmdS):
         """parse a read command
-
         Command:
-            |IMG| rel. pth | scale, caption (_[F])             .png, .jpg
-            |IMG2| rel. pth | s1, s2, c1, c2 (_[F])            .png, .jpg
-            |TABLE| rel. pth | col width, l;c;r, title (_[T])  .csv, .xls, .rst
-            |TEXT| rel. pth |  plain; rivt                     .txt
-            |VALUE| rel. pth | col width, l;c;r, title (_[T])  .csv
-
-
+            |IMG| rel. pth | scale factor, caption (_[F])       .png, .jpg
+            |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F]) .png, .jpg
+            |TABLE| rel. pth | col width, l;c;r, title (_[T])   .csv, .xls
+            |TEXT| rel. pth |  plain; rivt                      .txt
+            |VALUE| rel. pth | col width, l;c;r, title (_[T])   .csv
         Args:
             cmdS (str): command
-
         Returns:
             uS, rS, xS, folderD, labelD, rivtD, rivtL
         """
-
+        # region
         getattr(self, cmdS)
 
         return (
@@ -90,13 +84,14 @@ class Cmdr:
             self.rivtD,
             self.rivtL,
         )
+        # endregion
 
     def IMG(self, cmdS):
         """insert image
 
-        |IMG| rel. pth | scale, caption (_[F])
+        |IMG| rel. pth | scale factor, caption (_[F])
         """
-
+        # region
         if "_[F]" in self.parS:
             numS = str(self.labelD["figI"])
             self.labelD["figI"] = int(numS) + 1
@@ -133,10 +128,14 @@ class Cmdr:
             + capS
             + "\n"
         )
+        # endregion
 
     def IMG2(self, cmdS):
-        """insert side by side images"""
+        """insert side by side images
 
+        |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F])
+        """
+        # region
         # print(f"{parS=}")
         parL = self.parS.split(",")
         fileL = self.pthS.split(",")
@@ -164,10 +163,14 @@ class Cmdr:
             + "   :align: center"
             + "\n\n"
         )
+        # endregion
 
     def TABLE(self, cmdS):
-        """insert table"""
+        """insert table
 
+        |TABLE| rel. pth | col width, l;c;r, title (_[T])
+        """
+        # region
         # print(f"{pthS=}")
         if "_[T]" in self.parS:
             tnumI = int(self.labelD["tableI"])
@@ -234,10 +237,14 @@ class Cmdr:
         self.uS = utlS + uS + "\n"
         self.rS = rtlS + rS + "\n"
         self.xS = rtlS + rS + "\n"
+        # endregion
 
     def TEXT(self, cmdS):
-        """insert text"""
+        """insert text
 
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
         # print(f"{pthS=}")
         uS = rS = xS = ""
         pthP = Path(self.pthS)  # path
@@ -253,10 +260,14 @@ class Cmdr:
         self.uS = fileS
         self.rS = fileS
         self.xS = fileS
+        # endregion
 
     def VALUE(self, cmdS):
-        """insert values"""
+        """insert values
 
+        |VALUE| rel. pth | col width, l;c;r, title (_[T])
+        """
+        # region
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
         fillS = str(tnumI).zfill(2)
@@ -327,3 +338,4 @@ class Cmdr:
         self.uS = utitlnS + pS + uS + "\n"
         self.rS = rtitlnS + pS + rS + "\n"
         self.xS = rtitlnS + pS + rS + "\n"
+        # endregion

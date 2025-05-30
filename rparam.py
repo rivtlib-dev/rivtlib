@@ -1,68 +1,5 @@
 """
-File and label parameters
-
-    Labels (dict)
-    ==============
-
-    "baseS": rbaseS,  # file base name
-    "rivtnS": rivtnS,  # file name
-    "divnumS": divnumS,  # div number
-    "docnumS": prfxS,  # doc number
-    "titleS": titleS,  # document title
-    "sectS": "",  # section title
-    "secnumI": 0,  # section number
-    "widthI": 80,  # print width
-    "equI": 1,  # equation number
-    "tableI": 1,  # table number
-    "figI": 1,  # figure number
-    "valueI": 1,  # value number
-    "pageI": 1,  # starting page number
-    "noteL": [0],  # footnote counter
-    "footL": [1],  # foot counter
-    "descS": "2",  # description
-    "headrS": "",  # header string
-    "footrS": "",  # footer string
-    "tocB": False,  # table of contents
-    "docstrB": False,  # print doc strings
-    "unitS": "M,M",  # units
-
-
-    Commands (list)
-    ================
-
-    | IMG  | rel. pth | caption, scale, ([_F])        .png, .jpg
-    | IMG2  | rel. pth | c1, c2, s1, s2, ([_F])       .png, .jpg
-    | TEXT | rel. pth |  plain; rivt                  .txt
-    | TABLE | rel. pth | col width, l;c;r ([_T])      .csv, .txt, .xls
-    | VALUES | rel. pth | col width, l;c;r            .csv, .txt, .xls
-    | PUBLISH | rel. pth | txt, pdf, pdfx, html
-    | PREPEND | rel. pth | num; nonum                .pdf
-    | APPEND | rel. pth | num; nonum                 .pdf
-
-
-    tags (dictionary)
-    ==================
-    _[C]     center
-    _[D]     descrip
-    _[E]     equation
-    _[#]     foot
-    _[F]     figure
-    _[S]     sympy
-    _[L]     sympy with label
-    _[T]     table
-    _[U]     url
-    _[------]     horizontal line
-    _[======]     new page
-     :=      equals
-    _[[B]]   bld ind blk
-    _[[I]]   ital ind blk
-    _[[L]]   literal block
-    _[[N]]   indent block
-    _[[O]]   code blk
-    _[[X]]   latexblk
-    _[[V]]   valuesblk
-    _[[Q]    quit
-
+File paths and labels
 
 """
 
@@ -96,7 +33,6 @@ else:
 # print(f"{__name__=}")
 # print(f"{modnameS=}")
 
-
 errlogP = Path(rivtP, "temp", "rivt-log.txt")
 modnameS = __name__.split(".")[1]
 logging.basicConfig(
@@ -108,8 +44,8 @@ logging.basicConfig(
 )
 warnings.filterwarnings("ignore")
 
-
-# read file paths
+# region - file paths
+# read
 pthS = " "
 rbaseS = rivtnS.split(".")[0]
 prfxS = rivtnS[0:5]
@@ -129,9 +65,7 @@ insP = Path(srcP, "ins")
 toolsP = Path(srcP, "vls")
 styleP = Path(docP, "styles")
 titleS = rivtnS.split("-")[1]
-
-
-# write file paths
+# write
 rbakP = Path(rivtP, rbaseS + ".bak")
 pypathS = os.path.dirname(sys.executable)
 rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
@@ -142,17 +76,16 @@ readmeP = Path(projP, "README.txt")
 reportP = Path(projP, "docs")
 ossP = Path(projP / "oss")
 valnS = prfxS.replace("r", "v")
-
-# read/write paths
+# read/write
 valP = Path(srcP, "v" + dnumS)
-
 # print(f"{projP=}")
 # print(f"{rivtP=}")
 # print(f"{insP=}")
 # print(f"{valsP=}")
+# endregion
 
+# region - dictionaries
 rivtD = {}  # calculated values
-
 folderD = {}  # folders
 for item in [
     "docP",
@@ -200,3 +133,4 @@ labelD = {
     "valexpS": "",  # list of values for export
     "unitS": "M,M",  # units
 }
+# endregion

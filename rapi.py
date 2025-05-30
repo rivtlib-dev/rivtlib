@@ -69,21 +69,17 @@ def doc_hdr():
     dutfS = ""
     drs2S = ""
     drstS = ""
-
     # config = ConfigParser()
     # config.read(Path(projP, "rivt-doc.ini"))
     # headS = config.get("report", "title")
     # footS = config.get("utf", "foot1")
-
     titleL = rivtnS.split("-")  # subdivision title
     titleS = titleL[1].split(".")[0]
     dnumS = titleL[0].split("r")[1]
     headS = dnumS + "   " + titleS
-
     timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
     borderS = "=" * 80
     dutfS = "\n\n" + timeS + "   " + headS + "\n" + borderS + "\n"
-
     print(dutfS)  # STDOOUT doc heading
     dutfS = dutfS  # accumulate doc strings
     drs2S = dutfS
@@ -114,7 +110,6 @@ def doc_parse(sS, tS, tagL, cmdL):
     sL = sS.split("\n")
     secC = rparse.Section(tS, sL, folderD, labelD, rivtD)
     sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL = secC.section(tagL, cmdL)
-
     # accumulate doc strings
     dutfS += sutfS
     drs2S += srs2S

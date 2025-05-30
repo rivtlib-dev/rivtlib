@@ -50,16 +50,18 @@ class Tag:
     def taglx(self, tagS):
         """format line
         text        _[C]    center
+        text        _[B]    bold center
         text        _[D]    footnote description
         label       _[E]    equation label and number
         caption     _[F]    figure caption and number
         text        _[N]    number footnote
+        text        _[R]    right justify
         equation    _[S]    sympy
         title       _[T]    table title and number
         url, label  _[U]    url
         equation    _[Y]    sympy with equation number
-        ------  =>  _[H]    horizontal line (6 min.)
-        ======  =>  _[P]    new page (6 min.)
+        ------  =>  _[H]    horizontal line (6 -- min.)
+        ======  =>  _[P]    new page (6 == min.)
         Args:
             tagS (str): tag symbol
         Returns:
@@ -83,10 +85,10 @@ class Tag:
     def tagbx(self, tagS):
         """format block
         title _[[B]]   bold indent
+        title _[[C]]   code - literal indent
         title _[[I]]   italic indent
         title _[[L]]   literal
-        title _[[O]]   indent
-        title _[[P]]   plain
+        title _[[S]]   indent
         title _[[X]]   latex
         title _[[V]]   values table and number
         color _[[Q]]   quit
@@ -347,6 +349,17 @@ class Tag:
         lrS = "\n" + "Table " + fillS + ": " + blockS
         # endregion
 
+    def bC(self):
+        """code block"""
+        # region
+        iS = ""
+        for s in blockL:
+            s = "    " + s + "\n"
+            iS += s
+
+        uS = r2S = rS = iS
+        # endregion
+
     def bI(self):
         """italic-indent block"""
         # region
@@ -366,15 +379,13 @@ class Tag:
         lrS = "\n" + "Table " + fillS + ": " + blockS
         # endregion
 
-    def bL(self):
+    def bS(self):
         """indent block"""
         # region
-        iS = ""
-        for s in blockL:
-            s = "    " + s + "\n"
-            iS += s
-
-        uS = r2S = rS = iS
+        tnumI = int(self.labelD["tableI"])
+        self.labelD["tableI"] = tnumI + 1
+        luS = "Table " + str(tnumI) + " - " + blockS
+        lrS = "\n" + "Table " + fillS + ": " + blockS
         # endregion
 
     def bX(self):

@@ -30,12 +30,13 @@ class Cmdw:
             dtypeS (_type_): _description_
             styleS (_type_): _description_
         """
-
+        # region
         self.dtypeS = dtypeS
         self.folderD = folderD
         self.labelD = labelD
         self.yamlP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".yaml")
         self.iniP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".ini")
+        # endregion
 
     def cmdwx(self, cmdS):
         """parse a write command
@@ -50,18 +51,23 @@ class Cmdw:
             cmdS (str): command
 
         """
-
+        # region
         getattr(self, cmdS)
 
         return
+        # endregion
 
     def append(self, pthS, parS):
         """_summary_"""
+        # region
         pass
+        # endregion
 
     def prepend(self, pthS, parS):
         """_summary_"""
+        # region
         pass
+        # endregion
 
     def frontvar(self, titleS, subS, botS, imageS):
         """_summary_
@@ -71,16 +77,17 @@ class Cmdw:
             labelD (_type_): _description_
             titleS (_type_): _description_
         """
-
+        # region
         tcovS = self.cover(titleS, subS, botS, imageS)
         tcontS = self.content(titleS)
         tmainS = self.mainpage()
 
         return tcovS, tcontS, tmainS
+        # endregion
 
     def frontpg(self, tocS, tcovS, tcontS, tmainS):
         """assemble front pages"""
-
+        # region
         match tocS:
             case "none":
                 tcovS = " "
@@ -94,13 +101,16 @@ class Cmdw:
                 tcontS = " "
 
         return tcovS + tcontS + tmainS
+        # endregion
 
     def doctext(self):
+        # region
         pass
+        # endregion
 
     def rstpdf(self, rst2P, styleS):
         """_summary_"""
-
+        # region
         pthP = Path(self.folderD["pthS"])
         # pthP = os.path.join(pthP, '')
         # print(f"{pthP=}")
@@ -117,6 +127,7 @@ class Cmdw:
         msgS = "file written: " + str(insP)
 
         return msgS
+        # endregion
 
     def texpdf(self):
         """Modify TeX file to avoid problems with escapes:
@@ -136,7 +147,7 @@ class Cmdw:
             startpageS ([type]): [description]
 
         """
-
+        # region
         startS = str(labelD["pageI"])
         doctitleS = str(labelD["doctitleS"])
 
@@ -422,12 +433,17 @@ class Cmdw:
                     pass
             time.sleep(1)
             print("INFO: temporary Tex files deleted \n", flush=True)
+            # endregion
 
     def dochtml(self):
+        # region
         pass
+        # endregion
 
     def reportpdf2(self):
-        """
+        """template"""
+        # region
+        templ1 = """
 
 
 
@@ -476,11 +492,13 @@ class Cmdw:
 
 
         """
-        pass
+        # endregion
 
     def reporthtml(self):
-        """ """
+        """html"""
+        # region
         pass
+        # endregion
 
     def reportpdf(self, rL):
         """skip info command for md calcs
@@ -491,21 +509,20 @@ class Cmdw:
         Args:
             rL (list): parameter list
         """
-
-        """
+        # region
         try:
             filen1 = os.path.join(self.rpath, "reportmerge.txt")
             print(filen1)
-            file1 = open(filen1, 'r')
+            file1 = open(filen1, "r")
             mergelist = file1.readlines()
             file1.close()
             mergelist2 = mergelist[:]
         except OSError:
-            print('< reportmerge.txt file not found in reprt folder >')
+            print("< reportmerge.txt file not found in reprt folder >")
             return
         calnum1 = self.pdffile[0:5]
-        file2 = open(filen1, 'w')
-        newstr1 = 'c | ' + self.pdffile + ' | ' + self.calctitle
+        file2 = open(filen1, "w")
+        newstr1 = "c | " + self.pdffile + " | " + self.calctitle
         for itm1 in mergelist:
             if calnum1 in itm1:
                 indx1 = mergelist2.index(itm1)
@@ -518,11 +535,7 @@ class Cmdw:
         for j1 in mergelist2:
             file2.write(j1)
         file2.close()
-        return """
-        pass
-
         # from values
-
         if vL[1].strip() == "sub":
             self.setcmdD["subB"] = True
         self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
@@ -742,3 +755,4 @@ class Cmdw:
             self.restS += inrstS + "\n"
         self.restS += "\n\n"
         self.rivtD.update(locals())
+        # endregion
