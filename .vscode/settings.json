@@ -66,13 +66,7 @@
                 "color": "orange",
                 "useVsCodeApi": true,
                 "command": "editor.foldAllMarkerRegions",
-            },
-            {
-                "name": "Fold1",
-                "color": "orange",
-                "useVsCodeApi": true,
-                "command": "editor.foldLevel1",
-            },    
+            }, 
             {
                 "name": "FoldX",
                 "color": "orange",

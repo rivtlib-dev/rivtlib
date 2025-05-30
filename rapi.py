@@ -1,8 +1,8 @@
 #! python
 """rivt API
-API implemented with :
 
-import rivtlib.rapi as rv
+usage:
+    import rivtlib.rapi as rv
 
 API functions:
     rv.R(sS) - (Run) Execute shell scripts
@@ -12,6 +12,8 @@ API functions:
     rv.W(sS) - (Write) Write formatted documents
     rv.S(sS) - (Skip) Skip string processing of that string
 
+where sS is a triple quoted, indented, utf-8 section string.
+
 Globals:
     utfS (str): utf doc string
     rstS (str): rst2pdf doc string
@@ -20,11 +22,7 @@ Globals:
     folderD (dict): folder and file paths
     rivtD (dict): calculated values
 
-where sS is a triple quoted, indented, utf-8 section string. This rivtlib code
-base uses the last letter of a variable name to indicate the variable types as
-follows:
-
-Variable type suffix:
+This code uses the last letter of the variable name to indicate types:
 
     A = array
     B = boolean
@@ -34,6 +32,7 @@ Variable type suffix:
     I = integer
     L = list
     N = file name only
+    O = object
     P = path
     S = string
 
@@ -60,7 +59,6 @@ logging.info(f"""rivt backup : {folderD["bakfP"]}""")  # noqa: F405
 
 def doc_hdr():
     """_summary_
-
     Returns:
         _type_: _description_
     """
@@ -91,22 +89,17 @@ def doc_hdr():
 def doc_parse(sS, tS, tagL, cmdL):
     """
     section strings to doc strings
-
     Args:
         sS (str): rivt section
         tS (str): section type (R,I,V,T,W,S)
-
     Calls:
         Section (class), section (method)
-
     Returns:
         sutfS (str): utf output
         srs2S (str): rst2pdf output
         srstS (str): reSt output
     """
-
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-
     sL = sS.split("\n")
     secC = rparse.Section(tS, sL, folderD, labelD, rivtD)
     sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL = secC.section(tagL, cmdL)
@@ -118,50 +111,36 @@ def doc_parse(sS, tS, tagL, cmdL):
     return dutfS, drs2S, drstS, rivtL
 
 
-dutfS, drs2S, drstS = doc_hdr()  # doc header
-
-
 def R(sS):
     """convert Run string
-
     Args:
         sS (str): section string
     """
-
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
 
 def I(sS):  # noqa: E743
     """convert Insert string
-
     Args:
         sS (str): section string
     """
-
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-
     cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
     tag1 = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
     tag2 = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tag1 + tag2
-
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "I", tagL, cmdL)
 
 
 def V(sS):
     """convert Value string
-
     Args:
         sS (str): section string
     """
-
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-
     cmdL = ["IMG", "IMG2", "VALUE"]
     tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", ":=", "[V]]"]
-
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "V", tagL, cmdL)
-
     fileS = folderD["valnS"] + "-" + str(labelD["secnumI"]) + ".csv"
     fileP = Path(folderD["valP"], fileS)
     with open(fileP, "w") as file1:
@@ -170,33 +149,30 @@ def V(sS):
 
 def T(sS):
     """convert Tools string
-
     Args:
         sS (str): section string
     """
-
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
 
 def S(sS):
     """skip section string - no processing
-
     Args:
         sS (str): section string
     """
-
     shL = sS.split("|")
     print("\n[" + shL[0] + "] : section skipped " + "\n")
 
 
 def W(sS):
     """write doc files
-
     Args:
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-
     msgS = "docs written"
     print("\n" + f"{msgS=}")
     sys.exit()
+
+
+dutfS, drs2S, drstS = doc_hdr()  # doc header

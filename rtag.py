@@ -16,10 +16,10 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Tag:
-    """formats line and block tags
+    """formats tags
     Methods:
-        taglx(tagS): formats a line
-        tagbx(tagS): formats a block
+        taglx(tagS): formats line
+        tagbx(tagS): formats block
         tagex(tagS): formats equation
     """
 

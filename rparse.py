@@ -10,15 +10,12 @@ class Section:
     """converts section string to utf and rest doc strings"""
 
     def __init__(self, stS, sL, folderD, labelD, rivtD):
-        """
-        preprocess section headers and section string
-
+        """preprocess section headers and string
         Args:
             stS (str): section type
             sL (list): rivt section lines
-
         """
-
+        # region
         errlogP = Path(folderD["rivtP"], "temp", "rivt-log.txt")
         modnameS = __name__.split(".")[1]
         logging.basicConfig(
@@ -38,8 +35,7 @@ class Section:
         self.folderD = folderD
         self.labelD = labelD
         self.rivtD = rivtD
-
-        # section header
+        # section heading
         hL = sL[0].split("|")
         if hL[0].strip()[0:2] == "--":
             labelD["docS"] = hL[0].split("--")[1][1]  # section title
@@ -58,13 +54,11 @@ class Section:
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
-
         # print(sutfS, srs2S, srstS)
         self.sutfS = sutfS  # utf doc
         self.srs2S = srs2S  # rst2pdf doc
         self.srstS = srstS  # rest doc
         print(sutfS)  # STDOUT section header
-
         # strip leading spaces and comments from section
         spL = []
         for slS in sL[1:]:
@@ -75,26 +69,25 @@ class Section:
             if "#" in slS[:5]:
                 continue
             spL.append(slS[4:])
-
         self.logging.info(f"rivt function : {stS}")
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
+        # endregion
 
     def section(self, tagL, cmdL):
         """parse section
-
         Args:
             self.spL (list): preprocessed section list
-
         Returns:
-            sutfS (str): utf doc section
-            srstS (str): rest doc section
-            xrstS (str): tex doc section
+            sutfS (str): utf doc
+            srs2S (str): rst2pdf doc
+            srstS (str): resT doc
             folderD (dict): folder paths
             labelD (dict): labels
             rivtD (dict): calculated values
+            rivtL (list): values for export
         """
-
+        # region
         rivtL = []
         blockB = False
         blockS = """"""
@@ -188,3 +181,4 @@ class Section:
                 print(slS)  # STDOUT - line as is
 
         return sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL
+        # endregion

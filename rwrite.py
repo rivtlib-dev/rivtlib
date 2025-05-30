@@ -23,7 +23,6 @@ class Cmdw:
 
     def __init__(self, folderD, labelD, dtypeS, styleS):
         """command object (type is write)
-
         Args:
             folderD (_type_): _description_
             labelD (_type_): _description_
@@ -40,16 +39,13 @@ class Cmdw:
 
     def cmdwx(self, cmdS):
         """parse a write command
-
         Commands:
             |DOC| rel. pth | type, init
             |APPEND| rel. pth | divider; nodivider
             |PREPEND| rel. pth | divider; nodivider
             |REPORT| rel. pth | overwrite; nowrite
-
         Args:
             cmdS (str): command
-
         """
         # region
         getattr(self, cmdS)
@@ -71,7 +67,6 @@ class Cmdw:
 
     def frontvar(self, titleS, subS, botS, imageS):
         """_summary_
-
         Args:
             folderD (_type_): _description_
             labelD (_type_): _description_
