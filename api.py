@@ -34,7 +34,7 @@ rivtlib variables use the last letter of the var name to indicate type:
     O => object
     P => path
     S => string
-    P => total path (includes file)
+    T => total path (includes file)
 
 """
 
