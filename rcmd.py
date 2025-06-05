@@ -25,7 +25,7 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmdr:
-    """commands (type is read)
+    """read commands
 
     IMG - insert image from file
     IMG2 - insert side by side images from files

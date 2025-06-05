@@ -13,12 +13,12 @@ from fpdf import FPDF
 
 
 class Cmdw:
-    """commands (type is write)
+    """write commands
 
-    DOC - write doc of specified type
+    DOC - write doc
     APPEND - append pdf to doc
     PREPEND - prepend pdf to doc
-    REPORT - generate a report template file
+    REPORT - generate report template file
     """
 
     def __init__(self, folderD, labelD, dtypeS, styleS):
@@ -750,4 +750,46 @@ class Cmdw:
             self.restS += inrstS + "\n"
         self.restS += "\n\n"
         self.rivtD.update(locals())
+        # endregion
+
+
+class Report:
+    """generates report
+
+    DOC - write doc
+    APPEND - append pdf to doc
+    PREPEND - prepend pdf to doc
+    REPORT - generate report template file
+    """
+
+    def __init__(self, folderD, labelD, dtypeS, styleS):
+        """command object (type is write)
+        Args:
+            folderD (_type_): _description_
+            labelD (_type_): _description_
+            dtypeS (_type_): _description_
+            styleS (_type_): _description_
+        """
+        # region
+        self.dtypeS = dtypeS
+        self.folderD = folderD
+        self.labelD = labelD
+        self.yamlP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".yaml")
+        self.iniP = Path(folderD["projP"], "doc/styles/", styleS.strip() + ".ini")
+        # endregion
+
+    def repx(self, cmdS):
+        """parse a write command
+        Commands:
+            |DOC| rel. pth | type, init
+            |APPEND| rel. pth | divider; nodivider
+            |PREPEND| rel. pth | divider; nodivider
+            |REPORT| rel. pth | overwrite; nowrite
+        Args:
+            cmdS (str): command
+        """
+        # region
+        getattr(self, cmdS)
+
+        return
         # endregion

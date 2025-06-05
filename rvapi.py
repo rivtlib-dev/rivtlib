@@ -34,17 +34,19 @@ rivtlib variables use the last letter of the var name to indicate type:
     O => object
     P => path
     S => string
+    P => total path (includes file)
 
 """
 
-import sys
 import logging
+import sys
 from datetime import datetime
 from pathlib import Path
 
-from rivtlib import rparse, rwrite
-from rivtlib.rparam import *  # noqa: F403
-from rivtlib.runits import *  # noqa: F403
+from rivtlib.rvunits import *  # noqa: F403
+from rvparam import *  # noqa: F403
+
+from . import rvparse, rvwrite  # noqa: F403
 
 logging.info(f"""rivt file : {folderD["rivtnS"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
@@ -100,7 +102,7 @@ def doc_parse(sS, tS, tagL, cmdL):
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
     sL = sS.split("\n")
-    secC = rparse.Section(tS, sL, folderD, labelD, rivtD)
+    secC = rvparse.Section(tS, sL, folderD, labelD, rivtD)
     sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL = secC.section(tagL, cmdL)
     # accumulate doc strings
     dutfS += sutfS
@@ -161,13 +163,15 @@ def T(sS):
 
 
 def W(sS):
-    """write doc files
+    """Write doc files
     Args:
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-    msgS = "docs written"
-    print("\n" + f"{msgS=}")
+
+    wrtdoc = rvwrite.Cmdw(folderD, labelD, sS)
+    msgS = wrtdoc.cmdwx()
+    print("\n" + f"{msgS}")
     sys.exit()
 
 
