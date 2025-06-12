@@ -509,3 +509,57 @@ class Cmdw:
 
     def htmlx():
         pass
+
+
+class Cmdr:
+
+       """write commands
+
+    DOC - write doc
+    APPEND - append pdf to doc
+    PREPEND - prepend pdf to doc
+    """
+
+    def __init__(self, folderD, labelD, sS):
+        """write object
+        Args:
+            folderD (dict): folders
+            labelD (dict): labels
+            sS (str): section
+        """
+        # region
+        self.folderD = folderD
+        self.labelD = labelD
+        self.sutfS = ""  # utf section
+        self.srs2S = ""  # rst2pdf section
+        self.srstS = ""  # rest section
+        self.pthS = ""
+        self.parS = ""
+
+        errlogP = Path(folderD["rivtP"], "temp", "rivt-log.txt")
+        modnameS = __name__.split(".")[1]
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+            datefmt="%m-%d %H:%M",
+            filename=errlogP,
+            filemode="w",
+        )
+        warnings.filterwarnings("ignore")
+        self.logging = logging
+
+        sL = sS.split()  # preprocessed lines
+        spL = []  # strip leading spaces and comments from section
+        for slS in sL[1:]:
+            if len(slS) < 5:
+                slS = "\n"
+                spL.append(slS)
+                continue
+            if "#" in slS[:5]:
+                continue
+            spL.append(slS[4:])
+        self.logging.info("rivt function : W")
+        self.spL = spL  # preprocessed list
+        # endregion
+
+    

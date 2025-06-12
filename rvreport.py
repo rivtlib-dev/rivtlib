@@ -1,4 +1,4 @@
-"""generates report
+"""generates a report
 
 DOC - write doc
 APPEND - append pdf to doc

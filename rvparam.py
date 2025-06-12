@@ -23,7 +23,7 @@ if __name__ == "rivtlib.rparam":
     if fnmatch.fnmatch(rivtN, patternS):
         rivtfP = Path(rivtP, rivtN)
 else:
-    print(f"""The rivt file name is - {rivtN} -. The file name pattern must""")
+    print(f"""The rivt file name is - {rivtN} -. The file name must""")
     print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
     sys.exit()
 
@@ -67,7 +67,7 @@ bakT = Path(rivtP, bakN)
 rbakT = Path(rivtP, rbaseS + ".bak")
 pypathS = os.path.dirname(sys.executable)
 rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
-styleP = Path(projP, "style")
+styleP = Path(projP, "docs", "style")
 reportP = Path(projP, "docs", "report")
 ossP = Path(projP / "rivtos")
 valnS = prfxS.replace("r", "v")
@@ -92,7 +92,7 @@ folderD = {
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(projP, "README.txt"),
     "reportP": Path(projP, "docs", "report"),
-    "styleP": Path(projP, "style"),
+    "styleP": Path(projP, "docs", "style"),
     "runP": Path(srcP, "r" + dnumS),
     "insP": Path(srcP, "i" + dnumS),
     "valP": Path(srcP, "v" + dnumS),
