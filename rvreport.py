@@ -36,8 +36,9 @@ def genreport(typeS):
     pass
 
 
-def rename_divisions():
+def rename_div():
     """_summary_"""
+    pass
 
 
 def doc_list():
