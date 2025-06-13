@@ -16,7 +16,7 @@ rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))
 modnameS = __name__.split(".")[1]
 
-if __name__ == "rivtlib.rparam":
+if __name__ == "rivtlib.rvparam":
     rivtT = Path(__main__.__file__)
     rivtN = rivtT.name
     patternS = "r[0-9][0-9][0-9]0-9]-*.py"
@@ -27,9 +27,7 @@ else:
     print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
     sys.exit()
 
-# print(f"{rivtfP=}")
-# print(f"{rivtP=}")
-# print(f"{rivtnS=}")
+# print(f"{rivtT=}")
 # print(f"{__name__=}")
 # print(f"{modnameS=}")
 
@@ -45,6 +43,7 @@ logging.basicConfig(
 warnings.filterwarnings("ignore")
 
 # region - file paths
+
 # read
 pthS = " "
 rbaseS = rivtN.split(".")[0]
@@ -62,6 +61,7 @@ docP = Path(projP, "docs")
 srcP = insP = Path(projP, "source")
 styleP = Path(projP, "styles")
 titleS = rivtN.split("-")[1]
+
 # write
 bakT = Path(rivtP, bakN)
 rbakT = Path(rivtP, rbaseS + ".bak")
@@ -70,9 +70,11 @@ rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 styleP = Path(projP, "docs", "style")
 reportP = Path(projP, "docs", "report")
 ossP = Path(projP / "rivtos")
-valnS = prfxS.replace("r", "v")
+valN = prfxS.replace("r", "v")
+
 # read/write
 valP = Path(srcP, "v" + dnumS)
+
 # print(f"{projP=}")
 # print(f"{rivtP=}")
 # print(f"{insP=}")
@@ -82,6 +84,7 @@ valP = Path(srcP, "v" + dnumS)
 # region - folders dict
 folderD = {
     "pthS": " ",
+    "rivtT": rivtT,
     "rivtN": rivtT.name,
     "baseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
@@ -97,6 +100,7 @@ folderD = {
     "insP": Path(srcP, "i" + dnumS),
     "valP": Path(srcP, "v" + dnumS),
     "tooP": Path(srcP, "t" + dnumS),
+    "valN": valN,
 }
 # endregion
 

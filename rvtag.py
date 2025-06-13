@@ -67,7 +67,8 @@ class Tag:
         """
         # region
         cmdS = "l" + tagS[0]
-        getattr(self, cmdS)
+        method = getattr(self, cmdS)
+        method()
 
         return (
             self.uS,
@@ -88,7 +89,7 @@ class Tag:
         title _[[L]]   literal
         title _[[S]]   indent
         title _[[X]]   latex
-        title _[[V]]   values table and number
+        title _[[V]]   values table
         color _[[Q]]   quit
         Args:
             tagS (str): tag symbol
@@ -97,9 +98,9 @@ class Tag:
         """
         # region
         self.blockL = self.strngS.split("\n")
-
         cmdS = "b" + tagS[1]
-        getattr(self, cmdS)
+        method = getattr(self, cmdS)
+        method()
 
         return (
             self.uS,
@@ -114,42 +115,48 @@ class Tag:
 
     def tagex(self):
         """format equation
-            a := 1 + 2    :=     evaluate equation
+
+            equation tag  :=
+            a := 1 + 2 | unit1, unit2, dec1, dec2 | ref
+
+            ratio tags     :<  :>
+            a :> b | Ok, Not Ok
+            a :< b | Pass, Fail
+
         Returns:
             uS, r2S, rS, folderD, labelD, rivtD, rivtL
         """
         # region
-        lineS = self.strngS
-        fnumI = int(self.labelD["figI"])
-        self.labelD["figI"] = fnumI + 1
-        uS = r2S = rS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
         tbl1L = []
         hdr1L = []
-        wI = self.labelD["widthI"]
+        lineS = self.strngS
+        print(f"{lineS}")
         lpL = lineS.split("|")
         eqS = lpL[0]
         eqS = eqS.replace(":=", "=").strip()
-        parL = lpL[1:]
-        unit1S, unit2S, dec1S, dec2S = parL[0].split(",")
-        refS = parL[1].strip()
+        unit1S, unit2S, dec1S, dec2S = lpL[1].split(",")
+        refS = lpL[2].strip()
         unit1S, unit2S = unit1S.strip(), unit2S.strip()
         dec1S, dec2S = dec1S.strip(), dec2S.strip()
         fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
         fmt2S = "Unum.set_format(value_format='%." + dec2S + "f', auto_norm=True)"
-        # equation as string
+        # wI = self.labelD["widthI"]
+
+        # equation
         spL = eqS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
         refS = refS.rjust(self.labelD["widthI"])
         uS = refS + "\n" + eq1S + "\n\n"
-        r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
-        rS = ".. raw:: math\n\n   " + eqS + "\n"
+        rS = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
+        xS = ".. raw:: math\n\n   " + eqS + "\n"
         if unit1S != "-":
             exec(eqS, globals(), self.rivtD)
         else:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivtD)
+
         # rivtL and rivtD append
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
@@ -158,7 +165,8 @@ class Tag:
         exS = vxL[0] + " * " + vxL[1].upper()
         ex2S = spL[0].strip() + " = " + exS
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
-        rivtL.append(exvS)
+        self.rivtL.append(exvS)
+
         # equation and table elements
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
         symaO = symeqO.atoms(sp.Symbol)
@@ -201,8 +209,8 @@ class Tag:
             )
         )
         uS += output.getvalue()
-        r2S += output.getvalue()
         rS += output.getvalue()
+        xS += output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
 
@@ -232,7 +240,9 @@ class Tag:
         # region
         lineS = self.strngS
         ftnumI = self.labelD["noteL"].pop(0)
-        uS, r2S, rS = "[" + str(ftnumI) + "] " + lineS
+        self.uS = "[" + str(ftnumI) + "] " + lineS
+        self.rS = "[" + str(ftnumI) + "] " + lineS
+        self.xS = "[" + str(ftnumI) + "] " + lineS
         # endregion
 
     def lE(self):
@@ -241,10 +251,11 @@ class Tag:
         lineS = self.strngS
         enumI = int(self.labelD["equI"])
         self.labelD["equI"] = enumI + 1
-        fillS = "E" + str(enumI).zfill(2)
-        uS = fillS + " - " + lineS
-        fillS = "**E" + str(enumI).zfill(2) + "**"
-        rS = r2S = lineS + " - " + fillS + "\n"
+        fillS = "E" + str(enumI)
+        self.uS = fillS + " - " + lineS
+        fillS = "**E" + str(enumI) + "**"
+        self.rS = lineS + " - " + fillS + "\n"
+        self.xS = lineS + " - " + fillS + "\n"
         # endregion
 
     def lF(self):
@@ -263,7 +274,9 @@ class Tag:
         ftnumI = self.labelD["footL"].pop(0)
         self.labelD["noteL"].append(ftnumI + 1)
         self.labelD["footL"].append(ftnumI + 1)
-        uS = r2S = rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.xS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         # endregion
 
     def lS(self):
@@ -273,10 +286,10 @@ class Tag:
         spS = lineS.strip()
         spL = spS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-        lineS = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
-        uS = textwrap.indent(lineS, "     ")
-        r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
-        rS = ".. raw:: math\n\n   " + uS + "\n"
+        lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+        self.uS = textwrap.indent(lineS, "     ")
+        self.rS = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
+        self.xS = ".. raw:: math\n\n   " + lineS + "\n"
         # endregion
 
     def lT(self):
@@ -285,18 +298,20 @@ class Tag:
         lineS = self.strngS
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
-        fillS = str(tnumI).zfill(2)
-        uS = "\nTable " + str(tnumI) + ": " + lineS
-        r2S = "\n**Table " + fillS + "**: " + lineS
-        rS = "\n**Table " + fillS + "**: " + lineS
+        fillS = str(tnumI)
+        self.uS = "\nTable " + str(tnumI) + ": " + lineS
+        self.rS = "\n**Table " + fillS + "**: " + lineS
+        self.xS = "\n**Table " + fillS + "**: " + lineS
         # endregion
 
     def lU(self):
         "format url link"
         # region
         lineS = self.strngS
-        lineL = self.lineS.split(",")
-        uS = r2S = rS = ".. _" + lineL[0] + ": " + lineL[1]
+        lineL = lineS.split(",")
+        self.uS = lineL[0] + ": " + lineL[1]
+        self.rS = ".. _" + lineL[0] + ": " + lineL[1]
+        self.xS = ".. _" + lineL[0] + ": " + lineL[1]
         # endregion
 
     def lY(self):
@@ -307,9 +322,9 @@ class Tag:
         spL = spS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        uS = textwrap.indent(lineS, "     ")
-        r2S = "\n\n.. code:: \n\n\n" + uS + "\n\n"
-        rS = ".. raw:: math\n\n   " + lineS + "\n"
+        self.uS = textwrap.indent(lineS, "     ")
+        self.rS = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
+        self.xS = ".. raw:: math\n\n   " + lineS + "\n"
         # endregion
 
     def lH(self):
@@ -323,14 +338,26 @@ class Tag:
     def lP(self):
         "new page"
         # region
-        pagenoS = str(self.labelD["pageI"])
-        self.uS = self.labelD["headuS"].replace("p##", pagenoS)
-        self.labelD["pageI"] = int(pagenoS) + 1
-        self.xS = self.rS = (
+        pgnoS = str(self.labelD["pageI"])
+        self.uS = (
+            "\n" + "=" * (int(self.labelD["widthI"]) - 10) + " Page " + pgnoS + "\n"
+        )
+        # self.uS = self.labelD["headuS"].replace("p##", pagenoS)
+        self.labelD["pageI"] = int(pgnoS) + 1
+        self.rS = (
             "\n"
             + "_" * self.labelD["widthI"]
             + "\n"
-            + uS
+            + self.uS
+            + "\n"
+            + "_" * self.labelD["widthI"]
+            + "\n"
+        )
+        self.xS = (
+            "\n"
+            + "_" * self.labelD["widthI"]
+            + "\n"
+            + self.uS
             + "\n"
             + "_" * self.labelD["widthI"]
             + "\n"
@@ -343,8 +370,9 @@ class Tag:
         blockL = self.blockL
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
-        luS = "Table " + str(tnumI) + " - " + blockS
-        lrS = "\n" + "Table " + fillS + ": " + blockS
+        self.uS = "Table " + str(tnumI) + " - " + blockS
+        self.rS = "\n" + "Table " + fillS + ": " + blockS
+        self.xS = "\n" + "Table " + fillS + ": " + blockS
         # endregion
 
     def bC(self):
@@ -361,11 +389,7 @@ class Tag:
     def bI(self):
         """italic-indent block"""
         # region
-        blockL = self.blockL
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
-        luS = "Table " + str(tnumI) + " - " + blockS
-        lrS = "\n" + "Table " + fillS + ": " + blockS
+        print("IIIIIIIIIIIIIIIIIII")
         # endregion
 
     def bL(self):
@@ -397,17 +421,18 @@ class Tag:
 
     def bV(self):
         """values block"""
+
         # region
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
-        fillS = str(tnumI).zfill(2)
+        fillS = str(tnumI)
         tbL = []
-        uS = "\nTable " + fillS + " - " + blockL[0] + "\n\n"
-        r2S = "\n**Table " + fillS + "**: " + blockL[0] + "\n\n"
-        rS = "\n**Table " + fillS + "**: " + blockL[0] + "\n\n"
+        self.uS = "\nTable " + fillS + " - " + self.blockL[0] + "\n\n"
+        self.rS = "\n**Table " + fillS + "**: " + self.blockL[0] + "\n\n"
+        self.xS = "\n**Table " + fillS + "**: " + self.blockL[0] + "\n\n"
 
-        # print(f"{blockL=}")
-        for vaS in blockL[1:]:
+        # print(f"{self.blockL=}")
+        for vaS in self.blockL[1:]:
             vaL = vaS.split("|")
             if len(vaL) != 3:
                 continue
@@ -431,7 +456,7 @@ class Tag:
 
             # rivtL append
             exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
-            rivtL.append(exvS)
+            self.rivtL.append(exvS)
 
             # rivtD append
             if unit1S != "-":
@@ -471,9 +496,9 @@ class Tag:
                 colalign=alignL,
             )
         )
-        uS += output.getvalue() + "\n"
-        r2S += output.getvalue() + "\n"
-        rS += output.getvalue() + "\n"
+        self.uS += output.getvalue() + "\n"
+        self.rS += output.getvalue() + "\n"
+        self.xS += output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
         # endregion

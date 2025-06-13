@@ -8,9 +8,9 @@ API functions:
     rv.R(sS) - (Run) Execute shell scripts
     rv.I(sS) - (Insert) Insert static text, math, images and tables
     rv.V(sS) - (Values) Evaluate values and equations
-    rv.T(sS) - (Tools) Execute Python functions and scripts
-    rv.W(sS) - (Write) Write formatted documents
-    rv.S(sS) - (Skip) Skip string processing of that string
+    rv.T(sS) - (Tools) Execute Python scripts
+    rv.W(sS) - (Write) Write formatted document files
+    rv.S(sS) - (Skip) Skip processing of that section
 
 where sS is a section string - triple quoted, header line, indented, utf-8.
 
@@ -44,18 +44,17 @@ from datetime import datetime
 from pathlib import Path
 
 from rivtlib.rvunits import *  # noqa: F403
-from rvparam import *  # noqa: F403
+from rivtlib.rvparam import *  # noqa: F403
+from rivtlib import rvparse, rvcmdwr
 
-from . import rvparse, rvwrite  # noqa: F403
-
-logging.info(f"""rivt file : {folderD["rivtnS"]}""")
+logging.info(f"""rivt file : {folderD["rivtN"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
 
-with open(rivtfP, "r") as f2:  # noqa: F405
+with open(folderD["rivtT"], "r") as f2:  # noqa: F405
     rivtS = f2.read()
-with open(folderD["bakfP"], "w") as f3:  # noqa: F405
+with open(folderD["bakT"], "w") as f3:  # noqa: F405
     f3.write(rivtS)
-logging.info(f"""rivt backup : {folderD["bakfP"]}""")  # noqa: F405
+logging.info(f"""rivt backup : {folderD["bakT"]}""")  # noqa: F405
 
 
 def doc_hdr():
@@ -133,7 +132,7 @@ def I(sS):  # noqa: E743
     tag1L = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
     tag2L = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tag1L + tag2L
-    dutfS, drs2S, drstS = doc_parse(sS, "I", tagL, cmdL)
+    dutfS, drs2S, drstS, rivtL = doc_parse(sS, "I", tagL, cmdL)
 
 
 def V(sS):
@@ -143,9 +142,9 @@ def V(sS):
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
     cmdL = ["IMG", "IMG2", "VALUE"]
-    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", ":=", "[V]]"]
+    tagL = ["[E]]", "[F]]", "[S]]", "[Y]]", "[T]]", "[H]]", "[P]]", "[V]]", ":="]
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "V", tagL, cmdL)
-    fileS = folderD["valnS"] + "-" + str(labelD["secnumI"]) + ".csv"
+    fileS = folderD["valN"] + "-" + str(labelD["secnumI"]) + ".csv"
     fileP = Path(folderD["valP"], fileS)
     with open(fileP, "w") as file1:
         file1.write("\n".join(rivtL))
@@ -169,7 +168,7 @@ def W(sS):
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
-    wrtdoc = rvwrite.Cmdw(folderD, labelD, sS)
+    wrtdoc = rvcmdwr.Cmdw(folderD, labelD, sS)
     msgS = wrtdoc.cmdwx()
     print("\n" + f"{msgS}")
     sys.exit()
@@ -184,4 +183,6 @@ def S(sS):
     print("\n[" + shL[0] + "] : section skipped " + "\n")
 
 
-dutfS, drs2S, drstS = doc_hdr()  # doc header
+# start doc generation - returns doc in three formats
+
+dutfS, drs2S, drstS = doc_hdr()

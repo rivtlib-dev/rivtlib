@@ -4,7 +4,7 @@ import warnings
 
 from pathlib import Path
 from . import rvtag
-from . import rvcmd
+from . import rvcmdiv
 
 
 class Section:
@@ -60,8 +60,8 @@ class Section:
         self.srs2S = srs2S  # rst2pdf doc
         self.srstS = srstS  # rest doc
         print(sutfS)  # STDOUT section header
-        # strip leading spaces and comments from section
-        spL = []
+
+        spL = []  # strip leading spaces and comments from section
         for slS in sL[1:]:
             if len(slS) < 5:
                 slS = "\n"
@@ -69,6 +69,8 @@ class Section:
                 continue
             if "#" in slS[:5]:
                 continue
+            if slS.strip()[:7] == "=-=-=-=":
+                slS = "    _[P]"
             spL.append(slS[4:])
         self.logging.info(f"rivt function : {stS}")
         self.spL = spL  # preprocessed list
@@ -103,6 +105,7 @@ class Section:
         rivtD = self.rivtD
 
         for slS in self.spL:  # loop over rivt section lines
+            # print(slS)
             if self.stS == "I":
                 txt2L = []
                 # print(f"{slS=}")
@@ -124,10 +127,10 @@ class Section:
                 print(" ")  # STDOUT- blank line
                 continue
             elif blockB:  # block accumulate
-                blockS += slS + "\n"
+                # print(f"{blockS}")
                 if blockB and ("_[[Q]]" in slS):  # end of block
                     blockB = False
-                    tC = rvtag.Tag(folderD, labelD, rivtD, blockS, rivtL)
+                    tC = rvtag.Tag(folderD, labelD, rivtD, rivtL, blockS)
                     uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.tagbx(tagS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
@@ -136,14 +139,16 @@ class Section:
                     tagS = ""
                     blockS = """"""
                     continue
+                blockS += slS + "\n"
+                continue
             elif slS[0:1] == "|":  # commands
                 parL = slS[1:].split("|")
                 cmdS = parL[0].strip()
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
-                    cmC = rvcmd.Cmdr(folderD, labelD, rivtD, rivtL, parL)
-                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmdrx(cmdS)
+                    cmC = rvcmdiv.Cmdiv(folderD, labelD, rivtD, rivtL, parL)
+                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmdx(cmdS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
                     srstS += xS + "\n"
@@ -156,7 +161,7 @@ class Section:
                 self.logging.info(f"tag : _[{tagS}")
                 if tagS in tagL:  # check list
                     # print(f"{tagS=}")
-                    tC = rvtag.Tag(folderD, labelD, rivtD)
+                    tC = rvtag.Tag(folderD, labelD, rivtD, rivtL, lineS)
                     if len(tagS) < 3:  # line tag
                         uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.taglx(tagS)
                         sutfS += uS + "\n"
@@ -170,9 +175,9 @@ class Section:
                         blockS += lineS + "\n"
             elif ":=" in slS:
                 if ":=" in tagL:
-                    tagS = ":="
-                    tC = rvtag.Tag(folderD, labelD, rivtD)
-                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.taglx(tagS)
+                    lineS = slS.strip()
+                    tC = rvtag.Tag(folderD, labelD, rivtD, rivtL, lineS)
+                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.tagex()
                     print(uS)  # STDOUT- tagged line
                     continue
             else:  # everything else
