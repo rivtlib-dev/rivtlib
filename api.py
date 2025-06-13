@@ -71,7 +71,7 @@ def doc_hdr():
     # config.read(Path(projP, "rivt-doc.ini"))
     # headS = config.get("report", "title")
     # footS = config.get("utf", "foot1")
-    titleL = rivtS.split("-")  # subdivision title
+    titleL = rivtN.split("-")  # subdivision title
     titleS = titleL[1].split(".")[0]
     dnumS = titleL[0].split("r")[1]
     headS = dnumS + "   " + titleS
@@ -142,7 +142,7 @@ def V(sS):
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
     cmdL = ["IMG", "IMG2", "VALUE"]
-    tagL = ["[E]]", "[F]]", "[S]]", "[Y]]", "[T]]", "[H]]", "[P]]", "[V]]", ":="]
+    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "[V]]", ":="]
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "V", tagL, cmdL)
     fileS = folderD["valN"] + "-" + str(labelD["secnumI"]) + ".csv"
     fileP = Path(folderD["valP"], fileS)

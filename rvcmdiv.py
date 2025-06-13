@@ -88,9 +88,11 @@ class Cmdiv:
         if "_[F]" in self.parS:
             numS = str(self.labelD["figI"])
             self.labelD["figI"] = int(numS) + 1
-            figS = "**Fig. " + numS + " -** "
+            figuS = "Fig. " + numS + " - "
+            figrS = "**Fig. " + numS + " -**"
+
         else:
-            figS = " "
+            figuS = " "
         # print(f"{parS=}")
         # print(f"{pthS=}")
         parL = self.parS.split(",")
@@ -99,16 +101,15 @@ class Cmdiv:
         scS = parL[1].strip()
         insP = Path(self.folderD["projP"] / "source" / pthS)
         insS = str(insP.as_posix())
-        pS = " [file: " + self.pthS + "]" + "\n\n"
         if capS == "-":
             capS = " "
         # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
         try:
             img1 = Image.open(self.pthS)
             _display(img1)
-        except:
+        except:  # noqa: E722
             pass
-        self.uS = figS + capS + " [file: " + self.pthS + " ] \n"
+        self.uS = figuS + capS + " [file: " + self.pthS + " ] \n"
         self.rS = self.xS = (
             "\n\n.. image:: "
             + insS
@@ -118,7 +119,7 @@ class Cmdiv:
             + "% \n"
             + "   :align: center \n\n\n"
             + ".. class:: center \n\n"
-            + figS
+            + figrS
             + capS
             + "\n"
         )

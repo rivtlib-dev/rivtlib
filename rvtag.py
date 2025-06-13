@@ -251,9 +251,9 @@ class Tag:
         lineS = self.strngS
         enumI = int(self.labelD["equI"])
         self.labelD["equI"] = enumI + 1
-        fillS = "E" + str(enumI)
+        fillS = "Eq " + str(enumI)
         self.uS = fillS + " - " + lineS
-        fillS = "**E" + str(enumI) + "**"
+        fillS = "**Eq " + str(enumI) + "**"
         self.rS = lineS + " - " + fillS + "\n"
         self.xS = lineS + " - " + fillS + "\n"
         # endregion
@@ -264,7 +264,9 @@ class Tag:
         lineS = self.strngS
         fnumI = int(self.labelD["figI"])
         self.labelD["figI"] = fnumI + 1
-        uS = r2S = rS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
+        self.uS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
+        self.rS = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
+        self.xS = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
         # endregion
 
     def lN(self):
@@ -338,12 +340,12 @@ class Tag:
     def lP(self):
         "new page"
         # region
-        pgnoS = str(self.labelD["pageI"])
+        pgnS = str(self.labelD["pageI"])
         self.uS = (
-            "\n" + "=" * (int(self.labelD["widthI"]) - 10) + " Page " + pgnoS + "\n"
+            "\n" + "=" * (int(self.labelD["widthI"]) - 10) + " Page " + pgnS + "\n"
         )
         # self.uS = self.labelD["headuS"].replace("p##", pagenoS)
-        self.labelD["pageI"] = int(pgnoS) + 1
+        self.labelD["pageI"] = int(pgnS) + 1
         self.rS = (
             "\n"
             + "_" * self.labelD["widthI"]

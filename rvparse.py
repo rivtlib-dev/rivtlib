@@ -69,7 +69,7 @@ class Section:
                 continue
             if "#" in slS[:5]:
                 continue
-            if slS.strip()[:7] == "=-=-=-=":
+            if slS.strip()[:9] == "=-=-=-=-=":
                 slS = "    _[P]"
             spL.append(slS[4:])
         self.logging.info(f"rivt function : {stS}")
