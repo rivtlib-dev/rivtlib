@@ -16,7 +16,7 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmdiv:
-    """read I and V commands
+    """select commands - Insert, Value sections
 
     IMG - insert image from file
     IMG2 - insert side by side images from files
@@ -32,7 +32,7 @@ class Cmdiv:
     """
 
     def __init__(self, folderD, labelD, rivtD, rivtL, parL):
-        """command object (type is read)
+        """an Insert or Value object
         Args:
             folderD (dict): folders
             labelD (dict): labels
@@ -56,8 +56,8 @@ class Cmdiv:
         self.xS = ""
         # endregion
 
-    def cmdrx(self, cmdS):
-        """parse a read command
+    def cmdx(self, cmdS):
+        """parse I,V sections
 
         Args:
             cmdS (str): command
@@ -65,7 +65,8 @@ class Cmdiv:
             uS, rS, xS, folderD, labelD, rivtD, rivtL
         """
         # region
-        getattr(self, cmdS)
+        method = getattr(self, cmdS)
+        method()
 
         return (
             self.uS,
@@ -78,7 +79,7 @@ class Cmdiv:
         )
         # endregion
 
-    def IMG(self, cmdS):
+    def IMG(self):
         """insert image
 
         |IMG| rel. pth | scale factor, caption (_[F])
@@ -87,26 +88,28 @@ class Cmdiv:
         if "_[F]" in self.parS:
             numS = str(self.labelD["figI"])
             self.labelD["figI"] = int(numS) + 1
-            figS = "**Fig. " + numS + " -** "
+            figuS = "Fig. " + numS + " - "
+            figrS = "**Fig. " + numS + " -**"
+
         else:
-            figS = " "
+            figuS = " "
         # print(f"{parS=}")
         # print(f"{pthS=}")
         parL = self.parS.split(",")
+        pthS = parL[0].strip()
         capS = parL[0].strip()
         scS = parL[1].strip()
-        insP = Path(self.folderD["projP"] / "src" / pthS)
+        insP = Path(self.folderD["projP"] / "source" / pthS)
         insS = str(insP.as_posix())
-        pS = " [file: " + self.pthS + "]" + "\n\n"
         if capS == "-":
             capS = " "
         # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
         try:
             img1 = Image.open(self.pthS)
             _display(img1)
-        except:
+        except:  # noqa: E722
             pass
-        self.uS = figS + capS + " [file: " + self.pthS + " ] \n"
+        self.uS = figuS + capS + " [file: " + self.pthS + " ] \n"
         self.rS = self.xS = (
             "\n\n.. image:: "
             + insS
@@ -116,13 +119,13 @@ class Cmdiv:
             + "% \n"
             + "   :align: center \n\n\n"
             + ".. class:: center \n\n"
-            + figS
+            + figrS
             + capS
             + "\n"
         )
         # endregion
 
-    def IMG2(self, cmdS):
+    def IMG2(self):
         """insert side by side images
 
         |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F])
@@ -157,7 +160,7 @@ class Cmdiv:
         )
         # endregion
 
-    def TABLE(self, cmdS):
+    def TABLE(self):
         """insert table
 
         |TABLE| rel. pth | col width, l;c;r, title (_[T])
@@ -166,7 +169,7 @@ class Cmdiv:
         # print(f"{pthS=}")
         if "_[T]" in self.parS:
             tnumI = int(self.labelD["tableI"])
-            fillS = str(tnumI).zfill(2)
+            fillS = str(tnumI)
             utitlnS = "\nTable " + fillS + " - "
             rtitlnS = "\n**Table " + fillS + " -** "
             self.labelD["tableI"] = tnumI + 1
@@ -189,7 +192,7 @@ class Cmdiv:
         # pthxP = Path(*Path(pthS).parts[-3:])
         # pthxS = str(pthxP.as_posix())
         insP = Path(self.folderD["projP"])
-        insP = Path(Path(insP) / "src" / self.pthS)
+        insP = Path(Path(insP) / "source" / self.pthS)
         # insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
         utlS = utitlnS + titleS + pS  # file path text
@@ -231,21 +234,19 @@ class Cmdiv:
         self.xS = rtlS + rS + "\n"
         # endregion
 
-    def TEXT(self, cmdS):
+    def TEXT(self):
         """insert text
 
         |TEXT| rel. pth |  plain; rivt
         """
         # region
         # print(f"{pthS=}")
-        uS = rS = xS = ""
-        pthP = Path(self.pthS)  # path
-        extS = pthP.suffix[1:]  # file extension
-        parL = self.parS.split(",")
         insP = Path(self.folderD["projP"])
-        insP = Path(Path(insP) / "src" / self.pthS)
+        insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
+        parL = self.parS.split(",")
+        # extS = pthP.suffix[1:]  # file extension
         # pthxP = Path(*Path(pthS).parts[-3:])
         with open(insP, "r") as fileO:
             fileS = fileO.read()
@@ -254,19 +255,19 @@ class Cmdiv:
         self.xS = fileS
         # endregion
 
-    def VALUE(self, cmdS):
+    def VALUE(self):
         """insert values
 
-        |VALUE| rel. pth | col width, l;c;r, title (_[T])
+        |VALUE| rel. pth | title (_[T])
         """
         # region
         tnumI = int(self.labelD["tableI"])
         self.labelD["tableI"] = tnumI + 1
-        fillS = str(tnumI).zfill(2)
+        fillS = str(tnumI)
         utitlnS = "\nTable " + fillS + " - " + self.parS.strip("_[T]")
         rtitlnS = "\n**Table " + fillS + " -** " + self.parS.strip("_[T]")
         insP = Path(self.folderD["projP"])
-        insP = Path(Path(insP) / "src" / self.pthS)
+        insP = Path(Path(insP) / "source" / self.pthS)
         # insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
         with open(insP, "r") as csvfile:
@@ -322,12 +323,12 @@ class Cmdiv:
                 colalign=alignL,
             )
         )
-        uS = rS = xS = output.getvalue()
+        outS = output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
         # pthxS = str(Path(*Path(pthS).parts[-3:]))
         pS = "[from file: " + self.pthS + "]" + "\n\n"
-        self.uS = utitlnS + pS + uS + "\n"
-        self.rS = rtitlnS + pS + rS + "\n"
-        self.xS = rtitlnS + pS + rS + "\n"
+        self.uS = utitlnS + pS + outS + "\n"
+        self.rS = rtitlnS + pS + outS + "\n"
+        self.xS = rtitlnS + pS + outS + "\n"
         # endregion

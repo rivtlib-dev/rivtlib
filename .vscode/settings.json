@@ -97,7 +97,12 @@
                 "useVsCodeApi": true,
                 "command": "extension.toggleExplorerSortOrder",
             },
-
+            {
+                "name": "LOC",
+                "color": "yellow",
+                "useVsCodeApi": true,
+                "command": "extension.linecount.workspace",
+            },            
         ]
             
     },

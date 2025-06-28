@@ -16,7 +16,7 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmdiv:
-    """read I and V commands
+    """select commands - Insert, Value sections
 
     IMG - insert image from file
     IMG2 - insert side by side images from files
@@ -32,7 +32,7 @@ class Cmdiv:
     """
 
     def __init__(self, folderD, labelD, rivtD, rivtL, parL):
-        """command object (type is read)
+        """an Insert or Value object
         Args:
             folderD (dict): folders
             labelD (dict): labels
@@ -57,7 +57,7 @@ class Cmdiv:
         # endregion
 
     def cmdx(self, cmdS):
-        """parse a read command
+        """parse I,V sections
 
         Args:
             cmdS (str): command

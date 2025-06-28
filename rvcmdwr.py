@@ -13,7 +13,7 @@ from fpdf import FPDF
 
 
 class Cmdw:
-    """write commands
+    """select commands - Write section
 
     DOC - write doc
     APPEND - append pdf to doc
@@ -26,7 +26,7 @@ class Cmdw:
     """
 
     def __init__(self, folderD, labelD, sS):
-        """write object
+        """Write object
         Args:
             folderD (dict): folders
             labelD (dict): labels
@@ -517,7 +517,7 @@ class Cmdw:
 
 
 class Cmdr:
-    """run commands
+    """select commands - Run section
 
     DOC - write doc
     APPEND - append pdf to doc
@@ -525,7 +525,7 @@ class Cmdr:
     """
 
     def __init__(self, folderD, labelD, sS):
-        """write object
+        """Run object
         Args:
             folderD (dict): folders
             labelD (dict): labels
@@ -565,3 +565,45 @@ class Cmdr:
         self.logging.info("rivt function : W")
         self.spL = spL  # preprocessed list
         # endregion
+
+    def cmdrx(self):
+        """parse R section
+        Commands:
+        |WINFILE| /source/r01/file.cmd | exit
+        |LINUXFILE| /source/r01/file.sh | exit
+        |OSXFILE| /source/r01/file.sh | exit
+        Return:
+            msgS (str): completion message
+        """
+        # region
+
+        for lS in self.spL[1:]:
+            cL = lS.split("|")
+            if cL[0].strip() == "DOC":
+                typeS = cL[1].strip()
+                self.parS = cL[2].strip()
+            elif cL[0].strip() == "APPEND":
+                typeS = "append"
+                self.pthS = cL[1].strip()
+                self.parS = cL[2].strip()
+            elif cL[0].strip() == "PREPEND":
+                typeS = "prepend"
+                self.pthS = cL[1].strip()
+                self.parS = cL[2].strip()
+            else:
+                pass
+
+        dtypeS = typeS + ("x")
+        msgS = getattr(self, dtypeS)
+
+        return msgS
+        # endregion
+
+    def winfile(self):
+        pass
+
+    def linuxfile(self):
+        pass
+
+    def osxfile(self):
+        pass

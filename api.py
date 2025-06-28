@@ -58,9 +58,10 @@ logging.info(f"""rivt backup : {folderD["bakT"]}""")  # noqa: F405
 
 
 def doc_hdr():
-    """_summary_
+    """generate document header
+
     Returns:
-        _type_: _description_
+        str: doc string header
     """
     # init file - (headings and doc overrides)
 
@@ -87,8 +88,7 @@ def doc_hdr():
 
 
 def doc_parse(sS, tS, tagL, cmdL):
-    """
-    section strings to doc strings
+    """section string to doc string
     Args:
         sS (str): rivt section
         tS (str): section type (R,I,V,T,W,S)
@@ -112,7 +112,7 @@ def doc_parse(sS, tS, tagL, cmdL):
 
 
 def R(sS):
-    """Run shell commands
+    """Run shell command
     Args:
         sS (str): section string
     """
@@ -123,7 +123,7 @@ def R(sS):
 
 
 def I(sS):  # noqa: E743
-    """Insert static sources
+    """Insert static source
     Args:
         sS (str): section string
     """
@@ -136,7 +136,7 @@ def I(sS):  # noqa: E743
 
 
 def V(sS):
-    """Values calculation
+    """Values calculate
     Args:
         sS (str): section string
     """
@@ -151,7 +151,7 @@ def V(sS):
 
 
 def T(sS):
-    """Tools written in Python
+    """Tools in Python
     Args:
         sS (str): section string
     """
@@ -163,6 +163,9 @@ def T(sS):
 
 def W(sS):
     """Write doc files
+
+    Writes docs as .txt, .pdf (from reportab or tex) and .html
+
     Args:
         sS (str): section string
     """
@@ -175,7 +178,7 @@ def W(sS):
 
 
 def S(sS):
-    """skip section string - no processing
+    """skip section string - not processed
     Args:
         sS (str): section string
     """
@@ -183,6 +186,5 @@ def S(sS):
     print("\n[" + shL[0] + "] : section skipped " + "\n")
 
 
-# start doc generation - returns doc in three formats
-
+# begin doc generation - returns doc as txt, rst2 and rst string
 dutfS, drs2S, drstS = doc_hdr()
