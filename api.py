@@ -158,7 +158,7 @@ def T(sS):
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-    cmdL = ["SCRIPT"]
+    cmdL = ["Python"]
     tagL = []
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "T", tagL, cmdL)
 
@@ -173,8 +173,9 @@ def P(sS):
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
-    wrtdoc = rvcmdpub.Cmdw(folderD, labelD, sS)
-    msgS = wrtdoc.cmdwx()
+    cmdL = ["DOC", "ATTACH"]
+    wrtdoc = rvcmdpub.Cmdp(folderD, labelD, sS, cmdL)
+    msgS = wrtdoc.cmdpx()
     print("\n" + f"{msgS}")
     sys.exit()
 

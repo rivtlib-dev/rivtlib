@@ -31,8 +31,13 @@ else:
 # print(f"{__name__=}")
 # print(f"{modnameS=}")
 
-errlogT = Path(rivtP, "temp", "rivt-log.txt")
-modnameS = __name__.split(".")[1]
+# input files
+prfxS = rivtN[0:6]
+rnumS = rivtN[2:6]
+dnumS = prfxS[2:4]
+
+errlogT = Path(projP, "temp", prfxS + "-log.txt")
+modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
@@ -44,33 +49,29 @@ warnings.filterwarnings("ignore")
 
 # region - file paths
 
-# read
+# input files
 pthS = " "
 rbaseS = rivtN.split(".")[0]
-prfxS = rivtN[0:5]
-rnumS = rivtN[1:5]
-dnumS = prfxS[1:3]
-rnumS = rivtN[1:5]
 divnumS = "d" + dnumS + "-"
 rstnS = rbaseS + ".rst"
 txtnS = rbaseS + ".txt"
 pdfnS = rbaseS + ".pdf"
 htmnS = rbaseS + ".html"
 bakN = rbaseS + ".bak"
-docP = Path(projP, "docs")
-srcP = insP = Path(projP, "source")
+docP = Path(projP, "rivtdocs")
+srcP = Path(projP, "sources")
 styleP = Path(projP, "styles")
 titleS = rivtN.split("-")[1]
 
-# write
+# output files
 bakT = Path(rivtP, bakN)
 rbakT = Path(rivtP, rbaseS + ".bak")
 pypathS = os.path.dirname(sys.executable)
 rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
-styleP = Path(projP, "docs", "style")
-reportP = Path(projP, "docs", "report")
+styleP = Path(projP, "style")
+reportP = Path(projP, "rivtdocs", "report")
 ossP = Path(projP / "rivtos")
-valN = prfxS.replace("r", "v")
+valN = prfxS.replace("rv", "v")
 
 # read/write
 valP = Path(srcP, "v" + dnumS)
@@ -84,18 +85,19 @@ valP = Path(srcP, "v" + dnumS)
 # region - folders dict
 folderD = {
     "pthS": " ",
-    "rivtT": rivtT,
-    "rivtN": rivtT.name,
+    "rivtT": rivtT,  # full path and name
+    "rivtN": rivtT.name,  # file name
     "baseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
     "projP": Path(os.path.dirname(rivtP)),
     "docP": Path(projP, "docs"),
     "bakT": Path(rivtP, bakN),
-    "errlogT": Path(rivtP, "temp", "rivt-log.txt"),
+    "errlogT": errlogT,
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(projP, "README.txt"),
-    "reportP": Path(projP, "docs", "report"),
-    "styleP": Path(projP, "docs", "style"),
+    "reportP": Path(projP, "rivtdocs", "report"),
+    "styleP": Path(projP, "rivtdocs", "style"),
+    "srcP": srcP,
     "rstpN": rstnS,
     "pdfpN": pdfnS,
     "runP": Path(srcP, "r" + dnumS),

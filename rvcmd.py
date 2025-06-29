@@ -206,11 +206,7 @@ class Cmd:
         if len(rowL) == 0:
             pass
         alignD = {"s": "", "d": "decimal", "c": "center", "r": "right", "l": "left"}
-        # pthxP = Path(*Path(pthS).parts[-3:])
-        # pthxS = str(pthxP.as_posix())
-        insP = Path(self.folderD["projP"])
-        insP = Path(Path(insP) / "source" / self.pthS)
-        # insS = str(insP.as_posix())
+        insP = Path(self.folderD["srcP"], self.pthS)
         pS = " [file: " + self.pthS + "]" + "\n\n"
         utlS = utitlnS + titleS + pS  # file path text
         rtlS = rtitlnS + titleS + pS
@@ -258,11 +254,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.folderD["projP"])
-        insP = Path(Path(insP) / "source" / self.pthS)
-        insS = str(insP.as_posix())
-        pS = " [file: " + self.pthS + "]" + "\n\n"
-        parL = self.parS.split(",")
+        insP = Path(self.folderD["srcP"], self.pthS)
         # extS = pthP.suffix[1:]  # file extension
         # pthxP = Path(*Path(pthS).parts[-3:])
         with open(insP, "r") as fileO:
@@ -283,9 +275,7 @@ class Cmd:
         fillS = str(tnumI)
         utitlnS = "\nTable " + fillS + " - " + self.parS.strip("_[T]")
         rtitlnS = "\n**Table " + fillS + " -** " + self.parS.strip("_[T]")
-        insP = Path(self.folderD["projP"])
-        insP = Path(Path(insP) / "source" / self.pthS)
-        # insS = str(insP.as_posix())
+        insP = Path(self.folderD["srcP"], self.pthS)
         pS = " [file: " + self.pthS + "]" + "\n\n"
         with open(insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))

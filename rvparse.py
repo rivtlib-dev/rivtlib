@@ -1,10 +1,12 @@
-import re
 import logging
+import os
+import re
 import warnings
-
 from pathlib import Path
-from . import rvtag
-from . import rvcmd
+
+import __main__
+
+from . import rvcmd, rvtag
 
 
 class Section:
@@ -17,8 +19,8 @@ class Section:
             sL (list): rivt section lines
         """
         # region
-        errlogP = Path(folderD["rivtP"], "temp", "rivt-log.txt")
-        modnameS = __name__.split(".")[1]
+        errlogP = folderD["errlogT"]
+        modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
             format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
@@ -89,7 +91,7 @@ class Section:
             if slS.strip()[:9] == "==========":
                 slS = "    _[P]"
             spL.append(slS[4:])
-        self.logging.info(f"rivt function : {stS}")
+        self.logging.info("SECTION " + str(labelD["secnumI"]) + " - type " + stS)
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
         # endregion
@@ -164,7 +166,7 @@ class Section:
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
-                    cmC = rvcmd.Cmdiv(folderD, labelD, rivtD, rivtL, parL)
+                    cmC = rvcmd.Cmd(folderD, labelD, rivtD, rivtL, parL)
                     uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmdx(cmdS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
