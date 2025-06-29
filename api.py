@@ -45,7 +45,9 @@ from pathlib import Path
 
 from rivtlib.rvunits import *  # noqa: F403
 from rivtlib.rvparam import *  # noqa: F403
-from rivtlib import rvparse, rvcmdwr
+from rivtlib import rvparse
+
+from . import rvcmdpub
 
 logging.info(f"""rivt file : {folderD["rivtN"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
@@ -161,7 +163,7 @@ def T(sS):
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "T", tagL, cmdL)
 
 
-def W(sS):
+def P(sS):
     """Write doc files
 
     Writes docs as .txt, .pdf (from reportab or tex) and .html
@@ -171,7 +173,7 @@ def W(sS):
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
 
-    wrtdoc = rvcmdwr.Cmdw(folderD, labelD, sS)
+    wrtdoc = rvcmdpub.Cmdw(folderD, labelD, sS)
     msgS = wrtdoc.cmdwx()
     print("\n" + f"{msgS}")
     sys.exit()

@@ -15,20 +15,37 @@ from rivtlib.rvunits import *  # noqa: F403
 tabulate.PRESERVE_WHITESPACE = True
 
 
-class Cmdiv:
-    """select commands - Insert, Value sections
+class Cmd:
+    """select commands
 
-    IMG - insert image from file
-    IMG2 - insert side by side images from files
-    TABLE - insert table from file
-    TEXT - insert text from file
-    VALUE - insert values from file
+    Run     WIN - Windows command script
+            OSX - OSX command script
+            LINUX - Linux command script
 
+    Insert  TEXT - insert text from file
+            IMG - insert image from file
+            IMG2 - insert side by side images from files
+            TABLE - insert table from file
+
+
+    Values  IMG - insert image from file
+            IMG2 - insert side by side images from files
+            TABLE - insert table from file
+            VALUE - insert values from file
+
+    Tools   PYTHON - python script
+
+
+    |TEXT| rel. pth |  plain; rivt
     |IMG| rel. pth | scale factor, caption (_[F])       .png, .jpg
     |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F]) .png, .jpg
-    |TABLE| rel. pth | col width, l;c;r, title (_[T])   .csv, .xls
-    |TEXT| rel. pth |  plain; rivt                      .txt
+    |TABLE| rel. pth | col width, l;c;r, title (_[T])   .csv, .xls, .txt
     |VALUE| rel. pth | col width, l;c;r, title (_[T])   .csv
+    |WIN| rel. pth | print, noprint
+    |OSX| rel. pth | print, noprint
+    |LINUX| rel. pth | print, noprint
+    |PYTHON| rel. pth | print, noprint
+
     """
 
     def __init__(self, folderD, labelD, rivtD, rivtL, parL):
@@ -57,7 +74,7 @@ class Cmdiv:
         # endregion
 
     def cmdx(self, cmdS):
-        """parse I,V sections
+        """parse section
 
         Args:
             cmdS (str): command
@@ -331,4 +348,88 @@ class Cmdiv:
         self.uS = utitlnS + pS + outS + "\n"
         self.rS = rtitlnS + pS + outS + "\n"
         self.xS = rtitlnS + pS + outS + "\n"
+        # endregion
+
+    def WIN(self):
+        """insert text
+
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
+        # print(f"{pthS=}")
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / "source" / self.pthS)
+        insS = str(insP.as_posix())
+        pS = " [file: " + self.pthS + "]" + "\n\n"
+        parL = self.parS.split(",")
+        # extS = pthP.suffix[1:]  # file extension
+        # pthxP = Path(*Path(pthS).parts[-3:])
+        with open(insP, "r") as fileO:
+            fileS = fileO.read()
+        self.uS = fileS
+        self.rS = fileS
+        self.xS = fileS
+        # endregion
+
+    def OSX(self):
+        """insert text
+
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
+        # print(f"{pthS=}")
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / "source" / self.pthS)
+        insS = str(insP.as_posix())
+        pS = " [file: " + self.pthS + "]" + "\n\n"
+        parL = self.parS.split(",")
+        # extS = pthP.suffix[1:]  # file extension
+        # pthxP = Path(*Path(pthS).parts[-3:])
+        with open(insP, "r") as fileO:
+            fileS = fileO.read()
+        self.uS = fileS
+        self.rS = fileS
+        self.xS = fileS
+        # endregion
+
+    def LINUX(self):
+        """insert text
+
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
+        # print(f"{pthS=}")
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / "source" / self.pthS)
+        insS = str(insP.as_posix())
+        pS = " [file: " + self.pthS + "]" + "\n\n"
+        parL = self.parS.split(",")
+        # extS = pthP.suffix[1:]  # file extension
+        # pthxP = Path(*Path(pthS).parts[-3:])
+        with open(insP, "r") as fileO:
+            fileS = fileO.read()
+        self.uS = fileS
+        self.rS = fileS
+        self.xS = fileS
+        # endregion
+
+    def PYTHON(self):
+        """insert text
+
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
+        # print(f"{pthS=}")
+        insP = Path(self.folderD["projP"])
+        insP = Path(Path(insP) / "source" / self.pthS)
+        insS = str(insP.as_posix())
+        pS = " [file: " + self.pthS + "]" + "\n\n"
+        parL = self.parS.split(",")
+        # extS = pthP.suffix[1:]  # file extension
+        # pthxP = Path(*Path(pthS).parts[-3:])
+        with open(insP, "r") as fileO:
+            fileS = fileO.read()
+        self.uS = fileS
+        self.rS = fileS
+        self.xS = fileS
         # endregion

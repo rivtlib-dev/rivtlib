@@ -96,6 +96,8 @@ folderD = {
     "readmeT": Path(projP, "README.txt"),
     "reportP": Path(projP, "docs", "report"),
     "styleP": Path(projP, "docs", "style"),
+    "rstpN": rstnS,
+    "pdfpN": pdfnS,
     "runP": Path(srcP, "r" + dnumS),
     "insP": Path(srcP, "i" + dnumS),
     "valP": Path(srcP, "v" + dnumS),
@@ -125,9 +127,10 @@ labelD = {
     "docstrB": False,  # print doc strings
     "subB": False,  # sub values in equations
     "rvtosB": False,  # open-source rivt flag
-    "colorS": "",  # section background color
     "valexpS": "",  # list of values for export
     "unitS": "M,M",  # units
+    "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
+    "colorS": "none",  # background color
 }
 # endregion
 

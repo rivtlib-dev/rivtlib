@@ -23,8 +23,8 @@ and exposes 6 functions::
     rv.I(rS) - (Insert) Insert text, images, tables and math equations
     rv.V(rS) - (Values) Evaluate tables, values and equations
     rv.T(rS) - (Tools) Execute Python functions
-    rv.X(rS) - (eXclude) Skip rivt-string processing
-    rv.W(rS) - (Write) Write formatted documents and reports
+    rv.P(rS) - (Publish) Write formatted document files
+    rv.S(rS) - (Skip) Skip rivt-string processing
 
 
 where **rS** is a triple quoted string that follows rivt markup syntax. The

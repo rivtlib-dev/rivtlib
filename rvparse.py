@@ -4,11 +4,11 @@ import warnings
 
 from pathlib import Path
 from . import rvtag
-from . import rvcmdiv
+from . import rvcmd
 
 
 class Section:
-    """converts section string to utf and rest doc strings"""
+    """convert section string to utf and rst doc string"""
 
     def __init__(self, stS, sL, folderD, labelD, rivtD):
         """preprocess section headers and string
@@ -44,8 +44,6 @@ class Section:
             srs2S = "\n"
             srstS = "\n"
         else:
-            labelD["rvtosB"] = hL[1].strip()  # open-source flag
-            labelD["colorS"] = hL[2].strip()  # background color
             labelD["docS"] = hL[0].strip()  # section title
             snumI = labelD["secnumI"] + 1
             labelD["secnumI"] = snumI
@@ -55,6 +53,25 @@ class Section:
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
+        try:
+            if hL[1].strip() == "rivtos":  # open-source flag
+                labelD["rvtosB"] = True
+        except:
+            try:
+                if hL[2].strip() == "rivtos":
+                    labelD["rvtosB"] = True
+            except:
+                pass
+        try:
+            if hL[1].strip() in labelD["colorL"]:  # background color
+                labelD["colorS"] = hL[1].strip()
+        except:
+            try:
+                if hL[2].strip() in labelD["colorL"]:
+                    labelD["colorS"] = hL[2].strip()
+            except:
+                pass
+
         # print(sutfS, srs2S, srstS)
         self.sutfS = sutfS  # utf doc
         self.srs2S = srs2S  # rst2pdf doc
@@ -69,7 +86,7 @@ class Section:
                 continue
             if "#" in slS[:5]:
                 continue
-            if slS.strip()[:9] == "=-=-=-=-=":
+            if slS.strip()[:9] == "==========":
                 slS = "    _[P]"
             spL.append(slS[4:])
         self.logging.info(f"rivt function : {stS}")
@@ -104,7 +121,7 @@ class Section:
         labelD = self.labelD
         rivtD = self.rivtD
 
-        for slS in self.spL:  # loop over rivt section lines
+        for slS in self.spL:  # loop over section lines
             # print(slS)
             if self.stS == "I":
                 txt2L = []
@@ -147,7 +164,7 @@ class Section:
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
-                    cmC = rvcmdiv.Cmdiv(folderD, labelD, rivtD, rivtL, parL)
+                    cmC = rvcmd.Cmdiv(folderD, labelD, rivtD, rivtL, parL)
                     uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmdx(cmdS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
