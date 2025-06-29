@@ -7,23 +7,27 @@ from pathlib import Path
 from reportlab.lib.utils import ImageReader
 from configparser import ConfigParser
 
+import __main__
+
 from fpdf import FPDF
 
 # from templates.pdfcover import content, cover, mainpage
 
 
 class Cmdp:
-    """commands - publish section
+    """publish command object
 
-    DOC - write doc
-    APPEND - append pdf to doc
+    commands:
+        DOC - write doc
+        APPEND - append pdf to doc
 
-    |DOC| rel. path | doc type
-    |ATTACH| rel. path | title
+    syntax:
+        |DOC| rel. path | doc type
+        |ATTACH| rel. path | title
 
     """
 
-    def __init__(self, folderD, labelD, sS, cmdL):
+    def __init__(self, folderD, labelD, sS, cmdL, drs2S):
         """Write object
         Args:
             folderD (dict): folders
@@ -37,9 +41,11 @@ class Cmdp:
         self.cmdL = cmdL  # commands
         self.pthS = ""
         self.parS = ""
+        self.contentS = drs2S
+        print("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", self.contentS)
 
         errlogP = Path(folderD["rivtP"], "temp", "rivt-log.txt")
-        modnameS = __name__.split(".")[1]
+        modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
             format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
@@ -50,70 +56,85 @@ class Cmdp:
         warnings.filterwarnings("ignore")
         self.logging = logging
 
-        sL = sS.split()  # preprocessed lines
-        spL = []  # strip leading spaces and comments from section
+        sL = sS.split("\n")  # unprocessed lines
+        spL = []
+        # strip leading spaces and comments from section
         for slS in sL[1:]:
             if len(slS) < 5:
-                slS = "\n"
-                spL.append(slS)
                 continue
-            if "#" in slS[:5]:
+            if "#" in slS:
                 continue
-            spL.append(slS[4:])
-        self.logging.info("rivt function : P")
+            if len(slS.strip()) > 0:
+                spL.append(slS[4:])
+
         self.spL = spL  # preprocessed list
+        self.logging.info("SECTION : P")
         # endregion
 
     def cmdpx(self):
-        """parse W section
+        """parses commands in P section
         Commands:
             |DOC| rel. style pth | type, init file
             |APPEND| rel. src pth | divider; nodivider
+
         Returns:
             msgS (str): completion message
         """
         # region
-        for pS in self.spL[1:]:
-            if pS[0] == "|":
-                cL = pS.split("|")
-                if cL[0].strip() == "DOC":
-                    typeS = cL[1].strip()
-                    self.parS = cL[2].strip()
-                elif cL[0].strip() == "ATTACH":
+        typeS = ""
+        msgS = ""
+
+        for pS in self.spL:
+            pL = pS[1:].split("|")
+            if len(pL) > 0 and pL[0].strip() in self.cmdL:
+                if pL[0].strip() == "DOC":
+                    typeS = str(pL[1].strip())
+                    self.parS = pL[2].strip()
+                    dtypeS = typeS + ("x")
+                    # print(dtypeS)
+                    obj = getattr(Cmdp, dtypeS)
+                    msgS = obj(self)
+                elif pL[0].strip() == "ATTACH":
                     typeS = "attach"
-                    self.pthS = cL[1].strip()
-                    self.parS = cL[2].strip()
+                    self.pthS = pL[1].strip()
+                    self.parS = pL[2].strip()
+                    dtypeS = typeS + ("x")
+                    obj = getattr(Cmdp, dtypeS)
+                    msgS = obj(self)
                 else:
                     pass
-
-        dtypeS = typeS + ("x")
-        msgS = getattr(self, dtypeS)
+            else:
+                pass
 
         return msgS
         # endregion
 
     def rstpdfx(self):
         """write rstpdf doc file
+
         Returns:
             msgS (str): completion message
         """
         # region
 
-        self.yamlP = Path(folderD["projP"], "rivtdocs/styles/rstpdf.yaml")
-        self.iniP = Path(folderD["projP"], "rivtdocs/styles/rstpdf.ini")
-        cmd1S = "rst2pdf " + "temp/" + self.folderD["rstpN"]  # input
+        fileS = self.folderD["rstpN"]
+        fileP = Path(self.folderD["projP"], "temp", fileS)
+        with open(fileP, "w", errors="ignore") as f1:
+            f1.write(self.contentS)
+
+        self.yamlP = Path(self.folderD["projP"], "rivtdocs/styles/rstpdf.yaml")
+        self.iniP = Path(self.folderD["projP"], "rivtdocs/styles/rstpdf.ini")
+
+        cmd1S = "rst2pdf " + "../temp/" + self.folderD["rstpN"]  # input
         cmd2S = " -o ../rivtdocs/rstpdf/" + self.folderD["pdfN"]  # output
         cmd3S = " --config=../styles/rstpdf.ini"  # config
         cmd4S = " --stylesheets=../styles/rstpdf.yaml"  # styles
         cmdS = cmd1S + cmd2S + cmd3S + cmd4S
         # print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
-        # insP = Path(self.folderD["docsP"], "pdf2", self.folderD["pdfN"])
-        # print(str(insP.as_posix()))
 
         outS = "/rivtdocs/rstpdf/" + self.folderD["pdfN"]
         msgS = "doc written: " + outS
-
         return msgS
         # endregion
 
@@ -430,5 +451,8 @@ class Cmdp:
     def attachx(self):
         """_summary_"""
         # region
-        pass
+
+        msgS = "attachment"
+        return msgS
+
         # endregion

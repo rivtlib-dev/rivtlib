@@ -14,7 +14,8 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Tag:
-    """formats tags
+    """tag format object
+
     Methods:
         taglx(tagS): formats line
         tagbx(tagS): formats block

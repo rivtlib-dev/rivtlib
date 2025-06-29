@@ -16,8 +16,10 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmd:
-    """select commands
+    """command format object
 
+    Section     Command
+    ------- ----------------------------
     Run     WIN - Windows command script
             OSX - OSX command script
             LINUX - Linux command script
@@ -106,17 +108,18 @@ class Cmd:
             numS = str(self.labelD["figI"])
             self.labelD["figI"] = int(numS) + 1
             figuS = "Fig. " + numS + " - "
-            figrS = "**Fig. " + numS + " -**"
+            figrS = "**Fig. " + numS + "** - "
 
         else:
             figuS = " "
         # print(f"{parS=}")
         # print(f"{pthS=}")
+
         parL = self.parS.split(",")
-        pthS = parL[0].strip()
         capS = parL[0].strip()
-        scS = parL[1].strip()
-        insP = Path(self.folderD["projP"] / "source" / pthS)
+        scL = parL[1].split("_")
+        scS = scL[0].strip()
+        insP = Path(self.folderD["srcP"], self.pthS)
         insS = str(insP.as_posix())
         if capS == "-":
             capS = " "
@@ -253,10 +256,7 @@ class Cmd:
         |TEXT| rel. pth |  plain; rivt
         """
         # region
-        # print(f"{pthS=}")
         insP = Path(self.folderD["srcP"], self.pthS)
-        # extS = pthP.suffix[1:]  # file extension
-        # pthxP = Path(*Path(pthS).parts[-3:])
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         self.uS = fileS

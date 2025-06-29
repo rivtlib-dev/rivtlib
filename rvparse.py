@@ -1,8 +1,11 @@
+"""
+parse section string
+"""
+
 import logging
 import os
 import re
 import warnings
-from pathlib import Path
 
 import __main__
 
@@ -10,7 +13,7 @@ from . import rvcmd, rvtag
 
 
 class Section:
-    """convert section string to utf and rst doc string"""
+    """convert section string to utf and rst doc strings"""
 
     def __init__(self, stS, sL, folderD, labelD, rivtD):
         """preprocess section headers and string

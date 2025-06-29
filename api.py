@@ -1,5 +1,6 @@
 #! python
-"""rivt API
+"""
+rivt API
 
 usage:
     import rivtlib.api as rv
@@ -9,20 +10,20 @@ API functions:
     rv.I(sS) - (Insert) Insert static text, math, images and tables
     rv.V(sS) - (Values) Evaluate values and equations
     rv.T(sS) - (Tools) Execute Python scripts
-    rv.W(sS) - (Write) Write formatted document files
+    rv.P(sS) - (Publish) Write formatted document files
     rv.S(sS) - (Skip) Skip processing of that section
 
 where sS is a section string - triple quoted, header line, indented, utf-8.
 
 Globals:
     utfS (str): utf doc string
-    rstS (str): rst2pdf doc string
-    xstS (str): latex doc string
+    rstS (str): rstpdf doc string
+    xstS (str): texpdf doc string
     labelD (dict): format labels
     folderD (dict): folder and file paths
     rivtD (dict): calculated values
 
-rivtlib variables use the last letter of the var name to indicate type:
+Last letter of var name indicates type:
     A => array
     B => boolean
     C => class instance
@@ -35,7 +36,6 @@ rivtlib variables use the last letter of the var name to indicate type:
     P => path
     S => string
     T => total path (includes file)
-
 """
 
 import logging
@@ -146,6 +146,8 @@ def V(sS):
     cmdL = ["IMG", "IMG2", "VALUE"]
     tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "[V]]", ":="]
     dutfS, drs2S, drstS, rivtL = doc_parse(sS, "V", tagL, cmdL)
+
+    # write values file
     fileS = folderD["valN"] + "-" + str(labelD["secnumI"]) + ".csv"
     fileP = Path(folderD["valP"], fileS)
     with open(fileP, "w") as file1:
@@ -172,11 +174,12 @@ def P(sS):
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-
+    print("9999999999999999999999999999999999999999999999999999999999999999")
+    print(drs2S)
     cmdL = ["DOC", "ATTACH"]
-    wrtdoc = rvcmdpub.Cmdp(folderD, labelD, sS, cmdL)
-    msgS = wrtdoc.cmdpx()
-    print("\n" + f"{msgS}")
+    wrtdoc = rvcmdpub.Cmdp(folderD, labelD, sS, cmdL, drs2S)
+    mssgS = wrtdoc.cmdpx()
+    print("\n" + f"{mssgS}")
     sys.exit()
 
 
@@ -185,8 +188,8 @@ def S(sS):
     Args:
         sS (str): section string
     """
-    shL = sS.split("|")
-    print("\n[" + shL[0] + "] : section skipped " + "\n")
+    shL = sS.split("\n")
+    print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
 
 
 # begin doc generation - returns doc as txt, rst2 and rst string

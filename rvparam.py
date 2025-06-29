@@ -1,6 +1,5 @@
 """
 File paths and labels
-
 """
 
 import fnmatch
@@ -90,7 +89,7 @@ folderD = {
     "baseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
     "projP": Path(os.path.dirname(rivtP)),
-    "docP": Path(projP, "docs"),
+    "docP": Path(projP, "rivtdocs"),
     "bakT": Path(rivtP, bakN),
     "errlogT": errlogT,
     "pdfN": rbaseS + ".pdf",
@@ -105,6 +104,7 @@ folderD = {
     "valP": Path(srcP, "v" + dnumS),
     "tooP": Path(srcP, "t" + dnumS),
     "valN": valN,
+    "srcnS": "",
 }
 # endregion
 
