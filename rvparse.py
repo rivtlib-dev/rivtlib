@@ -97,6 +97,8 @@ class Section:
         self.logging.info("SECTION " + str(labelD["secnumI"]) + " - type " + stS)
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
+        srcnS = stS+self.folder["dnumS"]
+        self.folder["srcnS"] = srcnS
         # endregion
 
     def section(self, tagL, cmdL):
