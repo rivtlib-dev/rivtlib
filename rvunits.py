@@ -1,6 +1,6 @@
 """Unit definitions
 
-Add new units to end of file
+new units may be added to end of file
 """
 
 from rivtlib.unum.core import Unum
