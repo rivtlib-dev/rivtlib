@@ -42,7 +42,6 @@ class Cmdp:
         self.pthS = ""
         self.parS = ""
         self.contentS = drs2S
-        print("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", self.contentS)
 
         errlogP = Path(folderD["rivtP"], "temp", "rivt-log.txt")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]

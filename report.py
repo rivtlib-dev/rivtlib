@@ -7,7 +7,7 @@ define variables and run file
 # process
 # ===========================
 rerun = False  # flag that reruns rivt files
-rtype = "rst2pdf"  # report type
+rtype = "rst2pdf"  # doc/report type
 yamlP = "doc/styles/"
 iniP = "doc/styles"
 
