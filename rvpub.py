@@ -71,7 +71,7 @@ class Cmdp:
         # endregion
 
     def cmdpx(self):
-        """parses commands in P section
+        """parse commands in P section
         Commands:
             |DOC| rel. style pth | type, init file
             |APPEND| rel. src pth | divider; nodivider
@@ -138,6 +138,11 @@ class Cmdp:
         # endregion
 
     def textx(self):
+        """write text doc file
+
+        Returns:
+            msgS (str): completion message
+        """
         pass
 
     def texpdfx(self):

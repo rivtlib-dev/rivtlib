@@ -47,7 +47,7 @@ from rivtlib.rvunits import *  # noqa: F403
 from rivtlib.rvparam import *  # noqa: F403
 from rivtlib import rvparse
 
-from . import rvcmdpub
+from . import rvpub
 
 logging.info(f"""rivt file : {folderD["rivtN"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
@@ -177,7 +177,7 @@ def P(sS):
     print("9999999999999999999999999999999999999999999999999999999999999999")
     print(drs2S)
     cmdL = ["DOC", "ATTACH"]
-    wrtdoc = rvcmdpub.Cmdp(folderD, labelD, sS, cmdL, drs2S)
+    wrtdoc = rvpub.Cmdp(folderD, labelD, sS, cmdL, drs2S)
     mssgS = wrtdoc.cmdpx()
     print("\n" + f"{mssgS}")
     sys.exit()
