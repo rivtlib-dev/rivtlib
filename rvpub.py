@@ -108,6 +108,23 @@ class Cmdp:
         return msgS
         # endregion
 
+    def attachx(self):
+        """_summary_"""
+        # region
+
+        msgS = "attachment"
+        return msgS
+
+        # endregion
+
+    def textx(self):
+        """write text doc file
+
+        Returns:
+            msgS (str): completion message
+        """
+        pass
+
     def rstpdfx(self):
         """write rstpdf doc file
 
@@ -120,9 +137,8 @@ class Cmdp:
         fileP = Path(self.folderD["projP"], "temp", fileS)
         with open(fileP, "w", errors="ignore") as f1:
             f1.write(self.contentS)
-
         self.yamlP = Path(self.folderD["projP"], "rivtdocs/styles/rstpdf.yaml")
-        self.iniP = Path(self.folderD["projP"], "rivtdocs/styles/rstpdf.ini")
+        self.iniP = Path(self.folderD["projP"], "rivtdocs/styles/rivt.ini")
 
         cmd1S = "rst2pdf " + "../temp/" + self.folderD["rstpN"]  # input
         cmd2S = " -o ../rivtdocs/rstpdf/" + self.folderD["pdfN"]  # output
@@ -131,19 +147,10 @@ class Cmdp:
         cmdS = cmd1S + cmd2S + cmd3S + cmd4S
         # print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
-
         outS = "/rivtdocs/rstpdf/" + self.folderD["pdfN"]
         msgS = "doc written: " + outS
         return msgS
         # endregion
-
-    def textx(self):
-        """write text doc file
-
-        Returns:
-            msgS (str): completion message
-        """
-        pass
 
     def texpdfx(self):
         """Modify TeX file to avoid problems with escapes:
@@ -450,13 +457,6 @@ class Cmdp:
             # endregion
 
     def htmlx(self):
-        pass
-
-    def attachx(self):
-        """_summary_"""
         # region
-
-        msgS = "attachment"
-        return msgS
-
-        # endregion
+        pass
+        # end region
