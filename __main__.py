@@ -1,22 +1,22 @@
 """rivtlib
 
-rivtlib is generally run in an IDE. If run from the command line the command
+rivtlib is generally run in an IDE. It generates If run from the command line the command
 takes one of two forms depending on whether the file is part of a report. If
 part of a report the form is:
 
     python -m rivtlib rddnn-filename.py
 
-where *rddnn-* and *dd* and *nn* are integers identifying the report division
-and subdivision respectively. If the file is a standalone document then
-resource files are assumed to be in the current folder or subfolder and the
-command is:
+where *rvddnn-* is the doc number and *dd* and *nn* are integers identifying the
+report division and subdivision respectively. If the file is a standalone
+document, and not part of a larger report, then resource files are assumed to be
+in the current folder or subfolder and the command is:
 
     python -m rivtlib filename.py
 
-In this case output files will also be in the current file folder. See the
-**rivt User Manual** at https://rivt.info for details.
+In this case output files will also be in the current file folder. See e **rivt
+User Manual** at https://rivt.info for details.
 
-This code base uses a last-letter naming convention for indicating variable
+The rivtlib code base uses a last-letter naming convention to indicate variable
 types where:
 
 A = array
@@ -63,6 +63,6 @@ def cmdhelp():
 if __name__ == "__main__":
     try:
         argfileS = sys.argv[1]
-        import rapi
+        import rvapi
     except:
         cmdhelp()

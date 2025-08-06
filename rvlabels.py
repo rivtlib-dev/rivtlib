@@ -1,5 +1,5 @@
 """
-File paths and labels
+File paths and doc labels
 """
 
 import fnmatch
