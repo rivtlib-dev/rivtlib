@@ -174,7 +174,7 @@ def P(sS):
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-    print("9999999999999999999999999999999999999999999999999999999999999999")
+    print("9999999999999999999999999999999999999")
     print(drs2S)
     cmdL = ["DOC", "ATTACH"]
     wrtdoc = rvdoc.Cmdp(folderD, labelD, sS, cmdL, drs2S)
