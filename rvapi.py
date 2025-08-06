@@ -44,7 +44,7 @@ from datetime import datetime
 from pathlib import Path
 
 from rivtlib.rvunits import *  # noqa: F403
-from rivtlib.rvparam import *  # noqa: F403
+from rvlabels import *  # noqa: F403
 from rivtlib import rvparse
 
 from . import rvdoc
