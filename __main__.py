@@ -1,15 +1,16 @@
 """rivtlib
 
-rivtlib is generally run in an IDE. It generates If run from the command line the command
+rivtlib is generally run in an IDE. If run from the command line the command
 takes one of two forms depending on whether the file is part of a report. If
 part of a report the form is:
 
     python -m rivtlib rddnn-filename.py
 
 where *rvddnn-* is the doc number and *dd* and *nn* are integers identifying the
-report division and subdivision respectively. If the file is a standalone
-document, and not part of a larger report, then resource files are assumed to be
-in the current folder or subfolder and the command is:
+report division and subdivision respectively. Resource files need to be in the 
+standard folders. If the file is a standalone document, and not part of a larger 
+report, then resource files are assumed to be in the current folder or subfolder 
+and the command is:
 
     python -m rivtlib filename.py
 
