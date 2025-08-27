@@ -8,7 +8,7 @@ import tabulate
 from numpy import *  # noqa: F403
 from sympy.abc import _clash2
 
-from rivtlib.rvunits import *  # noqa: F403
+from rvunit import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 

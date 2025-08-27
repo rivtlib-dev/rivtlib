@@ -43,8 +43,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from rivtlib.rvunits import *  # noqa: F403
-from rvlabels import *  # noqa: F403
+from rvunit import *  # noqa: F403
+from rvlabel import *  # noqa: F403
 from rivtlib import rvparse
 
 from . import rvdoc
