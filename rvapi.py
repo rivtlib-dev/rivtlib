@@ -46,14 +46,12 @@ import warnings
 from datetime import datetime
 from pathlib import Path
 
+import __main__
 from rivtlib import rvparse
 from rvlabel import *  # noqa: F403
-from rvunit import *  # noqa: F403
-
-import __main__
+from rvunits import *  # noqa: F403
 
 from . import rvdoc
-
 
 rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))

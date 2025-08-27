@@ -10,7 +10,7 @@ import tabulate
 from IPython.display import display as _display
 from PIL import Image
 
-from rvunit import *  # noqa: F403
+from rvunits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
