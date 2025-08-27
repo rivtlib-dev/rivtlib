@@ -10,16 +10,18 @@ API functions:
     rv.I(sS) - (Insert) Insert static text, math, images and tables
     rv.V(sS) - (Values) Evaluate values and equations
     rv.T(sS) - (Tools) Execute Python scripts
-    rv.P(sS) - (Publish) Write formatted document files
+    rv.D(sS) - (Docs) Write formatted document files
     rv.S(sS) - (Skip) Skip processing of that section
+    rv.Q(sS) - (Quit) Exit processing of rivt file
 
-where sS is a section string - triple quoted, header line, indented, utf-8.
+where sS is a section string - a triple quoted utf-8 string with a parameter
+header on the first line
 
 Globals:
     utfS (str): utf doc string
     rstS (str): rstpdf doc string
     xstS (str): texpdf doc string
-    labelD (dict): format labels
+    labelD (dict): formatting labels
     folderD (dict): folder and file paths
     rivtD (dict): calculated values
 
@@ -48,7 +50,6 @@ from pathlib import Path
 
 import __main__
 from rivtlib import rvparse
-from rvlabel import *  # noqa: F403
 from rvunits import *  # noqa: F403
 
 from . import rvdoc
@@ -57,6 +58,7 @@ rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))
 modnameS = __name__.split(".")[1]
 
+# region - parse file nane
 if __name__ == "rivtlib.rvparam":
     rivtT = Path(__main__.__file__)
     rivtN = rivtT.name
@@ -67,7 +69,6 @@ else:
     print(f"""The rivt file name is - {rivtN} -. The file name must""")
     print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
     sys.exit()
-
 # print(f"{rivtT=}")
 # print(f"{__name__=}")
 # print(f"{modnameS=}")
@@ -76,20 +77,10 @@ else:
 prfxS = rivtN[0:6]
 rnumS = rivtN[2:6]
 dnumS = prfxS[2:4]
+# endregion
 
-errlogT = Path(projP, "temp", prfxS + "-log.txt")
-modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-    datefmt="%m-%d %H:%M",
-    filename=errlogT,
-    filemode="w",
-)
-warnings.filterwarnings("ignore")
 
 # region - file paths
-
 # input files
 pthS = " "
 rbaseS = rivtN.split(".")[0]
@@ -182,15 +173,28 @@ labelD = {
 rivtD = {}  # shared calculated values
 # endregion
 
+# region - logging and backup
+errlogT = Path(projP, "temp", prfxS + "-log.txt")
+modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+    datefmt="%m-%d %H:%M",
+    filename=errlogT,
+    filemode="w",
+)
+warnings.filterwarnings("ignore")
 
 logging.info(f"""rivt file : {folderD["rivtN"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
+
 
 with open(folderD["rivtT"], "r") as f2:  # noqa: F405
     rivtS = f2.read()
 with open(folderD["bakT"], "w") as f3:  # noqa: F405
     f3.write(rivtS)
 logging.info(f"""rivt backup : {folderD["bakT"]}""")  # noqa: F405
+# endregion
 
 
 def doc_hdr():
