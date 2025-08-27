@@ -3,33 +3,28 @@
     "workbench.colorTheme": "Default Dark Modern",
     "workbench.iconTheme": "vscode-icons",
     "workbench.editor.empty.hint": "hidden",
+    "workbench.sideBar.location": "right",
     "workbench.colorCustomizations": {
         "editor.lineHighlightBorder": "#34495d",
         "list.inactiveSelectionBackground": "#213148",
     },
-        "fsdeploy.nodes": [
-        {
-            "source": "C:/Python313/Lib/site-packages/rivtlib/",
-            "target": "C:/git/git-rivtlib",
-            "include": "**/*.*",
-            "exclude": "",
-            "deleteTargetOnDeploy": true,
-        }
-    ],
-    "python.languageServer": "Pylance",
-    "ruff.configuration": "--preview",
-    
-    "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.formatOnSave": true,
-        "editor.formatOnType": false,
-        "editor.stickyScroll.enabled": true,
+        "workbench.editorAssociations": {
+        "*.svg": "default"
     },
-    
+    "fsdeploy.nodes": [
+    {
+        "source": "C:/Python313/Lib/site-packages/rivtlib/",
+        "target": "C:/git/git-rivtlib",
+        "include": "**/*.*",
+        "exclude": "",
+        "deleteTargetOnDeploy": true,
+    }
+    ],
+
     "actionButtons": {
-        "reloadButton": "♻️", /* Custom reload button text */
-        "defaultColor": "#ff0034", /* Can also use string color names */
-        "loadNpmCommands": false, /* Disables automatic generation of actions for npm commands */
+        "reloadButton": "♻️", 
+        "defaultColor": "#ff0034", 
+        "loadNpmCommands": false, 
         "commands": [
             {
                 "name": "ToggleSpell",
@@ -114,10 +109,18 @@
     "ShortcutMenuBar.toggleWordWrap": true,
     "ShortcutMenuBar.openSettings": true,
     "git.autofetch": false,
-    "outline.showStrings": false,
-    "workbench.sideBar.location": "right",
-    "vsicons.dontShowNewVersionMessage": true,
+    "python.languageServer": "Pylance",
+    "ruff.configuration": "--preview",
+    
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": false,
+        "editor.stickyScroll.enabled": true,
+    },
+    
     "python.defaultInterpreterPath": "c:\\Python313\\python.exe",
+    "python.terminal.executeInFileDir": true,
     "editor.parameterHints.cycle": false,
     "editor.hover.enabled": false,
     "editor.tabCompletion": "on",
@@ -127,6 +130,13 @@
     "git.confirmSync": false,
     "editor.codeLens": false,
     "githubRepositories.indexing.verboseDownloadNotification": false,
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "explorer.confirmDelete": false,
+    "git.postCommitCommand": "sync",
+    "explorer.confirmDragAndDrop": false,
+    "explorer.compactFolders": false,
+    "explorer.sortOrder": "type",
+    "git.autoStash": true,
     "editor.rulers": [
         {
             "column": 4,
@@ -137,38 +147,36 @@
             "color": "#3d3d3d"
         }
     ],
-    "editor.renderWhitespace": "none",
-    "editor.guides.indentation": false,
-    "terminal.integrated.defaultProfile.windows": "Command Prompt",
-    "explorer.confirmDelete": false,
-    "workbench.editorAssociations": {
-        "*.svg": "default"
-    },
-    "git.postCommitCommand": "sync",
-    "explorer.confirmDragAndDrop": false,
-
     "editor.inlayHints.enabled": "off",
     "editor.suggest.showTypeParameters": false,
     "editor.parameterHints.enabled": false,
-    "explorer.sortOrder": "type",
-    "cSpell.userWords": [
-        "buildable",
-        "rivt"
-    ],
+    "editor.renderWhitespace": "none",
+    "editor.guides.indentation": false,
+    "editor.mouseWheelZoom": true,
+    "editor.formatOnSave": false,
     "editor.fontSize": 16,
-    "python.terminal.executeInFileDir": true,
+    "editor.formatOnPaste": false,
+
     "projectManager.git.baseFolders": [
         "c:\\git"
     ],
     "terminal.integrated.fontSize": 16,
-    "editor.mouseWheelZoom": true,
+
     "seito-openfile.searchSubFoldersOfWorkspaceFolders": [
         "rivtprivate/*/"
     ],
-    "explorer.compactFolders": false,
-    "git.autoStash": true,
     "python.analysis.autoFormatStrings": true,
     "rewrap.wrappingColumn": 80,
     "rewrap.wholeComment": false,
-    "editor.foldingImportsByDefault": true,
+
+    "terminal.integrated.scrollback": 5000,
+
+    "outline.showStrings": false,
+    "vsicons.dontShowNewVersionMessage": true,
+        "cSpell.userWords": [
+        "buildable",
+        "rivt"
+    ],
+    "cSpell.enabled": false,
+
 }
