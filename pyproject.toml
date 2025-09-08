@@ -15,6 +15,7 @@ dependencies = [
     "jupyterlab>=4.4.1",
     "rivtlib @ git+https://github.com/rivtlib-dev/rivtlib",
 ]
+
 [project.optional-dependencies]
 rivt = [
     "Sphinx>=8.2.3",
@@ -23,6 +24,7 @@ rivt = [
     "rst2pdf>=2.2.5",
     "pypdf>=1.0.3",
 ]
+
 [build-system]
 requires = [
     "hatchling",
@@ -31,3 +33,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/foo"]
