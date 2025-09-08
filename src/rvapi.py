@@ -124,7 +124,7 @@ folderD = {
     "projP": Path(os.path.dirname(rivtP)),
     "docP": Path(projP, "rivtdocs"),
     "bakT": Path(rivtP, bakN),
-    "errlogT": errlogT,
+    "errlogT": Path(rivtP, "error.log"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(projP, "README.txt"),
     "reportP": Path(projP, "rivtdocs", "report"),
