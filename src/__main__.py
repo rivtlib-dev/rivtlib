@@ -32,11 +32,6 @@ S = string
 
 """
 
-__version__ = "a.b.c"
-__author__ = "rhholand"
-
-
-import getopt
 import sys
 
 if sys.version_info < (3, 11):
