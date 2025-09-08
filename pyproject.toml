@@ -13,7 +13,7 @@ dependencies = [
     "numpy>=2.2.5",
     "pandas>=2.2.3",
     "jupyterlab>=4.4.1",
-    "rivtlib @ git+https://github.com/rivtlib-dev/rivtlib#subdirectory=dist",
+    "rivtlib @ git+https://github.com/rivtlib-dev/rivtlib-pkg#subdirectory=dist",
 ]
 
 [project.optional-dependencies]
