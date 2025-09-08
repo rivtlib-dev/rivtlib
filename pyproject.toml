@@ -26,5 +26,8 @@ rivt = [
 [build-system]
 requires = [
     "hatchling",
-] # Example build backend, can be setuptools, poetry, etc.
+] 
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
