@@ -1,5 +1,5 @@
 [project]
-name = "rivtlib2"
+name = "rivtlib"
 version = "0.5.0"
 description = "install rivtlib package or complete rivt project as extra"
 authors = [{ name = "rod holland", email = "rod.h.holland@gmail.com" }]
