@@ -1,7 +1,7 @@
 [project]
 name = "rivtlib"
 version = "0.5.0"
-description = "install rivtlib package or rivt project as extra"
+description = "install rivtlib package or complete rivt project as extra"
 authors = [{ name = "rod holland", email = "rod.h.holland@gmail.com" }]
 requires-python = ">=3.11"
 dependencies = [
