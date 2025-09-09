@@ -10,7 +10,7 @@ import tabulate
 from IPython.display import display as _display
 from PIL import Image
 
-from rvunits import *  # noqa: F403
+from rivtlib.rvunits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -423,3 +423,116 @@ class Cmd:
         self.rS = fileS
         self.xS = fileS
         # endregion
+
+    def tagex(self):
+        """format equation
+
+            equation tag  :=
+            a := 1 + 2 | unit1, unit2, dec1, dec2 | ref
+
+            ratio tags     :<  :>
+            a :> b | Ok, Not Ok
+            a :< b | Pass, Fail
+
+        Returns:
+            uS, r2S, rS, folderD, labelD, rivtD, rivtL
+        """
+        # region
+        tbl1L = []
+        hdr1L = []
+        lineS = self.strngS
+        print(f"{lineS}")
+        lpL = lineS.split("|")
+        eqS = lpL[0]
+        eqS = eqS.replace(":=", "=").strip()
+        unit1S, unit2S, dec1S, dec2S = lpL[1].split(",")
+        refS = lpL[2].strip()
+        unit1S, unit2S = unit1S.strip(), unit2S.strip()
+        dec1S, dec2S = dec1S.strip(), dec2S.strip()
+        fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+        fmt2S = "Unum.set_format(value_format='%." + dec2S + "f', auto_norm=True)"
+        # wI = self.labelD["widthI"]
+
+        # equation
+        spL = eqS.split("=")
+        spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+        eq1S = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
+        eq1S = textwrap.indent(eq1S, "    ")
+        refS = refS.rjust(self.labelD["widthI"])
+        uS = refS + "\n" + eq1S + "\n\n"
+        rS = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
+        xS = ".. raw:: math\n\n   " + eqS + "\n"
+        if unit1S != "-":
+            exec(eqS, globals(), self.rivtD)
+        else:
+            cmdS = spL[0] + " = " + spL[1]
+            exec(cmdS, globals(), self.rivtD)
+
+        # rivtL and rivtD append
+        valU = eval(spL[0], globals(), self.rivtD)
+        self.rivtD[spL[0]] = valU
+        vxS = str(valU).strip()
+        vxL = vxS.split(" ")
+        exS = vxL[0] + " * " + vxL[1].upper()
+        ex2S = spL[0].strip() + " = " + exS
+        exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
+        self.rivtL.append(exvS)
+
+        # equation and table elements
+        symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
+        symaO = symeqO.atoms(sp.Symbol)
+        hdr1L.append(spL[0])
+        hdr1L.append("[" + spL[0] + "]")
+        for vS in symaO:
+            hdr1L.append(str(vS))
+        numvarI = len(symaO) + 2
+        # print("header----------", hdr1L)
+        # eval value
+        eval(fmt1S)
+        val1U = valU.cast_unit(eval(unit1S))
+        val2U = valU.cast_unit(eval(unit2S))
+        tbl1L.append(str(val1U))
+        tbl1L.append(str(val2U))
+        # print("table--------------", tbl1L)
+        # loop over variables
+        eval(fmt2S)
+        for aO in symaO:
+            a1U = eval(str(aO), globals(), self.rivtD)
+            tbl1L.append(str(a1U))
+            # print("ao", aO, a1U)
+        # write table
+        # print(tbl1L)
+        alignL = []
+        tblL = [tbl1L]
+        tblfmt = "rst"
+        for nI in range(numvarI):
+            alignL.append("center")
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tblL,
+                tablefmt=tblfmt,
+                headers=hdr1L,
+                showindex=False,
+                colalign=alignL,
+            )
+        )
+        uS += output.getvalue()
+        rS += output.getvalue()
+        xS += output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+
+        return (
+            self.uS,
+            self.rS,
+            self.xS,
+            self.folderD,
+            self.labelD,
+            self.rivtD,
+            self.rivtL,
+        )
+
+    # endregion

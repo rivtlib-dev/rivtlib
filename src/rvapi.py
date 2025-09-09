@@ -6,15 +6,15 @@ usage:
     import rivtlib.api as rv
 
 API functions:
-    rv.R(sS) - (Run) Execute shell scripts
-    rv.I(sS) - (Insert) Insert static text, math, images and tables
-    rv.V(sS) - (Values) Evaluate values and equations
-    rv.T(sS) - (Tools) Execute Python scripts
-    rv.D(sS) - (Docs) Write formatted document files
-    rv.S(sS) - (Skip) Skip processing of that section
-    rv.Q(sS) - (Quit) Exit processing of rivt file
+    rv.R(rS) - (Run) Execute shell scripts
+    rv.I(rS) - (Insert) Insert static text, math, images and tables
+    rv.V(rS) - (Values) Evaluate values and equations
+    rv.T(rS) - (Tools) Execute Python scripts
+    rv.D(rS) - (Docs) Write formatted document files
+    rv.S(rS) - (Skip) Skip processing of that section
+    rv.Q(rS) - (Quit) Exit processing of rivt file
 
-where sS is a section string - a triple quoted utf-8 string with a parameter
+where rS is a rivt section string - a triple quoted utf-8 string with a parameter
 header on the first line
 
 Globals:
@@ -50,35 +50,30 @@ from pathlib import Path
 
 import __main__
 from rivtlib import rvparse
-from rvunits import *  # noqa: F403
-
-from . import rvdoc
+from rivtlib import rvdoc
 
 rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))
-modnameS = __name__.split(".")[1]
-
-# region - parse file nane
-if __name__ == "rivtlib.rvparam":
-    rivtT = Path(__main__.__file__)
-    rivtN = rivtT.name
-    patternS = "r[0-9][0-9][0-9]0-9]-*.py"
-    if fnmatch.fnmatch(rivtN, patternS):
-        rivtfP = Path(rivtP, rivtN)
+modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
+rivtT = Path(__main__.__file__)
+rivtN = (rivtT.name).strip()
+print(f"{__name__=}")
+print(f"{modnameS=}")
+print(f"{rivtT=}")
+print(f"{rivtN=}")
+if fnmatch.fnmatch(rivtN, "rv[0-9][0-9][0-9][0-9]-*.py"):
+    print("match")
 else:
-    print(f"""The rivt file name is - {rivtN} -. The file name must""")
-    print("""match "rddss-anyname.py", where dd and ss are two-digit integers""")
+    print(f"""The rivt file name is  {rivtN} . The file name must""")
+    print("""match "rvddss-anyname.py", where dd and ss are two-digit integers""")
     sys.exit()
-# print(f"{rivtT=}")
-# print(f"{__name__=}")
-# print(f"{modnameS=}")
+
 
 # input files
 prfxS = rivtN[0:6]
 rnumS = rivtN[2:6]
 dnumS = prfxS[2:4]
 # endregion
-
 
 # region - file paths
 # input files
@@ -175,7 +170,6 @@ rivtD = {}  # shared calculated values
 
 # region - logging and backup
 errlogT = Path(projP, "temp", prfxS + "-log.txt")
-modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
@@ -195,6 +189,21 @@ with open(folderD["bakT"], "w") as f3:  # noqa: F405
     f3.write(rivtS)
 logging.info(f"""rivt backup : {folderD["bakT"]}""")  # noqa: F405
 # endregion
+
+
+def cmdhelp():
+    """command line help"""
+
+    print()
+    print("Command line in folder with rivt file:                     ")
+    print()
+    print("     python rvddss-filename.py                             ")
+    print()
+    print("Where dd and ss are two digit integers.                    ")
+    print("Text output is written to stdout.                          ")
+    print("File outputs depend on API settings.                       ")
+    print("See User Manual at https://rivt.info for details           ")
+    sys.exit()
 
 
 def doc_hdr():
