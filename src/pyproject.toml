@@ -1,7 +1,7 @@
 [project]
 name = "rivtlib"
 version = "0.5.0"
-description = "install rivtlib project"
+description = "install rivt project"
 authors = [{ name = "rod holland", email = "rholland@structurelabs.com" }]
 requires-python = ">=3.11"
 
@@ -35,3 +35,4 @@ dependencies = [
 [build-system]
 requires = ["uv_build>=0.8.17,<0.9.0"]
 build-backend = "uv_build"
+
