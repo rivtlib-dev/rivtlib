@@ -62,12 +62,11 @@ print(f"{modnameS=}")
 print(f"{rivtT=}")
 print(f"{rivtN=}")
 if fnmatch.fnmatch(rivtN, "rv[0-9][0-9][0-9][0-9]-*.py"):
-    print("match")
+    print("valid rivt file name")
 else:
     print(f"""The rivt file name is  {rivtN} . The file name must""")
     print("""match "rvddss-anyname.py", where dd and ss are two-digit integers""")
     sys.exit()
-
 
 # input files
 prfxS = rivtN[0:6]
@@ -169,7 +168,7 @@ rivtD = {}  # shared calculated values
 # endregion
 
 # region - logging and backup
-errlogT = Path(projP, "temp", prfxS + "-log.txt")
+errlogT = Path(rivtP, prfxS + "-log.txt")
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
