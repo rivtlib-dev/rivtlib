@@ -9,8 +9,6 @@ from configparser import ConfigParser
 
 import __main__
 
-from fpdf import FPDF
-
 # from templates.pdfcover import content, cover, mainpage --
 
 
