@@ -12,6 +12,7 @@ dependencies = [
     "sympy>=1.13.3",
     "numpy>=2.2.5",
     "pandas>=2.2.3",
+    "ipython>=9.2.0",
     "docutils>=0.21.2",
     "reportlab>=4.4.0",
     "rst2pdf>=0.103.1",
