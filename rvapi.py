@@ -11,11 +11,12 @@ API functions:
     rv.V(rS) - (Values) Evaluate values and equations
     rv.T(rS) - (Tools) Execute Python scripts
     rv.D(rS) - (Docs) Write formatted document files
-    rv.S(rS) - (Skip) Skip processing of that section
+    rv.M(rS) - (Meta) Meta data for rivt file
+    rv.S(rS) - (Skip) Skip processing of section
     rv.Q(rS) - (Quit) Exit processing of rivt file
 
-where rS is a rivt section string - a triple quoted utf-8 string with a parameter
-header on the first line
+where rS is a rivt section string - a triple quoted utf-8 string with a header
+on the first line
 
 Globals:
     utfS (str): utf doc string
@@ -54,15 +55,19 @@ from rivtlib import rvdoc
 
 rivtP = Path(os.getcwd())
 projP = Path(os.path.dirname(rivtP))
-modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 rivtT = Path(__main__.__file__)
 rivtN = (rivtT.name).strip()
-print(f"{__name__=}")
-print(f"{modnameS=}")
-print(f"{rivtT=}")
-print(f"{rivtN=}")
+modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
+print("----------------------------------------------------------")
+print(f"rivt file name: {rivtN}")
+print(f"rivt file path: {projP}")
+print("----------------------------------------------------------")
+
+# print(f"{rivtT=}")
+# print(f"{rivtN=}")
+# print(f"{modnameS=}")
 if fnmatch.fnmatch(rivtN, "rv[0-9][0-9][0-9][0-9]-*.py"):
-    print("valid rivt file name")
+    pass
 else:
     print(f"""The rivt file name is  {rivtN} . The file name must""")
     print("""match "rvddss-anyname.py", where dd and ss are two-digit integers""")
@@ -181,7 +186,7 @@ warnings.filterwarnings("ignore")
 logging.info(f"""rivt file : {folderD["rivtN"]}""")
 logging.info(f"""rivt path : {folderD["rivtP"]}""")
 
-
+# write backup file
 with open(folderD["rivtT"], "r") as f2:  # noqa: F405
     rivtS = f2.read()
 with open(folderD["bakT"], "w") as f3:  # noqa: F405
@@ -205,13 +210,12 @@ def cmdhelp():
     sys.exit()
 
 
-def doc_hdr():
-    """generate document header
+def doc_hdr(hS):
+    """parse header
 
     Returns:
-        str: doc string header
+        str: rivt string header
     """
-    # init file - (headings and doc overrides)
 
     dutfS = ""
     drs2S = ""
@@ -259,7 +263,7 @@ def doc_parse(sS, tS, tagL, cmdL):
     return dutfS, drs2S, drstS, rivtL
 
 
-def R(sS):
+def R(rS):
     """Run shell command
     Args:
         sS (str): section string
@@ -267,10 +271,10 @@ def R(sS):
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
     cmdL = ["WIN", "OSX", "LINUX"]
     tagL = []
-    dutfS, drs2S, drstS, rivtL = doc_parse(sS, "R", tagL, cmdL)
+    dutfS, drs2S, drstS, rivtL = doc_parse(rS, "R", tagL, cmdL)
 
 
-def I(sS):  # noqa: E743
+def I(rS):  # noqa: E743
     """Insert static source
     Args:
         sS (str): section string
@@ -280,18 +284,20 @@ def I(sS):  # noqa: E743
     tag1L = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
     tag2L = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tag1L + tag2L
-    dutfS, drs2S, drstS, rivtL = doc_parse(sS, "I", tagL, cmdL)
+    hS = rS.split("\n")[0].strip()
+    doc_hdr(hS)
+    dutfS, drs2S, drstS, rivtL = doc_parse(rS, "I", tagL, cmdL)
 
 
-def V(sS):
+def V(rS):
     """Values calculate
     Args:
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
     cmdL = ["IMG", "IMG2", "VALUE"]
-    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "[V]]", ":="]
-    dutfS, drs2S, drstS, rivtL = doc_parse(sS, "V", tagL, cmdL)
+    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "[V]]", ":=", "="]
+    dutfS, drs2S, drstS, rivtL = doc_parse(rS, "V", tagL, cmdL)
 
     # write values file
     fileS = folderD["valN"] + "-" + str(labelD["secnumI"]) + ".csv"
@@ -300,43 +306,59 @@ def V(sS):
         file1.write("\n".join(rivtL))
 
 
-def T(sS):
+def T(rS):
     """Tools in Python
     Args:
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-    cmdL = ["Python"]
+    cmdL = ["PYTHON", "LATEX"]
     tagL = []
-    dutfS, drs2S, drstS, rivtL = doc_parse(sS, "T", tagL, cmdL)
+    dutfS, drs2S, drstS, rivtL = doc_parse(rS, "T", tagL, cmdL)
 
 
-def P(sS):
+def D(rS):
     """Write doc files
 
-    Writes docs as .txt, .pdf (from reportab or tex) and .html
+    Writes docs as .txt, .pdf (reportLab or tex) and .html
 
     Args:
         sS (str): section string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
-    print("9999999999999999999999999999999999999")
     print(drs2S)
     cmdL = ["DOC", "ATTACH"]
-    wrtdoc = rvdoc.Cmdp(folderD, labelD, sS, cmdL, drs2S)
+    wrtdoc = rvdoc.Cmdp(folderD, labelD, rS, cmdL, drs2S)
     mssgS = wrtdoc.cmdpx()
     print("\n" + f"{mssgS}")
     sys.exit()
 
 
-def S(sS):
+def M(rS):
+    """rivt file meta data
+    Args:
+        rS (str): rivt string
+    """
+    global dutfS, drs2S, drstS, folderD, labelD, rivtD
+    cmdL = []
+    tagL = ["[AUTH]]", "[FORK]]"]
+    dutfS, drs2S, drstS, rivtL = doc_parse(rS, "T", tagL, cmdL)
+
+
+def S(rS):
     """skip section string - not processed
     Args:
         sS (str): section string
     """
-    shL = sS.split("\n")
+    shL = rS.split("\n")
     print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
 
 
-# begin doc generation - returns doc as txt, rst2 and rst string
-dutfS, drs2S, drstS = doc_hdr()
+def Q(rS):
+    """exit rivtlib processing
+    Args:
+        rS (str): section string
+    """
+    shL = rS.split("\n")
+    print("\n[" + shL[0].strip() + "] : rivtlib exit " + "\n")
+    sys.exit()

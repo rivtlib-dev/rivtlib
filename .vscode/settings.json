@@ -27,7 +27,7 @@
     "fsdeploy.nodes": [
     {
         "source": "C:/Python313/Lib/site-packages/rivtlib/",
-        "target": "C:/git/git-rivtlib/src/rivtlib",
+        "target": "C:/git/git-rivtlib",
         "include": "**/*.*",
         "exclude": "",
         "deleteTargetOnDeploy": true,

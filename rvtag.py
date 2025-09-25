@@ -1,4 +1,10 @@
 #
+"""_summary_
+
+Returns:
+    _type_: _description_
+"""
+
 import sys
 import textwrap
 from io import StringIO
