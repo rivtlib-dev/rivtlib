@@ -116,6 +116,7 @@ valP = Path(srcP, "v" + dnumS)
 # region - folders dict
 folderD = {
     "pthS": " ",
+    "cmdP": srcP,
     "rivtT": rivtT,  # full path and name
     "rivtN": rivtT.name,  # file name
     "baseS": rbaseS,  # file base name
@@ -152,19 +153,19 @@ labelD = {
     "tableI": 1,  # table number
     "figI": 1,  # figure number
     "pageI": 1,  # starting page number
-    "noteL": [0],  # footnote counter
-    "footL": [1],  # foot counter
-    "descS": "2",  # description or decimal places
+    "noteL": [0],  # endnote counter
+    "descS": "ref",  # description
+    "deciI": 2,  # decimals
     "headrS": "",  # header string
     "footrS": "",  # footer string
-    "tocB": False,  # table of contents
-    "docstrB": False,  # print doc strings
-    "subB": False,  # sub values in equations
-    "rvtosB": False,  # open-source rivt flag
-    "valexpS": "",  # list of values for export
     "unitS": "M,M",  # units
+    "valexpS": "",  # list of values for export
+    "publicB": False,  # public section
+    "printB": True,  # print section to doc
+    "tocB": False,  # table of contents
+    "subB": False,  # sub values in equations
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
-    "colorS": "none",  # background color
+    "colorS": "none",  # topic background color
 }
 # endregion
 
@@ -210,11 +211,11 @@ def cmdhelp():
     sys.exit()
 
 
-def doc_hdr(hS):
-    """parse header
+def doc_hdr():
+    """write doc header
 
     Returns:
-        str: rivt string header
+        str: doc header
     """
 
     dutfS = ""
@@ -237,6 +238,10 @@ def doc_hdr(hS):
     drstS = dutfS
 
     return dutfS, drs2S, drstS
+
+
+# initialize doc string
+dutfS, drs2S, drstS = doc_hdr()
 
 
 def doc_parse(sS, tS, tagL, cmdL):
@@ -277,15 +282,13 @@ def R(rS):
 def I(rS):  # noqa: E743
     """Insert static source
     Args:
-        sS (str): section string
+        rS (str): rivt string
     """
     global dutfS, drs2S, drstS, folderD, labelD, rivtD
     cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
-    tag1L = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
-    tag2L = ["B]]", "C]]", "I]]", "L]]", "X]]"]
-    tagL = tag1L + tag2L
-    hS = rS.split("\n")[0].strip()
-    doc_hdr(hS)
+    tagL = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
+    tagbL = ["B]]", "C]]", "I]]", "L]]", "X]]"]
+    tagL = tagL + tagbL
     dutfS, drs2S, drstS, rivtL = doc_parse(rS, "I", tagL, cmdL)
 
 

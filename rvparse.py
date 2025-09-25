@@ -58,24 +58,40 @@ class Section:
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
+        # set section print and public flags
+        labelD["publicB"] = False
+        if stS == "R":
+            labelD["printB"] = False
+        if stS == "I":
+            labelD["printB"] = True
+        if stS == "V":
+            labelD["printB"] = True
+        if stS == "T":
+            labelD["printB"] = False
+        if stS == "D":
+            labelD["printB"] = False
+        if stS == "M":
+            labelD["printB"] = False
+        if stS == "I":
+            labelD["printB"] = True
+        if stS == "I":
+            labelD["printB"] = True
+
         try:
-            if hL[1].strip() == "rivtos":  # open-source flag
-                labelD["rvtosB"] = True
+            if "public" in hL[1].strip():  # open-source flag
+                labelD["publicB"] = True
+            else:
+                labelD["publicB"] = False
         except:
-            try:
-                if hL[2].strip() == "rivtos":
-                    labelD["rvtosB"] = True
-            except:
-                pass
+            pass
+
         try:
-            if hL[1].strip() in labelD["colorL"]:  # background color
-                labelD["colorS"] = hL[1].strip()
+            if "hide" in hL[1].strip():  # print flag
+                labelD["printB"] = False
+            elif "print" in hL[1].strip():
+                labelD["printB"] = True
         except:
-            try:
-                if hL[2].strip() in labelD["colorL"]:
-                    labelD["colorS"] = hL[2].strip()
-            except:
-                pass
+            pass
 
         # print(sutfS, srs2S, srstS)
         self.sutfS = sutfS  # utf doc
@@ -97,7 +113,7 @@ class Section:
         self.logging.info("SECTION " + str(labelD["secnumI"]) + " - type " + stS)
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
-        srcnS = stS+self.folder["dnumS"]
+        srcnS = stS + self.folder["dnumS"]
         self.folder["srcnS"] = srcnS
         # endregion
 
