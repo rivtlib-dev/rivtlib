@@ -48,6 +48,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
+from importlib.metadata import version
 
 import __main__
 from rivtlib import rvparse
@@ -179,16 +180,24 @@ logging.basicConfig(
     filemode="w",
 )
 
+warnings.filterwarnings("ignore")
+logging.info(f"""rivt file : {folderD["rivtN"]}""")
+logging.info(f"""rivt file path : {folderD["rivtP"]}""")
+
+try:
+    package_version = version("rivtlib")
+    verS = f"rivtlib version: {package_version}"
+except Exception as e:
+    verS = f"Could not retrieve version for rivtlib: {e}"
+
 print("   ")
 print("----------------------------------------------------------")
+print(verS)
 print(f"rivt file: {rivtN}")
 print(f"rivt file path: {rivtP}")
 print("----------------------------------------------------------")
 print("   ")
 
-warnings.filterwarnings("ignore")
-logging.info(f"""rivt file : {folderD["rivtN"]}""")
-logging.info(f"""rivt file path : {folderD["rivtP"]}""")
 
 # write backup file
 with open(folderD["rivtT"], "r") as f2:  # noqa: F405
