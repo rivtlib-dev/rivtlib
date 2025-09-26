@@ -58,10 +58,6 @@ projP = Path(os.path.dirname(rivtP))
 rivtT = Path(__main__.__file__)
 rivtN = (rivtT.name).strip()
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
-print("----------------------------------------------------------")
-print(f"rivt file name: {rivtN}")
-print(f"rivt file path: {projP}")
-print("----------------------------------------------------------")
 
 # print(f"{rivtT=}")
 # print(f"{rivtN=}")
@@ -103,8 +99,6 @@ styleP = Path(projP, "style")
 reportP = Path(projP, "rivtdocs", "report")
 ossP = Path(projP / "rivtos")
 valN = prfxS.replace("rv", "v")
-
-# read/write
 valP = Path(srcP, "v" + dnumS)
 
 # print(f"{projP=}")
@@ -130,6 +124,7 @@ folderD = {
     "reportP": Path(projP, "rivtdocs", "report"),
     "styleP": Path(projP, "rivtdocs", "style"),
     "srcP": srcP,
+    "localP": Path(os.getcwd()),
     "rstpN": rstnS,
     "pdfpN": pdfnS,
     "runP": Path(srcP, "r" + dnumS),
@@ -173,6 +168,7 @@ labelD = {
 rivtD = {}  # shared calculated values
 # endregion
 
+
 # region - logging and backup
 errlogT = Path(rivtP, prfxS + "-log.txt")
 logging.basicConfig(
@@ -182,10 +178,17 @@ logging.basicConfig(
     filename=errlogT,
     filemode="w",
 )
-warnings.filterwarnings("ignore")
 
+print("   ")
+print("----------------------------------------------------------")
+print(f"rivt file: {rivtN}")
+print(f"rivt file path: {rivtP}")
+print("----------------------------------------------------------")
+print("   ")
+
+warnings.filterwarnings("ignore")
 logging.info(f"""rivt file : {folderD["rivtN"]}""")
-logging.info(f"""rivt path : {folderD["rivtP"]}""")
+logging.info(f"""rivt file path : {folderD["rivtP"]}""")
 
 # write backup file
 with open(folderD["rivtT"], "r") as f2:  # noqa: F405
@@ -196,52 +199,24 @@ logging.info(f"""rivt backup : {folderD["bakT"]}""")  # noqa: F405
 # endregion
 
 
+# initialize doc strings
+dutfS = ""
+drsrS = ""
+drstS = ""
+dhtmS = ""
+
+
 def cmdhelp():
     """command line help"""
 
     print()
-    print("Command line in folder with rivt file:                     ")
+    print("Run rivt file on command line with:                     ")
     print()
     print("     python rvddss-filename.py                             ")
     print()
     print("Where dd and ss are two digit integers.                    ")
-    print("Text output is written to stdout.                          ")
-    print("File outputs depend on API settings.                       ")
     print("See User Manual at https://rivt.info for details           ")
     sys.exit()
-
-
-def doc_hdr():
-    """write doc header
-
-    Returns:
-        str: doc header
-    """
-
-    dutfS = ""
-    drs2S = ""
-    drstS = ""
-    # config = ConfigParser()
-    # config.read(Path(projP, "rivt-doc.ini"))
-    # headS = config.get("report", "title")
-    # footS = config.get("utf", "foot1")
-    titleL = rivtN.split("-")  # subdivision title
-    titleS = titleL[1].split(".")[0]
-    dnumS = titleL[0].split("r")[1]
-    headS = dnumS + "   " + titleS
-    timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
-    borderS = "=" * 80
-    dutfS = "\n\n" + timeS + "   " + headS + "\n" + borderS + "\n"
-    print(dutfS)  # STDOOUT doc heading
-    dutfS = dutfS  # accumulate doc strings
-    drs2S = dutfS
-    drstS = dutfS
-
-    return dutfS, drs2S, drstS
-
-
-# initialize doc string
-dutfS, drs2S, drstS = doc_hdr()
 
 
 def doc_parse(sS, tS, tagL, cmdL):
@@ -256,7 +231,7 @@ def doc_parse(sS, tS, tagL, cmdL):
         srs2S (str): rst2pdf output
         srstS (str): reSt output
     """
-    global dutfS, drs2S, drstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, dhtmS, folderD, labelD, rivtD
     sL = sS.split("\n")
     secC = rvparse.Section(tS, sL, folderD, labelD, rivtD)
     sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL = secC.section(tagL, cmdL)
@@ -273,7 +248,7 @@ def R(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drs2S, drstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, dhtmS, folderD, labelD, rivtD
     cmdL = ["WIN", "OSX", "LINUX"]
     tagL = []
     dutfS, drs2S, drstS, rivtL = doc_parse(rS, "R", tagL, cmdL)
@@ -284,7 +259,7 @@ def I(rS):  # noqa: E743
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, dhtmS, folderD, labelD, rivtD
     cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
     tagL = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
     tagbL = ["B]]", "C]]", "I]]", "L]]", "X]]"]
@@ -297,7 +272,7 @@ def V(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drs2S, drstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, dhtmS, folderD, labelD, rivtD
     cmdL = ["IMG", "IMG2", "VALUE"]
     tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "[V]]", ":=", "="]
     dutfS, drs2S, drstS, rivtL = doc_parse(rS, "V", tagL, cmdL)
@@ -314,7 +289,7 @@ def T(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drs2S, drstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, dhtmS, folderD, labelD, rivtD
     cmdL = ["PYTHON", "LATEX"]
     tagL = []
     dutfS, drs2S, drstS, rivtL = doc_parse(rS, "T", tagL, cmdL)
@@ -328,7 +303,11 @@ def D(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drs2S, drstS, folderD, labelD, rivtD
+    global dutfS, drs2S, drstS, dhtmS, folderD, labelD, rivtD
+    # config = ConfigParser()
+    # config.read(Path(projP, "rivt-doc.ini"))
+    # headS = config.get("report", "title")
+    # footS = config.get("utf", "foot1")
     print(drs2S)
     cmdL = ["DOC", "ATTACH"]
     wrtdoc = rvdoc.Cmdp(folderD, labelD, rS, cmdL, drs2S)
@@ -342,10 +321,32 @@ def M(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, folderD, labelD, rivtD
-    cmdL = []
-    tagL = ["[AUTH]]", "[FORK]]"]
-    dutfS, drs2S, drstS, rivtL = doc_parse(rS, "T", tagL, cmdL)
+    global dutfS, drs2S, drstS, dhtmS, folderD, labelD, rivtD
+
+    cmdS = ""
+    for iS in rS.split("\n")[1:]:
+        cmdS += iS[4:] + "\n"
+    # print(cmdS)
+
+    localsD = locals()
+    exec(cmdS, globals(), localsD)
+    authD = localsD["rv_authD"]
+    authS = "av-" + authD["version"]
+    headS = "   " + str(rivtN)
+    timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
+    borderS = "=" * 80
+    lenI = len(timeS + "   " + headS)
+    sutfS = (
+        "\n\n" + timeS + "   " + headS + authS.rjust(80 - lenI) + "\n" + borderS + "\n"
+    )
+
+    dutfS = sutfS  # init doc strings
+    drs2S = sutfS
+    drstS = sutfS
+    dhtmS = sutfS
+
+    print(sutfS)  # STDOUT doc header
+    logging.info("Doc start")
 
 
 def S(rS):

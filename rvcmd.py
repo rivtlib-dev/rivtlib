@@ -38,15 +38,15 @@ class Cmd:
     Tools   PYTHON - python script
 
 
-    |TEXT| rel. pth |  plain; rivt
-    |IMG| rel. pth | scale factor, caption (_[F])       .png, .jpg
-    |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F]) .png, .jpg
-    |TABLE| rel. pth | col width, l;c;r, title (_[T])   .csv, .xls, .txt
-    |VALUE| rel. pth | col width, l;c;r, title (_[T])   .csv
-    |WIN| rel. pth | print, noprint
-    |OSX| rel. pth | print, noprint
-    |LINUX| rel. pth | print, noprint
-    |PYTHON| rel. pth | print, noprint
+    | TEXT | rel. pth |  plain; rivt
+    | IMG | rel. pth | scale factor, caption (_[F])       .png, .jpg
+    | IMG2 | rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F]) .png, .jpg
+    | TABLE | rel. pth | col width, l;c;r, title (_[T])   .csv, .xls, .txt
+    | VALUE | rel. pth | col width, l;c;r, title (_[T])   .csv
+    | WIN | rel. pth | print, noprint
+    | OSX | rel. pth | print, noprint
+    | LINUX | rel. pth | print, noprint
+    | PYTHON | rel. pth | print, noprint
 
     """
 
@@ -68,11 +68,17 @@ class Cmd:
         self.labelD = labelD
         self.rivtD = rivtD
         self.rivtL = rivtL
-        self.pthS = parL[1].strip()
-        self.parS = parL[2].strip()
+        self.parS = parL[3].strip()
         self.uS = ""
         self.rS = ""
         self.xS = ""
+
+        apthS = parL[1].strip()
+        fileS = parL[2].strip()
+        if apthS == "rvlocal":
+            self.pthS = str(Path(folderD["localP"], fileS))
+        else:
+            self.pthS = str(Path(folderD["srcP"], fileS))
         # endregion
 
     def cmdx(self, cmdS):
@@ -101,7 +107,7 @@ class Cmd:
     def IMG(self):
         """insert image
 
-        |IMG| rel. pth | scale factor, caption (_[F])
+        | IMG | rel. pth | file | scale factor, caption (_[F])
         """
         # region
         if "_[F]" in self.parS:
@@ -116,9 +122,8 @@ class Cmd:
         # print(f"{pthS=}")
 
         parL = self.parS.split(",")
-        capS = parL[0].strip()
-        scL = parL[1].split("_")
-        scS = scL[0].strip()
+        capS = parL[1].split("_")[0].strip()
+        scS = parL[0].strip()
         insP = Path(self.folderD["srcP"], self.pthS)
         insS = str(insP.as_posix())
         if capS == "-":

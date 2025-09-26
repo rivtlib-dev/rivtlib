@@ -41,15 +41,16 @@ class Section:
         self.folderD = folderD
         self.labelD = labelD
         self.rivtD = rivtD
-        # section heading
+
+        # section header
         hL = sL[0].split("|")
+        labelD["docS"] = hL[0].strip()  # section title
         if hL[0].strip()[0:2] == "--":
             labelD["docS"] = hL[0].split("--")[1][1]  # section title
             sutfS = "\n"
             srs2S = "\n"
             srstS = "\n"
         else:
-            labelD["docS"] = hL[0].strip()  # section title
             snumI = labelD["secnumI"] + 1
             labelD["secnumI"] = snumI
             snumS = "[ " + str(snumI) + " ]"
@@ -58,31 +59,32 @@ class Section:
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
-        # set section print and public flags
+
+        # default flags
         labelD["publicB"] = False
+
         if stS == "R":
             labelD["printB"] = False
-        if stS == "I":
+        elif stS == "I":
             labelD["printB"] = True
-        if stS == "V":
+        elif stS == "V":
             labelD["printB"] = True
-        if stS == "T":
+        elif stS == "T":
             labelD["printB"] = False
-        if stS == "D":
+        elif stS == "D":
             labelD["printB"] = False
-        if stS == "M":
+        elif stS == "M":
             labelD["printB"] = False
-        if stS == "I":
-            labelD["printB"] = True
-        if stS == "I":
-            labelD["printB"] = True
+        else:
+            pass
 
+        # update flags
         try:
             if "public" in hL[1].strip():  # open-source flag
                 labelD["publicB"] = True
             else:
                 labelD["publicB"] = False
-        except:
+        except Exception:
             pass
 
         try:
@@ -90,7 +92,9 @@ class Section:
                 labelD["printB"] = False
             elif "print" in hL[1].strip():
                 labelD["printB"] = True
-        except:
+            else:
+                pass
+        except Exception:
             pass
 
         # print(sutfS, srs2S, srstS)
@@ -98,23 +102,22 @@ class Section:
         self.srs2S = srs2S  # rst2pdf doc
         self.srstS = srstS  # rest doc
         print(sutfS)  # STDOUT section header
+        self.logging.info("SECTION " + str(labelD["secnumI"]) + " - type " + stS)
 
-        spL = []  # strip leading spaces and comments from section
+        spL = []  # strip leading spaces and comments from section content
         for slS in sL[1:]:
-            if len(slS) < 5:
+            if len(slS) < 5:  # blank line to new line
                 slS = "\n"
                 spL.append(slS)
                 continue
-            if "#" in slS[:5]:
+            if "#" in slS[:5]:  # skip comment line
                 continue
-            if slS.strip()[:9] == "==========":
+            if "." * 10 in slS:  # page break to tag
                 slS = "    _[P]"
             spL.append(slS[4:])
-        self.logging.info("SECTION " + str(labelD["secnumI"]) + " - type " + stS)
+
         self.spL = spL  # preprocessed list
         self.stS = stS  # section type
-        srcnS = stS + self.folder["dnumS"]
-        self.folder["srcnS"] = srcnS
         # endregion
 
     def section(self, tagL, cmdL):
