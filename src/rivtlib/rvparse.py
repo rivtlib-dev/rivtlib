@@ -27,9 +27,7 @@ class Section:
         logging.basicConfig(
             level=logging.DEBUG,
             format=(
-                "%(asctime)-8s  "
-                + modnameS
-                + " %(levelname)-8s  %(message)-8s"
+                "%(asctime)-8s  " + modnameS + " %(levelname)-8s  %(message)-8s"
             ),
             datefmt="%m-%d %H:%M",
             filename=errlogP,
@@ -64,51 +62,53 @@ class Section:
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
         try:
-            hparaL = hL[1].strip().split(",")
-            if 
+            paraL = hL[1].strip().split("|")
         except Exception:
-            pass
+            paraL = []
 
-
-        
-
-
-        # default flags
+        # set default section parameters
         lablD["publicB"] = False
-
         if stS == "R":
             lablD["printB"] = False
+            lablD["publicB"] = False
+            foldD["alias"] = "rvsource"
         elif stS == "I":
             lablD["printB"] = True
+            lablD["publicB"] = False
+            foldD["alias"] = "rvsource"
         elif stS == "V":
             lablD["printB"] = True
+            lablD["publicB"] = False
+            foldD["alias"] = "rvsource"
         elif stS == "T":
             lablD["printB"] = False
+            lablD["publicB"] = False
+            foldD["alias"] = "rvsource"
         elif stS == "D":
             lablD["printB"] = False
+            lablD["publicB"] = False
+            foldD["alias"] = "rvsource"
         elif stS == "M":
             lablD["printB"] = False
+            lablD["publicB"] = False
+            foldD["alias"] = "rvsource"
         else:
             pass
 
-        # update flags
-        try:
-            if "public" in hL[1].strip():  # open-source flag
-                lablD["publicB"] = True
-            else:
-                lablD["publicB"] = False
-        except Exception:
-            pass
-
-        try:
-            if "hide" in hL[1].strip():  # print flag
-                lablD["printB"] = False
-            elif "print" in hL[1].strip():
-                lablD["printB"] = True
-            else:
-                pass
-        except Exception:
-            pass
+        # override section defaults
+        if len(paraL) > 0:
+            if "rvlocal" in paraL:
+                foldD["alias"] = "rvlocal"
+            if "rvsource" in paraL:
+                foldD["alias"] = "rvsource"
+            if "hide" in paraL:
+                foldD["printB"] = False
+            if "print" in paraL:
+                foldD["printB"] = True
+            if "private" in paraL:
+                foldD["publicB"] = False
+            if "public" in paraL:
+                foldD["publicB"] = True
 
         # print(sutfS, srs2S, srstS)
         self.sutfS = sutfS  # utf doc

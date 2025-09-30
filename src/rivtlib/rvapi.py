@@ -151,11 +151,11 @@ lablD = {
     "figI": 1,  # figure number
     "pageI": 1,  # starting page number
     "noteL": [0],  # endnote counter
-    "descS": "ref",  # description
+    "descS": "ref",  # value description
     "deciI": 2,  # decimals
     "headrS": "",  # header string
     "footrS": "",  # footer string
-    "folderaliaS": "rvsource",  # folder alias
+    "aliaS": "rvsource",  # folder alias
     "unitS": "M,M",  # units
     "valexpS": "",  # list of values for export
     "publicB": False,  # public section

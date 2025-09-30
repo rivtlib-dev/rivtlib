@@ -9,7 +9,6 @@ import pandas as pd
 import tabulate
 from IPython.display import display as _display
 from PIL import Image
-
 from rivLib.rvunits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
@@ -57,7 +56,6 @@ class Cmd:
             lablD (dict): labels
             rivD (dict): values
             rivL (list): values for export
-            parL (list): command parameters
         Vars:
             uS (str): utf string
             rS (str): rst2pdf string
@@ -68,17 +66,12 @@ class Cmd:
         self.lablD = lablD
         self.rivD = rivD
         self.rivL = rivL
-        self.parS = parL[3].strip()
+        self.fileS = parL[0].strip()
+        self.pathS = parL[1].strip()
+        self.parS = parL[2].strip()
         self.uS = ""
         self.rS = ""
         self.xS = ""
-
-        apthS = parL[1].strip()
-        fileS = parL[2].strip()
-        if apthS == "rvlocal":
-            self.pthS = str(Path(foldD["localP"], fileS))
-        else:
-            self.pthS = str(Path(foldD["srcP"], fileS))
         # endregion
 
     def cmdx(self, cmdS):
@@ -107,22 +100,23 @@ class Cmd:
     def IMG(self):
         """insert image
 
-        | IMG | rel. pth | file | scale factor, caption (_[F])
+        | IMG | rel. path | file | scale factor, caption (_[F])
         """
+        parL = self.parS.split(",")
         # region
-        if "_[F]" in self.parS:
+        if "_[F]" in parL:
             numS = str(self.lablD["figI"])
             self.lablD["figI"] = int(numS) + 1
             figuS = "Fig. " + numS + " - "
             figrS = "**Fig. " + numS + "** - "
-
+            capS = parL[1].replace("_[F]", " ")
         else:
-            figuS = " "
-        # print(f"{parS=}")
-        # print(f"{pthS=}")
+            capS = parL[1].strip()
 
-        parL = self.parS.split(",")
-        capS = parL[1].split("_")[0].strip()
+        # print(f"{self.parS=}")
+        # print(f"{self.pathS=}")
+        # print(f"{self.fileS=}")
+
         scS = parL[0].strip()
         insP = Path(self.foldD["srcP"], self.pthS)
         insS = str(insP.as_posix())
