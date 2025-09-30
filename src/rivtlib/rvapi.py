@@ -283,8 +283,8 @@ def V(rS):
         sS (str): section string
     """
     global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["IMG", "IMG2", "TABLE", "VALUE"]
-    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "V]", ":=", "<="]
+    cmdL = ["IMG", "IMG2", "TABLE", "VALUE", ":=", "<="]
+    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "V]"]
     dutfS, drsrS, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
 
 

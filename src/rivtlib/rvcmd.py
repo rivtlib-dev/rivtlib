@@ -1,16 +1,20 @@
 # python #!
 import csv
 import sys
+import textwrap
 from io import StringIO
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import sympy as sp
 import tabulate
 from IPython.display import display as _display
 from PIL import Image
+from sympy.abc import _clash2
 
 from rivtlib.rvunits import *  # noqa: F403
+from rivtlib.unum.core import Unum
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -363,7 +367,7 @@ class Cmd:
         self.xS = rtitlnS + pS + outS + "\n"
         # endregion
 
-    def assign(self):
+    def assign(self, aeqS):
         """format equation and assign value <=
 
             equation tag  :=
@@ -379,21 +383,16 @@ class Cmd:
         # region
         tbl1L = []
         hdr1L = []
-        lineS = self.strngS
-        print(f"{lineS}")
-        lpL = lineS.split("|")
+        lpL = aeqS.split("|")
         eqS = lpL[0]
-        eqS = eqS.replace(":=", "=").strip()
-        unit1S, unit2S, dec1S, dec2S = lpL[1].split(",")
+        eqS = eqS.replace("<=", "=").strip()
+        unit1S, unit2S, dec1S = lpL[1].split(",")
+        unit1S, unit2S, dec1S = unit1S.strip(), unit2S.strip(), dec1S.strip()
         refS = lpL[2].strip()
-        unit1S, unit2S = unit1S.strip(), unit2S.strip()
-        dec1S, dec2S = dec1S.strip(), dec2S.strip()
-        fmt1S = (
-            "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
-        )
-        fmt2S = (
-            "Unum.set_format(value_format='%." + dec2S + "f', auto_norm=True)"
-        )
+
+        # print(dir(Unum.set_format))
+        decS = "%." + dec1S + "f"
+        Unum.set_format(value_format=decS, auto_norm=True)
         # wI = self.lablD["widthI"]
 
         # equation
@@ -403,13 +402,14 @@ class Cmd:
         eq1S = textwrap.indent(eq1S, "    ")
         refS = refS.rjust(self.lablD["widthI"])
         uS = refS + "\n" + eq1S + "\n\n"
-        rS = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
-        xS = ".. raw:: math\n\n   " + eqS + "\n"
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivD)
+
+        rS = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
+        xS = ".. raw:: math\n\n   " + eqS + "\n"
 
         # rivL and rivD append
         valU = eval(spL[0], globals(), self.rivD)
@@ -431,14 +431,15 @@ class Cmd:
         numvarI = len(symaO) + 2
         # print("header----------", hdr1L)
         # eval value
-        eval(fmt1S)
+
         val1U = valU.cast_unit(eval(unit1S))
         val2U = valU.cast_unit(eval(unit2S))
         tbl1L.append(str(val1U))
         tbl1L.append(str(val2U))
+        # print(f"{valU=}")
         # print("table--------------", tbl1L)
+
         # loop over variables
-        eval(fmt2S)
         for aO in symaO:
             a1U = eval(str(aO), globals(), self.rivD)
             tbl1L.append(str(a1U))
@@ -469,9 +470,9 @@ class Cmd:
         sys.stdout.flush()
 
         return (
-            self.uS,
-            self.rS,
-            self.xS,
+            uS,
+            rS,
+            xS,
             self.foldD,
             self.lablD,
             self.rivD,
@@ -480,7 +481,7 @@ class Cmd:
 
     # endregion
 
-    def define(self):
+    def define(self, valS):
         """define value :=
 
             a := 1 + 2 | unit1, unit2, decimal | ref
@@ -495,88 +496,62 @@ class Cmd:
         """
 
         # region
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
         tbL = []
-        self.uS = "\nTable " + fillS + " - " + self.blockL[0] + "\n\n"
-        self.rS = "\n**Table " + fillS + "**: " + self.blockL[0] + "\n\n"
-        self.xS = "\n**Table " + fillS + "**: " + self.blockL[0] + "\n\n"
-
-        # print(f"{self.blockL=}")
-        for vaS in self.blockL[1:]:
-            vaL = vaS.split("|")
-            if len(vaL) != 3:
-                continue
-            if ":=" not in vaL[0]:
-                continue
-            # print(f"{vaS=}")
-            # print(f"{vaL=}")
-            eqS = vaL[0].strip()
-            eqS = eqS.replace(":=", "=")
-            varS = eqS.split("=")[0].strip()
-            valS = eqS.split("=")[1].strip()
-            unitL = vaL[1].split(",")
-            unit1S, unit2S, dec1S = (
-                unitL[0].strip(),
-                unitL[1].strip(),
-                unitL[2].strip(),
-            )
-            descripS = vaL[2].strip()
-            fmt1S = (
-                "Unum.set_format(value_format='%."
-                + dec1S
-                + "f', auto_norm=True)"
-            )
-            eval(fmt1S)
-
-            # rivL append
-            exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
-            self.rivL.append(exvS)
-
-            # rivD append
-            if unit1S != "-":
-                try:
-                    exec(eqS, globals(), self.rivD)
-                except ValueError as ve:
-                    print(f"A ValueError occurred: {ve}")
-                except Exception as e:
-                    print(f"An unexpected error occurred: {e}")
-                valU = eval(varS, {}, self.rivD)
-                val1U = str(valU.cast_unit(eval(unit1S)))
-                val2U = str(valU.cast_unit(eval(unit2S)))
-                self.rivD[varS] = val1U
-                # print(f"{self.rivtvD=}")
-            else:
-                cmdS = varS + " = " + valS
-                exec(cmdS, globals(), self.rivD)
-                valU = eval(varS)
-                val1U = str(valU)
-                val2U = str(valU)
-            tbL.append([varS, val1U, val2U, descripS])
-            self.rivD[varS] = valU
-
-        # write value table
-        tblfmt = "rst"
-        hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate.tabulate(
-                tbL,
-                tablefmt=tblfmt,
-                headers=hdrvL,
-                showindex=False,
-                colalign=alignL,
-            )
+        vaL = valS.split("|")
+        # print(f"{valS=}")
+        # print(f"{vaL=}")
+        eqS = vaL[0].strip()
+        eqS = eqS.replace(":=", "=")
+        varS = eqS.split("=")[0].strip()
+        valS = eqS.split("=")[1].strip()
+        unitL = vaL[1].split(",")
+        unit2S, dec1S = (
+            unitL[0].strip(),
+            unitL[1].strip(),
         )
-        self.uS += output.getvalue() + "\n"
-        self.rS += output.getvalue() + "\n"
-        self.xS += output.getvalue() + "\n"
-        sys.stdout = old_stdout
-        sys.stdout.flush()
+        unit1S = str(eval(valS).unit()).upper()
+        descripS = vaL[2].strip()
+        fmt1S = (
+            "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+        )
+        eval(fmt1S)
+
+        # rivL append
+        exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
+        self.rivL.append(exvS)
+        # rivD append
+        try:
+            exec(eqS, globals(), self.rivD)
+        except ValueError as ve:
+            print(f"A ValueError occurred: {ve}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        valU = eval(varS, {}, self.rivD)
+        if type(valU) is Unum:
+            val1U = str(valU.cast_unit(eval(unit1S)))
+            val2U = str(valU.cast_unit(eval(unit2S)))
+        # print(f"{self.rivtvD=}")
+        else:
+            cmdS = varS + " = " + valS
+            exec(cmdS, globals(), self.rivD)
+            valU = eval(varS)
+            val1U = str(valU)
+            val2U = str(valU)
+
+        self.rivD[varS] = valU  # rivt dictionary
+        tbL = [varS, val1U, val2U, descripS]  # append row
+
+        return (
+            self.uS,
+            self.rS,
+            self.xS,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
+            tbL,
+        )
 
         # export value table
         # endregion

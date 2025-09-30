@@ -34,8 +34,9 @@ Unum.set_format(
 )
 
 # standard SI units ==== DO NOT MODIFY BETWEEN DOUBLE LINES  ============
-#
 # temperature - relative degree size, not offset ------------------------
+#
+# temperature
 K = new_unit("K", 0, "kelvin")
 CELSIUS = new_unit("deg C", K, "degree Celsius")
 FAHR = new_unit("degF", K * 9.0 / 5, "degree Fahrenheit")
@@ -73,6 +74,7 @@ SIEMENS = new_unit("siemens", A / VO, "siemens")
 WB = new_unit("Wb", VO * SIEMENS, "weber")
 TS = new_unit("TS", WB / M**2, "tesla")
 HENRY = new_unit("H", WB / A, "henry")
+#
 # ============  DO NOT MODIFY ABOVE THIS LINE  =============================
 #
 # metric --------------------------------

@@ -5,7 +5,12 @@ parse section string
 import logging
 import os
 import re
+import sys
 import warnings
+from io import StringIO
+from pathlib import Path
+
+import tabulate
 
 import __main__
 
@@ -70,7 +75,7 @@ class Section:
         # set default section parameters
         lablD["rvtypeS"] = stS  # section type
         lablD["publicB"] = False
-        if stS == "R":
+        if stS == "R" or stS == "T" or stS == "D" or stS == "M":
             lablD["printB"] = False
             lablD["publicB"] = False
         elif stS == "I":
@@ -80,15 +85,6 @@ class Section:
             lablD["printB"] = True
             lablD["publicB"] = False
             foldD["alias"] = "rvsource"
-        elif stS == "T":
-            lablD["printB"] = False
-            lablD["publicB"] = False
-        elif stS == "D":
-            lablD["printB"] = False
-            lablD["publicB"] = False
-        elif stS == "M":
-            lablD["printB"] = False
-            lablD["publicB"] = False
         else:
             pass
 
@@ -142,10 +138,13 @@ class Section:
             foldD (dict): folder paths
             lablD (dict): labels
             rivD (dict): calculated values
-            rivL (list): values for export
+            rivL (list): export values
         """
         # region
+        # print(f"{cmdL=}")
+        # print(f"{tagL=}")
         rivL = []
+        tabL = []
         blockB = False
         blockS = """"""
         tagS = ""
@@ -159,7 +158,7 @@ class Section:
         rivD = self.rivD
 
         for slS in self.spL:  # loop over section lines
-            # print(slS)
+            # print(f"{slS=}")
             if self.stS == "I":
                 txt2L = []
                 # print(f"{slS=}")
@@ -179,7 +178,34 @@ class Section:
                 srsrS += " \n"
                 srstS += " \n"
                 print(" ")  # STDOUT- blank line
-                continue
+                if self.stS == "V" and len(tabL) > 0:  # write value table
+                    # write value table
+                    tblfmt = "rst"
+                    hdrvL = ["variable", "value", "[value]", "description"]
+                    alignL = ["left", "right", "right", "left"]
+                    sys.stdout.flush()
+                    old_stdout = sys.stdout
+                    output = StringIO()
+                    output.write(
+                        tabulate.tabulate(
+                            tabL,
+                            tablefmt=tblfmt,
+                            headers=hdrvL,
+                            showindex=False,
+                            colalign=alignL,
+                        )
+                    )
+                    uS = output.getvalue() + "\n"
+                    rS = output.getvalue() + "\n"
+                    xS = output.getvalue() + "\n"
+                    sys.stdout = old_stdout
+                    sys.stdout.flush()
+                    print(uS)  # STDOUT- value table
+                    tabL = []
+                    sutfS += uS + "\n"
+                    srsrS += rS + "\n"
+                    srstS += xS + "\n"
+                    continue
             elif blockB:  # block accumulate
                 # print(f"{blockS}")
                 if blockB and ("_[[Q]]" in slS):  # end of block
@@ -228,18 +254,22 @@ class Section:
                         blockB = True
                         blockS += lineS + "\n"
             elif ":=" in slS:
-                if ":=" in tagL:
+                if ":=" in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Tag(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivtvD, rivL = tC.define()
-                    print(uS)  # STDOUT- tagged line
+                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
+                    uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.define(lineS)
+                    # print(f"{tbL=}")
+                    tabL.append(tbL)
                     continue
             elif "<=" in slS:
-                if "<=" in tagL:
+                if "<=" in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Tag(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivtvD, rivL = tC.assign()
-                    print(uS)  # STDOUT- tagged line
+                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
+                    uS, rS, xS, foldD, lablD, rivD, rivL = tC.assign(lineS)
+                    sutfS += uS + "\n"
+                    srsrS += rS + "\n"
+                    srstS += xS + "\n"
+                    print(uS)  # STDOUT - equation table
                     continue
             else:  # everything else
                 self.sutfS += slS + "\n"
@@ -247,12 +277,15 @@ class Section:
                 self.srstS += slS + "\n"
                 print(slS)  # STDOUT - line as is
 
-        # write values file
-        if self.stS == "V"
-            fileS = folderD["valN"] + "-" + str(labelD["secnumI"]) + ".csv"
-            fileP = Path(folderD["valP"], fileS)
+            # export values file
+        if self.stS == "V" and len(rivL) > 0:
+            fileS = foldD["valN"] + "-" + str(lablD["secnumI"]) + ".csv"
+            if foldD["alias"] == "rvlocal":
+                fileP = Path(foldD["rivtP"], fileS)
+            if foldD["alias"] == "rvsource":
+                fileP = Path(foldD["valP"], fileS)
             with open(fileP, "w") as file1:
-                file1.write("\n".join(rivtL))
+                file1.write("\n".join(rivL))
 
         return sutfS, srsrS, srstS, foldD, lablD, rivD, rivL
         # endregion
