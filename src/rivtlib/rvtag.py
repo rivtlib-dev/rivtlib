@@ -141,7 +141,7 @@ class Tag:
         lineS = self.strngS
         enumI = int(self.lablD["equI"])
         self.lablD["equI"] = enumI + 1
-        fillS = "\n" + "Eq " + str(enumI)
+        fillS = "\n" + "Eq. " + str(enumI)
         self.uS = fillS + " - " + lineS
         fillS = "**Eq " + str(enumI) + "**"
         self.rS = lineS + " - " + fillS + "\n"
