@@ -10,14 +10,14 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import textwrap
 
-        labelD["rvtosB"] = hL[1].strip()  # open-source flag
-        labelD["colorS"] = hL[2].strip()  # background color
-        labelD["docS"] = hL[0].strip()  # section title
-        snumI = labelD["secnumI"] + 1
-        labelD["secnumI"] = snumI
+        lablD["rvtosB"] = hL[1].strip()  # open-source flag
+        lablD["colorS"] = hL[2].strip()  # background color
+        lablD["docS"] = hL[0].strip()  # section title
+        snumI = lablD["secnumI"] + 1
+        lablD["secnumI"] = snumI
         snumS = "[ " + str(snumI) + " ]"
         headS = snumS + " " + hL[0].strip()
-        bordrS = labelD["widthI"] * "-"
+        bordrS = lablD["widthI"] * "-"
         sutfS = "\n" + headS + "\n" + bordrS + "\n"
         srs2S = "\n" + headS + "\n" + bordrS + "\n"
         srstS = "\n" + headS + "\n" + bordrS + "\n
@@ -71,7 +71,7 @@ import textwrap
         self.setcmdD["trmrI"] = vL[2].split(",")[0].strip()
         self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
         # write dictionary from value-string
-        locals().update(self.rivtD)
+        locals().update(self.rivD)
         rprecS = str(self.setcmdD["trmrI"])  # trim numbers
         tprecS = str(self.setcmdD["trmtI"])
         fltfmtS = "." + rprecS.strip() + "f"
@@ -127,7 +127,7 @@ import textwrap
                 pyS = vL[0] + vL[1] + "  # equation" + "\n"
                 # print(pyS)
                 self.exportS += pyS
-            locals().update(self.rivtD)
+            locals().update(self.rivD)
         elif len(vL) >= 3:  # value
             descripS = vL[2].strip()
             varS = vL[0].split("=")[0].strip()
@@ -156,7 +156,7 @@ import textwrap
                 pyS = vL[0] + vL[1] + vL[2] + "\n"
                 # print(pyS)
                 self.exportS += pyS
-        self.rivtD.update(locals())
+        self.rivD.update(locals())
 
         # update dictionary
         if vL[1].strip() == "sub":
@@ -165,7 +165,7 @@ import textwrap
         self.setcmdD["trmtI"] = vL[2].split(",")[1].strip()
 
         # assign values
-        locals().update(self.rivtD)
+        locals().update(self.rivD)
         rprecS = str(self.setcmdD["trmrI"])  # trim numbers
         tprecS = str(self.setcmdD["trmtI"])
         fltfmtS = "." + rprecS.strip() + "f"
@@ -250,8 +250,8 @@ import textwrap
                 pyS = vL[0] + vL[1] + vL[2] + "\n"
                 # print(pyS)
                 self.exportS += pyS
-        self.rivtD.update(locals())
-        # print(self.rivtD)
+        self.rivD.update(locals())
+        # print(self.rivD)
 
         # write values to table
         tbl = "x"
@@ -259,7 +259,7 @@ import textwrap
         tlbfmt = "z"
         alignL = "true"
         fltfmtS = "x"
-        locals().update(self.rivtD)
+        locals().update(self.rivD)
         rprecS = str(self.setcmdD["trmrI"])  # trim numbers
         tprecS = str(self.setcmdD["trmtI"])
         fltfmtS = "." + rprecS.strip() + "f"
@@ -284,5 +284,5 @@ import textwrap
             inrstS = "  " + i
             self.restS += inrstS + "\n"
         self.restS += "\n\n"
-        self.rivtD.update(locals())
+        self.rivD.update(locals())
         # endregion

@@ -3,8 +3,8 @@
 add new units here or copy file to rivt project folder and modify
 """
 
-from rivtlib.unum.core import Unum
-from rivtlib.unum.core import new_unit
+from rivLib.unum.core import Unum
+from rivLib.unum.core import new_unit
 import importlib.util
 import sys
 from pathlib import Path
@@ -13,7 +13,7 @@ from pathlib import Path
 # from rivt.unum.utils import *
 # from rivt.unum.utils import uarray
 
-rvpath = importlib.util.find_spec("rivtlib")
+rvpath = importlib.util.find_spec("rivLib")
 rivpath = Path(rvpath.origin).parent
 unumpath = Path(rivpath, "unum")
 sys.path.append(str(rivpath))

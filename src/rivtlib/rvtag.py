@@ -26,13 +26,13 @@ class Tag:
         tagex(tagS): formats equation
     """
 
-    def __init__(self, folderD, labelD, rivtD, rivtL, strngS):
+    def __init__(self, foldD, lablD, rivD, rivL, strngS):
         """tag object
         Args:
-            folderD (dict): _description_
-            labelD (dict): _description_
-            rivtD (dict): _description_
-            rivtL (list): _description_
+            foldD (dict): _description_
+            lablD (dict): _description_
+            rivD (dict): _description_
+            rivL (list): _description_
             strngS (str): _description_
         Vars:
             uS (str): utf string
@@ -40,10 +40,10 @@ class Tag:
             xS (str): reST string
         """
         # region
-        self.folderD = folderD
-        self.labelD = labelD
-        self.rivtD = rivtD
-        self.rivtL = rivtL
+        self.foldD = foldD
+        self.lablD = lablD
+        self.rivD = rivD
+        self.rivL = rivL
         self.strngS = strngS
         self.uS = ""
         self.rS = ""
@@ -68,7 +68,7 @@ class Tag:
         Args:
             tagS (str): tag symbol
         Returns:
-            uS, r2S, rS, folderD, labelD, rivtD, rivtL
+            uS, r2S, rS, foldD, lablD, rivD, rivL
         """
         # region
         cmdS = "l" + tagS[0]
@@ -79,10 +79,10 @@ class Tag:
             self.uS,
             self.rS,
             self.xS,
-            self.folderD,
-            self.labelD,
-            self.rivtD,
-            self.rivtL,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
         )
         # endregion
 
@@ -99,7 +99,7 @@ class Tag:
         Args:
             tagS (str): tag symbol
         Returns:
-            uS, r2S, rS, folderD, labelD, rivtD, rivtL
+            uS, r2S, rS, foldD, lablD, rivD, rivL
         """
         # region
         self.blockL = self.strngS.split("\n")
@@ -111,10 +111,10 @@ class Tag:
             self.uS,
             self.rS,
             self.xS,
-            self.folderD,
-            self.labelD,
-            self.rivtD,
-            self.rivtL,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
         )
         # endregion
 
@@ -122,16 +122,16 @@ class Tag:
         """center text"""
         # region
         lineS = self.strngS
-        self.uS = lineS.center(int(self.labelD["widthI"])) + "\n"
-        self.rS = lineS.center(int(self.labelD["widthI"])) + "\n"
-        self.xS = "\n::\n\n" + lineS.center(int(self.labelD["widthI"])) + "\n"
+        self.uS = lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.rS = lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.xS = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
         # endregion
 
     def lD(self):
         """footnote description"""
         # region
         lineS = self.strngS
-        ftnumI = self.labelD["noteL"].pop(0)
+        ftnumI = self.lablD["noteL"].pop(0)
         self.uS = "[" + str(ftnumI) + "] " + lineS
         self.rS = "[" + str(ftnumI) + "] " + lineS
         self.xS = "[" + str(ftnumI) + "] " + lineS
@@ -141,8 +141,8 @@ class Tag:
         """number equation"""
         # region
         lineS = self.strngS
-        enumI = int(self.labelD["equI"])
-        self.labelD["equI"] = enumI + 1
+        enumI = int(self.lablD["equI"])
+        self.lablD["equI"] = enumI + 1
         fillS = "Eq " + str(enumI)
         self.uS = fillS + " - " + lineS
         fillS = "**Eq " + str(enumI) + "**"
@@ -154,8 +154,8 @@ class Tag:
         """number figure"""
         # region
         lineS = self.strngS
-        fnumI = int(self.labelD["figI"])
-        self.labelD["figI"] = fnumI + 1
+        fnumI = int(self.lablD["figI"])
+        self.lablD["figI"] = fnumI + 1
         self.uS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
         self.rS = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
         self.xS = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
@@ -165,9 +165,9 @@ class Tag:
         """number footnote"""
         # region
         lineS = self.strngS
-        ftnumI = self.labelD["footL"].pop(0)
-        self.labelD["noteL"].append(ftnumI + 1)
-        self.labelD["footL"].append(ftnumI + 1)
+        ftnumI = self.lablD["footL"].pop(0)
+        self.lablD["noteL"].append(ftnumI + 1)
+        self.lablD["footL"].append(ftnumI + 1)
         self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         self.xS = lineS.replace("*]", "[" + str(ftnumI) + "]")
@@ -190,8 +190,8 @@ class Tag:
         """number table"""
         # region
         lineS = self.strngS
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         self.uS = "\nTable " + str(tnumI) + ": " + lineS
         self.rS = "\n**Table " + fillS + "**: " + lineS
@@ -232,28 +232,32 @@ class Tag:
     def lP(self):
         "new page"
         # region
-        pgnS = str(self.labelD["pageI"])
+        pgnS = str(self.lablD["pageI"])
         self.uS = (
-            "\n" + "=" * (int(self.labelD["widthI"]) - 10) + " Page " + pgnS + "\n"
+            "\n"
+            + "=" * (int(self.lablD["widthI"]) - 10)
+            + " Page "
+            + pgnS
+            + "\n"
         )
-        # self.uS = self.labelD["headuS"].replace("p##", pagenoS)
-        self.labelD["pageI"] = int(pgnS) + 1
+        # self.uS = self.lablD["headuS"].replace("p##", pagenoS)
+        self.lablD["pageI"] = int(pgnS) + 1
         self.rS = (
             "\n"
-            + "_" * self.labelD["widthI"]
+            + "_" * self.lablD["widthI"]
             + "\n"
             + self.uS
             + "\n"
-            + "_" * self.labelD["widthI"]
+            + "_" * self.lablD["widthI"]
             + "\n"
         )
         self.xS = (
             "\n"
-            + "_" * self.labelD["widthI"]
+            + "_" * self.lablD["widthI"]
             + "\n"
             + self.uS
             + "\n"
-            + "_" * self.labelD["widthI"]
+            + "_" * self.lablD["widthI"]
             + "\n"
         )
         # endregion
@@ -262,8 +266,8 @@ class Tag:
         """bold-indent block"""
         # region
         blockL = self.blockL
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
         self.uS = "Table " + str(tnumI) + " - " + blockS
         self.rS = "\n" + "Table " + fillS + ": " + blockS
         self.xS = "\n" + "Table " + fillS + ": " + blockS
@@ -289,8 +293,8 @@ class Tag:
     def bL(self):
         """literal block"""
         # region
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
         luS = "Table " + str(tnumI) + " - " + blockS
         lrS = "\n" + "Table " + fillS + ": " + blockS
         # endregion
@@ -298,8 +302,8 @@ class Tag:
     def bS(self):
         """indent block"""
         # region
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
         luS = "Table " + str(tnumI) + " - " + blockS
         lrS = "\n" + "Table " + fillS + ": " + blockS
         # endregion
@@ -307,8 +311,8 @@ class Tag:
     def bX(self):
         """latex block"""
         # region
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
         luS = "Table " + str(tnumI) + " - " + blockS
         lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
         # endregion
@@ -317,8 +321,8 @@ class Tag:
         """values block"""
 
         # region
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         tbL = []
         self.uS = "\nTable " + fillS + " - " + self.blockL[0] + "\n\n"
@@ -345,34 +349,38 @@ class Tag:
                 unitL[2].strip(),
             )
             descripS = vaL[2].strip()
-            fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+            fmt1S = (
+                "Unum.set_format(value_format='%."
+                + dec1S
+                + "f', auto_norm=True)"
+            )
             eval(fmt1S)
 
-            # rivtL append
+            # rivL append
             exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
-            self.rivtL.append(exvS)
+            self.rivL.append(exvS)
 
-            # rivtD append
+            # rivD append
             if unit1S != "-":
                 try:
-                    exec(eqS, globals(), self.rivtD)
+                    exec(eqS, globals(), self.rivD)
                 except ValueError as ve:
                     print(f"A ValueError occurred: {ve}")
                 except Exception as e:
                     print(f"An unexpected error occurred: {e}")
-                valU = eval(varS, {}, self.rivtD)
+                valU = eval(varS, {}, self.rivD)
                 val1U = str(valU.cast_unit(eval(unit1S)))
                 val2U = str(valU.cast_unit(eval(unit2S)))
-                self.rivtD[varS] = val1U
+                self.rivD[varS] = val1U
                 # print(f"{self.rivtvD=}")
             else:
                 cmdS = varS + " = " + valS
-                exec(cmdS, globals(), self.rivtD)
+                exec(cmdS, globals(), self.rivD)
                 valU = eval(varS)
                 val1U = str(valU)
                 val2U = str(valU)
             tbL.append([varS, val1U, val2U, descripS])
-            self.rivtD[varS] = valU
+            self.rivD[varS] = valU
 
         # write value table
         tblfmt = "rst"

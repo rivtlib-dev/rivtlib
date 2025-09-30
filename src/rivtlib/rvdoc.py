@@ -25,23 +25,23 @@ class Cmdd:
 
     """
 
-    def __init__(self, folderD, labelD, sS, cmdL, drs2S):
+    def __init__(self, foldD, lablD, sS, cmdL, drs2S):
         """Write object
         Args:
-            folderD (dict): folders
-            labelD (dict): labels
+            foldD (dict): folders
+            lablD (dict): labels
             sS (str): section text
         """
         # region
-        self.folderD = folderD
-        self.labelD = labelD
+        self.foldD = foldD
+        self.lablD = lablD
         self.sS = sS  # section string
         self.cmdL = cmdL  # commands
         self.pthS = ""
         self.parS = ""
         self.contentS = drs2S
 
-        errlogP = Path(folderD["rivtP"], "temp", "rivt-log.txt")
+        errlogP = Path(foldD["rivtP"], "temp", "rivt-log.txt")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
@@ -131,21 +131,21 @@ class Cmdd:
         """
         # region
 
-        fileS = self.folderD["rstpN"]
-        fileP = Path(self.folderD["projP"], "temp", fileS)
+        fileS = self.foldD["rstpN"]
+        fileP = Path(self.foldD["projP"], "temp", fileS)
         with open(fileP, "w", errors="ignore") as f1:
             f1.write(self.contentS)
-        self.yamlP = Path(self.folderD["projP"], "rivtdocs/styles/rstpdf.yaml")
-        self.iniP = Path(self.folderD["projP"], "rivtdocs/styles/rivt.ini")
+        self.yamlP = Path(self.foldD["projP"], "rivDocs/styles/rstpdf.yaml")
+        self.iniP = Path(self.foldD["projP"], "rivDocs/styles/rivt.ini")
 
-        cmd1S = "rst2pdf " + "../temp/" + self.folderD["rstpN"]  # input
-        cmd2S = " -o ../rivtdocs/rstpdf/" + self.folderD["pdfN"]  # output
+        cmd1S = "rst2pdf " + "../temp/" + self.foldD["rstpN"]  # input
+        cmd2S = " -o ../rivDocs/rstpdf/" + self.foldD["pdfN"]  # output
         cmd3S = " --config=../styles/rstpdf.ini"  # config
         cmd4S = " --stylesheets=../styles/rstpdf.yaml"  # styles
         cmdS = cmd1S + cmd2S + cmd3S + cmd4S
         # print("cmdS=", cmdS)
         subprocess.run(cmdS, shell=True, check=True)
-        outS = "/rivtdocs/rstpdf/" + self.folderD["pdfN"]
+        outS = "/rivDocs/rstpdf/" + self.foldD["pdfN"]
         msgS = "doc written: " + outS
         return msgS
         # endregion
@@ -182,8 +182,8 @@ class Cmdd:
 
         """
         # region
-        startS = str(labelD["pageI"])
-        doctitleS = str(labelD["doctitleS"])
+        startS = str(lablD["pageI"])
+        doctitleS = str(lablD["doctitleS"])
 
         with open(tfileP, "r", encoding="md-8", errors="ignore") as f2:
             texf = f2.read()
@@ -219,7 +219,7 @@ class Cmdd:
             """fancyhead[L]{\leftmark}""",
             """fancyhead[L]{\\normalsize\\bfseries  """ + doctitleS + "}",
         )
-        texf = texf.replace("x*x*x", "[" + labelD["docnumS"] + "]")
+        texf = texf.replace("x*x*x", "[" + lablD["docnumS"] + "]")
         texf = texf.replace("""\\begin{tabular}""", "%% ")
         texf = texf.replace("""\\end{tabular}""", "%% ")
         texf = texf.replace(
@@ -343,9 +343,9 @@ class Cmdd:
         dstS = str(Path(reportP, srcS))
         shutil.copy(srcS, dstS)
 
-        global folderD
+        global foldD
 
-        style_path = folderD["styleP"]
+        style_path = foldD["styleP"]
         # print(f"{style_path=}")
         # f2 = open(style_path)
         # f2.close

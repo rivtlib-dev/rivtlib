@@ -1,4 +1,4 @@
-rivtlib
+rivLib
 ========
 
-rivtlib source code
+rivLib source code

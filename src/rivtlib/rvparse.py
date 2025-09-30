@@ -15,18 +15,22 @@ from . import rvcmd, rvtag
 class Section:
     """convert section string to utf and rst doc strings"""
 
-    def __init__(self, stS, sL, folderD, labelD, rivtD):
+    def __init__(self, stS, sL, foldD, lablD, rivD):
         """preprocess section headers and string
         Args:
             stS (str): section type
             sL (list): rivt section lines
         """
         # region
-        errlogP = folderD["errlogT"]
+        errlogP = foldD["errlogT"]
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+            format=(
+                "%(asctime)-8s  "
+                + modnameS
+                + " %(levelname)-8s  %(message)-8s"
+            ),
             datefmt="%m-%d %H:%M",
             filename=errlogP,
             filemode="w",
@@ -38,60 +42,69 @@ class Section:
         srs2S = ""  # rst2pdf doc
         srstS = ""  # rest doc
         spL = []  # preprocessed lines
-        self.folderD = folderD
-        self.labelD = labelD
-        self.rivtD = rivtD
+        self.foldD = foldD
+        self.lablD = lablD
+        self.rivD = rivD
 
         # section header
         hL = sL[0].split("|")
-        labelD["docS"] = hL[0].strip()  # section title
+        lablD["docS"] = hL[0].strip()  # section title
         if hL[0].strip()[0:2] == "--":
-            labelD["docS"] = hL[0].split("--")[1][1]  # section title
+            lablD["docS"] = hL[0].split("--")[1][1]  # section title
             sutfS = "\n"
             srs2S = "\n"
             srstS = "\n"
         else:
-            snumI = labelD["secnumI"] + 1
-            labelD["secnumI"] = snumI
+            snumI = lablD["secnumI"] + 1
+            lablD["secnumI"] = snumI
             snumS = "[ " + str(snumI) + " ]"
             headS = snumS + " " + hL[0].strip()
-            bordrS = labelD["widthI"] * "-"
+            bordrS = lablD["widthI"] * "-"
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
             srs2S = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
+        try:
+            hparaL = hL[1].strip().split(",")
+            if 
+        except Exception:
+            pass
+
+
+        
+
 
         # default flags
-        labelD["publicB"] = False
+        lablD["publicB"] = False
 
         if stS == "R":
-            labelD["printB"] = False
+            lablD["printB"] = False
         elif stS == "I":
-            labelD["printB"] = True
+            lablD["printB"] = True
         elif stS == "V":
-            labelD["printB"] = True
+            lablD["printB"] = True
         elif stS == "T":
-            labelD["printB"] = False
+            lablD["printB"] = False
         elif stS == "D":
-            labelD["printB"] = False
+            lablD["printB"] = False
         elif stS == "M":
-            labelD["printB"] = False
+            lablD["printB"] = False
         else:
             pass
 
         # update flags
         try:
             if "public" in hL[1].strip():  # open-source flag
-                labelD["publicB"] = True
+                lablD["publicB"] = True
             else:
-                labelD["publicB"] = False
+                lablD["publicB"] = False
         except Exception:
             pass
 
         try:
             if "hide" in hL[1].strip():  # print flag
-                labelD["printB"] = False
+                lablD["printB"] = False
             elif "print" in hL[1].strip():
-                labelD["printB"] = True
+                lablD["printB"] = True
             else:
                 pass
         except Exception:
@@ -102,7 +115,7 @@ class Section:
         self.srs2S = srs2S  # rst2pdf doc
         self.srstS = srstS  # rest doc
         print(sutfS)  # STDOUT section header
-        self.logging.info("SECTION " + str(labelD["secnumI"]) + " - type " + stS)
+        self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
 
         spL = []  # strip leading spaces and comments from section content
         for slS in sL[1:]:
@@ -120,21 +133,22 @@ class Section:
         self.stS = stS  # section type
         # endregion
 
-    def section(self, tagL, cmdL):
-        """parse section
+    def content(self, tagL, cmdL):
+        """parse section content
         Args:
-            self.spL (list): preprocessed section list
+            tagL (list): list of valid tags
+            cmdL (list): list of valid commands
         Returns:
-            sutfS (str): utf doc
-            srs2S (str): rst2pdf doc
-            srstS (str): resT doc
-            folderD (dict): folder paths
-            labelD (dict): labels
-            rivtD (dict): calculated values
-            rivtL (list): values for export
+            sutfS (str): utf doc string
+            srs2S (str): rst2pdf doc string
+            srstS (str): resT doc string
+            foldD (dict): folder paths
+            lablD (dict): labels
+            rivD (dict): calculated values
+            rivL (list): values for export
         """
         # region
-        rivtL = []
+        rivL = []
         blockB = False
         blockS = """"""
         tagS = ""
@@ -143,9 +157,9 @@ class Section:
         sutfS = self.sutfS
         srs2S = self.srs2S
         srstS = self.srstS
-        folderD = self.folderD
-        labelD = self.labelD
-        rivtD = self.rivtD
+        foldD = self.foldD
+        lablD = self.lablD
+        rivD = self.rivD
 
         for slS in self.spL:  # loop over section lines
             # print(slS)
@@ -173,8 +187,8 @@ class Section:
                 # print(f"{blockS}")
                 if blockB and ("_[[Q]]" in slS):  # end of block
                     blockB = False
-                    tC = rvtag.Tag(folderD, labelD, rivtD, rivtL, blockS)
-                    uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.tagbx(tagS)
+                    tC = rvtag.Tag(foldD, lablD, rivD, rivL, blockS)
+                    uS, rS, xS, foldD, lablD, rivD, rivL = tC.tagbx(tagS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
@@ -190,8 +204,8 @@ class Section:
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # check list
-                    cmC = rvcmd.Cmd(folderD, labelD, rivtD, rivtL, parL)
-                    uS, rS, xS, folderD, labelD, rivtD, rivtL = cmC.cmdx(cmdS)
+                    cmC = rvcmd.Cmd(foldD, lablD, rivD, rivL, parL)
+                    uS, rS, xS, foldD, lablD, rivD, rivL = cmC.cmdx(cmdS)
                     sutfS += uS + "\n"
                     srs2S += rS + "\n"
                     srstS += xS + "\n"
@@ -204,9 +218,9 @@ class Section:
                 self.logging.info(f"tag : _[{tagS}")
                 if tagS in tagL:  # check list
                     # print(f"{tagS=}")
-                    tC = rvtag.Tag(folderD, labelD, rivtD, rivtL, lineS)
+                    tC = rvtag.Tag(foldD, lablD, rivD, rivL, lineS)
                     if len(tagS) < 3:  # line tag
-                        uS, rS, xS, folderD, labelD, rivtD, rivtL = tC.taglx(tagS)
+                        uS, rS, xS, foldD, lablD, rivD, rivL = tC.taglx(tagS)
                         sutfS += uS + "\n"
                         srs2S += rS + "\n"
                         srstS += xS + "\n"
@@ -219,8 +233,8 @@ class Section:
             elif ":=" in slS:
                 if ":=" in tagL:
                     lineS = slS.strip()
-                    tC = rvtag.Tag(folderD, labelD, rivtD, rivtL, lineS)
-                    uS, rS, xS, folderD, labelD, rivtvD, rivtL = tC.tagex()
+                    tC = rvtag.Tag(foldD, lablD, rivD, rivL, lineS)
+                    uS, rS, xS, foldD, lablD, rivtvD, rivL = tC.tagex()
                     print(uS)  # STDOUT- tagged line
                     continue
             else:  # everything else
@@ -229,5 +243,5 @@ class Section:
                 self.srstS += slS + "\n"
                 print(slS)  # STDOUT - line as is
 
-        return sutfS, srs2S, srstS, folderD, labelD, rivtD, rivtL
+        return sutfS, srs2S, srstS, foldD, lablD, rivD, rivL
         # endregion

@@ -10,7 +10,7 @@ import tabulate
 from IPython.display import display as _display
 from PIL import Image
 
-from rivtlib.rvunits import *  # noqa: F403
+from rivLib.rvunits import *  # noqa: F403
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -50,13 +50,13 @@ class Cmd:
 
     """
 
-    def __init__(self, folderD, labelD, rivtD, rivtL, parL):
+    def __init__(self, foldD, lablD, rivD, rivL, parL):
         """an Insert or Value object
         Args:
-            folderD (dict): folders
-            labelD (dict): labels
-            rivtD (dict): values
-            rivtL (list): values for export
+            foldD (dict): folders
+            lablD (dict): labels
+            rivD (dict): values
+            rivL (list): values for export
             parL (list): command parameters
         Vars:
             uS (str): utf string
@@ -64,10 +64,10 @@ class Cmd:
             xS (str): reST string
         """
         # region
-        self.folderD = folderD
-        self.labelD = labelD
-        self.rivtD = rivtD
-        self.rivtL = rivtL
+        self.foldD = foldD
+        self.lablD = lablD
+        self.rivD = rivD
+        self.rivL = rivL
         self.parS = parL[3].strip()
         self.uS = ""
         self.rS = ""
@@ -76,9 +76,9 @@ class Cmd:
         apthS = parL[1].strip()
         fileS = parL[2].strip()
         if apthS == "rvlocal":
-            self.pthS = str(Path(folderD["localP"], fileS))
+            self.pthS = str(Path(foldD["localP"], fileS))
         else:
-            self.pthS = str(Path(folderD["srcP"], fileS))
+            self.pthS = str(Path(foldD["srcP"], fileS))
         # endregion
 
     def cmdx(self, cmdS):
@@ -87,7 +87,7 @@ class Cmd:
         Args:
             cmdS (str): command
         Returns:
-            uS, rS, xS, folderD, labelD, rivtD, rivtL
+            uS, rS, xS, foldD, lablD, rivD, rivL
         """
         # region
         method = getattr(self, cmdS)
@@ -97,10 +97,10 @@ class Cmd:
             self.uS,
             self.rS,
             self.xS,
-            self.folderD,
-            self.labelD,
-            self.rivtD,
-            self.rivtL,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
         )
         # endregion
 
@@ -111,8 +111,8 @@ class Cmd:
         """
         # region
         if "_[F]" in self.parS:
-            numS = str(self.labelD["figI"])
-            self.labelD["figI"] = int(numS) + 1
+            numS = str(self.lablD["figI"])
+            self.lablD["figI"] = int(numS) + 1
             figuS = "Fig. " + numS + " - "
             figrS = "**Fig. " + numS + "** - "
 
@@ -124,11 +124,11 @@ class Cmd:
         parL = self.parS.split(",")
         capS = parL[1].split("_")[0].strip()
         scS = parL[0].strip()
-        insP = Path(self.folderD["srcP"], self.pthS)
+        insP = Path(self.foldD["srcP"], self.pthS)
         insS = str(insP.as_posix())
         if capS == "-":
             capS = " "
-        # pthxS = str(Path(*Path(self.folderD["rivP"]).parts[-1:]))
+        # pthxS = str(Path(*Path(self.foldD["rivP"]).parts[-1:]))
         try:
             img1 = Image.open(self.pthS)
             _display(img1)
@@ -167,8 +167,8 @@ class Cmd:
         scale2S = parL[3].strip()
         figS = "Fig. "
         if parL[2] == "_[F]":
-            numS = str(self.labelD["fnum"])
-            self.labelD["fnum"] = int(numS) + 1
+            numS = str(self.lablD["fnum"])
+            self.lablD["fnum"] = int(numS) + 1
             figS = figS + numS + cap1S
 
         self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
@@ -193,11 +193,11 @@ class Cmd:
         # region
         # print(f"{pthS=}")
         if "_[T]" in self.parS:
-            tnumI = int(self.labelD["tableI"])
+            tnumI = int(self.lablD["tableI"])
             fillS = str(tnumI)
             utitlnS = "\nTable " + fillS + " - "
             rtitlnS = "\n**Table " + fillS + " -** "
-            self.labelD["tableI"] = tnumI + 1
+            self.lablD["tableI"] = tnumI + 1
             parS = (self.parS.replace("_[T]", " ")).strip()
         else:
             utitlnS = " "
@@ -213,8 +213,14 @@ class Cmd:
         rowL = eval(parL[3].strip())  # rows
         if len(rowL) == 0:
             pass
-        alignD = {"s": "", "d": "decimal", "c": "center", "r": "right", "l": "left"}
-        insP = Path(self.folderD["srcP"], self.pthS)
+        alignD = {
+            "s": "",
+            "d": "decimal",
+            "c": "center",
+            "r": "right",
+            "l": "left",
+        }
+        insP = Path(self.foldD["srcP"], self.pthS)
         pS = " [file: " + self.pthS + "]" + "\n\n"
         utlS = utitlnS + titleS + pS  # file path text
         rtlS = rtitlnS + titleS + pS
@@ -261,7 +267,7 @@ class Cmd:
         |TEXT| rel. pth |  plain; rivt
         """
         # region
-        insP = Path(self.folderD["srcP"], self.pthS)
+        insP = Path(self.foldD["srcP"], self.pthS)
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         self.uS = fileS
@@ -275,12 +281,12 @@ class Cmd:
         |VALUE| rel. pth | title (_[T])
         """
         # region
-        tnumI = int(self.labelD["tableI"])
-        self.labelD["tableI"] = tnumI + 1
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         utitlnS = "\nTable " + fillS + " - " + self.parS.strip("_[T]")
         rtitlnS = "\n**Table " + fillS + " -** " + self.parS.strip("_[T]")
-        insP = Path(self.folderD["srcP"], self.pthS)
+        insP = Path(self.foldD["srcP"], self.pthS)
         pS = " [file: " + self.pthS + "]" + "\n\n"
         with open(insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
@@ -295,7 +301,11 @@ class Cmd:
             valS = vaL[0].split("=")[1].strip()
             unit1S, unit2S = vaL[1], vaL[2]
             dec1S, descripS = vaL[3].strip(), vaL[4].strip()
-            fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+            fmt1S = (
+                "Unum.set_format(value_format='%."
+                + dec1S
+                + "f', auto_norm=True)"
+            )
             eval(fmt1S)
             if unit1S != "-":
                 if isinstance(eval(valS), list):
@@ -304,17 +314,17 @@ class Cmd:
                 else:
                     eqS = varS + " = " + valS
                     try:
-                        exec(eqS, globals(), self.rivtD)
+                        exec(eqS, globals(), self.rivD)
                     except ValueError as ve:
                         print(f"A ValueError occurred: {ve}")
                     except Exception as e:
                         print(f"An unexpected error occurred: {e}")
-                    valU = eval(varS, globals(), self.rivtD)
+                    valU = eval(varS, globals(), self.rivD)
                     val1U = str(valU.cast_unit(eval(unit1S)))
                     val2U = str(valU.cast_unit(eval(unit2S)))
             else:
                 eqS = varS + " = " + valS
-                exec(eqS, globals(), self.rivtD)
+                exec(eqS, globals(), self.rivD)
                 valU = eval(varS)
                 val1U = str(valU)
                 val2U = str(valU)
@@ -352,7 +362,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.folderD["projP"])
+        insP = Path(self.foldD["projP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -373,7 +383,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.folderD["projP"])
+        insP = Path(self.foldD["projP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -394,7 +404,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.folderD["projP"])
+        insP = Path(self.foldD["projP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -415,7 +425,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.folderD["projP"])
+        insP = Path(self.foldD["projP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -440,7 +450,7 @@ class Cmd:
             a :< b | Pass, Fail
 
         Returns:
-            uS, r2S, rS, folderD, labelD, rivtD, rivtL
+            uS, r2S, rS, foldD, lablD, rivD, rivL
         """
         # region
         tbl1L = []
@@ -454,34 +464,38 @@ class Cmd:
         refS = lpL[2].strip()
         unit1S, unit2S = unit1S.strip(), unit2S.strip()
         dec1S, dec2S = dec1S.strip(), dec2S.strip()
-        fmt1S = "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
-        fmt2S = "Unum.set_format(value_format='%." + dec2S + "f', auto_norm=True)"
-        # wI = self.labelD["widthI"]
+        fmt1S = (
+            "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
+        )
+        fmt2S = (
+            "Unum.set_format(value_format='%." + dec2S + "f', auto_norm=True)"
+        )
+        # wI = self.lablD["widthI"]
 
         # equation
         spL = eqS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        refS = refS.rjust(self.labelD["widthI"])
+        refS = refS.rjust(self.lablD["widthI"])
         uS = refS + "\n" + eq1S + "\n\n"
         rS = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
         xS = ".. raw:: math\n\n   " + eqS + "\n"
         if unit1S != "-":
-            exec(eqS, globals(), self.rivtD)
+            exec(eqS, globals(), self.rivD)
         else:
             cmdS = spL[0] + " = " + spL[1]
-            exec(cmdS, globals(), self.rivtD)
+            exec(cmdS, globals(), self.rivD)
 
-        # rivtL and rivtD append
-        valU = eval(spL[0], globals(), self.rivtD)
-        self.rivtD[spL[0]] = valU
+        # rivL and rivD append
+        valU = eval(spL[0], globals(), self.rivD)
+        self.rivD[spL[0]] = valU
         vxS = str(valU).strip()
         vxL = vxS.split(" ")
         exS = vxL[0] + " * " + vxL[1].upper()
         ex2S = spL[0].strip() + " = " + exS
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
-        self.rivtL.append(exvS)
+        self.rivL.append(exvS)
 
         # equation and table elements
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
@@ -502,7 +516,7 @@ class Cmd:
         # loop over variables
         eval(fmt2S)
         for aO in symaO:
-            a1U = eval(str(aO), globals(), self.rivtD)
+            a1U = eval(str(aO), globals(), self.rivD)
             tbl1L.append(str(a1U))
             # print("ao", aO, a1U)
         # write table
@@ -534,10 +548,10 @@ class Cmd:
             self.uS,
             self.rS,
             self.xS,
-            self.folderD,
-            self.labelD,
-            self.rivtD,
-            self.rivtL,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
         )
 
     # endregion

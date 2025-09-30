@@ -1,6 +1,6 @@
 #! python
 # %% Start
-import rivtlib.rvapi as rv
+import rivLib.rvapi as rv
 
 # %%
 rv.I("""rivt Test
@@ -62,5 +62,5 @@ rv.V("""Calculate Beam Moment - UDL
 # %%
 rv.D("""Publish Doc
 
-    | DOC | rvlocal | rpdf | rivtdoc1.ini 
+    | DOC | rvlocal | rpdf | rivDoc1.ini 
     """)
