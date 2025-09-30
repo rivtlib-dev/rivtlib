@@ -4,8 +4,6 @@ import subprocess
 import time
 import warnings
 from pathlib import Path
-from reportlab.lib.utils import ImageReader
-from configparser import ConfigParser
 
 import __main__
 
@@ -25,7 +23,7 @@ class Cmdd:
 
     """
 
-    def __init__(self, foldD, lablD, sS, cmdL, drs2S):
+    def __init__(self, foldD, lablD, sS, cmdL, drsrS):
         """Write object
         Args:
             foldD (dict): folders
@@ -39,13 +37,15 @@ class Cmdd:
         self.cmdL = cmdL  # commands
         self.pthS = ""
         self.parS = ""
-        self.contentS = drs2S
+        self.contentS = drsrS
 
         errlogP = Path(foldD["rivtP"], "temp", "rivt-log.txt")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+            format="%(asctime)-8s  "
+            + modnameS
+            + "   %(levelname)-8s %(message)s",
             datefmt="%m-%d %H:%M",
             filename=errlogP,
             filemode="w",

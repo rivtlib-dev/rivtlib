@@ -15,10 +15,10 @@
     "fsdeploy.deployOnSave": true,
     "fsdeploy.nodes": [
         {
-            "source": "${workspaceFolder}/src/",
-            "target": "C:/Python313/Lib/site-packages/rivLib/",
+            "source": "C:/git/git-rivtlib/src/rivtlib",
+            "target": "C:/Python313/Lib/site-packages/rivtlib",
             "include": "**/*.*",
-            "exclude": ".vscode",
+            "exclude": "",
             "deleteTargetOnDeploy": true,
             "name": "4790k"
         }

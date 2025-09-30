@@ -1,12 +1,12 @@
 """
-rivLib
+rivtlib
 =======
 
-*rivLib* is a Python library for writing and sharing engineering documents. It
+*rivtlib* is a Python library for writing and sharing engineering documents. It
 outputs *rivt docs* and *reports* from a *rivt file*.  A rivt file is a Python
-file (*.py) that imports *rivLib*::
+file (*.py) that imports *rivtlib*::
 
-    import rivLib.rivtapi as rv
+    import rivtlib.rivtapi as rv
 
 and exposes 8 API functions::
 
@@ -31,7 +31,7 @@ where *rvddss-* is the doc number and *dd* and *ss* are integers identifying the
 report division and subdivision respectively.
 See the `rivt User Manual <https://rivt.info>`_ for details.
 
-The rivLib code base uses a last-letter naming convention to indicate variable
+The rivtlib code base uses a last-letter naming convention to indicate variable
 types where:
 
 A = array

@@ -19,13 +19,13 @@ import textwrap
         headS = snumS + " " + hL[0].strip()
         bordrS = lablD["widthI"] * "-"
         sutfS = "\n" + headS + "\n" + bordrS + "\n"
-        srs2S = "\n" + headS + "\n" + bordrS + "\n"
+        srsrS = "\n" + headS + "\n" + bordrS + "\n"
         srstS = "\n" + headS + "\n" + bordrS + "\n
         
         hL = sL[0].split("|")
         
         sutfS = ""  # utf section
-        srs2S = ""  # rst2pdf section
+        srsrS = ""  # rst2pdf section
         srstS = ""  # rest section
         
         

@@ -13,10 +13,10 @@ from . import rvcmd, rvtag
 
 
 class Section:
-    """convert section string to utf and rst doc strings"""
+    """convert rivt string to utf and reST doc strings"""
 
     def __init__(self, stS, sL, foldD, lablD, rivD):
-        """preprocess section headers and string
+        """process section headers and preprocess string
         Args:
             stS (str): section type
             sL (list): rivt section lines
@@ -37,12 +37,13 @@ class Section:
         self.logging = logging
 
         sutfS = ""  # utf doc
-        srs2S = ""  # rst2pdf doc
+        srsrS = ""  # rst2pdf doc
         srstS = ""  # rest doc
         spL = []  # preprocessed lines
         self.foldD = foldD
         self.lablD = lablD
         self.rivD = rivD
+        self.stS = stS
 
         # section header
         hL = sL[0].split("|")
@@ -50,7 +51,7 @@ class Section:
         if hL[0].strip()[0:2] == "--":
             lablD["docS"] = hL[0].split("--")[1][1]  # section title
             sutfS = "\n"
-            srs2S = "\n"
+            srsrS = "\n"
             srstS = "\n"
         else:
             snumI = lablD["secnumI"] + 1
@@ -59,7 +60,7 @@ class Section:
             headS = snumS + " " + hL[0].strip()
             bordrS = lablD["widthI"] * "-"
             sutfS = "\n" + headS + "\n" + bordrS + "\n"
-            srs2S = "\n" + headS + "\n" + bordrS + "\n"
+            srsrS = "\n" + headS + "\n" + bordrS + "\n"
             srstS = "\n" + headS + "\n" + bordrS + "\n"
         try:
             paraL = hL[1].strip().split("|")
@@ -67,15 +68,14 @@ class Section:
             paraL = []
 
         # set default section parameters
+        lablD["rvtypeS"] = stS  # section type
         lablD["publicB"] = False
         if stS == "R":
             lablD["printB"] = False
             lablD["publicB"] = False
-            foldD["alias"] = "rvsource"
         elif stS == "I":
             lablD["printB"] = True
             lablD["publicB"] = False
-            foldD["alias"] = "rvsource"
         elif stS == "V":
             lablD["printB"] = True
             lablD["publicB"] = False
@@ -83,15 +83,12 @@ class Section:
         elif stS == "T":
             lablD["printB"] = False
             lablD["publicB"] = False
-            foldD["alias"] = "rvsource"
         elif stS == "D":
             lablD["printB"] = False
             lablD["publicB"] = False
-            foldD["alias"] = "rvsource"
         elif stS == "M":
             lablD["printB"] = False
             lablD["publicB"] = False
-            foldD["alias"] = "rvsource"
         else:
             pass
 
@@ -110,9 +107,9 @@ class Section:
             if "public" in paraL:
                 foldD["publicB"] = True
 
-        # print(sutfS, srs2S, srstS)
+        # print(sutfS, srsrS, srstS)
         self.sutfS = sutfS  # utf doc
-        self.srs2S = srs2S  # rst2pdf doc
+        self.srsrS = srsrS  # rst2pdf doc
         self.srstS = srstS  # rest doc
         print(sutfS)  # STDOUT section header
         self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
@@ -140,7 +137,7 @@ class Section:
             cmdL (list): list of valid commands
         Returns:
             sutfS (str): utf doc string
-            srs2S (str): rst2pdf doc string
+            srsrS (str): rst2pdf doc string
             srstS (str): resT doc string
             foldD (dict): folder paths
             lablD (dict): labels
@@ -155,7 +152,7 @@ class Section:
         uS = rS = xS = """"""  # returned doc line
 
         sutfS = self.sutfS
-        srs2S = self.srs2S
+        srsrS = self.srsrS
         srstS = self.srstS
         foldD = self.foldD
         lablD = self.lablD
@@ -179,7 +176,7 @@ class Section:
                 # print(f"{txt1L=}")
             if len(slS.strip()) < 1 and not blockB:
                 sutfS += "\n"
-                srs2S += " \n"
+                srsrS += " \n"
                 srstS += " \n"
                 print(" ")  # STDOUT- blank line
                 continue
@@ -191,7 +188,7 @@ class Section:
                     uS, rS, xS, foldD, lablD, rivD, rivL = tC.tagbx(tagS)
                     print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
-                    srs2S += rS + "\n"
+                    srsrS += rS + "\n"
                     srstS += xS + "\n"
                     tagS = ""
                     blockS = """"""
@@ -207,7 +204,7 @@ class Section:
                     cmC = rvcmd.Cmd(foldD, lablD, rivD, rivL, parL)
                     uS, rS, xS, foldD, lablD, rivD, rivL = cmC.cmdx(cmdS)
                     sutfS += uS + "\n"
-                    srs2S += rS + "\n"
+                    srsrS += rS + "\n"
                     srstS += xS + "\n"
                     print(uS)  # STDOUT- command
                     continue
@@ -222,7 +219,7 @@ class Section:
                     if len(tagS) < 3:  # line tag
                         uS, rS, xS, foldD, lablD, rivD, rivL = tC.taglx(tagS)
                         sutfS += uS + "\n"
-                        srs2S += rS + "\n"
+                        srsrS += rS + "\n"
                         srstS += xS + "\n"
                         print(uS)  # STDOUT- tagged line
                         continue
@@ -233,15 +230,29 @@ class Section:
             elif ":=" in slS:
                 if ":=" in tagL:
                     lineS = slS.strip()
-                    tC = rvtag.Tag(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivtvD, rivL = tC.tagex()
+                    tC = rvcmd.Tag(foldD, lablD, rivD, rivL, lineS)
+                    uS, rS, xS, foldD, lablD, rivtvD, rivL = tC.define()
+                    print(uS)  # STDOUT- tagged line
+                    continue
+            elif "<=" in slS:
+                if "<=" in tagL:
+                    lineS = slS.strip()
+                    tC = rvcmd.Tag(foldD, lablD, rivD, rivL, lineS)
+                    uS, rS, xS, foldD, lablD, rivtvD, rivL = tC.assign()
                     print(uS)  # STDOUT- tagged line
                     continue
             else:  # everything else
                 self.sutfS += slS + "\n"
-                self.srs2S += slS + "\n"
+                self.srsrS += slS + "\n"
                 self.srstS += slS + "\n"
                 print(slS)  # STDOUT - line as is
 
-        return sutfS, srs2S, srstS, foldD, lablD, rivD, rivL
+        # write values file
+        if self.stS == "V"
+            fileS = folderD["valN"] + "-" + str(labelD["secnumI"]) + ".csv"
+            fileP = Path(folderD["valP"], fileS)
+            with open(fileP, "w") as file1:
+                file1.write("\n".join(rivtL))
+
+        return sutfS, srsrS, srstS, foldD, lablD, rivD, rivL
         # endregion

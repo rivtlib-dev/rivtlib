@@ -1,7 +1,7 @@
 [project]
-name = "rivLib"
+name = "rivtlib"
 version = "0.5.0"
-description = "install rivLib project"
+description = "install rivtlib project"
 authors = [{ name = "rod holland", email = "rholland@structurelabs.com" }]
 requires-python = ">=3.11"
 
@@ -31,7 +31,7 @@ dependencies = [
     "sphinxcontrib-jquery>=4.1",
     "sphinxcontrib-jsmath>=1.0.1",
     "sphinxcontrib-qthelp>=2.0.0",
-    "sphinxcontrib-serializinghtml>=2.0.0"
+    "sphinxcontrib-serializinghtml>=2.0.0",
 ]
 
 [build-system]
@@ -40,4 +40,3 @@ build-backend = "uv_build"
 
 [tool.ruff]
 line-length = 80
-

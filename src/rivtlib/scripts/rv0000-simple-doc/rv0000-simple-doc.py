@@ -1,6 +1,6 @@
 #! python
 # %% Start
-import rivLib.rvapi as rv
+import rivtlib.rvapi as rv
 
 # %%
 rv.I("""rivt Test

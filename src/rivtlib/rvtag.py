@@ -5,9 +5,7 @@ Returns:
     _type_: _description_
 """
 
-import sys
 import textwrap
-from io import StringIO
 
 import sympy as sp
 import tabulate
@@ -287,7 +285,7 @@ class Tag:
     def bI(self):
         """italic-indent block"""
         # region
-        print("IIIIIIIIIIIIIIIIIII")
+        print("IIII")
         # endregion
 
     def bL(self):
@@ -315,92 +313,4 @@ class Tag:
         self.lablD["tableI"] = tnumI + 1
         luS = "Table " + str(tnumI) + " - " + blockS
         lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
-        # endregion
-
-    def bV(self):
-        """values block"""
-
-        # region
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
-        tbL = []
-        self.uS = "\nTable " + fillS + " - " + self.blockL[0] + "\n\n"
-        self.rS = "\n**Table " + fillS + "**: " + self.blockL[0] + "\n\n"
-        self.xS = "\n**Table " + fillS + "**: " + self.blockL[0] + "\n\n"
-
-        # print(f"{self.blockL=}")
-        for vaS in self.blockL[1:]:
-            vaL = vaS.split("|")
-            if len(vaL) != 3:
-                continue
-            if ":=" not in vaL[0]:
-                continue
-            # print(f"{vaS=}")
-            # print(f"{vaL=}")
-            eqS = vaL[0].strip()
-            eqS = eqS.replace(":=", "=")
-            varS = eqS.split("=")[0].strip()
-            valS = eqS.split("=")[1].strip()
-            unitL = vaL[1].split(",")
-            unit1S, unit2S, dec1S = (
-                unitL[0].strip(),
-                unitL[1].strip(),
-                unitL[2].strip(),
-            )
-            descripS = vaL[2].strip()
-            fmt1S = (
-                "Unum.set_format(value_format='%."
-                + dec1S
-                + "f', auto_norm=True)"
-            )
-            eval(fmt1S)
-
-            # rivL append
-            exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
-            self.rivL.append(exvS)
-
-            # rivD append
-            if unit1S != "-":
-                try:
-                    exec(eqS, globals(), self.rivD)
-                except ValueError as ve:
-                    print(f"A ValueError occurred: {ve}")
-                except Exception as e:
-                    print(f"An unexpected error occurred: {e}")
-                valU = eval(varS, {}, self.rivD)
-                val1U = str(valU.cast_unit(eval(unit1S)))
-                val2U = str(valU.cast_unit(eval(unit2S)))
-                self.rivD[varS] = val1U
-                # print(f"{self.rivtvD=}")
-            else:
-                cmdS = varS + " = " + valS
-                exec(cmdS, globals(), self.rivD)
-                valU = eval(varS)
-                val1U = str(valU)
-                val2U = str(valU)
-            tbL.append([varS, val1U, val2U, descripS])
-            self.rivD[varS] = valU
-
-        # write value table
-        tblfmt = "rst"
-        hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate.tabulate(
-                tbL,
-                tablefmt=tblfmt,
-                headers=hdrvL,
-                showindex=False,
-                colalign=alignL,
-            )
-        )
-        self.uS += output.getvalue() + "\n"
-        self.rS += output.getvalue() + "\n"
-        self.xS += output.getvalue() + "\n"
-        sys.stdout = old_stdout
-        sys.stdout.flush()
         # endregion
