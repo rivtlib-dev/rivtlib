@@ -1,6 +1,6 @@
 """Unit definitions
 
-add new units here or copy file to rivt project folder and modify
+create rv-custom-units.py file in doc or report folder to add units
 """
 
 import importlib.util
@@ -34,9 +34,8 @@ Unum.set_format(
 )
 
 # standard SI units ==== DO NOT MODIFY BETWEEN DOUBLE LINES  ============
-# temperature - relative degree size, not offset ------------------------
 #
-# temperature
+# temperature - relative degree, not offset
 K = new_unit("K", 0, "kelvin")
 CELSIUS = new_unit("deg C", K, "degree Celsius")
 FAHR = new_unit("degF", K * 9.0 / 5, "degree Fahrenheit")
@@ -75,28 +74,28 @@ WB = new_unit("Wb", VO * SIEMENS, "weber")
 TS = new_unit("TS", WB / M**2, "tesla")
 HENRY = new_unit("H", WB / A, "henry")
 #
-# ============  DO NOT MODIFY ABOVE THIS LINE  =============================
+# ============  DO NOT MODIFY FILE ABOVE THIS LINE  ===========================
 #
-# metric --------------------------------
+# -------------------------------- metric
 #
 G = new_unit("G", 9.80665 * M / S**2, "gravity acceleration")
 # pressure
-PA = new_unit("Pa", N / M**2, "pascal")
-MPA = new_unit("MPa", PA * (10**6), "megapascals")
-KPA = new_unit("KPa", PA * (10**3), "kilopascals")
+PA = new_unit("pa", N / M**2, "pascal")
+MPA = new_unit("mpa", PA * (10**6), "megapascals")
+KPA = new_unit("kpa", PA * (10**3), "kilopascals")
 # force
-KN = new_unit("KN", N * (10**3), "kilonewton")
-MN = new_unit("MN", N * (10**6), "meganewton")
-KM = new_unit("KM", M * (10**3), "kilometer")
-KNCM = new_unit("KNCM", KN / (M**3), "kilonewton per cubic meter")
-KNLM = new_unit("KNLM", KN / (M), "kilonewton per meter")
-M_KN = new_unit("M-KN", (M * KN), "meter-kilonewton")
+KN = new_unit("kN", N * (10**3), "kilonewton")
+MN = new_unit("mN", N * (10**6), "meganewton")
+KM = new_unit("km", M * (10**3), "kilometer")
+KNCM = new_unit("kN/M^3", KN / (M**3), "kilonewton per cubic meter")
+KNLM = new_unit("kN/m", KN / (M), "kilonewton per meter")
+KN_M = new_unit("kN-m", (KN * M), "meter-kilonewton")
 
 # area
-SM = new_unit("SM", (M**2), "square meter")
-SCM = new_unit("SCM", (CM**2), "square centimeter")
+SM = new_unit("sqm", (M**2), "square meter")
+SCM = new_unit("sqcm", (CM**2), "square centimeter")
 #
-# imperial------------------------------
+# ------------------------------ imperial
 #
 # length
 IN = new_unit("in", M / 39.370079, "inch")
@@ -105,28 +104,25 @@ MILES = new_unit("miles", FT * 5280, "miles")
 # mass
 LBM = new_unit("lbm", KG / 2.2046226, "pound-mass")
 # force
-LBF = new_unit("lbs", 4.4482216 * N, "pound-force")
-KIPS = new_unit("kips", LBF * 1000.0, "kilopounds")
+LBF = new_unit("lbf", 4.4482216 * N, "pound-force")
 KIP = new_unit("kip", LBF * 1000.0, "kilopound")
-# moment
-FT_KIPS = new_unit("ft-kips", FT * LBF * 1000.0, "foot-kips")
-IN_KIPS = new_unit("in-kips", IN * LBF * 1000.0, "inch-kips")
+KIP_FT = new_unit("kip-ft", FT * LBF * 1000.0, "foot-kips")
+KIP_IN = new_unit("kip-in", IN * LBF * 1000.0, "inch-kips")
+KLI = new_unit("kips/in", KIP / IN, "kips per inch")
+PLI = new_unit("lbf/in", LBF / IN, "pounds per inch")
+PLF = new_unit("lbf/ft", LBF / FT, "pounds per foot")
+KLF = new_unit("kip/ft", KIP / FT, "kips per foot")
 # area
-SF = new_unit("sf", FT**2, "square feet")
+SF = new_unit("sqft", FT**2, "square feet")
 SQIN = new_unit("sqin", IN**2, "square feet")
 # pressure
 PSF = new_unit("psf", LBF / FT**2, "pounds per square foot")
 PSI = new_unit("psi", LBF / IN**2, "pounds per square inch")
-KSF = new_unit("ksf", KIPS / FT**2, "kips per square foot")
-KSI = new_unit("ksi", KIPS / IN**2, "kips per square inch")
+KSF = new_unit("ksf", KIP / FT**2, "kips per square foot")
+KSI = new_unit("ksi", KIP / IN**2, "kips per square inch")
 # density
 PCI = new_unit("pci", LBF / IN**3, "pounds per cubic inch")
 PCF = new_unit("pcf", LBF / FT**3, "pounds per cubic ft")
-# line loads
-KLI = new_unit("kips/in", KIPS / IN, "kips per inch")
-PLI = new_unit("lbf/in", LBF / IN, "pounds per inch")
-PLF = new_unit("lbf/ft", LBF / FT, "pounds per foot")
-KLF = new_unit("kips/ft", KIPS / FT, "kips per foot")
 # time
 HR = new_unit("hr", 60 * 60 * S, "hours")
 # velocity

@@ -20,7 +20,7 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmd:
-    """command format object
+    """format file
 
     Section     Command
     ------- ----------------------------
@@ -40,6 +40,10 @@ class Cmd:
             VALUE - insert values from file
 
     Tools   PYTHON - python script
+
+    Meta
+
+    Doc
 
 
     | TEXT | rel. pth |  plain; rivt
@@ -639,3 +643,11 @@ class Cmd:
         self.rS = fileS
         self.xS = fileS
         # endregion
+
+    def LATEX(self):
+        """insert text
+
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
+        # print(f"{pthS=}")

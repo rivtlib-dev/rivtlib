@@ -16,22 +16,21 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Tag:
-    """tag format object
+    """formats a line or block
 
     Methods:
         taglx(tagS): formats line
         tagbx(tagS): formats block
-        tagex(tagS): formats equation
     """
 
-    def __init__(self, foldD, lablD, rivD, rivL, strngS):
+    def __init__(self, foldD, lablD, rivD, rivL, strLS):
         """tag object
         Args:
-            foldD (dict): _description_
-            lablD (dict): _description_
-            rivD (dict): _description_
-            rivL (list): _description_
-            strngS (str): _description_
+            foldD (dict): folder dictionary
+            lablD (dict): label dictionary
+            rivD (dict): values dictionary
+            rivL (list): values list for export
+            strLS (str): string to format
         Vars:
             uS (str): utf string
             rS (str): rst2pdf string
@@ -42,7 +41,7 @@ class Tag:
         self.lablD = lablD
         self.rivD = rivD
         self.rivL = rivL
-        self.strngS = strngS
+        self.strLS = strLS
         self.uS = ""
         self.rS = ""
         self.xS = ""
@@ -85,22 +84,21 @@ class Tag:
         # endregion
 
     def tagbx(self, tagS):
-        """format block
-        title _[[B]]   bold indent
-        title _[[C]]   code - literal indent
-        title _[[I]]   italic indent
-        title _[[L]]   literal
-        title _[[S]]   indent
-        title _[[X]]   latex
-        title _[[V]]   values table
-        color _[[Q]]   quit
+        """formats a block
+        _[[B]]              bold indent
+        _[[I]]              italic indent
+        _[[C]] language     literal
+        _[[L]]              LaTeX
+        _[[N]]              indent
+        _[[T]] label        topic
+        _[[Q]]              quit
         Args:
             tagS (str): tag symbol
         Returns:
             uS, r2S, rS, foldD, lablD, rivD, rivL
         """
         # region
-        self.blockL = self.strngS.split("\n")
+        self.blockL = self.strLS.split("\n")
         cmdS = "b" + tagS[1]
         method = getattr(self, cmdS)
         method()
@@ -119,7 +117,7 @@ class Tag:
     def lC(self):
         """center text"""
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         self.uS = lineS.center(int(self.lablD["widthI"])) + "\n"
         self.rS = lineS.center(int(self.lablD["widthI"])) + "\n"
         self.xS = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
@@ -128,7 +126,7 @@ class Tag:
     def lD(self):
         """footnote description"""
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         ftnumI = self.lablD["noteL"].pop(0)
         self.uS = "[" + str(ftnumI) + "] " + lineS
         self.rS = "[" + str(ftnumI) + "] " + lineS
@@ -138,7 +136,7 @@ class Tag:
     def lE(self):
         """number equation"""
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         enumI = int(self.lablD["equI"])
         self.lablD["equI"] = enumI + 1
         fillS = "\n" + "Eq. " + str(enumI)
@@ -151,7 +149,7 @@ class Tag:
     def lF(self):
         """number figure"""
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         fnumI = int(self.lablD["figI"])
         self.lablD["figI"] = fnumI + 1
         self.uS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
@@ -162,7 +160,7 @@ class Tag:
     def lN(self):
         """number footnote"""
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         ftnumI = self.lablD["footL"].pop(0)
         self.lablD["noteL"].append(ftnumI + 1)
         self.lablD["footL"].append(ftnumI + 1)
@@ -174,7 +172,7 @@ class Tag:
     def lS(self):
         """format sympy"""
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         spS = lineS.strip()
         spL = spS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
@@ -187,7 +185,7 @@ class Tag:
     def lT(self):
         """number table"""
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         tnumI = int(self.lablD["tableI"])
         self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
@@ -199,7 +197,7 @@ class Tag:
     def lU(self):
         "format url link"
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         lineL = lineS.split(",")
         self.uS = lineL[0] + ": " + lineL[1]
         self.rS = ".. _" + lineL[0] + ": " + lineL[1]
@@ -209,7 +207,7 @@ class Tag:
     def lY(self):
         "format and number sympy"
         # region
-        lineS = self.strngS
+        lineS = self.strLS
         spS = lineS.strip()
         spL = spS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
@@ -263,7 +261,7 @@ class Tag:
     def bB(self):
         """bold-indent block"""
         # region
-        blockL = self.blockL
+        blockL = self.strLS
         tnumI = int(self.lablD["tableI"])
         self.lablD["tableI"] = tnumI + 1
         self.uS = "Table " + str(tnumI) + " - " + blockS
@@ -272,8 +270,9 @@ class Tag:
         # endregion
 
     def bC(self):
-        """code block"""
+        """code-literal block"""
         # region
+        blockL = self.strLS
         iS = ""
         for s in blockL:
             s = "    " + s + "\n"
