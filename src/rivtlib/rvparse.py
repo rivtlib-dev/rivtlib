@@ -40,7 +40,6 @@ class Section:
         )
         warnings.filterwarnings("ignore")
         self.logging = logging
-
         sutfS = ""  # utf doc
         srsrS = ""  # rst2pdf doc
         srstS = ""  # rest doc
@@ -49,7 +48,6 @@ class Section:
         self.lablD = lablD
         self.rivD = rivD
         self.stS = stS
-
         # section header
         hL = sL[0].split("|")
         lablD["docS"] = hL[0].strip()  # section title
@@ -71,29 +69,15 @@ class Section:
             paraL = hL[1].strip().split("|")
         except Exception:
             paraL = []
-
         # set default section parameters
         lablD["rvtypeS"] = stS  # section type
         lablD["publicB"] = False
-        if stS == "R" or stS == "T" or stS == "D" or stS == "M":
+        if stS == "R" or stS == "T" or stS == "M":
             lablD["printB"] = False
-            lablD["publicB"] = False
-        elif stS == "I":
+        if stS == "I" or stS == "V":
             lablD["printB"] = True
-            lablD["publicB"] = False
-        elif stS == "V":
-            lablD["printB"] = True
-            lablD["publicB"] = False
-            foldD["alias"] = "rvsource"
-        else:
-            pass
-
         # override section defaults
         if len(paraL) > 0:
-            if "rvlocal" in paraL:
-                foldD["alias"] = "rvlocal"
-            if "rvsource" in paraL:
-                foldD["alias"] = "rvsource"
             if "hide" in paraL:
                 foldD["printB"] = False
             if "print" in paraL:
@@ -279,11 +263,11 @@ class Section:
 
             # export values file
         if self.stS == "V" and len(rivL) > 0:
-            fileS = foldD["valN"] + "-" + str(lablD["secnumI"]) + ".csv"
-            if foldD["alias"] == "rvlocal":
-                fileP = Path(foldD["rivtP"], fileS)
-            if foldD["alias"] == "rvsource":
-                fileP = Path(foldD["valP"], fileS)
+            fileS = lablD["valprfx"] + "-" + str(lablD["secnumI"]) + ".csv"
+            if foldD["localdirB"]:
+                fileP = Path(foldD["val_P"], fileS)
+            else:
+                fileP = Path(foldD["val_P"], fileS)
             with open(fileP, "w") as file1:
                 file1.write("\n".join(rivL))
 

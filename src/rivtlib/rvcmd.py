@@ -75,26 +75,13 @@ class Cmd:
         self.lablD = lablD
         self.rivD = rivD
         self.rivL = rivL
-        self.fileS = parL[2].strip()
-        self.parS = parL[3].strip()
+        self.fileS = parL[1].strip()
+        self.parS = parL[2].strip()
         self.uS = ""
         self.rS = ""
         self.xS = ""
-
-        dnumS = lablD["divnumS"]
-        stypeS = lablD["rvtypeS"]
-        sourceP = Path(foldD["srcP"], stypeS + dnumS)
-        srcS = parL[1].strip()
-
-        if srcS == "rvlocal":
-            insP = Path(self.foldD["rivtP"], self.fileS)
-        elif srcS == "rvsource":
-            insP = Path(self.foldD["srcP"], sourceP)
-        else:
-            insP = Path(self.foldD["srcP"], srcS)
-
-        self.inspS = str(insP.as_posix())
-
+        self.insP = Path(foldD["rivtP"], self.fileS)
+        self.inspS = str(self.insP.as_posix())
         # endregion
 
     def cmdx(self, cmdS):
@@ -118,257 +105,6 @@ class Cmd:
             self.rivD,
             self.rivL,
         )
-        # endregion
-
-    def IMG(self):
-        """insert image
-
-        | IMG | rel. path | file | scale factor, caption (_[F])
-        """
-        parL = self.parS.split(",")
-        scS = parL[0].strip()
-        # region
-        if "_[F]" in parL[1]:
-            numS = str(self.lablD["figI"])
-            self.lablD["figI"] = int(numS) + 1
-            figuS = "Fig. " + numS + " - "
-            figrS = "**Fig. " + numS + "** - "
-            capS = parL[1].replace("_[F]", " ")
-        else:
-            capS = parL[1].strip()
-
-        if capS == "-":
-            capS = " "
-        # print(f"{self.parS=}")
-        # print(f"{self.pathS=}")
-        # print(f"{self.fileS=}")
-        # pthxS = str(Path(*Path(self.foldD["rivP"]).parts[-1:]))
-
-        try:
-            img1 = Image.open(self.inspS)
-            _display(img1)
-        except Exception:
-            pass
-
-        self.uS = figuS + capS + " [file: " + self.inspS + " ] \n"
-        self.rS = self.xS = (
-            "\n\n.. image:: "
-            + self.inspS
-            + "\n"
-            + "   :width: "
-            + scS
-            + "% \n"
-            + "   :align: center \n\n\n"
-            + ".. class:: center \n\n"
-            + figrS
-            + capS
-            + "\n"
-        )
-        # endregion
-
-    def IMG2(self):
-        """insert side by side images
-
-        |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F])
-        """
-        # region
-        # print(f"{parS=}")
-        parL = self.parS.split(",")
-        fileL = self.pthS.split(",")
-        file1P = Path(fileL[0])
-        file2P = Path(fileL[1])
-        cap1S = parL[0].strip()
-        cap2S = parL[1].strip()
-        scale1S = parL[2].strip()
-        scale2S = parL[3].strip()
-        figS = "Fig. "
-        if parL[2] == "_[F]":
-            numS = str(self.lablD["fnum"])
-            self.lablD["fnum"] = int(numS) + 1
-            figS = figS + numS + cap1S
-
-        self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
-        self.rS = (
-            "\n.. image:: "
-            + self.pthS
-            + "\n"
-            + "   :scale: "
-            + scale1S
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n"
-        )
-        # endregion
-
-    def TABLE(self):
-        """insert table
-
-        |TABLE| rel. pth | col width, l;c;r, title (_[T])
-        """
-        # region
-        # print(f"{pthS=}")
-        if "_[T]" in self.parS:
-            tnumI = int(self.lablD["tableI"])
-            fillS = str(tnumI)
-            utitlnS = "\nTable " + fillS + " - "
-            rtitlnS = "\n**Table " + fillS + " -** "
-            self.lablD["tableI"] = tnumI + 1
-            parS = (self.parS.replace("_[T]", " ")).strip()
-        else:
-            utitlnS = " "
-            rtitlnS = " "
-        pthP = Path(self.pthS)  # path
-        extS = pthP.suffix[1:]  # file extension
-        parL = parS.split(",")
-        titleS = parL[0].strip()  # title
-        if titleS == "-":
-            titleS = " "
-        maxwI = int(parL[1].strip())  # max col. width
-        alnS = parL[2].strip()  # col. alignment
-        rowL = eval(parL[3].strip())  # rows
-        if len(rowL) == 0:
-            pass
-        alignD = {
-            "s": "",
-            "d": "decimal",
-            "c": "center",
-            "r": "right",
-            "l": "left",
-        }
-        insP = Path(self.foldD["srcP"], self.pthS)
-        pS = " [file: " + self.pthS + "]" + "\n\n"
-        utlS = utitlnS + titleS + pS  # file path text
-        rtlS = rtitlnS + titleS + pS
-        readL = []
-        if extS == "csv":  # read csv file
-            with open(insP, "r") as csvfile:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                    # print(f"{row=}")
-                    if row and row[0].startswith("#"):
-                        continue
-                    else:
-                        readL.append(row)
-        elif extS == "xlsx":  # read xls file
-            pDF1 = pd.read_excel(self.pthS, header=None)
-            readL = pDF1.values.tolist()
-        else:
-            pass
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        alignS = alignD[alnS]
-        output.write(
-            tabulate.tabulate(
-                readL,
-                tablefmt="rst",
-                headers="firstrow",
-                numalign="decimal",
-                maxcolwidths=maxwI,
-                stralign=alignS,
-            )
-        )
-        uS = rS = output.getvalue()
-        sys.stdout = old_stdout
-
-        self.uS = utlS + uS + "\n"
-        self.rS = rtlS + rS + "\n"
-        self.xS = rtlS + rS + "\n"
-        # endregion
-
-    def TEXT(self):
-        """insert text
-
-        |TEXT| rel. pth |  plain; rivt
-        """
-        # region
-        insP = Path(self.foldD["srcP"], self.pthS)
-        with open(insP, "r") as fileO:
-            fileS = fileO.read()
-        self.uS = fileS
-        self.rS = fileS
-        self.xS = fileS
-        # endregion
-
-    def VALUE(self):
-        """insert values
-
-        |VALUE| rel. pth | title (_[T])
-        """
-        # region
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
-        utitlnS = "\nTable " + fillS + " - " + self.parS.strip("_[T]")
-        rtitlnS = "\n**Table " + fillS + " -** " + self.parS.strip("_[T]")
-        insP = Path(self.foldD["srcP"], self.pthS)
-        pS = " [file: " + self.pthS + "]" + "\n\n"
-        with open(insP, "r") as csvfile:
-            readL = list(csv.reader(csvfile))
-        # print(f"{readL=}")
-        tbL = []
-        for vaL in readL:
-            # print(f"{vaL=}")
-            if len(vaL) != 5:
-                continue
-            eqS = vaL[0].strip()
-            varS = vaL[0].split("=")[0].strip()
-            valS = vaL[0].split("=")[1].strip()
-            unit1S, unit2S = vaL[1], vaL[2]
-            dec1S, descripS = vaL[3].strip(), vaL[4].strip()
-            fmt1S = (
-                "Unum.set_format(value_format='%."
-                + dec1S
-                + "f', auto_norm=True)"
-            )
-            eval(fmt1S)
-            if unit1S != "-":
-                if isinstance(eval(valS), list):
-                    val1U = np.array(eval(valS)) * eval(unit1S)
-                    val2U = [varS.cast_unit(eval(unit2S)) for varS in val1U]
-                else:
-                    eqS = varS + " = " + valS
-                    try:
-                        exec(eqS, globals(), self.rivD)
-                    except ValueError as ve:
-                        print(f"A ValueError occurred: {ve}")
-                    except Exception as e:
-                        print(f"An unexpected error occurred: {e}")
-                    valU = eval(varS, globals(), self.rivD)
-                    val1U = str(valU.cast_unit(eval(unit1S)))
-                    val2U = str(valU.cast_unit(eval(unit2S)))
-            else:
-                eqS = varS + " = " + valS
-                exec(eqS, globals(), self.rivD)
-                valU = eval(varS)
-                val1U = str(valU)
-                val2U = str(valU)
-            tbL.append([varS, val1U, val2U, descripS])
-        # print("tbl", tbL)
-        tblfmt = "rst"
-        hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate.tabulate(
-                tbL,
-                tablefmt=tblfmt,
-                headers=hdrvL,
-                showindex=False,
-                colalign=alignL,
-            )
-        )
-        outS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-        # pthxS = str(Path(*Path(pthS).parts[-3:]))
-        pS = "[from file: " + self.pthS + "]" + "\n\n"
-        self.uS = utitlnS + pS + outS + "\n"
-        self.rS = rtitlnS + pS + outS + "\n"
-        self.xS = rtitlnS + pS + outS + "\n"
         # endregion
 
     def assign(self, aeqS):
@@ -509,11 +245,11 @@ class Cmd:
         varS = eqS.split("=")[0].strip()
         valS = eqS.split("=")[1].strip()
         unitL = vaL[1].split(",")
-        unit2S, dec1S = (
+        unit1S, unit2S, dec1S = (
             unitL[0].strip(),
             unitL[1].strip(),
+            unitL[2].strip(),
         )
-        unit1S = str(eval(valS).unit()).upper()
         descripS = vaL[2].strip()
         fmt1S = (
             "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
@@ -560,6 +296,264 @@ class Cmd:
         # export value table
         # endregion
 
+    def IMG(self):
+        """insert image
+
+        | IMG | rel. path | file | scale factor, caption (_[F])
+        """
+        # region
+        parL = self.parS.split(",")
+        scS = parL[0].strip()
+
+        if "_[F]" in parL[1]:
+            numS = str(self.lablD["figI"])
+            self.lablD["figI"] = int(numS) + 1
+            figuS = "Fig. " + numS + " - "
+            figrS = "**Fig. " + numS + "** - "
+            capS = parL[1].replace("_[F]", " ")
+        else:
+            capS = parL[1].strip()
+
+        if capS == "-":
+            capS = " "
+        # print(f"{self.parS=}")
+        # print(f"{self.pathS=}")
+        # print(f"{self.fileS=}")
+        # pthxS = str(Path(*Path(self.foldD["rivP"]).parts[-1:]))
+
+        try:
+            img1 = Image.open(self.inspS)
+            _display(img1)
+        except Exception:
+            pass
+
+        self.uS = figuS + capS + " [file: " + self.inspS + " ] \n"
+        self.rS = self.xS = (
+            "\n\n.. image:: "
+            + self.inspS
+            + "\n"
+            + "   :width: "
+            + scS
+            + "% \n"
+            + "   :align: center \n\n\n"
+            + ".. class:: center \n\n"
+            + figrS
+            + capS
+            + "\n"
+        )
+        # endregion
+
+    def IMG2(self):
+        """insert side by side images
+
+        |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F])
+        """
+        # region
+        # print(f"{parS=}")
+        parL = self.parS.split(",")
+        fileL = self.pthS.split(",")
+        file1P = Path(fileL[0])
+        file2P = Path(fileL[1])
+        cap1S = parL[0].strip()
+        cap2S = parL[1].strip()
+        scale1S = parL[2].strip()
+        scale2S = parL[3].strip()
+        figS = "Fig. "
+        if parL[2] == "_[F]":
+            numS = str(self.lablD["fnum"])
+            self.lablD["fnum"] = int(numS) + 1
+            figS = figS + numS + cap1S
+
+        self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
+        self.rS = (
+            "\n.. image:: "
+            + self.pthS
+            + "\n"
+            + "   :scale: "
+            + scale1S
+            + "%"
+            + "\n"
+            + "   :align: center"
+            + "\n\n"
+        )
+        # endregion
+
+    def TABLE(self):
+        """insert table
+
+        |TABLE| rel. pth | col width, l;c;r, title (_[T])
+        """
+        # region
+        # print(f"{pthS=}")
+        if "_[T]" in self.parS:
+            tnumI = int(self.lablD["tableI"])
+            fillS = str(tnumI)
+            self.lablD["tableI"] = tnumI + 1
+            utitlnS = "\nTable " + fillS + " - "
+            rtitlnS = "\n**Table " + fillS + " -** "
+            parS = (self.parS.replace("_[T]", " ")).strip()
+        else:
+            utitlnS = " "
+            rtitlnS = " "
+        pthP = Path(self.pthS)  # path
+        extS = pthP.suffix[1:]  # file extension
+        parL = parS.split(",")
+        titleS = parL[0].strip()  # title
+        if titleS == "-":
+            titleS = " "
+        maxwI = int(parL[1].strip())  # max col. width
+        alnS = parL[2].strip()  # col. alignment
+        rowL = eval(parL[3].strip())  # rows
+        if len(rowL) == 0:
+            pass
+        alignD = {
+            "s": "",
+            "d": "decimal",
+            "c": "center",
+            "r": "right",
+            "l": "left",
+        }
+        insP = Path(self.foldD["srcP"], self.pthS)
+        pS = " [file: " + self.pthS + "]" + "\n\n"
+        utlS = utitlnS + titleS + pS  # file path text
+        rtlS = rtitlnS + titleS + pS
+        readL = []
+        if extS == "csv":  # read csv file
+            with open(insP, "r") as csvfile:
+                reader = csv.reader(csvfile)
+                for row in reader:
+                    # print(f"{row=}")
+                    if row and row[0].startswith("#"):
+                        continue
+                    else:
+                        readL.append(row)
+        elif extS == "xlsx":  # read xls file
+            pDF1 = pd.read_excel(self.pthS, header=None)
+            readL = pDF1.values.tolist()
+        else:
+            pass
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        alignS = alignD[alnS]
+        output.write(
+            tabulate.tabulate(
+                readL,
+                tablefmt="rst",
+                headers="firstrow",
+                numalign="decimal",
+                maxcolwidths=maxwI,
+                stralign=alignS,
+            )
+        )
+        uS = rS = output.getvalue()
+        sys.stdout = old_stdout
+
+        self.uS = utlS + uS + "\n"
+        self.rS = rtlS + rS + "\n"
+        self.xS = rtlS + rS + "\n"
+        # endregion
+
+    def TEXT(self):
+        """insert text
+
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
+        insP = Path(self.foldD["srcP"], self.pthS)
+        with open(insP, "r") as fileO:
+            fileS = fileO.read()
+        self.uS = fileS
+        self.rS = fileS
+        self.xS = fileS
+        # endregion
+
+    def VALUE(self):
+        """insert values
+
+        |VALUE| rel. path | title (_[T])
+        """
+        # region
+        if "_[T]" in self.parS:
+            tnumI = int(self.lablD["tableI"])
+            fillS = str(tnumI)
+            self.lablD["tableI"] = tnumI + 1
+            tiS = (self.parS.replace("_[T]", " ")).strip()
+            utitlnS = "\nTable " + fillS + " - " + tiS
+            rtitlnS = "\n**Table " + fillS + " -** " + tiS
+        else:
+            if tiS == "-":
+                tiS = " "
+            tiS = self.parS.strip()
+
+        pS = " [file: " + self.inspS + "]" + "\n\n"
+        with open(self.insP, "r") as csvfile:
+            readL = list(csv.reader(csvfile))
+        # print(f"{readL=}")
+        tbL = []
+        for vaL in readL:
+            # print(f"{vaL=}")
+            if len(vaL) != 5:
+                continue
+            eqS = vaL[0].strip()
+            varS = vaL[0].split("=")[0].strip()
+            valS = vaL[0].split("=")[1].strip()
+            unit1S, unit2S = vaL[1], vaL[2]
+            dec1S, descripS = vaL[3].strip(), vaL[4].strip()
+            fmt1S = (
+                "Unum.set_format(value_format='%."
+                + dec1S
+                + "f', auto_norm=True)"
+            )
+            eval(fmt1S)
+            if unit1S != "-":
+                if isinstance(eval(valS), list):
+                    val1U = np.array(eval(valS)) * eval(unit1S)
+                    val2U = [varS.cast_unit(eval(unit2S)) for varS in val1U]
+                else:
+                    eqS = varS + " = " + valS
+                    try:
+                        exec(eqS, globals(), self.rivD)
+                    except ValueError as ve:
+                        print(f"A ValueError occurred: {ve}")
+                    except Exception as e:
+                        print(f"An unexpected error occurred: {e}")
+                    valU = eval(varS, globals(), self.rivD)
+                    val1U = str(valU.cast_unit(eval(unit1S)))
+                    val2U = str(valU.cast_unit(eval(unit2S)))
+            else:
+                eqS = varS + " = " + valS
+                exec(eqS, globals(), self.rivD)
+                valU = eval(varS)
+                val1U = str(valU)
+                val2U = str(valU)
+            tbL.append([varS, val1U, val2U, descripS])
+        # print("tbl", tbL)
+        tblfmt = "rst"
+        hdrvL = ["variable", "value", "[value]", "description"]
+        alignL = ["left", "right", "right", "left"]
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tbL,
+                tablefmt=tblfmt,
+                headers=hdrvL,
+                showindex=False,
+                colalign=alignL,
+            )
+        )
+        outS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+        # pthxS = str(Path(*Path(pthS).parts[-3:]))
+        pS = "[from file: " + self.fileS + "]" + "\n\n"
+        self.uS = utitlnS + pS + outS + "\n"
+        self.rS = rtitlnS + pS + outS + "\n"
+        self.xS = rtitlnS + pS + outS + "\n"
+        # endregion
+
     def WIN(self):
         """insert text
 
@@ -567,7 +561,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.foldD["projP"])
+        insP = Path(self.foldD["reptfoldP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -588,7 +582,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.foldD["projP"])
+        insP = Path(self.foldD["reptfoldP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -609,7 +603,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.foldD["projP"])
+        insP = Path(self.foldD["reptfoldP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -630,7 +624,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.foldD["projP"])
+        insP = Path(self.foldD["reptfoldP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"

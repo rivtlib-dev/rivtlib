@@ -132,11 +132,11 @@ class Cmdd:
         # region
 
         fileS = self.foldD["rstpN"]
-        fileP = Path(self.foldD["projP"], "temp", fileS)
+        fileP = Path(self.foldD["reptfoldP"], "temp", fileS)
         with open(fileP, "w", errors="ignore") as f1:
             f1.write(self.contentS)
-        self.yamlP = Path(self.foldD["projP"], "rivDocs/styles/rstpdf.yaml")
-        self.iniP = Path(self.foldD["projP"], "rivDocs/styles/rivt.ini")
+        self.yamlP = Path(self.foldD["reptfoldP"], "rivDocs/styles/rstpdf.yaml")
+        self.iniP = Path(self.foldD["reptfoldP"], "rivDocs/styles/rivt.ini")
 
         cmd1S = "rst2pdf " + "../temp/" + self.foldD["rstpN"]  # input
         cmd2S = " -o ../rivDocs/rstpdf/" + self.foldD["pdfN"]  # output

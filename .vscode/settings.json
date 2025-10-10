@@ -13,14 +13,14 @@
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "vsicons.dontShowNewVersionMessage": true,
     "fsdeploy.deployOnSave": true,
+    "fsdeploy.deployWorkspaceOnSave": false,
     "fsdeploy.nodes": [
         {
-            "source": "C:/git/git-rivtlib/src/rivtlib",
+            "source": "C:/git/rivtlib-git/src/rivtlib",
             "target": "C:/Python313/Lib/site-packages/rivtlib",
             "include": "**/*.*",
             "exclude": "",
             "deleteTargetOnDeploy": true,
-            "name": "4790k"
         }
     ],
     "projectManager.git.baseFolders": [
