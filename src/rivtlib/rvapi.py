@@ -84,12 +84,10 @@ htmlN = rbaseS + ".html"
 bakN = rbaseS + ".bak"
 publicP = Path(rivtP, "public")
 public_P = Path(rivtP)
-logT = Path(rivtP, "log", rbaseS + "-log.txt")
 srcP = Path(rivtP, "src")
 docnumS = rbaseS[0:6]
-errlogT = Path(rivtP, "log", docnumS + "-log.txt")
-errlog_T = Path(rivtP, docnumS + "-log.txt")
-
+errlogT = Path(rivtP, "log", docnumS + "log.txt")
+errlog_T = Path(rivtP, docnumS + "log.txt")
 
 # print(f"{reptfoldP=}")
 # print(f"{rivtP=}")
@@ -98,6 +96,7 @@ errlog_T = Path(rivtP, docnumS + "-log.txt")
 # endregion
 
 # region - folders dict
+rivD = {}  # shared calculated values
 foldD = {
     "pthS": " ",
     "srcnS": " ",
@@ -162,10 +161,7 @@ lablD = {
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "none",  # topic background color
 }
-
-rivD = {}  # shared calculated values
 # endregion
-
 
 try:
     logging.basicConfig(
@@ -231,10 +227,11 @@ def cmdhelp():
     print()
     print("Run rivt file on command line with:                     ")
     print()
-    print("     python rvddss-filename.py                             ")
+    print("     python rvDss-filename.py                           ")
     print()
-    print("Where dd and ss are two digit integers.                    ")
-    print("See User Manual at https://rivt.info for details           ")
+    print("Where D is a capital alpha-numeric division label       ")
+    print("and ss is a two digit subdivision integer.              ")
+    print("See User Manual at https://rivt.info for details        ")
     sys.exit()
 
 

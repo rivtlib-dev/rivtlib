@@ -263,7 +263,7 @@ class Section:
 
             # export values file
         if self.stS == "V" and len(rivL) > 0:
-            fileS = lablD["valprfx"] + "-" + str(lablD["secnumI"]) + ".csv"
+            fileS = lablD["valprfx"] + str(lablD["secnumI"]) + ".csv"
             if foldD["localdirB"]:
                 fileP = Path(foldD["val_P"], fileS)
             else:

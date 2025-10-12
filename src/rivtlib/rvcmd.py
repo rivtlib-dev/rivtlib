@@ -45,16 +45,16 @@ class Cmd:
 
     Doc
 
-
-    | TEXT | rel. pth |  plain; rivt
-    | IMG | rel. pth | scale factor, caption (_[F])       .png, .jpg
-    | IMG2 | rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F]) .png, .jpg
-    | TABLE | rel. pth | col width, l;c;r, title (_[T])   .csv, .xls, .txt
-    | VALUE | rel. pth | col width, l;c;r, title (_[T])   .csv
-    | WIN | rel. pth | print, noprint
-    | OSX | rel. pth | print, noprint
-    | LINUX | rel. pth | print, noprint
-    | PYTHON | rel. pth | print, noprint
+    | TEXT | rel. path |  plain; rivt
+    | IMG | rel. path | scale factor, caption (_[F])
+    | IMG2 | rel. path, rel. path | sf1, sf2, c1, c2 (_[F])
+    | TABLE | rel. path | col width, l;c;r, title (_[T])
+    | VALUE | rel. path | title (_[T])
+    | WIN | rel. path | wait, nowait
+    | OSX | rel. path | wait, nowait
+    | LINUX | rel. path | wait, nowait
+    | PYTHON | rel. path | print, noprint
+    | LATEX | rel. path | print, noprint
 
     """
 
@@ -108,14 +108,10 @@ class Cmd:
         # endregion
 
     def assign(self, aeqS):
-        """format equation and assign value <=
+        """format equation and assign value
 
-            equation tag  :=
+            equation tag  <=
             a <= b + 2 | unit1, unit2, decimal | ref
-
-            ratio tags     :<  :>
-            a :> b | Ok, Not Ok
-            a :< b | Pass, Fail
 
         Returns:
             uS, r2S, rS, foldD, lablD, rivD, rivL
@@ -129,10 +125,9 @@ class Cmd:
         unit1S, unit2S, dec1S = lpL[1].split(",")
         unit1S, unit2S, dec1S = unit1S.strip(), unit2S.strip(), dec1S.strip()
         refS = lpL[2].strip()
-
-        # print(dir(Unum.set_format))
         decS = "%." + dec1S + "f"
-        Unum.set_format(value_format=decS, auto_norm=True)
+        Unum.set_format(value_format=decS, auto_norm=True, unitless="")
+        # print(dir(Unum.set_format))
         # wI = self.lablD["widthI"]
 
         # equation
@@ -224,11 +219,7 @@ class Cmd:
     def define(self, valS):
         """define value :=
 
-            a := 1 + 2 | unit1, unit2, decimal | ref
-
-            ratio tags     :<  :>
-            a :> b | Ok, Not Ok
-            a :< b | Pass, Fail
+            a := .5 * 2*IN | unit1, unit2, decimal | ref
 
         Returns:
             uS, r2S, rS, foldD, lablD, rivD, rivL
@@ -251,11 +242,6 @@ class Cmd:
             unitL[2].strip(),
         )
         descripS = vaL[2].strip()
-        fmt1S = (
-            "Unum.set_format(value_format='%." + dec1S + "f', auto_norm=True)"
-        )
-        eval(fmt1S)
-
         # rivL append
         exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
         self.rivL.append(exvS)
@@ -266,21 +252,23 @@ class Cmd:
             print(f"A ValueError occurred: {ve}")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
-
+        # format
+        decS = "%." + dec1S + "f"
+        Unum.set_format(value_format=decS, auto_norm=False, unitless="")
         valU = eval(varS, {}, self.rivD)
         if type(valU) is Unum:
-            val1U = str(valU.cast_unit(eval(unit1S)))
-            val2U = str(valU.cast_unit(eval(unit2S)))
-        # print(f"{self.rivtvD=}")
+            val2S = str(valU.cast_unit(eval(unit2S)))
+            val1U = valU.cast_unit(eval(unit1S))
+            if val1U.number() == 1.0:
+                val1S = str((1 + 10**-10) * val1U)
+            else:
+                val1S = str(valU.cast_unit(eval(unit1S)))
         else:
-            cmdS = varS + " = " + valS
-            exec(cmdS, globals(), self.rivD)
-            valU = eval(varS)
-            val1U = str(valU)
-            val2U = str(valU)
-
+            val1S = str(valU)
+            val2S = str(valU)
+        # print(f"{self.rivtvD=}")
         self.rivD[varS] = valU  # rivt dictionary
-        tbL = [varS, val1U, val2U, descripS]  # append row
+        tbL = [varS, val1S, val2S, descripS]  # append row
 
         return (
             self.uS,
@@ -296,38 +284,64 @@ class Cmd:
         # export value table
         # endregion
 
+    def cF(self):
+        """number figure"""
+        # region
+        lineS = self.strpS
+        fnumI = int(self.lablD["figI"])
+        self.lablD["figI"] = fnumI + 1
+        self.uS = "Fig. " + str(fnumI) + " -" + lineS
+        self.rS = "**Fig. " + str(fnumI) + " -** " + lineS
+        self.xS = "**Fig. " + str(fnumI) + " -** " + lineS
+        # endregion
+
+    def cT(self):
+        """number table"""
+        # region
+        lineS = self.strpS
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
+        fillS = str(tnumI)
+        self.uS = "\nTable " + str(tnumI) + ": " + lineS
+        self.rS = "\n**Table " + fillS + "**: " + lineS
+        self.xS = "\n**Table " + fillS + "**: " + lineS
+        # endregion
+
+    def cE(self):
+        """number equation"""
+        # region
+        lineS = self.strpS
+        enumI = int(self.lablD["equI"])
+        self.lablD["equI"] = enumI + 1
+        fillS = "\n" + "Eq. " + str(enumI)
+        self.uS = fillS + " - " + lineS
+        fillS = "**Eq " + str(enumI) + "**"
+        self.rS = lineS + " - " + fillS + "\n"
+        self.xS = lineS + " - " + fillS + "\n"
+        # endregion
+
     def IMG(self):
         """insert image
 
-        | IMG | rel. path | file | scale factor, caption (_[F])
+        | IMG | rel. path file | scale factor, caption (_[F])
         """
         # region
         parL = self.parS.split(",")
         scS = parL[0].strip()
-
-        if "_[F]" in parL[1]:
-            numS = str(self.lablD["figI"])
-            self.lablD["figI"] = int(numS) + 1
-            figuS = "Fig. " + numS + " - "
-            figrS = "**Fig. " + numS + "** - "
+        capS = " "
+        if "_[F]" in parL[1] or capS[0:1] != "--":
             capS = parL[1].replace("_[F]", " ")
-        else:
-            capS = parL[1].strip()
-
-        if capS == "-":
+        elif capS[0:1] != "--":
             capS = " "
-        # print(f"{self.parS=}")
-        # print(f"{self.pathS=}")
-        # print(f"{self.fileS=}")
-        # pthxS = str(Path(*Path(self.foldD["rivP"]).parts[-1:]))
-
+        self.strpS = capS.strip()
+        self.cF()
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
         except Exception:
             pass
 
-        self.uS = figuS + capS + " [file: " + self.inspS + " ] \n"
+        self.uS = self.uS + " [file: " + self.fileS + " ] \n"
         self.rS = self.xS = (
             "\n\n.. image:: "
             + self.inspS
@@ -337,7 +351,6 @@ class Cmd:
             + "% \n"
             + "   :align: center \n\n\n"
             + ".. class:: center \n\n"
-            + figrS
             + capS
             + "\n"
         )
@@ -381,28 +394,25 @@ class Cmd:
     def TABLE(self):
         """insert table
 
-        |TABLE| rel. pth | col width, l;c;r, title (_[T])
+        | TABLE | rel. path | col width, l;c;r, title (_[T])
         """
         # region
         # print(f"{pthS=}")
-        if "_[T]" in self.parS:
-            tnumI = int(self.lablD["tableI"])
-            fillS = str(tnumI)
-            self.lablD["tableI"] = tnumI + 1
-            utitlnS = "\nTable " + fillS + " - "
-            rtitlnS = "\n**Table " + fillS + " -** "
-            parS = (self.parS.replace("_[T]", " ")).strip()
-        else:
-            utitlnS = " "
-            rtitlnS = " "
-        pthP = Path(self.pthS)  # path
-        extS = pthP.suffix[1:]  # file extension
-        parL = parS.split(",")
-        titleS = parL[0].strip()  # title
-        if titleS == "-":
+
+        parL = self.parS.split(",")
+        titleS = " "
+        if "_[T]" in parL[2] or titleS[0:1] != "--":
+            titleS = parL[2].replace("_[T]", " ")
+        elif titleS[0:1] != "--":
             titleS = " "
-        maxwI = int(parL[1].strip())  # max col. width
-        alnS = parL[2].strip()  # col. alignment
+        self.strpS = titleS.strip()
+        self.cT()
+        fiS = " [file: " + self.fileS + "]" + "\n\n"
+        utlS = titleS + fiS  # file path text
+        rtlS = xtlS = titleS + fiS
+        extS = self.insP.suffix  # file extension
+        maxwI = int(parL[0].strip())  # max col. width
+        alnS = parL[1].strip()  # col. alignment
         rowL = eval(parL[3].strip())  # rows
         if len(rowL) == 0:
             pass
@@ -413,13 +423,9 @@ class Cmd:
             "r": "right",
             "l": "left",
         }
-        insP = Path(self.foldD["srcP"], self.pthS)
-        pS = " [file: " + self.pthS + "]" + "\n\n"
-        utlS = utitlnS + titleS + pS  # file path text
-        rtlS = rtitlnS + titleS + pS
         readL = []
         if extS == "csv":  # read csv file
-            with open(insP, "r") as csvfile:
+            with open(self.inspS, "r") as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
                     # print(f"{row=}")
@@ -451,7 +457,7 @@ class Cmd:
 
         self.uS = utlS + uS + "\n"
         self.rS = rtlS + rS + "\n"
-        self.xS = rtlS + rS + "\n"
+        self.xS = xtlS + rS + "\n"
         # endregion
 
     def TEXT(self):
@@ -471,22 +477,21 @@ class Cmd:
     def VALUE(self):
         """insert values
 
-        |VALUE| rel. path | title (_[T])
+        | VALUE | rel. path | title (_[T])
         """
         # region
-        if "_[T]" in self.parS:
-            tnumI = int(self.lablD["tableI"])
-            fillS = str(tnumI)
-            self.lablD["tableI"] = tnumI + 1
-            tiS = (self.parS.replace("_[T]", " ")).strip()
-            utitlnS = "\nTable " + fillS + " - " + tiS
-            rtitlnS = "\n**Table " + fillS + " -** " + tiS
-        else:
-            if tiS == "-":
-                tiS = " "
-            tiS = self.parS.strip()
+        parL = self.parS.split(",")
+        titleS = " "
+        if "_[T]" in parL[0] or titleS[0:1] != "--":
+            titleS = parL[0].replace("_[T]", " ").strip()
+        elif titleS[0:1] != "--":
+            titleS = " "
+        self.strpS = titleS.strip()
+        self.cT()
+        fiS = " [file: " + self.fileS + "]" + "\n\n"
+        utlS = titleS + fiS
+        rtlS = xtlS = titleS + fiS
 
-        pS = " [file: " + self.inspS + "]" + "\n\n"
         with open(self.insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         # print(f"{readL=}")
@@ -500,12 +505,10 @@ class Cmd:
             valS = vaL[0].split("=")[1].strip()
             unit1S, unit2S = vaL[1], vaL[2]
             dec1S, descripS = vaL[3].strip(), vaL[4].strip()
-            fmt1S = (
-                "Unum.set_format(value_format='%."
-                + dec1S
-                + "f', auto_norm=True)"
-            )
-            eval(fmt1S)
+            decS = "%." + dec1S + "f"
+            Unum.set_format(value_format=decS, auto_norm=True, unitless="")
+            # print(dir(Unum.set_format))
+            # wI = self.lablD["widthI"]
             if unit1S != "-":
                 if isinstance(eval(valS), list):
                     val1U = np.array(eval(valS)) * eval(unit1S)
@@ -548,10 +551,9 @@ class Cmd:
         sys.stdout = old_stdout
         sys.stdout.flush()
         # pthxS = str(Path(*Path(pthS).parts[-3:]))
-        pS = "[from file: " + self.fileS + "]" + "\n\n"
-        self.uS = utitlnS + pS + outS + "\n"
-        self.rS = rtitlnS + pS + outS + "\n"
-        self.xS = rtitlnS + pS + outS + "\n"
+        self.uS = utlS + outS + "\n"
+        self.rS = rtlS + outS + "\n"
+        self.xS = xtlS + outS + "\n"
         # endregion
 
     def WIN(self):
