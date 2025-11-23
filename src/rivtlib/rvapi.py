@@ -95,8 +95,8 @@ publicP = Path(rivtP, "public")
 srcP = Path(rivtP, "src")
 storedP = Path(rivtP, "stored")
 pubP = Path(rivtP, "publish")
-apilogP = Path(storedP, "log")
-errlogP = Path(storedP, "log")
+apilogP = Path(storedP, "logs")
+errlogP = Path(storedP, "logs")
 # endregion
 
 # region - folders dict
@@ -104,7 +104,6 @@ rivD = {}  # shared calculated values
 foldD = {
     "pthS": " ",
     "srcnS": " ",
-    "srcP": Path(rivtP, "src"),
     "rivtN": rivtT.name,  # file name
     "baseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
@@ -119,6 +118,7 @@ foldD = {
     "publicT": Path(rivtP, "public", rivtpN),
     "public_T": Path(rivtP, rivtpN),
     "valP": Path(srcP, "values"),
+    "srcP": srcP,
     "val_P": rivtP,
     "toolP": Path(srcP, "tools"),
     "tool_P": rivtP,
@@ -202,19 +202,17 @@ logging.info(f"""rivt file path : {foldD["rivtP"]}""")
 
 # write backup file
 if rv_localB:
-    fileT = Path(rivtP, errlogN)
+    fileT = Path(rivtP, bakN)
 else:
-    fileT = Path(errlogP, errlogN)
+    fileT = Path(storedP, "logs", bakN)
 with open(foldD["rivtT"], "r") as f2:  # noqa: F405
     rivtS = f2.read()
 try:
-    with open(foldD["bakT"], "w") as f3:  # noqa: F405
+    with open(foldD["fileT"], "w") as f3:  # noqa: F405
         f3.write(rivtS)
-    logging.info(f"""rivt backup : {foldD["bakT"]}""")  # noqa: F405
+    logging.info(f"""rivt backup : {fileT}""")  # noqa: F405
 except Exception:
-    with open(foldD["bak_T"], "w") as f3:  # noqa: F405
-        f3.write(rivtS)
-    logging.info(f"""rivt backup : {foldD["bak_T"]}""")  # noqa: F405
+    pass
 logging.info("Doc start")
 
 # open api log
