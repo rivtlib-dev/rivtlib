@@ -21,6 +21,13 @@
             "include": "**/*.*",
             "exclude": "",
             "deleteTargetOnDeploy": true,
+        },
+        {
+            "source": "C:/git/rivtlib-git/src/rivtlib",
+            "target": "E:/OneDrive/StL-rivt/rivtlib-dev/rivtlib/src/rivtlib",
+            "include": "**/*.*",
+            "exclude": "",
+            "deleteTargetOnDeploy": true,
         }
     ],
     "projectManager.git.baseFolders": [

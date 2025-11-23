@@ -10,8 +10,8 @@ API functions:
     rv.I(rS) - (Insert) Insert static text, math, images and tables
     rv.V(rS) - (Values) Evaluate values and equations
     rv.T(rS) - (Tools) Execute Python scripts
-    rv.D(rS) - (Docs) Write formatted document files
-    rv.M(rS) - (Meta) Meta data - rivt file
+    rv.D(rS) - (Docs) Publish formatted doc file
+    rv.M(rS) - (Meta) Meta data for doc and rivt file
     rv.S(rS) - (Skip) Skip processing of section
     rv.Q(rS) - (Quit) Exit processing of rivt file
 
@@ -21,7 +21,7 @@ Globals:
     utfS (str): utf doc string
     rstS (str): rstpdf doc string
     xstS (str): texpdf doc string
-    lablD (dict): formatting labels
+    lablD (dict): formatting parameters
     foldD (dict): folder and file paths
     rivD (dict): calculated values
 
@@ -33,11 +33,11 @@ Last letter of var name indicates type:
     F => float
     I => integer
     L => list
+    N => file name (string)
     O => object
     P => path
     S => string
-    N => file name (string)
-    T => total path (with file)
+    T => path + file name
 """
 
 import fnmatch
@@ -74,25 +74,29 @@ else:
     sys.exit()
 # endregion
 
-# region - derived file paths
+rv_localB = False
+
+# region - file names
 rbaseS = rivtN.split(".")[0]
 rivtpN = rivtN.replace("rv", "rv-")
+docnumS = rbaseS[0:6]
 rstN = rbaseS + ".rst"
 txtN = rbaseS + ".txt"
 pdfN = rbaseS + ".pdf"
 htmlN = rbaseS + ".html"
 bakN = rbaseS + ".bak"
-publicP = Path(rivtP, "public")
-public_P = Path(rivtP)
-srcP = Path(rivtP, "src")
-docnumS = rbaseS[0:6]
-errlogT = Path(rivtP, "log", docnumS + "log.txt")
-errlog_T = Path(rivtP, docnumS + "log.txt")
+apilogN = docnumS + "api.txt"
+errlogN = docnumS + "log.txt"
+# endregion
 
-# print(f"{reptfoldP=}")
-# print(f"{rivtP=}")
-# print(f"{insP=}")
-# print(f"{valsP=}")
+
+# region - file paths
+publicP = Path(rivtP, "public")
+srcP = Path(rivtP, "src")
+storedP = Path(rivtP, "stored")
+pubP = Path(rivtP, "publish")
+apilogP = Path(storedP, "log")
+errlogP = Path(storedP, "log")
 # endregion
 
 # region - folders dict
@@ -101,7 +105,6 @@ foldD = {
     "pthS": " ",
     "srcnS": " ",
     "srcP": Path(rivtP, "src"),
-    "rivtT": rivtT,  # full path and name
     "rivtN": rivtT.name,  # file name
     "baseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
@@ -123,18 +126,16 @@ foldD = {
     "style_P": rivtP,
     "tempP": Path(srcP, "temp"),
     "temp_P": rivtP,
-    "errlogT": errlogT,
-    "errlog_T": errlog_T,
+    "errlogT": Path(errlogP, errlogN),
+    "apilog_T": Path(apilogP, apilogN),
     "localdirB": False,
 }
-# endregion
-# region - labels dict
 lablD = {
     "rvtypeS": "",  # section type,
     "divS": rbaseS[2:3],  # div number
     "sdivS": rbaseS[3:5],
     "docnumS": rbaseS[0:6],  # doc number
-    "titleS": rbaseS[6:],  # document title
+    "docnameS": rbaseS[6:].replace("-", " "),  # document name
     "replablS": reptP.name[5:],
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "sectS": "",  # section title
@@ -163,22 +164,22 @@ lablD = {
 }
 # endregion
 
+
+# region - logs
+if rv_localB:
+    fileT = Path(rivtP, errlogN)
+else:
+    fileT = Path(errlogP, errlogN)
 try:
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
         datefmt="%m-%d %H:%M",
-        filename=errlogT,
+        filename=fileT,
         filemode="w",
     )
 except Exception:
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-        datefmt="%m-%d %H:%M",
-        filename=errlog_T,
-        filemode="w",
-    )
+    pass
 
 try:
     package_version = version("rivtlib")
@@ -188,18 +189,22 @@ except Exception as e:
 
 print("   ")
 print("----------------------------------------------------------")
-print(verS)
+print(f"rivtlib version: {verS}")
 print(f"rivt file: {rivtN}")
 print(f"rivt file path: {rivtP}")
 print("----------------------------------------------------------")
 print("   ")
 
-
 warnings.filterwarnings("ignore")
+logging.info(f"""rivtlib version : {verS}""")
 logging.info(f"""rivt file : {foldD["rivtN"]}""")
 logging.info(f"""rivt file path : {foldD["rivtP"]}""")
 
 # write backup file
+if rv_localB:
+    fileT = Path(rivtP, errlogN)
+else:
+    fileT = Path(errlogP, errlogN)
 with open(foldD["rivtT"], "r") as f2:  # noqa: F405
     rivtS = f2.read()
 try:
@@ -210,15 +215,60 @@ except Exception:
     with open(foldD["bak_T"], "w") as f3:  # noqa: F405
         f3.write(rivtS)
     logging.info(f"""rivt backup : {foldD["bak_T"]}""")  # noqa: F405
-
 logging.info("Doc start")
 
+# open api log
+if rv_localB:
+    fileT = Path(rivtP, errlogN)
+else:
+    fileT = Path(errlogP, errlogN)
+try:
+    f4 = open(apilogT, "w")
+except Exception:
+    f4 = open(apilog_T, "w")
+f4.write("API log: " + rivtN + "\n")
 
 # initialize doc strings
 dutfS = ""
 drsrS = ""
 drstS = ""
 dhtmS = ""
+rv_localB = False
+
+
+cmdS = ""
+# read content
+
+# print(cmdS)
+localsD = locals()
+exec(cmdS, globals(), localsD)
+try:
+    authD = localsD["rv_authD"]
+except Exception:
+    pass
+try:
+    if localsD["rv_localB"]:
+        foldD["localdirB"] = True
+except Exception:
+    pass
+
+authS = "av-" + authD["version"]
+headS = "   " + lablD["docnameS"]
+timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
+borderS = "=" * 80
+lenI = len(timeS + "   " + headS)
+sutfS = (
+    "\n\n"
+    + timeS
+    + "   "
+    + headS
+    + authS.rjust(80 - lenI)
+    + "\n"
+    + borderS
+    + "\n"
+)
+
+print(sutfS)  # STDOUT doc header
 
 
 def cmdhelp():
@@ -259,46 +309,6 @@ def doc_parse(sS, tS, tagL, cmdL):
     return dutfS, drsrS, drstS, rivL
 
 
-def M(rS):
-    """rivt file meta data
-    Args:
-        rS (str): rivt string
-    """
-    global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
-
-    rv_localB = False
-    cmdS = ""
-    for iS in rS.split("\n")[1:]:
-        cmdS += iS[4:] + "\n"
-    # print(cmdS)
-
-    localsD = locals()
-    exec(cmdS, globals(), localsD)
-    authD = localsD["rv_authD"]
-    authS = "av-" + authD["version"]
-    headS = "   " + str(rivtN)
-    timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
-    borderS = "=" * 80
-    lenI = len(timeS + "   " + headS)
-    sutfS = (
-        "\n\n"
-        + timeS
-        + "   "
-        + headS
-        + authS.rjust(80 - lenI)
-        + "\n"
-        + borderS
-        + "\n"
-    )
-
-    if rv_localB:
-        foldD["localdirB"] = True
-    else:
-        pass
-
-    print(sutfS)  # STDOUT doc header
-
-
 def R(rS):
     """Run shell command
     Args:
@@ -316,11 +326,28 @@ def I(rS):  # noqa: E743
         rS (str): rivt string
     """
     global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["IMG", "IMG2", "TABLE", "TEXT"]
-    tagL = ["#]", "C]", "D]", "E]", "F]", "S]", "L]", "T]", "H]", "P]", "U]"]
+    cmdL = ["IMAGE", "IMAGE2", "TABLE", "TEXT"]
+    tagL = [
+        "#]",
+        "C]",
+        "R]",
+        "E]",
+        "I]",
+        "T]",
+        "A]",
+        "L]",
+        "S]",
+        "D]",
+        "U]",
+        "-----",
+        "=====",
+    ]
     tagbL = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tagL + tagbL
     dutfS, drsrS, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
+
+    apiS = "[rv.I] " + rS.split("\n")[0]
+    f4.write(apiS + "\n")
 
 
 def V(rS):
@@ -329,24 +356,40 @@ def V(rS):
         sS (str): section string
     """
     global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["IMG", "IMG2", "TABLE", "VALUE", ":=", "<="]
-    tagL = ["E]", "F]", "S]", "Y]", "T]", "H]", "P]", "V]"]
+    cmdL = ["IMAGE", "IMAGE2", "TABLE", "VALUE", ":=", "<="]
+    tagL = [
+        "#]",
+        "C]",
+        "R]",
+        "E]",
+        "I]",
+        "T]",
+        "S]",
+        "D]",
+        "U]",
+        "-----",
+        "=====",
+    ]
+
     dutfS, drsrS, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
+
+    apiS = "[rv.V] " + rS.split("\n")[0]
+    f4.write(apiS + "\n")
 
 
 def T(rS):
-    """Tools in Python
+    """Python and Markup Tools
     Args:
         sS (str): section string
     """
     global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["PYTHON", "LATEX"]
+    cmdL = ["PYTHON", "LATEX", "HTML", "RST"]
     tagL = []
     dutfS, drsrS, drstS, rivL = doc_parse(rS, "T", tagL, cmdL)
 
 
 def D(rS):
-    """Write doc files
+    """Publish Doc files
 
     Writes docs as .txt, .pdf (reportLab or tex) and .html
 
@@ -363,6 +406,9 @@ def D(rS):
     wrtdoc = rvdoc.Cmdp(foldD, lablD, rS, cmdL, drsrS)
     mssgS = wrtdoc.cmdpx()
     print("\n" + f"{mssgS}")
+    apiS = "[rv.D] " + rS.split("\n")[0]
+    f4.write(apiS + "\n")
+    f4.close()
     sys.exit()
 
 
@@ -373,6 +419,8 @@ def S(rS):
     """
     shL = rS.split("\n")
     print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
+    apiS = "[rv.S] " + rS.split("\n")[0]
+    f4.write(apiS + "\n")
 
 
 def Q(rS):
@@ -382,4 +430,7 @@ def Q(rS):
     """
     shL = rS.split("\n")
     print("\n[" + shL[0].strip() + "] : rivtlib exit " + "\n")
+    apiS = "[rv.Q] " + rS.split("\n")[0]
+    f4.write(apiS + "\n")
+    f4.close()
     sys.exit()
