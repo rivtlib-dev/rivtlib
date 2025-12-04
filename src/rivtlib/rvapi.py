@@ -3,7 +3,7 @@
 rivt API
 
 usage:
-    import rivtlib.api as rv
+    import rivtlib.rvapi as rv
 
 API functions:
     rv.R(rS) - (Run) Execute shell scripts
@@ -11,11 +11,14 @@ API functions:
     rv.V(rS) - (Values) Evaluate values and equations
     rv.T(rS) - (Tools) Execute Python scripts
     rv.D(rS) - (Docs) Publish formatted doc file
-    rv.M(rS) - (Meta) Meta data for doc and rivt file
     rv.S(rS) - (Skip) Skip processing of section
-    rv.Q(rS) - (Quit) Exit processing of rivt file
+    rv.X(rS) - (Exit) Exit processing of rivt file
 
 where the argument rS is a triple quoted utf-8 string (rivt string)
+
+Settings:
+    rv_authD (dict): author information
+    rv_localB (bool): True - reads and writes to local directory
 
 Globals:
     utfS (str): utf doc string
@@ -74,7 +77,11 @@ else:
     sys.exit()
 # endregion
 
-rv_localB = False
+# set file path variables
+try:
+    tempB = rv_localB  # noqa:
+except NameError:
+    rv_localB = False
 
 # region - file names
 rbaseS = rivtN.split(".")[0]
@@ -86,17 +93,16 @@ pdfN = rbaseS + ".pdf"
 htmlN = rbaseS + ".html"
 bakN = rbaseS + ".bak"
 apilogN = docnumS + "api.txt"
-errlogN = docnumS + "log.txt"
+errlogN = docnumS + ".log"
 # endregion
 
 
 # region - file paths
 publicP = Path(rivtP, "public")
 srcP = Path(rivtP, "src")
-storedP = Path(rivtP, "stored")
+storeP = Path(rivtP, "store")
 pubP = Path(rivtP, "publish")
-apilogP = Path(storedP, "logs")
-errlogP = Path(storedP, "logs")
+logsP = Path(storeP, "logs")
 # endregion
 
 # region - folders dict
@@ -165,11 +171,32 @@ lablD = {
 # endregion
 
 
+# write backup file
+if rv_localB:
+    fileT = Path(rivtP, bakN)
+else:
+    fileT = Path(storeP, "logs", bakN)
+with open(foldD["rivtT"], "r") as f2:  # noqa: F405
+    rivtS = f2.read()
+try:
+    with open(foldD["fileT"], "w") as f3:  # noqa: F405
+        f3.write(rivtS)
+    logging.info(f"""rivt backup : {fileT}""")  # noqa: F405
+except Exception:
+    pass
+try:
+    package_version = version("rivtlib")
+    verS = f"rivtlib version: {package_version}"
+except Exception as e:
+    verS = f"Could not retrieve version for rivtlib: {e}"
+
 # region - logs
+warnings.filterwarnings("ignore")
+logging.info("Doc start")
 if rv_localB:
     fileT = Path(rivtP, errlogN)
 else:
-    fileT = Path(errlogP, errlogN)
+    fileT = Path(logsP, errlogN)
 try:
     logging.basicConfig(
         level=logging.DEBUG,
@@ -181,50 +208,27 @@ try:
 except Exception:
     pass
 
-try:
-    package_version = version("rivtlib")
-    verS = f"rivtlib version: {package_version}"
-except Exception as e:
-    verS = f"Could not retrieve version for rivtlib: {e}"
-
-print("   ")
-print("----------------------------------------------------------")
-print(f"rivtlib version: {verS}")
-print(f"rivt file: {rivtN}")
-print(f"rivt file path: {rivtP}")
-print("----------------------------------------------------------")
-print("   ")
-
-warnings.filterwarnings("ignore")
-logging.info(f"""rivtlib version : {verS}""")
-logging.info(f"""rivt file : {foldD["rivtN"]}""")
-logging.info(f"""rivt file path : {foldD["rivtP"]}""")
-
-# write backup file
-if rv_localB:
-    fileT = Path(rivtP, bakN)
-else:
-    fileT = Path(storedP, "logs", bakN)
-with open(foldD["rivtT"], "r") as f2:  # noqa: F405
-    rivtS = f2.read()
-try:
-    with open(foldD["fileT"], "w") as f3:  # noqa: F405
-        f3.write(rivtS)
-    logging.info(f"""rivt backup : {fileT}""")  # noqa: F405
-except Exception:
-    pass
-logging.info("Doc start")
-
 # open api log
 if rv_localB:
-    fileT = Path(rivtP, errlogN)
+    apilogT = Path(rivtP, apilogN)
 else:
-    fileT = Path(errlogP, errlogN)
-try:
-    f4 = open(apilogT, "w")
-except Exception:
-    f4 = open(apilog_T, "w")
+    apilogT = Path(logsP, apilogN)
+f4 = open(apilogT, "w")
 f4.write("API log: " + rivtN + "\n")
+f4.write(f"""rivtlib version : {verS}""")
+f4.write(f"""rivt file : {foldD["rivtN"]}""")
+f4.write(f"""rivt file path : {foldD["rivtP"]}""")
+
+# write auth information
+
+try:
+    print("Key\tValue")  # Header
+    print("----------")
+    for key, value in rv_authD.items():
+        print(f"{key}\t{value}")
+except Exception:
+    pass
+
 
 # initialize doc strings
 dutfS = ""
@@ -267,6 +271,7 @@ sutfS = (
 )
 
 print(sutfS)  # STDOUT doc header
+# end region
 
 
 def cmdhelp():
