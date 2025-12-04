@@ -27,7 +27,8 @@ class Section:
             sL (list): rivt section lines
         """
         # region
-        errlogP = foldD["errlogT"]
+        warnings.filterwarnings("ignore")
+        errlogT = foldD["errlogT"]
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
@@ -35,19 +36,18 @@ class Section:
                 "%(asctime)-8s  " + modnameS + " %(levelname)-8s  %(message)-8s"
             ),
             datefmt="%m-%d %H:%M",
-            filename=errlogP,
+            filename=errlogT,
             filemode="w",
         )
-        warnings.filterwarnings("ignore")
         self.logging = logging
-        sutfS = ""  # utf doc
-        srsrS = ""  # rst2pdf doc
-        srstS = ""  # rest doc
-        spL = []  # preprocessed lines
         self.foldD = foldD
         self.lablD = lablD
         self.rivD = rivD
         self.stS = stS
+        sutfS = ""  # utf doc
+        srsrS = ""  # rst2pdf doc
+        srstS = ""  # rest doc
+        spL = []  # preprocessed lines
         # section header
         hL = sL[0].split("|")
         lablD["docS"] = hL[0].strip()  # section title

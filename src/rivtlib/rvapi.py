@@ -89,7 +89,7 @@ pdfN = rbaseS + ".pdf"
 htmlN = rbaseS + ".html"
 bakN = rbaseS + ".bak"
 apilogN = docnumS + "api.txt"
-errlogN = docnumS + ".log"
+errlogN = docnumS + "chk.log"
 # endregion
 
 # region - file paths
@@ -173,19 +173,8 @@ lablD = {
 }
 # endregion
 
-# write backup file
-with open(rivtT, "r") as f2:  # noqa: F405
-    rivtS = f2.read()
-try:
-    with open(bakT, "w") as f3:  # noqa: F405
-        f3.write(rivtS)
-    logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
-except Exception:
-    pass
-
 # region - logs
 warnings.filterwarnings("ignore")
-
 try:
     logging.basicConfig(
         level=logging.DEBUG,
@@ -198,6 +187,15 @@ except Exception:
     pass
 logging.info("Doc start")
 
+# write backup file
+with open(rivtT, "r") as f2:  # noqa: F405
+    rivtS = f2.read()
+try:
+    with open(bakT, "w") as f3:  # noqa: F405
+        f3.write(rivtS)
+    logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
+except Exception:
+    pass
 
 # api log
 try:
