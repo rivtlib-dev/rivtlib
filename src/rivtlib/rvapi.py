@@ -53,9 +53,12 @@ from importlib.metadata import version
 from pathlib import Path
 
 import __main__
-from rivtlib import rvdoc, rvparse
+
+sys.path.append(os.getcwd())
+from rivtmeta import rv_authD, rv_localB  # noqa: F403
 
 # region - rivt file name and paths
+# set metadata variables
 rivtP = Path(os.getcwd())
 reptP = Path(os.path.dirname(rivtP))
 rivtT = Path(__main__.__file__)
@@ -76,12 +79,6 @@ else:
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
 # endregion
-
-# set file path variables
-try:
-    tempB = rv_localB  # noqa:
-except NameError:
-    rv_localB = False
 
 # region - file names
 rbaseS = rivtN.split(".")[0]
@@ -123,17 +120,16 @@ foldD = {
     "publish_P": Path(rivtP),
     "publicT": Path(rivtP, "public", rivtpN),
     "public_T": Path(rivtP, rivtpN),
-    "valP": Path(srcP, "values"),
     "srcP": srcP,
-    "val_P": rivtP,
+    "storeP": storeP,
+    "valP": Path(srcP, "values"),
     "toolP": Path(srcP, "tools"),
-    "tool_P": rivtP,
     "styleP": Path(srcP, "styles"),
-    "style_P": rivtP,
     "tempP": Path(srcP, "temp"),
+    "val_P": rivtP,
+    "style_P": rivtP,
+    "tool_P": rivtP,
     "temp_P": rivtP,
-    "errlogT": Path(errlogP, errlogN),
-    "apilog_T": Path(apilogP, apilogN),
     "localdirB": False,
 }
 lablD = {
@@ -176,19 +172,14 @@ if rv_localB:
     fileT = Path(rivtP, bakN)
 else:
     fileT = Path(storeP, "logs", bakN)
-with open(foldD["rivtT"], "r") as f2:  # noqa: F405
+with open(rivtT, "r") as f2:  # noqa: F405
     rivtS = f2.read()
 try:
-    with open(foldD["fileT"], "w") as f3:  # noqa: F405
+    with open(fileT, "w") as f3:  # noqa: F405
         f3.write(rivtS)
     logging.info(f"""rivt backup : {fileT}""")  # noqa: F405
 except Exception:
     pass
-try:
-    package_version = version("rivtlib")
-    verS = f"rivtlib version: {package_version}"
-except Exception as e:
-    verS = f"Could not retrieve version for rivtlib: {e}"
 
 # region - logs
 warnings.filterwarnings("ignore")
@@ -208,7 +199,12 @@ try:
 except Exception:
     pass
 
-# open api log
+# api log
+try:
+    package_version = version("rivtlib")
+    verS = f"rivtlib version: {package_version}"
+except Exception as e:
+    verS = f"Could not retrieve version for rivtlib: {e}"
 if rv_localB:
     apilogT = Path(rivtP, apilogN)
 else:
@@ -218,13 +214,11 @@ f4.write("API log: " + rivtN + "\n")
 f4.write(f"""rivtlib version : {verS}""")
 f4.write(f"""rivt file : {foldD["rivtN"]}""")
 f4.write(f"""rivt file path : {foldD["rivtP"]}""")
-
 # write auth information
-
 try:
     print("Key\tValue")  # Header
     print("----------")
-    for key, value in rv_authD.items():
+    for key, value in rv_authD.items():  # noqa: F821
         print(f"{key}\t{value}")
 except Exception:
     pass
