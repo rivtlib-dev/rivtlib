@@ -321,7 +321,7 @@ class Cmd:
         self.xS = lineS + " - " + fillS + "\n"
         # endregion
 
-    def IMG(self):
+    def IMAGE(self):
         """insert image
 
         | IMG | rel. path file | scale factor, caption (_[F])
@@ -357,7 +357,7 @@ class Cmd:
         )
         # endregion
 
-    def IMG2(self):
+    def IMAGE2(self):
         """insert side by side images
 
         |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F])

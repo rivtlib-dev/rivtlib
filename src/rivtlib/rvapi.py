@@ -84,6 +84,8 @@ for lnS in rivtL:
         if "rv_localB" and "True" in lnS:
             rv_localB = True
 
+print(f"\n== {rv_localB=} ==")
+
 # region - file names and paths
 rbaseS = rivtN.split(".")[0]
 rivtpN = rivtN.replace("rv", "rv-")
@@ -94,7 +96,7 @@ pdfN = rbaseS + ".pdf"
 htmlN = rbaseS + ".html"
 bakN = rbaseS + ".bak"
 apilogN = docnumS + "api.txt"
-errlogN = docnumS + "chk.log"
+errlogN = docnumS + "log.txt"
 publicP = Path(rivtP, "public")
 srcP = Path(rivtP, "src")
 storeP = Path(rivtP, "store")
@@ -147,7 +149,7 @@ else:
     apilogT = Path(logsP, apilogN)
 f4 = open(apilogT, "w")
 f4.write("API log: " + rivtN + "\n")
-f4.write("-------------------\n")
+f4.write("---------------------------------------\n")
 # end region
 
 
@@ -220,7 +222,6 @@ dutfS = ""
 drsrS = ""
 drstS = ""
 dhtmS = ""
-rv_localB = False
 
 
 cmdS = ""
