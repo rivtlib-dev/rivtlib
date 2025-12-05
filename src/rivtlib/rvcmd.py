@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import sympy as sp
 import tabulate
+from fastcore.utils import store_attr
 from IPython.display import display as _display
 from PIL import Image
 from sympy.abc import _clash2
@@ -20,7 +21,9 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 class Cmd:
-    """format file
+    """reads, writes and formats files
+
+    Methods:
 
     Section     Command
     ------- ----------------------------
@@ -41,7 +44,6 @@ class Cmd:
 
     Tools   PYTHON - python script
 
-    Meta
 
     Doc
 
@@ -59,22 +61,21 @@ class Cmd:
     """
 
     def __init__(self, foldD, lablD, rivD, rivL, parL):
-        """an Insert or Value object
+        """command object
+
         Args:
             foldD (dict): folders
             lablD (dict): labels
             rivD (dict): values
             rivL (list): values for export
+
         Vars:
             uS (str): utf string
-            rS (str): rst2pdf string
-            xS (str): reST string
+            r2S (str): rst2pdf string
+            rS (str): reST string
         """
         # region
-        self.foldD = foldD
-        self.lablD = lablD
-        self.rivD = rivD
-        self.rivL = rivL
+        store_attr()
         self.fileS = parL[1].strip()
         self.parS = parL[2].strip()
         self.uS = ""

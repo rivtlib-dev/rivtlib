@@ -55,10 +55,6 @@ from pathlib import Path
 import __main__
 from rivtlib import rvparse
 
-rv_localB = False
-rv_authD = {}
-from rivtmeta import *  # noqa: E402, F403
-
 # region - rivt file name and paths
 # set metadata variables
 rivtP = Path(os.getcwd())
@@ -79,7 +75,16 @@ else:
     sys.exit()
 # endregion
 
-# region - file names
+# set rv_localB
+rv_localB = False
+with open(rivtT, "r") as f1:  # noqa: F405
+    rivtL = f1.readlines()
+for lnS in rivtL:
+    if lnS[0] == "#":
+        if "rv_localB" and "True" in lnS:
+            rv_localB = True
+
+# region - file names and paths
 rbaseS = rivtN.split(".")[0]
 rivtpN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
@@ -90,9 +95,6 @@ htmlN = rbaseS + ".html"
 bakN = rbaseS + ".bak"
 apilogN = docnumS + "api.txt"
 errlogN = docnumS + "chk.log"
-# endregion
-
-# region - file paths
 publicP = Path(rivtP, "public")
 srcP = Path(rivtP, "src")
 storeP = Path(rivtP, "store")
@@ -108,6 +110,46 @@ else:
     errlogT = Path(logsP, errlogN)
     apilogT = Path(logsP, apilogN)
     bakT = Path(logsP, bakN)
+
+# region - logs
+warnings.filterwarnings("ignore")
+try:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+        datefmt="%m-%d %H:%M",
+        filename=errlogT,
+        filemode="w",
+    )
+except Exception:
+    pass
+logging.info("Doc start")
+
+# write backup file
+with open(rivtT, "r") as f2:  # noqa: F405
+    rivtS = f2.read()
+try:
+    with open(bakT, "w") as f3:  # noqa: F405
+        f3.write(rivtS)
+    logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
+except Exception:
+    pass
+
+# api log
+try:
+    package_version = version("rivtlib")
+    verS = f"rivtlib version: {package_version}"
+except Exception as e:
+    verS = f"rivtlib version not available: {e}"
+if rv_localB:
+    apilogT = Path(rivtP, apilogN)
+else:
+    apilogT = Path(logsP, apilogN)
+f4 = open(apilogT, "w")
+f4.write("API log: " + rivtN + "\n")
+f4.write("-------------------\n")
+# end region
+
 
 # region - folders dict
 rivD = {}  # shared calculated values
@@ -173,52 +215,6 @@ lablD = {
 }
 # endregion
 
-# region - logs
-warnings.filterwarnings("ignore")
-try:
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
-        datefmt="%m-%d %H:%M",
-        filename=errlogT,
-        filemode="w",
-    )
-except Exception:
-    pass
-logging.info("Doc start")
-
-# write backup file
-with open(rivtT, "r") as f2:  # noqa: F405
-    rivtS = f2.read()
-try:
-    with open(bakT, "w") as f3:  # noqa: F405
-        f3.write(rivtS)
-    logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
-except Exception:
-    pass
-
-# api log
-try:
-    package_version = version("rivtlib")
-    verS = f"rivtlib version: {package_version}"
-except Exception as e:
-    verS = f"Could not retrieve version for rivtlib: {e}"
-if rv_localB:
-    apilogT = Path(rivtP, apilogN)
-else:
-    apilogT = Path(logsP, apilogN)
-f4 = open(apilogT, "w")
-f4.write("API log: " + rivtN + "\n")
-f4.write("-------------------\n")
-f4.write("Meta Data\n")
-f4.write("-------------------\n")
-f4.write(f"""rivtlib version : {verS}\n""")
-f4.write(f"""rivt file : {foldD["rivtN"]}\n""")
-f4.write(f"""rivt file path : {foldD["rivtP"]}\n""")
-for key, value in rv_authD.items():
-    f4.write(f"{key}\t{value}\n")
-
-
 # initialize doc strings
 dutfS = ""
 drsrS = ""
@@ -243,7 +239,7 @@ try:
 except Exception:
     pass
 
-authS = "v" + authD["version"]
+verS = "v" + "0.1.1"
 headS = "   " + lablD["docnameS"]
 timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
 borderS = "=" * 80
@@ -253,14 +249,13 @@ sutfS = (
     + timeS
     + "   "
     + headS
-    + authS.rjust(80 - lenI)
+    + verS.rjust(80 - lenI)
     + "\n"
     + borderS
     + "\n"
 )
 
 print(sutfS)  # STDOUT doc header
-# end region
 
 
 def cmdhelp():
