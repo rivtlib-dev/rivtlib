@@ -23,40 +23,26 @@ tabulate.PRESERVE_WHITESPACE = True
 class Cmd:
     """reads, writes and formats files
 
-    Methods:
+        Methods:
 
-    Section     Command
-    ------- ----------------------------
-    Run     WIN - Windows command script
-            OSX - OSX command script
-            LINUX - Linux command script
-
-    Insert  TEXT - insert text from file
-            IMG - insert image from file
-            IMG2 - insert side by side images from files
-            TABLE - insert table from file
-
-
-    Values  IMG - insert image from file
-            IMG2 - insert side by side images from files
-            TABLE - insert table from file
-            VALUE - insert values from file
-
-    Tools   PYTHON - python script
-
-
-    Doc
-
-    | TEXT | rel. path |  plain; rivt
-    | IMG | rel. path | scale factor, caption (_[F])
-    | IMG2 | rel. path, rel. path | sf1, sf2, c1, c2 (_[F])
-    | TABLE | rel. path | col width, l;c;r, title (_[T])
-    | VALUE | rel. path | title (_[T])
-    | WIN | rel. path | wait, nowait
-    | OSX | rel. path | wait, nowait
-    | LINUX | rel. path | wait, nowait
-    | PYTHON | rel. path | print, noprint
-    | LATEX | rel. path | print, noprint
+     API        Command                                                RW   File Types
+    ---------  ------------------------------------------------------- --- -----------------
+    rv.R        | LINUX | relative path | *wait;nowait*                 R     *.sh*
+    rv.R        | MACOS | relative path | *wait;nowait*                 R     *.sh*
+    rv.R        | WIN | relative path   | *wait;nowait*                 R     *.bat, .cmd*
+    rv.I, V     | IMAGE | relative path |  scale, caption (_[I])        R     *.png, .jpg*
+    rv.I, V     | IMAGE2 | relative path | s1, s2, c1, c2 (_[I])        R     *.png, jpg*
+    rv.I, V     | TABLE | relative path | width, l;c;r, title           R     *csv, txt, xlsx*
+    rv.I, V     | TEXT | relative path |  *normal;literal* ;code        R     *txt, code*
+    rv.V        | VALUES | relative path | label (_[T])                 R     *csv*
+    rv.V       a := 1*IN  | unit1, unit2, decimal | descrip (_[E])[1]   W     define a value
+    rv.V       b <= a + 3*FT | unit1, unit2, decimal | descrip (_[E])   W     assign a value
+    rv.V       c <= func1(x,y) | unit1, unit2, decimal | descrip (_[E]) W     assign a value
+    rv.V, T     | PYTHON | relative path | *rv-space*; userspace        R     *py*
+    rv.T        | HTML | relative path | label                          R     *html*
+    rv.T        | LATEX | relative path | label                         R     *tex*
+    rv.D        | APPEND | relative path | cover_page_title             W     *pdf*
+    rv.D        | PUBLISH | relative path | *pdf;pdftex;text;html*      W     *pdf, html, txt*
 
     """
 
@@ -79,8 +65,8 @@ class Cmd:
         self.fileS = parL[1].strip()
         self.parS = parL[2].strip()
         self.uS = ""
-        self.rS = ""
-        self.xS = ""
+        self.r2s = ""
+        self.rs = ""
         self.insP = Path(foldD["rivtP"], self.fileS)
         self.inspS = str(self.insP.as_posix())
         # endregion
@@ -89,7 +75,7 @@ class Cmd:
         """parse section
 
         Args:
-            cmdS (str): command
+            cmdS (str): command keyword
         Returns:
             uS, rS, xS, foldD, lablD, rivD, rivL
         """
@@ -99,8 +85,8 @@ class Cmd:
 
         return (
             self.uS,
-            self.rS,
-            self.xS,
+            self.r2s,
+            self.rs,
             self.foldD,
             self.lablD,
             self.rivD,
@@ -108,7 +94,7 @@ class Cmd:
         )
         # endregion
 
-    def assign(self, aeqS):
+    def vassign(self, aeqS):
         """format equation and assign value
 
             equation tag  <=
@@ -217,7 +203,7 @@ class Cmd:
 
     # endregion
 
-    def define(self, valS):
+    def vdefine(self, valS):
         """define value :=
 
             a := .5 * 2*IN | unit1, unit2, decimal | ref
@@ -273,8 +259,8 @@ class Cmd:
 
         return (
             self.uS,
-            self.rS,
-            self.xS,
+            self.r2s,
+            self.rs,
             self.foldD,
             self.lablD,
             self.rivD,
@@ -292,8 +278,8 @@ class Cmd:
         fnumI = int(self.lablD["figI"])
         self.lablD["figI"] = fnumI + 1
         self.uS = "Fig. " + str(fnumI) + " -" + lineS
-        self.rS = "**Fig. " + str(fnumI) + " -** " + lineS
-        self.xS = "**Fig. " + str(fnumI) + " -** " + lineS
+        self.r2s = "**Fig. " + str(fnumI) + " -** " + lineS
+        self.rs = "**Fig. " + str(fnumI) + " -** " + lineS
         # endregion
 
     def cT(self):
@@ -304,8 +290,8 @@ class Cmd:
         self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         self.uS = "\nTable " + str(tnumI) + ": " + lineS
-        self.rS = "\n**Table " + fillS + "**: " + lineS
-        self.xS = "\n**Table " + fillS + "**: " + lineS
+        self.r2s = "\n**Table " + fillS + "**: " + lineS
+        self.rs = "\n**Table " + fillS + "**: " + lineS
         # endregion
 
     def cE(self):
@@ -317,8 +303,8 @@ class Cmd:
         fillS = "\n" + "Eq. " + str(enumI)
         self.uS = fillS + " - " + lineS
         fillS = "**Eq " + str(enumI) + "**"
-        self.rS = lineS + " - " + fillS + "\n"
-        self.xS = lineS + " - " + fillS + "\n"
+        self.r2s = lineS + " - " + fillS + "\n"
+        self.rs = lineS + " - " + fillS + "\n"
         # endregion
 
     def IMAGE(self):
@@ -343,7 +329,7 @@ class Cmd:
             pass
 
         self.uS = self.uS + " [file: " + self.fileS + " ] \n"
-        self.rS = self.xS = (
+        self.r2s = self.rs = (
             "\n\n.. image:: "
             + self.inspS
             + "\n"
@@ -379,7 +365,7 @@ class Cmd:
             figS = figS + numS + cap1S
 
         self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
-        self.rS = (
+        self.r2s = (
             "\n.. image:: "
             + self.pthS
             + "\n"
@@ -457,8 +443,8 @@ class Cmd:
         sys.stdout = old_stdout
 
         self.uS = utlS + uS + "\n"
-        self.rS = rtlS + rS + "\n"
-        self.xS = xtlS + rS + "\n"
+        self.r2s = rtlS + rS + "\n"
+        self.rs = xtlS + rS + "\n"
         # endregion
 
     def TEXT(self):
@@ -471,14 +457,14 @@ class Cmd:
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         self.uS = fileS
-        self.rS = fileS
-        self.xS = fileS
+        self.r2s = fileS
+        self.rs = fileS
         # endregion
 
-    def VALUE(self):
-        """insert values
+    def VALUES(self):
+        """read file and insert values
 
-        | VALUE | rel. path | title (_[T])
+        | VALUE | relative path | title (_[T])
         """
         # region
         parL = self.parS.split(",")
@@ -553,9 +539,39 @@ class Cmd:
         sys.stdout.flush()
         # pthxS = str(Path(*Path(pthS).parts[-3:]))
         self.uS = utlS + outS + "\n"
-        self.rS = rtlS + outS + "\n"
-        self.xS = xtlS + outS + "\n"
+        self.r2s = rtlS + outS + "\n"
+        self.rs = xtlS + outS + "\n"
         # endregion
+
+    def PYTHON(self):
+        """execute Python script
+
+        | PYTHON | rel. path | namespace, docstrings
+        """
+        # region
+        # print(f"{readL=}")
+        parL = self.parS.split(",")
+        namespaceS = parL[0]
+
+        fileP = Path(self.foldD["rivtP"], self.fileS)
+        with open(fileP, "r") as f10:
+            pyscriptS = f10.read()
+        if namespaceS == "rivt":
+            exec(pyscriptS, globals(), self.rivD)
+        else:
+            exec(pyscriptS, globals(), namespaceS)
+
+        fiS = " [file: " + self.fileS + "]" + "\n\n"
+
+        # endregion
+
+    def LATEX(self):
+        """insert text
+
+        |TEXT| rel. pth |  plain; rivt
+        """
+        # region
+        # print(f"{pthS=}")
 
     def WIN(self):
         """insert text
@@ -574,8 +590,8 @@ class Cmd:
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         self.uS = fileS
-        self.rS = fileS
-        self.xS = fileS
+        self.r2s = fileS
+        self.rs = fileS
         # endregion
 
     def OSX(self):
@@ -595,8 +611,8 @@ class Cmd:
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         self.uS = fileS
-        self.rS = fileS
-        self.xS = fileS
+        self.r2s = fileS
+        self.rs = fileS
         # endregion
 
     def LINUX(self):
@@ -616,35 +632,6 @@ class Cmd:
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         self.uS = fileS
-        self.rS = fileS
-        self.xS = fileS
+        self.r2s = fileS
+        self.rs = fileS
         # endregion
-
-    def PYTHON(self):
-        """insert text
-
-        |TEXT| rel. pth |  plain; rivt
-        """
-        # region
-        # print(f"{pthS=}")
-        insP = Path(self.foldD["reptfoldP"])
-        insP = Path(Path(insP) / "source" / self.pthS)
-        insS = str(insP.as_posix())
-        pS = " [file: " + self.pthS + "]" + "\n\n"
-        parL = self.parS.split(",")
-        # extS = pthP.suffix[1:]  # file extension
-        # pthxP = Path(*Path(pthS).parts[-3:])
-        with open(insP, "r") as fileO:
-            fileS = fileO.read()
-        self.uS = fileS
-        self.rS = fileS
-        self.xS = fileS
-        # endregion
-
-    def LATEX(self):
-        """insert text
-
-        |TEXT| rel. pth |  plain; rivt
-        """
-        # region
-        # print(f"{pthS=}")

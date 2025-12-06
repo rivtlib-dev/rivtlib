@@ -322,14 +322,22 @@ def I(rS):  # noqa: E743
         "E]",
         "I]",
         "T]",
-        "A]",
-        "L]",
+        "G]",
         "S]",
         "D]",
         "U]",
         "-----",
         "=====",
+        "A]",
+        "L]",
+        "[INDENT]]",
+        "[ITALIC]]",
+        "[ENDNOTES]]",
+        "[TEXT]]",
+        "[TOPIC]]",
+        "[END]]",
     ]
+
     tagbL = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tagL + tagbL
     dutfS, drsrS, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
@@ -344,7 +352,7 @@ def V(rS):
         sS (str): section string
     """
     global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["IMAGE", "IMAGE2", "TABLE", "VALUE", ":=", "<="]
+    cmdL = ["IMAGE", "IMAGE2", "TABLE", "VALUES", "PYTHON", ":=", "<="]
     tagL = [
         "#]",
         "C]",
@@ -352,11 +360,18 @@ def V(rS):
         "E]",
         "I]",
         "T]",
+        "G]",
         "S]",
         "D]",
         "U]",
         "-----",
         "=====",
+        "[INDENT]]",
+        "[ITALIC]]",
+        "[ENDNOTES]]",
+        "[TEXT]]",
+        "[TOPIC]]",
+        "[END]]",
     ]
 
     dutfS, drsrS, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
@@ -372,7 +387,7 @@ def T(rS):
     """
     global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["PYTHON", "LATEX", "HTML", "RST"]
-    tagL = []
+    tagL = ["[PYTHON]]", "[LATEX]]", "[HTML]]", "[RST]]", "[END]]"]
     dutfS, drsrS, drstS, rivL = doc_parse(rS, "T", tagL, cmdL)
 
 
@@ -390,7 +405,8 @@ def D(rS):
     # headS = config.get("report", "title")
     # footS = config.get("utf", "foot1")
     print(drsrS)
-    cmdL = ["DOC", "ATTACH"]
+    cmdL = ["PUBLISH", "ATTACH"]
+    tagL = ["[LAYOUT]]"]
     wrtdoc = rvdoc.Cmdp(foldD, lablD, rS, cmdL, drsrS)
     mssgS = wrtdoc.cmdpx()
     print("\n" + f"{mssgS}")

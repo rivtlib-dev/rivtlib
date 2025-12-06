@@ -92,8 +92,10 @@ KNLM = new_unit("kN/m", KN / (M), "kilonewton per meter")
 KN_M = new_unit("kN-m", (KN * M), "meter-kilonewton")
 
 # area
-SM = new_unit("sqm", (M**2), "square meter")
-SCM = new_unit("sqcm", (CM**2), "square centimeter")
+SQM = new_unit("sq_m", (M**2), "square meter")
+CM2 = new_unit("cm^2", (CM**2), "square centimeter")
+CM3 = new_unit("cm^3", (CM**3), "cubic centimeter")
+
 #
 # ------------------------------ imperial
 #
@@ -114,7 +116,8 @@ PLF = new_unit("lbf/ft", LBF / FT, "pounds per foot")
 KLF = new_unit("kip/ft", KIP / FT, "kips per foot")
 # area
 SF = new_unit("sqft", FT**2, "square feet")
-SQIN = new_unit("sqin", IN**2, "square feet")
+IN2 = new_unit("in^2", IN**2, "square feet")
+IN3 = new_unit("in^3", IN**3, "square feet")
 # pressure
 PSF = new_unit("psf", LBF / FT**2, "pounds per square foot")
 PSI = new_unit("psi", LBF / IN**2, "pounds per square inch")

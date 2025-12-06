@@ -241,7 +241,9 @@ class Section:
                 if ":=" in cmdL:
                     lineS = slS.strip()
                     tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.define(lineS)
+                    uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.vdefine(
+                        lineS
+                    )
                     # print(f"{tbL=}")
                     tabL.append(tbL)
                     continue
@@ -249,7 +251,7 @@ class Section:
                 if "<=" in cmdL:
                     lineS = slS.strip()
                     tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivD, rivL = tC.assign(lineS)
+                    uS, rS, xS, foldD, lablD, rivD, rivL = tC.vassign(lineS)
                     sutfS += uS + "\n"
                     srsrS += rS + "\n"
                     srstS += xS + "\n"
