@@ -123,25 +123,19 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
         refS = refS.rjust(self.lablD["widthI"])
-        uS = refS + "\n" + eq1S + "\n\n"
+        uS = "\n" + eq1S + "\n" + refS + "\n\n"
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivD)
 
-        rS = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
-        xS = ".. raw:: math\n\n   " + eqS + "\n"
+        r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
+        rS = ".. raw:: math\n\n   " + eqS + "\n"
 
-        # rivL and rivD append
+        # rivD append
         valU = eval(spL[0], globals(), self.rivD)
         self.rivD[spL[0]] = valU
-        vxS = str(valU).strip()
-        vxL = vxS.split(" ")
-        exS = vxL[0] + " * " + vxL[1].upper()
-        ex2S = spL[0].strip() + " = " + exS
-        exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
-        self.rivL.append(exvS)
 
         # equation and table elements
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
@@ -161,13 +155,18 @@ class Cmd:
         # print(f"{valU=}")
         # print("table--------------", tbl1L)
 
+        # rivL append
+        ex2S = spL[0].strip() + " = " + str(val1U)
+        exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
+        self.rivL.append(exvS)
+
         # loop over variables
         for aO in symaO:
             a1U = eval(str(aO), globals(), self.rivD)
             tbl1L.append(str(a1U))
             # print("ao", aO, a1U)
-        # write table
         # print(tbl1L)
+        # write table
         alignL = []
         tblL = [tbl1L]
         tblfmt = "rst"
@@ -186,15 +185,15 @@ class Cmd:
             )
         )
         uS += output.getvalue()
+        r2S += output.getvalue()
         rS += output.getvalue()
-        xS += output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
 
         return (
             uS,
+            r2S,
             rS,
-            xS,
             self.foldD,
             self.lablD,
             self.rivD,

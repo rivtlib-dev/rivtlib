@@ -1,6 +1,9 @@
 from __future__ import division, unicode_literals
+
 import collections
+
 import six
+
 from .exceptions import *
 
 BASIC_UNIT = 0
@@ -74,7 +77,7 @@ class Formatter(object):
         unitless="[-]",
         auto_norm=False,
         unit=None,
-        superscript=True,
+        superscript=False,
         always_display_number=False,
     )
 
@@ -111,7 +114,11 @@ class Formatter(object):
             else self._format_with_div_separator(units)
         )
 
-        return self["unitless"] if not formatted else self["unit_format"] % formatted
+        return (
+            self["unitless"]
+            if not formatted
+            else self["unit_format"] % formatted
+        )
 
     def _format_only_mul_separator(self, units):
         return self["mul_separator"].join(
@@ -124,11 +131,15 @@ class Formatter(object):
             .join(
                 [
                     self["mul_separator"].join(
-                        self._format_exponent(u, exp) for u, exp in units if exp > 0
+                        self._format_exponent(u, exp)
+                        for u, exp in units
+                        if exp > 0
                     )
                     or "1",
                     self["mul_separator"].join(
-                        self._format_exponent(u, -exp) for u, exp in units if exp < 0
+                        self._format_exponent(u, -exp)
+                        for u, exp in units
+                        if exp < 0
                     ),
                 ]
             )
@@ -140,7 +151,9 @@ class Formatter(object):
             exp_text = six.text_type(exp)
 
             if self["superscript"]:
-                exp_text = "".join([_SUPERSCRIPT_NUMBERS.get(c, c) for c in exp_text])
+                exp_text = "".join(
+                    [_SUPERSCRIPT_NUMBERS.get(c, c) for c in exp_text]
+                )
         else:
             exp_text = ""
 
@@ -300,7 +313,9 @@ class Unum(object):
             for subst_dict, subst_unum in subst_unums:
                 for symbol, exponent in subst_unum._derived_units():
                     new_subst_dict = subst_dict.copy()
-                    new_subst_dict[symbol] = exponent + new_subst_dict.get(symbol, 0)
+                    new_subst_dict[symbol] = exponent + new_subst_dict.get(
+                        symbol, 0
+                    )
 
                     if all(
                         new_subst_dict != subst_dict2
@@ -313,9 +328,14 @@ class Unum(object):
 
                         new_length = len(reduced._unit)
                         if new_length < previous_length and not (
-                            forDisplay and new_length == 0 and previous_length == 1
+                            forDisplay
+                            and new_length == 0
+                            and previous_length == 1
                         ):
-                            self._value, self._unit = reduced._value, reduced._unit
+                            self._value, self._unit = (
+                                reduced._value,
+                                reduced._unit,
+                            )
                             previous_length = new_length
         return self
 
