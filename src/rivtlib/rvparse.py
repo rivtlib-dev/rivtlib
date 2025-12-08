@@ -62,9 +62,9 @@ class Section:
             snumS = "[ " + str(snumI) + " ]"
             headS = snumS + " " + hL[0].strip()
             bordrS = lablD["widthI"] * "-"
-            sutfS = "\n" + headS + "\n" + bordrS + "\n"
-            srsrS = "\n" + headS + "\n" + bordrS + "\n"
-            srstS = "\n" + headS + "\n" + bordrS + "\n"
+            sutfS = "\n" + headS + "\n" + bordrS
+            srsrS = "\n" + headS + "\n" + bordrS
+            srstS = "\n" + headS + "\n" + bordrS
         try:
             paraL = hL[1].strip().split("|")
         except Exception:
@@ -87,12 +87,13 @@ class Section:
             if "public" in paraL:
                 foldD["publicB"] = True
 
+        print(sutfS)  # STDOUT section header
+        self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
+
         # print(sutfS, srsrS, srstS)
         self.sutfS = sutfS  # utf doc
         self.srsrS = srsrS  # rst2pdf doc
         self.srstS = srstS  # rest doc
-        print(sutfS)  # STDOUT section header
-        self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
 
         spL = []  # strip leading spaces and comments from section content
         for slS in sL[1:]:
@@ -205,7 +206,7 @@ class Section:
                     continue
                 blockS += slS + "\n"
                 continue
-            elif slS[0:1] == "|":  # commands
+            if slS[0:1] == "|":  # commands
                 parL = slS[1:].split("|")
                 cmdS = parL[0].strip()
                 self.logging.info(f"command : {cmdS}")
@@ -217,6 +218,26 @@ class Section:
                     srsrS += rS + "\n"
                     srstS += xS + "\n"
                     print(uS)  # STDOUT- command
+                    continue
+            if ":=" in slS:
+                if ":=" in cmdL:
+                    lineS = slS.strip()
+                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
+                    uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.vdefine(
+                        lineS
+                    )
+                    # print(f"{tbL=}")
+                    tabL.append(tbL)
+                    continue
+            if "<=" in slS:
+                if "<=" in cmdL:
+                    lineS = slS.strip()
+                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
+                    uS, rS, xS, foldD, lablD, rivD, rivL = tC.vassign(lineS)
+                    sutfS += uS + "\n"
+                    srsrS += rS + "\n"
+                    srstS += xS + "\n"
+                    print(uS)  # STDOUT - equation table
                     continue
             elif "_[" in slS:  # tags
                 slL = slS.split("_[")
@@ -237,26 +258,6 @@ class Section:
                         blockS = ""
                         blockB = True
                         blockS += lineS + "\n"
-            elif ":=" in slS:
-                if ":=" in cmdL:
-                    lineS = slS.strip()
-                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.vdefine(
-                        lineS
-                    )
-                    # print(f"{tbL=}")
-                    tabL.append(tbL)
-                    continue
-            elif "<=" in slS:
-                if "<=" in cmdL:
-                    lineS = slS.strip()
-                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivD, rivL = tC.vassign(lineS)
-                    sutfS += uS + "\n"
-                    srsrS += rS + "\n"
-                    srstS += xS + "\n"
-                    print(uS)  # STDOUT - equation table
-                    continue
             else:  # everything else
                 self.sutfS += slS + "\n"
                 self.srsrS += slS + "\n"

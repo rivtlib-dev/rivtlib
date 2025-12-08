@@ -53,7 +53,7 @@ from importlib.metadata import version
 from pathlib import Path
 
 import __main__
-from rivtlib import rvparse
+from rivtlib import rvdoc, rvparse
 
 # region - rivt file name and paths
 # set metadata variables

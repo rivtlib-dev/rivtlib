@@ -35,7 +35,7 @@ class Tag:
         store_attr()
         self.uS = ""
         self.r2S = ""
-        self.r2s = ""
+        self.rs = ""
         # endregion
 
     def taglx(self, tagS):
@@ -72,7 +72,7 @@ class Tag:
         return (
             self.uS,
             self.r2s,
-            self.r2s,
+            self.rs,
             self.foldD,
             self.lablD,
             self.rivD,
@@ -128,7 +128,7 @@ class Tag:
         lineS = self.strLS
         self.uS = lineS.center(int(self.lablD["widthI"])) + "\n"
         self.r2s = lineS.center(int(self.lablD["widthI"])) + "\n"
-        self.r2s = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.rs = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
         # endregion
 
     def lD(self):
@@ -138,7 +138,7 @@ class Tag:
         ftnumI = self.lablD["noteL"].pop(0)
         self.uS = "[" + str(ftnumI) + "] " + lineS
         self.r2s = "[" + str(ftnumI) + "] " + lineS
-        self.r2s = "[" + str(ftnumI) + "] " + lineS
+        self.rs = "[" + str(ftnumI) + "] " + lineS
         # endregion
 
     def lE(self):
@@ -147,11 +147,12 @@ class Tag:
         lineS = self.strLS
         enumI = int(self.lablD["equI"])
         self.lablD["equI"] = enumI + 1
-        fillS = "\n" + "Eq. " + str(enumI)
-        self.uS = fillS + " - " + lineS
-        fillS = "**Eq " + str(enumI) + "**"
-        self.r2s = lineS + " - " + fillS + "\n"
-        self.r2s = lineS + " - " + fillS + "\n"
+        fillS = " [Eq " + str(enumI) + "]"
+        refS = lineS + fillS
+        refS = refS.rjust(self.lablD["widthI"])
+        self.uS = refS + "\n"
+        self.r2s = refS + "\n"
+        self.rs = refS + "\n"
         # endregion
 
     def lF(self):
@@ -162,7 +163,7 @@ class Tag:
         self.lablD["figI"] = fnumI + 1
         self.uS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
         self.r2s = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
-        self.r2s = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
+        self.rs = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
         # endregion
 
     def lN(self):
@@ -174,10 +175,10 @@ class Tag:
         self.lablD["footL"].append(ftnumI + 1)
         self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         self.r2s = lineS.replace("*]", "[" + str(ftnumI) + "]")
-        self.r2s = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.rs = lineS.replace("*]", "[" + str(ftnumI) + "]")
         # endregion
 
-    def lS(self):
+    def lA(self):
         """format sympy"""
         # region
         lineS = self.strLS
@@ -187,7 +188,7 @@ class Tag:
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         self.uS = textwrap.indent(lineS, "     ")
         self.r2s = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
-        self.r2s = ".. raw:: math\n\n   " + lineS + "\n"
+        self.rs = ".. raw:: math\n\n   " + lineS + "\n"
         # endregion
 
     def lT(self):
@@ -199,7 +200,7 @@ class Tag:
         fillS = str(tnumI)
         self.uS = "\nTable " + str(tnumI) + ": " + lineS
         self.r2s = "\n**Table " + fillS + "**: " + lineS
-        self.r2s = "\n**Table " + fillS + "**: " + lineS
+        self.rs = "\n**Table " + fillS + "**: " + lineS
         # endregion
 
     def lU(self):
@@ -209,7 +210,7 @@ class Tag:
         lineL = lineS.split(",")
         self.uS = lineL[0] + ": " + lineL[1]
         self.r2s = ".. _" + lineL[0] + ": " + lineL[1]
-        self.r2s = ".. _" + lineL[0] + ": " + lineL[1]
+        self.rs = ".. _" + lineL[0] + ": " + lineL[1]
         # endregion
 
     def lY(self):
@@ -222,7 +223,7 @@ class Tag:
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         self.uS = textwrap.indent(lineS, "     ")
         self.r2s = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
-        self.r2s = ".. raw:: math\n\n   " + lineS + "\n"
+        self.rs = ".. raw:: math\n\n   " + lineS + "\n"
         # endregion
 
     def lH(self):
@@ -230,7 +231,7 @@ class Tag:
         # region
         self.uS = "-" * 80
         self.r2s = "-" * 80
-        self.r2s = "-" * 80
+        self.rs = "-" * 80
         # endregion
 
     def lP(self):
@@ -255,7 +256,7 @@ class Tag:
             + "_" * self.lablD["widthI"]
             + "\n"
         )
-        self.r2s = (
+        self.rs = (
             "\n"
             + "_" * self.lablD["widthI"]
             + "\n"
@@ -274,7 +275,7 @@ class Tag:
         self.lablD["tableI"] = tnumI + 1
         self.uS = "Table " + str(tnumI) + " - " + blockS
         self.r2s = "\n" + "Table " + fillS + ": " + blockS
-        self.r2s = "\n" + "Table " + fillS + ": " + blockS
+        self.rs = "\n" + "Table " + fillS + ": " + blockS
         # endregion
 
     def bC(self):

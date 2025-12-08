@@ -41,7 +41,7 @@ class Cmd:
     rv.V, T     | PYTHON | relative path | *rv-space*; userspace        R     *py*
     rv.T        | HTML | relative path | label                          R     *html*
     rv.T        | LATEX | relative path | label                         R     *tex*
-    rv.D        | APPEND | relative path | cover_page_title             W     *pdf*
+    rv.D        | ATTACH | relative path | cover_page_title             W     *pdf*
     rv.D        | PUBLISH | relative path | *pdf;pdftex;text;html*      W     *pdf, html, txt*
 
     """
@@ -122,8 +122,20 @@ class Cmd:
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(sp.simplify(spS), _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        refS = refS.rjust(self.lablD["widthI"])
-        uS = "\n" + eq1S + "\n" + refS + "\n\n"
+        if "_[E]" in refS:
+            refS = refS.replace("_[E]", "")
+            enumI = int(self.lablD["equI"])
+            self.lablD["equI"] = enumI + 1
+            fillS = " [Eq " + str(enumI) + "]"
+            refS = refS + fillS
+            refS = refS.rjust(self.lablD["widthI"]) + "\n"
+            self.uS = refS + "\n"
+            self.r2s = refS + "\n"
+            self.rs = refS + "\n"
+        else:
+            refS = refS.rjust(self.lablD["widthI"])
+
+        uS = "\n" + refS + "\n" + eq1S + "\n\n"
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
