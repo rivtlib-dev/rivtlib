@@ -83,8 +83,7 @@ for lnS in rivtL:
     if lnS[0] == "#":
         if "rv_localB" and "True" in lnS:
             rv_localB = True
-
-print(f"\n== {rv_localB=} ==")
+# print(f"\n== {rv_localB=} ==")
 
 # region - file names and paths
 rbaseS = rivtN.split(".")[0]
@@ -143,22 +142,20 @@ try:
     verS = f"rivtlib version: {package_version}"
 except Exception as e:
     verS = f"rivtlib version not available: {e}"
-if rv_localB:
-    apilogT = Path(rivtP, apilogN)
-else:
-    apilogT = Path(logsP, apilogN)
 f4 = open(apilogT, "w")
 f4.write("API log: " + rivtN + "\n")
 f4.write("---------------------------------------\n")
 # end region
 
 
-# region - folders dict
-rivD = {}  # shared calculated values
-foldD = {
+# region - dictionaries
+rivD = {}  # rivt calculated values
+foldD = {  # folders
+    "rvlocalB": rv_localB,
     "pthS": " ",
     "srcnS": " ",
-    "rivtN": rivtT.name,  # file name
+    "rivtN": rivtN,  # file name
+    "rivtT": rivtT,  # full path name
     "baseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
     "reptfoldN": os.path.dirname(rivtP),
@@ -183,11 +180,11 @@ foldD = {
     "apilogT": apilogT,
     "bakT": bakT,
 }
-lablD = {
-    "rvtypeS": "",  # section type,
-    "divS": rbaseS[2:3],  # div number
-    "sdivS": rbaseS[3:5],
+lablD = {  # dictionary of labels
+    "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
+    "divS": rbaseS[2:3],  # div number
+    "sdivS": rbaseS[3:5],  # subdiv
     "docnameS": rbaseS[6:].replace("-", " "),  # document name
     "replablS": reptP.name[5:],
     "valprfx": rbaseS[0:6].replace("rv", "v"),
@@ -219,7 +216,7 @@ lablD = {
 
 # initialize doc strings
 dutfS = ""
-drsrS = ""
+dsr2S = ""
 drstS = ""
 dhtmS = ""
 
@@ -227,18 +224,6 @@ dhtmS = ""
 cmdS = ""
 # read content
 
-# print(cmdS)
-localsD = locals()
-exec(cmdS, globals(), localsD)
-try:
-    authD = localsD["rv_authD"]
-except Exception:
-    pass
-try:
-    if localsD["rv_localB"]:
-        foldD["localdirB"] = True
-except Exception:
-    pass
 
 verS = "v" + "0.1.1"
 headS = "   " + lablD["docnameS"]
@@ -285,16 +270,16 @@ def doc_parse(sS, tS, tagL, cmdL):
         srsrS (str): rst2pdf output
         srstS (str): reSt output
     """
-    global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
     sL = sS.split("\n")
     secC = rvparse.Section(tS, sL, foldD, lablD, rivD)
     sutfS, srsrS, srstS, foldD, lablD, rivD, rivL = secC.content(tagL, cmdL)
     # accumulate doc strings
     dutfS += sutfS
-    drsrS += srsrS
+    dsr2S += srsrS
     drstS += srstS
 
-    return dutfS, drsrS, drstS, rivL
+    return dutfS, dsr2S, drstS, rivL
 
 
 def R(rS):
@@ -302,10 +287,10 @@ def R(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["WIN", "OSX", "LINUX"]
     tagL = []
-    dutfS, drsrS, drstS, rivL = doc_parse(rS, "R", tagL, cmdL)
+    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "R", tagL, cmdL)
 
 
 def I(rS):  # noqa: E743
@@ -313,7 +298,7 @@ def I(rS):  # noqa: E743
     Args:
         rS (str): rivt string
     """
-    global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["IMAGE", "IMAGE2", "TABLE", "TEXT"]
     tagL = [
         "#]",
@@ -340,7 +325,7 @@ def I(rS):  # noqa: E743
 
     tagbL = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tagL + tagbL
-    dutfS, drsrS, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
+    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
 
     apiS = "[rv.I] " + rS.split("\n")[0]
     f4.write(apiS + "\n")
@@ -351,7 +336,7 @@ def V(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["IMAGE", "IMAGE2", "TABLE", "VALUES", "PYTHON", ":=", "<="]
     tagL = [
         "#]",
@@ -374,7 +359,7 @@ def V(rS):
         "[END]]",
     ]
 
-    dutfS, drsrS, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
+    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
 
     apiS = "[rv.V] " + rS.split("\n")[0]
     f4.write(apiS + "\n")
@@ -385,10 +370,10 @@ def T(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["PYTHON", "LATEX", "HTML", "RST"]
     tagL = ["[PYTHON]]", "[LATEX]]", "[HTML]]", "[RST]]", "[END]]"]
-    dutfS, drsrS, drstS, rivL = doc_parse(rS, "T", tagL, cmdL)
+    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "T", tagL, cmdL)
 
 
 def D(rS):
@@ -399,15 +384,15 @@ def D(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, drsrS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
     # config = ConfigParser()
     # config.read(Path(reptfoldP, "rivt-doc.ini"))
     # headS = config.get("report", "title")
     # footS = config.get("utf", "foot1")
-    print(drsrS)
+    print(dsr2S)
     cmdL = ["PUBLISH", "ATTACH"]
     tagL = ["[LAYOUT]]"]
-    wrtdoc = rvdoc.Cmdp(foldD, lablD, rS, cmdL, drsrS)
+    wrtdoc = rvdoc.Cmdd(rS, foldD, lablD, cmdL, tagL, dutfS, dsr2S, drstS)
     mssgS = wrtdoc.cmdpx()
     print("\n" + f"{mssgS}")
     apiS = "[rv.D] " + rS.split("\n")[0]

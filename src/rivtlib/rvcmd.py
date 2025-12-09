@@ -152,14 +152,15 @@ class Cmd:
         # equation and table elements
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
         symaO = symeqO.atoms(sp.Symbol)
+        numvarI = len(symaO) + 3
         hdr1L.append(spL[0])
         hdr1L.append("[" + spL[0] + "]")
+        hdr1L.append("|")
         for vS in symaO:
             hdr1L.append(str(vS))
-        numvarI = len(symaO) + 2
         # print("header----------", hdr1L)
-        # eval value
 
+        # eval value
         val1U = valU.cast_unit(eval(unit1S))
         val2U = valU.cast_unit(eval(unit2S))
         tbl1L.append(str(val1U))
@@ -171,13 +172,13 @@ class Cmd:
         ex2S = spL[0].strip() + " = " + str(val1U)
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
         self.rivL.append(exvS)
-
         # loop over variables
+        tbl1L.append("|")
         for aO in symaO:
             a1U = eval(str(aO), globals(), self.rivD)
             tbl1L.append(str(a1U))
-            # print("ao", aO, a1U)
-        # print(tbl1L)
+            # print(aO, a1U, tbl1L)
+
         # write table
         alignL = []
         tblL = [tbl1L]

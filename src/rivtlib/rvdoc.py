@@ -5,6 +5,8 @@ import time
 import warnings
 from pathlib import Path
 
+from fastcore.utils import store_attr
+
 import __main__
 
 # from templates.pdfcover import content, cover, mainpage --
@@ -23,23 +25,20 @@ class Cmdd:
 
     """
 
-    def __init__(self, foldD, lablD, sS, cmdL, drsrS):
-        """Write object
+    def __init__(self, sS, foldD, lablD, cmdL, tagL, dutfS, dsr2S, drstS):
+        """Publish object
         Args:
             foldD (dict): folders
             lablD (dict): labels
             sS (str): section text
         """
         # region
-        self.foldD = foldD
-        self.lablD = lablD
-        self.sS = sS  # section string
-        self.cmdL = cmdL  # commands
+        store_attr()
         self.pthS = ""
         self.parS = ""
-        self.contentS = drsrS
 
-        errlogP = Path(foldD["rivtP"], "temp", "rivt-log.txt")
+        if self.foldD["rvlocalB"]:
+            errlogP = Path(foldD["rivtP"], "temp", "rivt-log.txt")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
@@ -59,8 +58,6 @@ class Cmdd:
         for slS in sL[1:]:
             if len(slS) < 5:
                 continue
-            if "#" in slS:
-                continue
             if len(slS.strip()) > 0:
                 spL.append(slS[4:])
 
@@ -68,11 +65,16 @@ class Cmdd:
         self.logging.info("SECTION : P")
         # endregion
 
-    def cmdpx(self):
-        """parse commands in P section
+    def cmdx(self):
+        """parse commands and blocks in D API
         Commands:
-            |DOC| rel. style pth | type, init file
-            |APPEND| rel. src pth | divider; nodivider
+            | PUBLISH | doc name | text; rst2pdf; texpdf
+            | APPEND | relative source path | report; doc
+            | PREPEND | relative source path | report; doc
+
+        blocks:
+            _[[LAYOUT]]
+            _[[END]]
 
         Returns:
             msgS (str): completion message
@@ -84,35 +86,32 @@ class Cmdd:
         for pS in self.spL:
             pL = pS[1:].split("|")
             if len(pL) > 0 and pL[0].strip() in self.cmdL:
-                if pL[0].strip() == "DOC":
-                    typeS = str(pL[1].strip())
-                    self.parS = pL[2].strip()
+                if pL[0].strip() == "PUBLISH":
+                    typeS = str(pL[2].strip())
+                    self.stylefile = pL[1].strip()
                     dtypeS = typeS + ("x")
                     # print(dtypeS)
-                    obj = getattr(Cmdp, dtypeS)
+                    obj = getattr(Cmdd, dtypeS)
                     msgS = obj(self)
-                elif pL[0].strip() == "ATTACH":
-                    typeS = "attach"
+                elif pL[0].strip() == "APPEND":
+                    dtypeS = "appendx"
                     self.pthS = pL[1].strip()
                     self.parS = pL[2].strip()
-                    dtypeS = typeS + ("x")
-                    obj = getattr(Cmdp, dtypeS)
+                    obj = getattr(Cmdd, dtypeS)
+                    msgS = obj(self)
+                elif pL[0].strip() == "PREPEND":
+                    dtypeS = "prependx"
+                    self.pthS = pL[1].strip()
+                    self.parS = pL[2].strip()
+                    obj = getattr(Cmdd, dtypeS)
                     msgS = obj(self)
                 else:
                     pass
+
             else:
                 pass
 
         return msgS
-        # endregion
-
-    def attachx(self):
-        """_summary_"""
-        # region
-
-        msgS = "attachment"
-        return msgS
-
         # endregion
 
     def textx(self):
@@ -123,7 +122,10 @@ class Cmdd:
         """
         pass
 
-    def rstpdfx(self):
+    def htmlx(self):
+        pass
+
+    def rst2pdfx(self):
         """write rstpdf doc file
 
         Returns:
@@ -454,7 +456,14 @@ class Cmdd:
             print("INFO: temporary Tex files deleted \n", flush=True)
             # endregion
 
-    def htmlx(self):
-        # region
-        pass
-        # end region
+    def appendx(self):
+        """_summary_"""
+
+        msgS = "attachment"
+        return msgS
+
+    def prependx(self):
+        """_summary_"""
+
+        msgS = "attachment"
+        return msgS
