@@ -1,0 +1,342 @@
+fontsAlias:
+  fontSerif: OpenSans-Regular
+  fontSerifBold: OpenSans-Bold
+  fontSerifBoldItalic: OpenSans-BoldItalic
+  fontSerifItalic: OpenSans-Italic
+  fontMono: DejaVuSansMono
+  fontMonoBold: DejaVuSansMono-Bold
+  fontMonoBoldItalic: DejaVuSansMono-BoldOblique
+  fontMonoItalic: DejaVuSansMono-Oblique
+  fontSans: OpenSans-Regular
+  fontSansBold: OpenSans-Bold
+  fontSansBoldItalic: OpenSans-BoldItalic
+  fontSansItalic: OpenSans-Italic
+  size: letter
+  margin-bottom: 1cm
+  margin-top: 1cm
+pageSetup:
+  firstTemplate: mainPage
+  height: null
+  margin-bottom: 1.0cm
+  margin-gutter: 0cm
+  margin-left: 1.5cm
+  margin-right: 1.5cm
+  margin-top: 1.0cm
+  size: letter
+  spacing-footer: 10mm
+  spacing-header: 10mm
+  width: null
+pageTemplates:
+  coverPage:
+    defaultFooter: " "
+    defaultHeader: " "
+    showFooter: false
+    showHeader: false
+  mainPage:
+    defaultHeader: ".. class:: center\n\n   **###Section###**"
+    defaultFooter: ".. |date| date::\n\n**Date:** |date| ``|                                                   |`` **Page:** ###Page###"
+    showFooter: true
+    showHeader: true
+styles:
+  base:
+    alignment: TA_LEFT
+    allowOrphans: false
+    allowWidows: false
+    backColor: null
+    borderColor: null
+    borderPadding: 0
+    borderRadius: null
+    borderWidth: 0
+    bulletFontName: fontMono
+    bulletFontSize: 10
+    bulletIndent: 0
+    commands: []
+    firstLineIndent: 0
+    fontName: fontSans
+    fontSize: 11
+    hyphenation: false
+    leading: 12
+    leftIndent: 0
+    parent: null
+    rightIndent: 0
+    spaceAfter: 6
+    spaceBefore: 6
+    strike: false
+    textColor: black
+    underline: false
+    wordWrap: null
+  blockquote:
+    leftIndent: 20
+    parent: bodytext
+  bodytext:
+    alignment: TA_JUSTIFY
+    hyphenation: true
+    parent: normal
+    spaceBefore: 6
+  bottom:
+    alignment: TA_CENTER
+    fontSize: 120%
+    keepWithNext: false
+    parent: heading
+    fontName: fontSansBold
+  center:
+    alignment: center
+    parent: bodytext
+  code:
+    spaceBefore: 6
+    spaceAfter: 12
+    backColor: "#e0ebeb"
+    borderColor: darkgray
+    borderPadding: 6
+    borderWidth: 0.5
+    leftIndent: 0
+    parent: literal
+
+  contents:
+    parent: normal
+  figure:
+    spaceBefore: 18
+    spaceAfter: 12
+    alignment: TA_CENTER
+    colWidths:
+      - 100%
+    commands:
+      - - VALIGN
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - TOP
+      - - ALIGN
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - CENTER
+    parent: bodytext
+  figure-caption:
+    alignment: TA_CENTER
+    fontName: fontSans
+    parent: bodytext
+  figure-legend:
+    parent: bodytext
+  footer:
+    alignment: TA_CENTER
+    fontName: fontSansBold
+  header:
+    alignment: TA_CENTER
+    fontName: fontSansBold
+  heading:
+    keepWithNext: true
+    parent: normal
+    spaceAfter: 6
+    spaceBefore: 20
+    fontName: fontSerif
+    textColor: "#222222"
+  heading1:
+    fontSize: 120%
+    parent: heading
+    fontName: fontSansBold
+  heading2:
+    fontSize: 115%
+    parent: heading
+  heading3:
+    fontSize: 110%
+    parent: heading
+  heading4:
+    parent: heading
+  heading5:
+    parent: heading
+  heading6:
+    parent: heading
+  hint:
+    parent: admonition
+  hint-heading:
+    parent: admonition-heading
+  image:
+    spaceBefore: 18
+    spaceAfter: 12
+    alignment: TA_CENTER
+    parent: bodytext
+  important:
+    parent: admonition
+  important-heading:
+    parent: admonition-heading
+  italic:
+    fontName: fontSansItalic
+    parent: bodytext
+  line:
+    parent: lineblock
+    spaceBefore: 0
+  lineblock:
+    parent: bodytext
+  linenumber:
+    parent: code
+  literal:
+    firstLineIndent: 0
+    fontName: fontMono
+    hyphenation: false
+    parent: normal
+    wordWrap: null
+  normal:
+    parent: base
+  note:
+    parent: admonition
+  note-heading:
+    parent: admonition-heading
+  option-list:
+    colWidths:
+      - null
+      - null
+    commands:
+      - - VALIGN
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - TOP
+      - - TOPPADDING
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 0
+  right:
+    alignment: right
+    parent: bodytext
+  rubric:
+    alignment: TA_CENTER
+    parent: bodytext
+    textColor: darkred
+  separation:
+    parent: normal
+  sidebar:
+    backColor: cornsilk
+    borderColor: darkgray
+    borderPadding: 8
+    borderWidth: 0.5
+    float: none
+    parent: normal
+    width: 100%
+  sidebar-subtitle:
+    parent: heading4
+  sidebar-title:
+    parent: heading3
+  subtitle:
+    fontSize: 85%
+    parent: title
+    spaceBefore: 12
+  table:
+    spaceBefore: 0
+    spaceAfter: 6
+    parent: normal
+    alignment: TA_CENTER
+    commands:
+      - - VALIGN
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - TOP
+      - - INNERGRID
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 0.25
+        - black
+      - - ROWBACKGROUNDS
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - - white
+          - "#E0E0E0"
+      - - BOX
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 0.25
+        - black
+  table-body:
+    parent: normal
+  table-heading:
+    alignment: TA_CENTER
+    borderPadding: 0
+    fontName: fontSansBold
+    valign: BOTTOM
+  table-title:
+    alignment: TA_CENTER
+    keepWithNext: false
+    parent: heading4
+  tableofcontents:
+    parent: normal
+  tip:
+    parent: admonition
+  tip-heading:
+    parent: admonition-heading
+  title:
+    alignment: TA_CENTER
+    fontSize: 140%
+    keepWithNext: false
+    parent: heading
+    fontName: fontSansBold
+    spaceAfter: 36
+  title-reference:
+    fontName: fontSansItalic
+    parent: normal
+  toc:
+    parent: normal
+    fontSize: 110%
+  toc1:
+    fontName: fontSansBold
+    parent: toc
+  toc10:
+    leftIndent: 100
+    parent: toc
+  toc11:
+    leftIndent: 100
+    parent: toc
+  toc12:
+    leftIndent: 100
+    parent: toc
+  toc13:
+    leftIndent: 100
+    parent: toc
+  toc14:
+    leftIndent: 100
+    parent: toc
+  toc15:
+    leftIndent: 100
+    parent: toc
+  toc2:
+    leftIndent: 20
+    parent: toc
+  toc3:
+    leftIndent: 40
+    parent: toc
+  toc4:
+    leftIndent: 60
+    parent: toc
+  toc5:
+    leftIndent: 80
+    parent: toc
+  toc6:
+    leftIndent: 100
+    parent: toc
+  toc7:
+    leftIndent: 100
+    parent: toc
+  toc8:
+    leftIndent: 100
+    parent: toc
+  toc9:
+    leftIndent: 100
+    parent: toc
+  topic-title:
+    parent: heading3
+  warning:
+    parent: admonition
+  warning-heading:
+    parent: admonition-heading

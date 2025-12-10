@@ -103,12 +103,12 @@ if rv_localB:
     errlogT = Path(rivtP, errlogN)
     apilogT = Path(rivtP, apilogN)
     bakT = Path(rivtP, bakN)
-    rivtT = Path(rivtP, bakN)
+    rivtT = Path(rivtP, rivtN)
 else:
     errlogT = Path(logsP, errlogN)
     apilogT = Path(logsP, apilogN)
     bakT = Path(logsP, bakN)
-    rivtT = Path(rivtP, bakN)
+    rivtT = Path(rivtP, rivtN)
 
 try:
     package_version = version("rivtlib")
