@@ -114,7 +114,7 @@ class Tag:
         return (
             self.uS,
             self.r2s,
-            self.r2s,
+            self.rs,
             self.foldD,
             self.lablD,
             self.rivD,

@@ -135,15 +135,14 @@ class Cmd:
         else:
             refS = refS.rjust(self.lablD["widthI"])
 
-        uS = "\n" + refS + "\n" + eq1S + "\n\n"
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivD)
 
-        r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
-        rS = ".. raw:: math\n\n   " + eqS + "\n"
+        uS = "\n" + refS + "\n" + eq1S + "\n\n"
+        rS = r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
 
         # rivD append
         valU = eval(spL[0], globals(), self.rivD)

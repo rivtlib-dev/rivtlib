@@ -27,8 +27,11 @@ class Section:
             sL (list): rivt section lines
         """
         # region
-        warnings.filterwarnings("ignore")
+        apilogT = foldD["apilogT"]
+        with open(apilogT, "a") as f4:
+            f4.write(sL[0] + "\n")
         errlogT = foldD["errlogT"]
+        warnings.filterwarnings("ignore")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
@@ -60,7 +63,10 @@ class Section:
             snumI = lablD["secnumI"] + 1
             lablD["secnumI"] = snumI
             snumS = "[ " + str(snumI) + " ]"
+            stypeS = "<" + stS + ">"
             headS = snumS + " " + hL[0].strip()
+            lenI = lablD["widthI"] - len(headS)
+            headS = snumS + " " + hL[0].strip() + stypeS.rjust(lenI)
             bordrS = lablD["widthI"] * "-"
             sutfS = "\n" + headS + "\n" + bordrS
             srsrS = "\n" + headS + "\n" + bordrS
@@ -73,15 +79,15 @@ class Section:
         lablD["rvtypeS"] = stS  # section type
         lablD["publicB"] = False
         if stS == "R" or stS == "T" or stS == "M":
-            lablD["printB"] = False
+            lablD["showB"] = False
         if stS == "I" or stS == "V":
-            lablD["printB"] = True
+            lablD["showB"] = True
         # override section defaults
         if len(paraL) > 0:
             if "hide" in paraL:
-                foldD["printB"] = False
+                foldD["showB"] = False
             if "print" in paraL:
-                foldD["printB"] = True
+                foldD["showB"] = True
             if "private" in paraL:
                 foldD["publicB"] = False
             if "public" in paraL:
@@ -267,7 +273,7 @@ class Section:
             # export values file
         if self.stS == "V" and len(rivL) > 0:
             fileS = lablD["valprfx"] + str(lablD["secnumI"]) + ".csv"
-            if foldD["localdirB"]:
+            if foldD["rvlocalB"]:
                 fileP = Path(foldD["val_P"], fileS)
             else:
                 fileP = Path(foldD["val_P"], fileS)

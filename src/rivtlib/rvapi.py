@@ -89,10 +89,6 @@ for lnS in rivtL:
 rbaseS = rivtN.split(".")[0]
 rivtpN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
-rstN = rbaseS + ".rst"
-txtN = rbaseS + ".txt"
-pdfN = rbaseS + ".pdf"
-htmlN = rbaseS + ".html"
 bakN = rbaseS + ".bak"
 apilogN = docnumS + "api.txt"
 errlogN = docnumS + "log.txt"
@@ -107,10 +103,18 @@ if rv_localB:
     errlogT = Path(rivtP, errlogN)
     apilogT = Path(rivtP, apilogN)
     bakT = Path(rivtP, bakN)
+    rivtT = Path(rivtP, bakN)
 else:
     errlogT = Path(logsP, errlogN)
     apilogT = Path(logsP, apilogN)
     bakT = Path(logsP, bakN)
+    rivtT = Path(rivtP, bakN)
+
+try:
+    package_version = version("rivtlib")
+    verS = f"rivtlib version: {package_version}"
+except Exception as e:
+    verS = f"rivtlib version not available: {e}"
 
 # region - logs
 warnings.filterwarnings("ignore")
@@ -125,7 +129,7 @@ try:
 except Exception:
     pass
 logging.info("Doc start")
-
+logging.info(verS)
 # write backup file
 with open(rivtT, "r") as f2:  # noqa: F405
     rivtS = f2.read()
@@ -135,16 +139,10 @@ try:
     logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
 except Exception:
     pass
-
 # api log
-try:
-    package_version = version("rivtlib")
-    verS = f"rivtlib version: {package_version}"
-except Exception as e:
-    verS = f"rivtlib version not available: {e}"
-f4 = open(apilogT, "w")
-f4.write("API log: " + rivtN + "\n")
-f4.write("---------------------------------------\n")
+with open(apilogT, "w") as f4:
+    f4.write("API log: " + rivtN + "\n")
+    f4.write("---------------------------------------\n")
 # end region
 
 
@@ -156,14 +154,14 @@ foldD = {  # folders
     "srcnS": " ",
     "rivtN": rivtN,  # file name
     "rivtT": rivtT,  # full path name
-    "baseS": rbaseS,  # file base name
+    "rbaseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
     "reptfoldN": os.path.dirname(rivtP),
     "docP": Path(rivtP, "rivDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
-    "publishP": Path(rivtP, "publish"),
-    "publish_P": Path(rivtP),
+    "rivtpubP": Path(rivtP, "publish"),
+    "rivtpub_P": Path(rivtP),
     "publicT": Path(rivtP, "public", rivtpN),
     "public_T": Path(rivtP, rivtpN),
     "srcP": srcP,
@@ -190,7 +188,6 @@ lablD = {  # dictionary of labels
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "sectS": "",  # section title
     "secnumI": 0,  # section number
-    "widthI": 80,  # print width
     "equI": 1,  # equation number
     "tableI": 1,  # table number
     "figI": 1,  # figure number
@@ -204,26 +201,23 @@ lablD = {  # dictionary of labels
     "unitS": "M,M",  # units
     "valexpS": "",  # list of values for export
     "publicB": False,  # public section
-    "printB": True,  # print section to doc
+    "showB": True,  # print section to doc
     "mergeB": False,
     "apiB": True,
     "tocB": False,  # table of contents
     "subB": False,  # sub values in equations
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "none",  # topic background color
+    "widthI": 80,  # print width
 }
 # endregion
 
 # initialize doc strings
 dutfS = ""
-dsr2S = ""
+dr2pS = ""
 drstS = ""
 dhtmS = ""
-
-
 cmdS = ""
-# read content
-
 
 verS = "v" + "0.1.1"
 headS = "   " + lablD["docnameS"]
@@ -270,16 +264,16 @@ def doc_parse(sS, tS, tagL, cmdL):
         srsrS (str): rst2pdf output
         srstS (str): reSt output
     """
-    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     sL = sS.split("\n")
     secC = rvparse.Section(tS, sL, foldD, lablD, rivD)
     sutfS, srsrS, srstS, foldD, lablD, rivD, rivL = secC.content(tagL, cmdL)
     # accumulate doc strings
     dutfS += sutfS
-    dsr2S += srsrS
+    dr2pS += srsrS
     drstS += srstS
 
-    return dutfS, dsr2S, drstS, rivL
+    return dutfS, dr2pS, drstS, rivL
 
 
 def R(rS):
@@ -287,10 +281,10 @@ def R(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["WIN", "OSX", "LINUX"]
     tagL = []
-    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "R", tagL, cmdL)
+    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "R", tagL, cmdL)
 
 
 def I(rS):  # noqa: E743
@@ -298,7 +292,7 @@ def I(rS):  # noqa: E743
     Args:
         rS (str): rivt string
     """
-    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["IMAGE", "IMAGE2", "TABLE", "TEXT"]
     tagL = [
         "#]",
@@ -325,10 +319,7 @@ def I(rS):  # noqa: E743
 
     tagbL = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tagL + tagbL
-    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
-
-    apiS = "[rv.I] " + rS.split("\n")[0]
-    f4.write(apiS + "\n")
+    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
 
 
 def V(rS):
@@ -336,7 +327,7 @@ def V(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["IMAGE", "IMAGE2", "TABLE", "VALUES", "PYTHON", ":=", "<="]
     tagL = [
         "#]",
@@ -359,10 +350,7 @@ def V(rS):
         "[END]]",
     ]
 
-    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
-
-    apiS = "[rv.V] " + rS.split("\n")[0]
-    f4.write(apiS + "\n")
+    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
@@ -370,10 +358,10 @@ def T(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["PYTHON", "LATEX", "HTML", "RST"]
     tagL = ["[PYTHON]]", "[LATEX]]", "[HTML]]", "[RST]]", "[END]]"]
-    dutfS, dsr2S, drstS, rivL = doc_parse(rS, "T", tagL, cmdL)
+    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "T", tagL, cmdL)
 
 
 def D(rS):
@@ -384,20 +372,16 @@ def D(rS):
     Args:
         sS (str): section string
     """
-    global dutfS, dsr2S, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     # config = ConfigParser()
     # config.read(Path(reptfoldP, "rivt-doc.ini"))
     # headS = config.get("report", "title")
     # footS = config.get("utf", "foot1")
-    print(dsr2S)
     cmdL = ["PUBLISH", "ATTACH"]
     tagL = ["[LAYOUT]]"]
-    wrtdoc = rvdoc.Cmdd(rS, foldD, lablD, cmdL, tagL, dutfS, dsr2S, drstS)
-    mssgS = wrtdoc.cmdpx()
+    wrtdoc = rvdoc.Cmdp(rS, foldD, lablD, cmdL, tagL, dutfS, dr2pS, drstS)
+    mssgS = wrtdoc.cmdx()
     print("\n" + f"{mssgS}")
-    apiS = "[rv.D] " + rS.split("\n")[0]
-    f4.write(apiS + "\n")
-    f4.close()
     sys.exit()
 
 
@@ -408,18 +392,14 @@ def S(rS):
     """
     shL = rS.split("\n")
     print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
-    apiS = "[rv.S] " + rS.split("\n")[0]
-    f4.write(apiS + "\n")
 
 
-def Q(rS):
+def X(rS):
     """exit rivtlib processing
     Args:
         rS (str): section string
     """
     shL = rS.split("\n")
+    logging.info("exit rivt file at: " + shL[0])
     print("\n[" + shL[0].strip() + "] : rivtlib exit " + "\n")
-    apiS = "[rv.Q] " + rS.split("\n")[0]
-    f4.write(apiS + "\n")
-    f4.close()
     sys.exit()
