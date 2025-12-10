@@ -16,9 +16,9 @@ class Cmdp:
     """publish object
 
     syntax:
-        | PUBLISH| init rel. path | doc type
+        | PUBLISH| init rel. path | text, html, rst2pdf, texpdf
         | APPEND | rel. path | doc;report
-        | PREPEND | rel. path | doc; report
+        | PREPEND | rel. path | doc;report
 
     """
 
@@ -71,8 +71,8 @@ class Cmdp:
         """parse commands and blocks in D API
         Commands:
             | PUBLISH | init rel. path | text; rst2pdf; texpdf
-            | APPEND | relative path | report; doc
-            | PREPEND | relative path | report; doc
+            | APPEND | relative path | report;doc
+            | PREPEND | relative path | report;doc
 
         blocks:
             _[[LAYOUT]]
