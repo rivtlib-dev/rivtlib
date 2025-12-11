@@ -331,22 +331,18 @@ class Cmd:
         self.eqrs = lineS + " - " + fillS + "\n"
         # endregion
 
-    def IMAGE(self):
+    def FIGURE(self):
         """insert image
 
-        | IMAGE | rel. path file | scale factor, caption (_[F])
+        | FIGURE | rel. path file | scale factor, caption
         """
         # region
         parL = self.parS.split(",")
         capS = parL[1]
         scS = parL[0].strip()
-        if "_[F]" in parL[1]:
-            capS = parL[1].replace("_[F]", " ")
-            self.strpS = capS.strip()
-            self.cF()
-            capS = self.caprS
-        elif "---" in capS:
-            capS = " "
+        self.strpS = capS.strip()
+        self.cF()
+
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
@@ -382,6 +378,79 @@ class Cmd:
             + "   "
             + capS
             + "\n"
+        )
+
+        # endregion
+
+    def FIGURE2(self):
+        """insert side by side images
+
+        |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F])
+        """
+        # region
+        # print(f"{parS=}")
+        parL = self.parS.split(",")
+        fileL = self.pthS.split(",")
+        file1P = Path(fileL[0])
+        file2P = Path(fileL[1])
+        cap1S = parL[0].strip()
+        cap2S = parL[1].strip()
+        scale1S = parL[2].strip()
+        scale2S = parL[3].strip()
+        figS = "Fig. "
+        if parL[2] == "_[F]":
+            numS = str(self.lablD["fnum"])
+            self.lablD["fnum"] = int(numS) + 1
+            figS = figS + numS + cap1S
+
+        self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
+        self.r2s = (
+            "\n.. image:: "
+            + self.pthS
+            + "\n"
+            + "   :scale: "
+            + scale1S
+            + "%"
+            + "\n"
+            + "   :align: center"
+            + "\n\n"
+        )
+        # endregion
+
+    def IMAGE(self):
+        """insert image
+
+        | IMAGE | rel. path file | scale factor
+        """
+        # region
+        scS = self.parS.strip()
+        try:
+            img1 = Image.open(self.inspS)
+            _display(img1)
+        except Exception:
+            pass
+
+        self.uS = self.uS + " [file: " + self.fileS + " ] \n"
+        self.r2s = (
+            "\n\n.. image:: "
+            + self.inspS
+            + "\n"
+            + "   :width: "
+            + scS
+            + "\n"
+            + "   :align: center"
+            + "\n\n"
+        )
+        self.rs = (
+            "\n\n.. image:: "
+            + self.inspS
+            + "\n"
+            + "   :width: "
+            + scS
+            + " %"
+            + "\n"
+            + "   :align: center"
+            + "\n\n"
         )
 
         # endregion

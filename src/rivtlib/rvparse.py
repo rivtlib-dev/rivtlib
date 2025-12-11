@@ -5,12 +5,8 @@ parse section string
 import logging
 import os
 import re
-import sys
 import warnings
-from io import StringIO
 from pathlib import Path
-
-import tabulate
 
 import __main__
 
@@ -107,7 +103,7 @@ class Section:
                 continue
             if "#" in slS[:5]:  # skip comment line
                 continue
-            if "." * 10 in slS:  # page break to tag
+            if "." * 5 in slS:  # page break to tag
                 slS = "    _[P]"
             spL.append(slS[4:])
 
@@ -162,42 +158,15 @@ class Section:
                         t2S = "*" + tS + "*"
                         slS = slS.replace(t2S, tS)
                 # print(f"{txt1L=}")
-            if len(slS.strip()) < 1 and not blockB:
+            if len(slS.strip()) == 0 and not blockB:
                 sutfS += "\n"
                 srsrS += " \n"
                 srstS += " \n"
                 print(" ")  # STDOUT- blank line
-                if self.stS == "V" and len(tabL) > 0:  # write value table
-                    # write value table
-                    tblfmt = "rst"
-                    hdrvL = ["variable", "value", "[value]", "description"]
-                    alignL = ["left", "right", "right", "left"]
-                    sys.stdout.flush()
-                    old_stdout = sys.stdout
-                    output = StringIO()
-                    output.write(
-                        tabulate.tabulate(
-                            tabL,
-                            tablefmt=tblfmt,
-                            headers=hdrvL,
-                            showindex=False,
-                            colalign=alignL,
-                        )
-                    )
-                    uS = output.getvalue() + "\n"
-                    rS = output.getvalue() + "\n"
-                    xS = output.getvalue() + "\n"
-                    sys.stdout = old_stdout
-                    sys.stdout.flush()
-                    print(uS)  # STDOUT- value table
-                    tabL = []
-                    sutfS += uS + "\n"
-                    srsrS += rS + "\n"
-                    srstS += xS + "\n"
-                    continue
-            elif blockB:  # block accumulate
+                continue
+            if blockB:  # block accumulate
                 # print(f"{blockS}")
-                if blockB and ("_[[Q]]" in slS):  # end of block
+                if blockB and ("_[[END]]" in slS):  # end of block
                     blockB = False
                     tC = rvtag.Tag(foldD, lablD, rivD, rivL, blockS)
                     uS, rS, xS, foldD, lablD, rivD, rivL = tC.tagbx(tagS)
@@ -215,7 +184,7 @@ class Section:
                 cmdS = parL[0].strip()
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
-                if cmdS in cmdL:  # check list
+                if cmdS in cmdL:  # verify scope
                     cmC = rvcmd.Cmd(foldD, lablD, rivD, rivL, parL)
                     uS, rS, xS, foldD, lablD, rivD, rivL = cmC.cmdx(cmdS)
                     sutfS += uS + "\n"
@@ -263,12 +232,12 @@ class Section:
                         blockB = True
                         blockS += lineS + "\n"
             else:  # everything else
-                self.sutfS += slS + "\n"
-                self.srsrS += slS + "\n"
-                self.srstS += slS + "\n"
-                print(slS)  # STDOUT - line as is
+                print(slS)  # STDOUT - raw line
+                sutfS += slS + "\n"
+                srsrS += slS + "\n"
+                srstS += slS + "\n"
 
-            # export values file
+        # export values file
         if self.stS == "V" and len(rivL) > 0:
             fileS = lablD["valprfx"] + str(lablD["secnumI"]) + ".csv"
             if foldD["rvlocalB"]:
