@@ -279,7 +279,7 @@ def doc_parse(sS, tS, tagL, cmdL):
 def R(rS):
     """Run shell command
     Args:
-        sS (str): section string
+        rS (str): rivt section string
     """
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["WIN", "OSX", "LINUX"]
@@ -290,10 +290,10 @@ def R(rS):
 def I(rS):  # noqa: E743
     """Insert static source
     Args:
-        rS (str): rivt string
+        rS (str): rivt section string
     """
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["IMAGE", "IMAGE2", "TABLE", "TEXT"]
+    cmdL = ["IMAGE", "IMAGE2", "FIGURE", "FIGURE2", "TABLE", "TEXT"]
     tagL = [
         "#]",
         "C]",
@@ -325,10 +325,20 @@ def I(rS):  # noqa: E743
 def V(rS):
     """Values calculate
     Args:
-        sS (str): section string
+        rS (str): rivt section string
     """
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["IMAGE", "IMAGE2", "TABLE", "VALUES", "PYTHON", ":=", "<="]
+    cmdL = [
+        "IMAGE",
+        "IMAGE2",
+        "FIGURE",
+        "FIGURE2",
+        "TABLE",
+        "VALUES",
+        "PYTHON",
+        ":=",
+        "<=",
+    ]
     tagL = [
         "#]",
         "C]",
@@ -356,7 +366,7 @@ def V(rS):
 def T(rS):
     """Python and Markup Tools
     Args:
-        sS (str): section string
+        rS (str): rivt section string
     """
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["PYTHON", "LATEX", "HTML", "RST"]
@@ -388,7 +398,7 @@ def D(rS):
 def S(rS):
     """skip section string - not processed
     Args:
-        sS (str): section string
+        rS (str): rivt section string
     """
     shL = rS.split("\n")
     print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
@@ -397,7 +407,7 @@ def S(rS):
 def X(rS):
     """exit rivtlib processing
     Args:
-        rS (str): section string
+        rS (str): rivt section string
     """
     shL = rS.split("\n")
     logging.info("exit rivt file at: " + shL[0])

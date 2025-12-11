@@ -128,12 +128,23 @@ class Cmd:
             self.lablD["equI"] = enumI + 1
             fillS = " [Eq " + str(enumI) + "]"
             refS = refS + fillS
-            refS = refS.rjust(self.lablD["widthI"]) + "\n"
-            self.uS = refS + "\n"
-            self.r2s = refS + "\n"
-            self.rs = refS + "\n"
+            equS = refS.rjust(self.lablD["widthI"]) + "\n"
+            eqr2S = refS + "\n"
+            eqrS = (
+                ".. raw:: html\n\n"
+                + '   <p align="right">'
+                + refS
+                + "</p> \n\n"
+            )
         else:
             refS = refS.rjust(self.lablD["widthI"])
+            eqr2S = refS + "\n"
+            eqrS = (
+                ".. raw:: html\n\n"
+                + '   <p align="right">'
+                + refS
+                + "</p> +\n\n"
+            )
 
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
@@ -141,8 +152,9 @@ class Cmd:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivD)
 
-        uS = "\n" + refS + "\n" + eq1S + "\n\n"
-        rS = r2S = "\n\n..  code:: \n\n\n" + refS + "\n" + eqS + "\n\n"
+        uS = "\n" + equS + "\n" + eq1S + "\n\n"
+        r2S = "\n\n" + eqr2S + "\n" + "..  code:: \n\n" + eq1S + "\n\n"
+        rS = "\n\n" + eqrS + "\n" + "..  code:: \n\n" + eq1S + "\n\n"
 
         # rivD append
         valU = eval(spL[0], globals(), self.rivD)
@@ -288,9 +300,9 @@ class Cmd:
         lineS = self.strpS
         fnumI = int(self.lablD["figI"])
         self.lablD["figI"] = fnumI + 1
-        self.uS = "Fig. " + str(fnumI) + " -" + lineS
-        self.r2s = "**Fig. " + str(fnumI) + " -** " + lineS
-        self.rs = "**Fig. " + str(fnumI) + " -** " + lineS
+        self.capuS = "Fig. " + str(fnumI) + " -" + lineS
+        self.capr2s = "**Fig. " + str(fnumI) + " -** " + lineS
+        self.caprS = "**Fig. " + str(fnumI) + " -** " + lineS
         # endregion
 
     def cT(self):
@@ -300,9 +312,9 @@ class Cmd:
         tnumI = int(self.lablD["tableI"])
         self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
-        self.uS = "\nTable " + str(tnumI) + ": " + lineS
-        self.r2s = "\n**Table " + fillS + "**: " + lineS
-        self.rs = "\n**Table " + fillS + "**: " + lineS
+        self.tabuS = "\nTable " + str(tnumI) + ": " + lineS
+        self.tabr2s = "\n**Table " + fillS + "**: " + lineS
+        self.tabrs = "\n**Table " + fillS + "**: " + lineS
         # endregion
 
     def cE(self):
@@ -314,25 +326,27 @@ class Cmd:
         fillS = "\n" + "Eq. " + str(enumI)
         self.uS = fillS + " - " + lineS
         fillS = "**Eq " + str(enumI) + "**"
-        self.r2s = lineS + " - " + fillS + "\n"
-        self.rs = lineS + " - " + fillS + "\n"
+        self.equS = lineS + " - " + fillS + "\n"
+        self.eqr2s = lineS + " - " + fillS + "\n"
+        self.eqrs = lineS + " - " + fillS + "\n"
         # endregion
 
     def IMAGE(self):
         """insert image
 
-        | IMG | rel. path file | scale factor, caption (_[F])
+        | IMAGE | rel. path file | scale factor, caption (_[F])
         """
         # region
         parL = self.parS.split(",")
+        capS = parL[1]
         scS = parL[0].strip()
-        capS = " "
-        if "_[F]" in parL[1] or capS[0:1] != "--":
+        if "_[F]" in parL[1]:
             capS = parL[1].replace("_[F]", " ")
-        elif capS[0:1] != "--":
+            self.strpS = capS.strip()
+            self.cF()
+            capS = self.caprS
+        elif "---" in capS:
             capS = " "
-        self.strpS = capS.strip()
-        self.cF()
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
@@ -340,18 +354,36 @@ class Cmd:
             pass
 
         self.uS = self.uS + " [file: " + self.fileS + " ] \n"
-        self.r2s = self.rs = (
+        self.r2s = (
             "\n\n.. image:: "
             + self.inspS
             + "\n"
             + "   :width: "
             + scS
-            + "% \n"
-            + "   :align: center \n\n\n"
+            + "\n"
+            + "   :align: center"
+            + "\n\n\n"
             + ".. class:: center \n\n"
+            + "   "
+            + capS
+            + "\n\n"
+        )
+        self.rs = (
+            "\n\n.. image:: "
+            + self.inspS
+            + "\n"
+            + "   :width: "
+            + scS
+            + " %"
+            + "\n"
+            + "   :align: center"
+            + "\n\n\n"
+            + ".. class:: center \n\n"
+            + "   "
             + capS
             + "\n"
         )
+
         # endregion
 
     def IMAGE2(self):

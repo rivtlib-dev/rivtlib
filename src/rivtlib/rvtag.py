@@ -35,7 +35,7 @@ class Tag:
         store_attr()
         self.uS = ""
         self.r2S = ""
-        self.rs = ""
+        self.rS = ""
         # endregion
 
     def taglx(self, tagS):
@@ -71,8 +71,8 @@ class Tag:
 
         return (
             self.uS,
-            self.r2s,
-            self.rs,
+            self.r2S,
+            self.rS,
             self.foldD,
             self.lablD,
             self.rivD,
@@ -113,8 +113,8 @@ class Tag:
 
         return (
             self.uS,
-            self.r2s,
-            self.rs,
+            self.r2S,
+            self.rS,
             self.foldD,
             self.lablD,
             self.rivD,
@@ -127,8 +127,8 @@ class Tag:
         # region
         lineS = self.strLS
         self.uS = lineS.center(int(self.lablD["widthI"])) + "\n"
-        self.r2s = lineS.center(int(self.lablD["widthI"])) + "\n"
-        self.rs = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.r2S = lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.rS = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
         # endregion
 
     def lD(self):
@@ -137,8 +137,8 @@ class Tag:
         lineS = self.strLS
         ftnumI = self.lablD["noteL"].pop(0)
         self.uS = "[" + str(ftnumI) + "] " + lineS
-        self.r2s = "[" + str(ftnumI) + "] " + lineS
-        self.rs = "[" + str(ftnumI) + "] " + lineS
+        self.r2S = "[" + str(ftnumI) + "] " + lineS
+        self.rS = "[" + str(ftnumI) + "] " + lineS + "\n"
         # endregion
 
     def lE(self):
@@ -149,10 +149,11 @@ class Tag:
         self.lablD["equI"] = enumI + 1
         fillS = " [Eq " + str(enumI) + "]"
         refS = lineS + fillS
-        refS = refS.rjust(self.lablD["widthI"])
-        self.uS = refS + "\n"
-        self.r2s = refS + "\n"
-        self.rs = refS + "\n"
+        self.uS = refS.rjust(self.lablD["widthI"]) + "\n"
+        self.r2S = refS + "\n"
+        self.rS = (
+            ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> \n\n"
+        )
         # endregion
 
     def lF(self):
@@ -162,8 +163,8 @@ class Tag:
         fnumI = int(self.lablD["figI"])
         self.lablD["figI"] = fnumI + 1
         self.uS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
-        self.r2s = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
-        self.rs = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
+        self.r2S = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
+        self.rS = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
         # endregion
 
     def lN(self):
@@ -174,8 +175,8 @@ class Tag:
         self.lablD["noteL"].append(ftnumI + 1)
         self.lablD["footL"].append(ftnumI + 1)
         self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
-        self.r2s = lineS.replace("*]", "[" + str(ftnumI) + "]")
-        self.rs = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.r2S = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         # endregion
 
     def lA(self):
@@ -186,9 +187,10 @@ class Tag:
         spL = spS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        self.uS = textwrap.indent(lineS, "     ")
-        self.r2s = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
-        self.rs = ".. raw:: math\n\n   " + lineS + "\n"
+        indlineS = textwrap.indent(lineS, "     ")
+        self.uS = lineS + "\n"
+        self.r2S = "\n\n.. code:: \n\n\n" + indlineS + "\n\n"
+        self.rS = ".. code:: \n\n   " + indlineS + "\n\n"
         # endregion
 
     def lT(self):
@@ -199,8 +201,8 @@ class Tag:
         self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         self.uS = "\nTable " + str(tnumI) + ": " + lineS
-        self.r2s = "\n**Table " + fillS + "**: " + lineS
-        self.rs = "\n**Table " + fillS + "**: " + lineS
+        self.r2S = "\n**Table " + fillS + "**: " + lineS
+        self.rS = "\n**Table " + fillS + "**: " + lineS
         # endregion
 
     def lU(self):
@@ -209,8 +211,8 @@ class Tag:
         lineS = self.strLS
         lineL = lineS.split(",")
         self.uS = lineL[0] + ": " + lineL[1]
-        self.r2s = ".. _" + lineL[0] + ": " + lineL[1]
-        self.rs = ".. _" + lineL[0] + ": " + lineL[1]
+        self.r2S = ".. _" + lineL[0] + ": " + lineL[1]
+        self.rS = ".. _" + lineL[0] + ": " + lineL[1]
         # endregion
 
     def lY(self):
@@ -222,16 +224,16 @@ class Tag:
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         self.uS = textwrap.indent(lineS, "     ")
-        self.r2s = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
-        self.rs = ".. raw:: math\n\n   " + lineS + "\n"
+        self.r2S = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
+        self.rS = ".. raw:: math\n\n   " + lineS + "\n"
         # endregion
 
     def lH(self):
         "horizontal line"
         # region
         self.uS = "-" * 80
-        self.r2s = "-" * 80
-        self.rs = "-" * 80
+        self.r2S = "-" * 80
+        self.rS = "-" * 80
         # endregion
 
     def lP(self):
@@ -247,7 +249,7 @@ class Tag:
         )
         # self.uS = self.lablD["headuS"].replace("p##", pagenoS)
         self.lablD["pageI"] = int(pgnS) + 1
-        self.r2s = (
+        self.r2S = (
             "\n"
             + "_" * self.lablD["widthI"]
             + "\n"
@@ -256,7 +258,7 @@ class Tag:
             + "_" * self.lablD["widthI"]
             + "\n"
         )
-        self.rs = (
+        self.rS = (
             "\n"
             + "_" * self.lablD["widthI"]
             + "\n"
@@ -274,8 +276,8 @@ class Tag:
         tnumI = int(self.lablD["tableI"])
         self.lablD["tableI"] = tnumI + 1
         self.uS = "Table " + str(tnumI) + " - " + blockS
-        self.r2s = "\n" + "Table " + fillS + ": " + blockS
-        self.rs = "\n" + "Table " + fillS + ": " + blockS
+        self.r2S = "\n" + "Table " + fillS + ": " + blockS
+        self.rS = "\n" + "Table " + fillS + ": " + blockS
         # endregion
 
     def bC(self):

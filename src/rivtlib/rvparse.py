@@ -62,11 +62,9 @@ class Section:
         else:
             snumI = lablD["secnumI"] + 1
             lablD["secnumI"] = snumI
-            snumS = "[ " + str(snumI) + " ]"
-            stypeS = "<" + stS + ">"
+            snumS = "[ " + str(snumI) + stS.lower() + " ]"
             headS = snumS + " " + hL[0].strip()
-            lenI = lablD["widthI"] - len(headS)
-            headS = snumS + " " + hL[0].strip() + stypeS.rjust(lenI)
+            headS = snumS + " " + hL[0].strip()
             bordrS = lablD["widthI"] * "-"
             sutfS = "\n" + headS + "\n" + bordrS
             srsrS = "\n" + headS + "\n" + bordrS
