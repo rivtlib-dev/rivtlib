@@ -162,7 +162,7 @@
     ],
     "editor.codeLens": false,
     "editor.parameterHints.cycle": false,
-    "editor.hover.enabled": false,
+    "editor.hover.enabled": "off",
     "editor.tabCompletion": "on",
     "editor.minimap.enabled": false,
     "editor.inlayHints.enabled": "off",

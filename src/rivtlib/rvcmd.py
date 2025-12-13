@@ -129,7 +129,7 @@ class Cmd:
             fillS = " [Eq " + str(enumI) + "]"
             refS = refS + fillS
             equS = refS.rjust(self.lablD["widthI"]) + "\n"
-            eqr2S = refS + "\n"
+            eqr2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
             eqrS = (
                 ".. raw:: html\n\n"
                 + '   <p align="right">'
@@ -153,8 +153,8 @@ class Cmd:
             exec(cmdS, globals(), self.rivD)
 
         uS = "\n" + equS + "\n" + eq1S + "\n\n"
-        r2S = "\n\n" + eqr2S + "\n" + "..  code:: \n\n" + eq1S + "\n\n"
-        rS = "\n\n" + eqrS + "\n" + "..  code:: \n\n" + eq1S + "\n\n"
+        r2S = "\n\n" + eqr2S + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
+        rS = "\n\n" + eqrS + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
 
         # rivD append
         valU = eval(spL[0], globals(), self.rivD)
@@ -356,6 +356,7 @@ class Cmd:
             + "\n"
             + "   :width: "
             + scS
+            + " %"
             + "\n"
             + "   :align: center"
             + "\n\n\n"

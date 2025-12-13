@@ -193,7 +193,7 @@ class Cmdp:
         # region
         pypathS = os.path.dirname(sys.executable)
         rvstyleP = os.path.join(
-            pypathS, "Lib", "site-packages", "rivt", "styles"
+            pypathS, "Lib", "site-packages", "rivtlib", "styles"
         )
 
         rvfileS = self.foldD["rbaseS"] + ".rst2"
@@ -210,15 +210,19 @@ class Cmdp:
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
 
-        yamlP = str(Path(rvstyleP, "rst2pdf.yaml"))
         iniP = str(Path(rvstyleP, "rst2pdf.ini"))
+        fontP = str(Path(rvstyleP, "fonts"))
+        yamlS = "rst2pdf.yaml"
 
         cmd1S = "rst2pdf " + rvfileT  # input
         cmd2S = " -o " + rvdocT  # output
         cmd3S = " --config=" + iniP  # config
-        cmd4S = " --stylesheets=" + yamlP  # styles
-        rst2cmdS = cmd1S + cmd2S + cmd3S + cmd4S
+        cmd4S = " --font-path=" + fontP  # fonts
+        cmd5S = " --stylesheet-path=" + rvstyleP  # fonts
+        cmd6S = " --stylesheets=" + yamlS  # styles
+        rst2cmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
         # print("cmdS=", cmdS)
+        #
 
         try:
             result = subprocess.run(rst2cmdS, shell=True, check=True)

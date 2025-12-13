@@ -53,7 +53,7 @@ styles:
     commands: []
     firstLineIndent: 0
     fontName: fontSans
-    fontSize: 9
+    fontSize: 10
     hyphenation: false
     leading: 12
     leftIndent: 0
@@ -133,14 +133,14 @@ styles:
     fontName: fontSerif
     textColor: "#222222"
   heading1:
-    fontSize: 120%
+    fontSize: 110%
     parent: heading
     fontName: fontSansBold
   heading2:
-    fontSize: 110%
+    fontSize: 105%
     parent: heading
   heading3:
-    fontSize: 105%
+    fontSize: 100%
     parent: heading
   heading4:
     parent: heading
@@ -201,9 +201,8 @@ styles:
           - -1
         - 0
   right:
-    alignment: TA_RIGHT
+    alignment: right
     parent: bodytext
-    fontName: fontSansBold
   rubric:
     alignment: TA_CENTER
     parent: bodytext
@@ -228,37 +227,44 @@ styles:
     spaceBefore: 12
   table:
     spaceBefore: 0
-    spaceAfter: 0
+    spaceAfter: 6
     parent: normal
     alignment: TA_CENTER
-    # Format: [COMMAND, [start_col, start_row], [stop_col, stop_row], style_value]
     commands:
-        - [VALIGN, [ 0, 0 ], [ -1, -1 ], MIDDLE ]
-        - [ROWBACKGROUNDS, [0, 0], [-1, -1], ['#E0E0E0', white ]]
-        - [LINEBELOW, [0, 0], [-1, 0], 0.5, black]
-        - [BOTTOMPADDING, [0, 1], [-1, -1], 3]
-        - [TOPPADDING, [0, 1], [-1, -1], 3]
-
-  table-heading:
-      parent : heading
-      fontName: fontSansBold
-      backColor : white
-      alignment : TA_CENTER
-    # - [ALIGN, [ 0, 0 ], [ -1, -1 ], LEFT ]
-    # - [ROWBACKGROUNDS, [0, 0], [-1, -1], ['#E0E0E0', white ]]
+      - - VALIGN
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - TOP
+      - - INNERGRID
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 0.25
+        - black
+      - - ROWBACKGROUNDS
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - - white
+          - "#E0E0E0"
+      - - BOX
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 0.25
+        - black
   table-body:
-    line-height: 80%
     parent: normal
-    textColor: black
-    alignment: TA_CENTER # Options: TA_LEFT, TA_CENTER, TA_RIGHT
+  table-heading:
+    alignment: TA_CENTER
     borderPadding: 0
-    topPadding: 0
-    bottomPadding: 0
-    leftPadding: 0
-    rightPadding: 0
-    fontSize: 10
-    fontName: fontSans
-    valign: MIDDLE # Options: TOP, MIDDLE, BOTTOM
+    fontName: fontSansBold
+    valign: BOTTOM
   table-title:
     alignment: TA_CENTER
     keepWithNext: false

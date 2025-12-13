@@ -293,7 +293,14 @@ def I(rS):  # noqa: E743
         rS (str): rivt section string
     """
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["IMAGE", "IMAGE2", "FIGURE", "FIGURE2", "TABLE", "TEXT"]
+    cmdL = [
+        "IMAGE",
+        "IMAGE2",
+        "FIGURE",
+        "FIGURE2",
+        "TABLE",
+        "TEXT",
+    ]
     tagL = [
         "#]",
         "C]",
@@ -305,19 +312,23 @@ def I(rS):  # noqa: E743
         "S]",
         "D]",
         "U]",
-        "-----",
-        "=====",
         "A]",
         "L]",
+        "-----",
+        "=====",
+    ]
+    tagbL = [
         "[INDENT]]",
         "[ITALIC]]",
         "[ENDNOTES]]",
+        "[PYTHON]]",
+        "[HTML]]",
+        "[RST]]",
+        "[LATEX]]",
         "[TEXT]]",
         "[TOPIC]]",
         "[END]]",
     ]
-
-    tagbL = ["B]]", "C]]", "I]]", "L]]", "X]]"]
     tagL = tagL + tagbL
     dutfS, dr2pS, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
 
@@ -352,14 +363,20 @@ def V(rS):
         "U]",
         "-----",
         "=====",
+    ]
+    tagbL = [
         "[INDENT]]",
         "[ITALIC]]",
         "[ENDNOTES]]",
+        "[PYTHON]]",
+        "[HTML]]",
+        "[RST]]",
+        "[LATEX]]",
         "[TEXT]]",
         "[TOPIC]]",
         "[END]]",
     ]
-
+    tagL = tagL + tagbL
     dutfS, dr2pS, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
 
 

@@ -150,7 +150,7 @@ class Tag:
         fillS = " [Eq " + str(enumI) + "]"
         refS = lineS + fillS
         self.uS = refS.rjust(self.lablD["widthI"]) + "\n"
-        self.r2S = refS + "\n"
+        self.r2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
         self.rS = (
             ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> \n\n"
         )
