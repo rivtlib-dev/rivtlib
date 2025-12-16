@@ -48,7 +48,6 @@ import logging
 import os
 import sys
 import warnings
-from datetime import datetime
 from importlib.metadata import version
 from pathlib import Path
 
@@ -145,9 +144,19 @@ with open(apilogT, "w") as f4:
     f4.write("---------------------------------------\n")
 # end region
 
-
 # region - dictionaries
-rivD = {}  # rivt calculated values
+rivD = {
+    "rv_metaD": {
+        "authors": " - ",
+        "version": " - ",
+        "email": " - ",
+        "repo": " - ",
+        "license": " - ",
+        "fork1": [" - "],
+        "fork2": [" - "],
+    },
+}
+rv_metaD = {}  # metadata
 foldD = {  # folders
     "rvlocalB": rv_localB,
     "pthS": " ",
@@ -219,24 +228,6 @@ drstS = ""
 dhtmS = ""
 cmdS = ""
 
-verS = "v" + "0.1.1"
-headS = "   " + lablD["docnameS"]
-timeS = datetime.now().strftime("%Y-%m-%d | %I:%M%p")
-borderS = "=" * 80
-lenI = len(timeS + "   " + headS)
-sutfS = (
-    "\n\n"
-    + timeS
-    + "   "
-    + headS
-    + verS.rjust(80 - lenI)
-    + "\n"
-    + borderS
-    + "\n"
-)
-
-print(sutfS)  # STDOUT doc header
-
 
 def cmdhelp():
     """command line help"""
@@ -267,13 +258,13 @@ def doc_parse(sS, tS, tagL, cmdL):
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     sL = sS.split("\n")
     secC = rvparse.Section(tS, sL, foldD, lablD, rivD)
-    sutfS, srsrS, srstS, foldD, lablD, rivD, rivL = secC.content(tagL, cmdL)
+    sutfS, srsrS, srstS, foldD, lablD, rivD = secC.content(tagL, cmdL)
     # accumulate doc strings
     dutfS += sutfS
     dr2pS += srsrS
     drstS += srstS
 
-    return dutfS, dr2pS, drstS, rivL
+    return dutfS, dr2pS, drstS
 
 
 def R(rS):
@@ -284,7 +275,7 @@ def R(rS):
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
     cmdL = ["WIN", "OSX", "LINUX"]
     tagL = []
-    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "R", tagL, cmdL)
+    dutfS, dr2pS, drstS = doc_parse(rS, "R", tagL, cmdL)
 
 
 def I(rS):  # noqa: E743
@@ -330,7 +321,7 @@ def I(rS):  # noqa: E743
         "[END]]",
     ]
     tagL = tagL + tagbL
-    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "I", tagL, cmdL)
+    dutfS, dr2pS, drstS = doc_parse(rS, "I", tagL, cmdL)
 
 
 def V(rS):
@@ -377,7 +368,7 @@ def V(rS):
         "[END]]",
     ]
     tagL = tagL + tagbL
-    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "V", tagL, cmdL)
+    dutfS, dr2pS, drstS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
@@ -386,9 +377,27 @@ def T(rS):
         rS (str): rivt section string
     """
     global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["PYTHON", "LATEX", "HTML", "RST"]
-    tagL = ["[PYTHON]]", "[LATEX]]", "[HTML]]", "[RST]]", "[END]]"]
-    dutfS, dr2pS, drstS, rivL = doc_parse(rS, "T", tagL, cmdL)
+    cmdL = ["| PYTHON |", "LATEX", "HTML", "RST"]
+    tagL = ["[[PYTHON]]", "[[LATEX]]", "[[HTML]]", "[[RST]]"]
+    blkB = False
+    blkS = ""
+    lL = rS.split("\n")
+    for lS in lL:
+        if blkB:  # tag flag
+            if "[[END]]" in lS:
+                blkB = False
+                exec(blkS, globals(), rivD)
+                blkS = ""
+                continue
+            blkS += lS.strip()
+            continue
+        for subS in tagL:  # tags
+            if subS in lS:
+                blkB = True
+                continue
+        for subS in cmdL:
+            pass
+    # print("eeeeeee", rivD["rv_metaD"])
 
 
 def D(rS):
@@ -406,7 +415,7 @@ def D(rS):
     # footS = config.get("utf", "foot1")
     cmdL = ["PUBLISH", "ATTACH"]
     tagL = ["[LAYOUT]]"]
-    wrtdoc = rvdoc.Cmdp(rS, foldD, lablD, cmdL, tagL, dutfS, dr2pS, drstS)
+    wrtdoc = rvdoc.Cmdp(rS, foldD, lablD, cmdL, tagL, dutfS, dr2pS, drstS, rivD)
     mssgS = wrtdoc.cmdx()
     print("\n" + f"{mssgS}")
     sys.exit()

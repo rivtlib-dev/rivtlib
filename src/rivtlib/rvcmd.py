@@ -674,7 +674,11 @@ class Cmd:
         else:
             exec(pyscriptS, globals(), namespaceS)
 
-        fiS = " [file: " + self.fileS + "]" + "\n\n"
+        fiS = " [Python file: " + self.fileS + "]" + "\n\n"
+
+        self.uS = fiS + "\n"
+        self.r2s = fiS + "\n"
+        self.rs = fiS + "\n"
 
         # endregion
 

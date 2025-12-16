@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 import warnings
+from datetime import datetime
 from pathlib import Path
 
 from fastcore.utils import store_attr
@@ -22,7 +23,18 @@ class Cmdp:
 
     """
 
-    def __init__(self, sS, foldD, lablD, cmdL, tagL, dutfS, dr2pS, drstS):
+    def __init__(
+        self,
+        sS,
+        foldD,
+        lablD,
+        cmdL,
+        tagL,
+        dutfS,
+        dr2pS,
+        drstS,
+        rivD,
+    ):
         """Publish object
         Args:
             foldD (dict): folders
@@ -113,18 +125,6 @@ class Cmdp:
         return msgS
         # endregion
 
-    def appendx(self):
-        """_summary_"""
-
-        msgS = "attachment"
-        return msgS
-
-    def prependx(self):
-        """_summary_"""
-
-        msgS = "attachment"
-        return msgS
-
     def textx(self):
         """write text doc and readme files
 
@@ -136,6 +136,18 @@ class Cmdp:
             rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
         else:
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+
+        verS = "  v" + self.rivD["rv_metaD"]["version"]
+        doctitleS = self.foldD["rbaseS"]
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        authorS = self.rivD["rv_metaD"]["authors"]
+        borderS = "=" * 80
+        hdlS = timeS + " | " + authorS + " | " + doctitleS + verS
+        headS = "\n" + hdlS.rjust(80) + "\n" + borderS + "\n"
+
+        # add layout info
+
+        self.dutfS = headS + "\n" + self.dutfS
 
         with open(rvdocT, "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
@@ -151,6 +163,10 @@ class Cmdp:
             msgS (str): completion message
 
         """
+        pypathS = os.path.dirname(sys.executable)
+        rvstyleP = os.path.join(
+            pypathS, "Lib", "site-packages", "rivtlib", "styles"
+        )
 
         rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".html"
@@ -161,18 +177,31 @@ class Cmdp:
             rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
 
+        # add layout info
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        doctitleS = self.foldD["rbaseS"]
+        authorS = self.rivD["rv_metaD"]["authors"]
+        verS = "  v" + self.rivD["rv_metaD"]["version"]
+        spaceS = "  |  "
+        headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
+        headerS = f"""
+   .. header:: 
+      {headS}     
+"""
+
+        self.drstS = headerS + self.drstS + "\n"
+
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
 
+        cmd4S = " --font-path="  # fonts
+        cmd5S = " --stylesheet-path=" + os.path.join(rvstyleP, "plain.css")
+        htmlS = "rst2html5" + cmd5S
+
         try:
-            htmlcmdS = (
-                "rst2html5 --stylesheet-path=minimal.css,responsive.css "
-                + rvfileT
-                + " "
-                + rvdocT
-            )
+            htmlcmdS = htmlS + " " + rvfileT + " " + rvdocT
             result = subprocess.run(htmlcmdS, shell=True, check=True)
             if not result.returncode:
                 print("\nHTML script executed successfully.")
@@ -205,6 +234,23 @@ class Cmdp:
             rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
 
+        # add layout info
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        doctitleS = self.foldD["rbaseS"]
+        authorS = self.rivD["rv_metaD"]["authors"]
+        verS = "  v" + self.rivD["rv_metaD"]["version"]
+        spaceS = "  |  "
+        headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
+        pageS = "Page ###Page### of ###Total###"
+        headfootS = f"""
+.. header:: 
+   {headS}
+
+.. footer::
+   {pageS}"""
+
+        self.dr2pS = self.dr2pS + "\n" + headfootS
+
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.dr2pS)
         with open("README.txt", "w", encoding="utf-8") as f5:
@@ -218,10 +264,10 @@ class Cmdp:
         cmd2S = " -o " + rvdocT  # output
         cmd3S = " --config=" + iniP  # config
         cmd4S = " --font-path=" + fontP  # fonts
-        cmd5S = " --stylesheet-path=" + rvstyleP  # fonts
+        cmd5S = " --stylesheet-path=" + rvstyleP  # style path
         cmd6S = " --stylesheets=" + yamlS  # styles
         rst2cmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
-        # print("cmdS=", cmdS)
+        # print("rst2cmdS=", rst2cmdS)
         #
 
         try:
@@ -266,7 +312,7 @@ class Cmdp:
         :type pdffileS: _type_
 
         """
-        #     # region
+        #  # region
         #     startS = str(lablD["pageI"])
         #     doctitleS = str(lablD["doctitleS"])
 
@@ -537,5 +583,16 @@ class Cmdp:
         #                 pass
         #         time.sleep(1)
         #         print("INFO: temporary Tex files deleted \n", flush=True)
-        # endregion
-        pass
+        #    # endregion
+
+    def appendx(self):
+        """_summary_"""
+
+        msgS = "attachment"
+        return msgS
+
+    def prependx(self):
+        """_summary_"""
+
+        msgS = "attachment"
+        return msgS

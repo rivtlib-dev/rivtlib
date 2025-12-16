@@ -247,5 +247,5 @@ class Section:
             with open(fileP, "w") as file1:
                 file1.write("\n".join(rivL))
 
-        return sutfS, srsrS, srstS, foldD, lablD, rivD, rivL
+        return sutfS, srsrS, srstS, foldD, lablD, rivD
         # endregion

@@ -46,9 +46,8 @@ class Tag:
          I, V      text _[#]  text            endnote number (all)
          I, V      text _[C]                  center text (all)
          I, V      text _[R]                  right justify text (all)
-         I, V     label _[E]                  equation number and label (all)
-         I, V   caption _[I]                  image number and caption (all)[1]
-         I, V     title _[T]                  table number and title (all)[1]
+         I, V      label _[E]                 equation number and label (all)
+         I, V      title _[T]                 table number and title (all)[1]
          I, V      text _[G] term to link     link term to glossary (all)
          I, V      text _[S] section link     link to section in doc (all)
          I, V      text _[D] report link      link to doc in report (all)
@@ -131,14 +130,16 @@ class Tag:
         self.rS = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
         # endregion
 
-    def lD(self):
-        """footnote description"""
+    def lN(self):
+        """number footnote"""
         # region
         lineS = self.strLS
-        ftnumI = self.lablD["noteL"].pop(0)
-        self.uS = "[" + str(ftnumI) + "] " + lineS
-        self.r2S = "[" + str(ftnumI) + "] " + lineS
-        self.rS = "[" + str(ftnumI) + "] " + lineS + "\n"
+        ftnumI = self.lablD["footL"].pop(0)
+        self.lablD["noteL"].append(ftnumI + 1)
+        self.lablD["footL"].append(ftnumI + 1)
+        self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.r2S = lineS.replace("*]", "[" + str(ftnumI) + "]")
+        self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         # endregion
 
     def lE(self):
@@ -154,29 +155,6 @@ class Tag:
         self.rS = (
             ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> \n\n"
         )
-        # endregion
-
-    def lF(self):
-        """number figure"""
-        # region
-        lineS = self.strLS
-        fnumI = int(self.lablD["figI"])
-        self.lablD["figI"] = fnumI + 1
-        self.uS = "Fig. " + str(fnumI) + " - " + lineS + "\n"
-        self.r2S = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
-        self.rS = "**Fig. " + str(fnumI) + " -** " + lineS + "\n"
-        # endregion
-
-    def lN(self):
-        """number footnote"""
-        # region
-        lineS = self.strLS
-        ftnumI = self.lablD["footL"].pop(0)
-        self.lablD["noteL"].append(ftnumI + 1)
-        self.lablD["footL"].append(ftnumI + 1)
-        self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
-        self.r2S = lineS.replace("*]", "[" + str(ftnumI) + "]")
-        self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         # endregion
 
     def lA(self):
@@ -213,19 +191,6 @@ class Tag:
         self.uS = lineL[0] + ": " + lineL[1]
         self.r2S = ".. _" + lineL[0] + ": " + lineL[1]
         self.rS = ".. _" + lineL[0] + ": " + lineL[1]
-        # endregion
-
-    def lY(self):
-        "format and number sympy"
-        # region
-        lineS = self.strLS
-        spS = lineS.strip()
-        spL = spS.split("=")
-        spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-        lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        self.uS = textwrap.indent(lineS, "     ")
-        self.r2S = "\n\n.. code:: \n\n\n" + self.uS + "\n\n"
-        self.rS = ".. raw:: math\n\n   " + lineS + "\n"
         # endregion
 
     def lH(self):
