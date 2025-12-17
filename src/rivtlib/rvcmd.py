@@ -232,7 +232,7 @@ class Cmd:
             a := .5 * 2*IN | unit1, unit2, decimal | ref
 
         Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL
+            uS, r2S, rS, foldD, lablD, rivD, rivL, tbL
 
         """
 
@@ -290,8 +290,6 @@ class Cmd:
             self.rivL,
             tbL,
         )
-
-        # export value table
         # endregion
 
     def cF(self):
@@ -581,19 +579,35 @@ class Cmd:
         """
         # region
         parL = self.parS.split(",")
-        titleS = " "
-        if "_[T]" in parL[0] or titleS[0:1] != "--":
-            titleS = parL[0].replace("_[T]", " ").strip()
-        elif titleS[0:1] != "--":
-            titleS = " "
-        self.strpS = titleS.strip()
-        self.cT()
+        titleS = parL[0].strip()
+        sliceS = " "
         fiS = " [file: " + self.fileS + "]" + "\n\n"
-        utlS = titleS + fiS
-        rtlS = xtlS = titleS + fiS
+        if "_[T]" in parL[1]:
+            sliceS = parL[1].replace("_[T]", " ").strip()
+            tnumI = int(self.lablD["tableI"])
+            self.lablD["tableI"] = tnumI + 1
+            fillS = str(tnumI)
+            titleS = titleS + fiS
+            utlS = "\nTable " + fillS + ": " + titleS
+            rtlS = "\n**Table " + fillS + "**: " + titleS
+            xtlS = "\n**Table " + fillS + "**: " + titleS
+        else:
+            sliceS = parL[1].strip()
+            if titleS[0:1] == "--":
+                titleS = fiS
+            utlS = "\n" + fiS
+            rtlS = "\n" + fiS
+            xtlS = "\n" + fiS
 
         with open(self.insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
+        # extract rows
+        sliceL = sliceS.split(":")
+        if sliceL[1].strip() == "0":
+            sliceO = slice(int(sliceL[0]), len(readL))
+        else:
+            sliceO = slice(int(sliceL[0]), int(sliceL[1]))
+        readL = readL[sliceO]
         # print(f"{readL=}")
         tbL = []
         for vaL in readL:
@@ -674,9 +688,9 @@ class Cmd:
         else:
             exec(pyscriptS, globals(), namespaceS)
 
-        fiS = " [Python file: " + self.fileS + "]" + "\n\n"
-
-        self.uS = fiS + "\n"
+        fiS = "**[ Python file read:** " + self.fileS + " **]**" + "\n\n"
+        fiuS = "[ Python file read: " + self.fileS + " ]" + "\n\n"
+        self.uS = fiuS + "\n"
         self.r2s = fiS + "\n"
         self.rs = fiS + "\n"
 

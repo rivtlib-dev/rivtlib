@@ -5,8 +5,12 @@ parse section string
 import logging
 import os
 import re
+import sys
 import warnings
+from io import StringIO
 from pathlib import Path
+
+import tabulate
 
 import __main__
 
@@ -65,6 +69,8 @@ class Section:
             sutfS = "\n" + headS + "\n" + bordrS
             srsrS = "\n" + headS + "\n" + bordrS
             srstS = "\n" + headS + "\n" + bordrS
+            print(sutfS)  # STDOUT section header
+
         try:
             paraL = hL[1].strip().split("|")
         except Exception:
@@ -87,10 +93,7 @@ class Section:
             if "public" in paraL:
                 foldD["publicB"] = True
 
-        print(sutfS)  # STDOUT section header
         self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
-
-        # print(sutfS, srsrS, srstS)
         self.sutfS = sutfS  # utf doc
         self.srsrS = srsrS  # rst2pdf doc
         self.srstS = srstS  # rest doc
@@ -158,6 +161,35 @@ class Section:
                         t2S = "*" + tS + "*"
                         slS = slS.replace(t2S, tS)
                 # print(f"{txt1L=}")
+            if len(tabL) > 0 and len(slS.strip()) == 0:  # values block
+                tblfmt = "rst"
+                hdrvL = ["variable", "value", "[value]", "description"]
+                alignL = ["left", "right", "right", "left"]
+                sys.stdout.flush()
+                old_stdout = sys.stdout
+                output = StringIO()
+                output.write(
+                    tabulate.tabulate(
+                        tabL,
+                        tablefmt=tblfmt,
+                        headers=hdrvL,
+                        showindex=False,
+                        colalign=alignL,
+                    )
+                )
+                outS = output.getvalue()
+                sys.stdout = old_stdout
+                sys.stdout.flush()
+                sutfS += outS
+                srsrS += outS
+                srstS += outS
+                print(outS)  # STDOUT - values block
+                tabL = []
+                sutfS += "\n"
+                srsrS += " \n"
+                srstS += " \n"
+                print(" ")  # STDOUT- blank line
+                continue
             if len(slS.strip()) == 0 and not blockB:
                 sutfS += "\n"
                 srsrS += " \n"
@@ -199,7 +231,6 @@ class Section:
                     uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.vdefine(
                         lineS
                     )
-                    # print(f"{tbL=}")
                     tabL.append(tbL)
                     continue
             if "<=" in slS:

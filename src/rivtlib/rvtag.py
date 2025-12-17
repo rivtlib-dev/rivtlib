@@ -174,7 +174,7 @@ class Tag:
     def lT(self):
         """number table"""
         # region
-        lineS = self.strLS
+        lineS = self.strLS + "\n"
         tnumI = int(self.lablD["tableI"])
         self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
