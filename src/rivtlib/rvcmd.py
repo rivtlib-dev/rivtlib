@@ -677,13 +677,12 @@ class Cmd:
         """
         # region
         # print(f"{readL=}")
-        parL = self.parS.split(",")
-        namespaceS = parL[0]
+        namespaceS = "rivtO"
 
         fileP = Path(self.foldD["rivtP"], self.fileS)
         with open(fileP, "r") as f10:
             pyscriptS = f10.read()
-        if namespaceS == "rivt":
+        if namespaceS == "rivtO":
             exec(pyscriptS, globals(), self.rivD)
         else:
             exec(pyscriptS, globals(), namespaceS)

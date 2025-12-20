@@ -197,7 +197,7 @@ class Cmdp:
             f5.write(self.dutfS)
 
         cmd4S = " --font-path="  # fonts
-        cmd5S = " --stylesheet-path=" + os.path.join(rvstyleP, "plain.css")
+        cmd5S = " --stylesheet-path=" + os.path.join(rvstyleP, "singledoc.css")
         htmlS = "rst2html5" + cmd5S
 
         try:
@@ -240,14 +240,16 @@ class Cmdp:
         authorS = self.rivD["rv_metaD"]["authors"]
         verS = "  v" + self.rivD["rv_metaD"]["version"]
         spaceS = "  |  "
-        headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
+        footS = timeS + spaceS + authorS + spaceS + doctitleS + verS
         pageS = "Page ###Page### of ###Total###"
+        pgtemp = ".. raw:: pdf \n\n    PageBreak decoratedPage\n\n "
+        self.dr2pS = pgtemp + self.dr2pS
         headfootS = f"""
 .. header:: 
-   {headS}
+   {pageS}
 
 .. footer::
-   {pageS}"""
+   {footS}"""
 
         self.dr2pS = self.dr2pS + "\n" + headfootS
 
@@ -256,9 +258,9 @@ class Cmdp:
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
 
-        iniP = str(Path(rvstyleP, "rst2pdf.ini"))
+        iniP = str(Path(rvstyleP, ".ini"))
         fontP = str(Path(rvstyleP, "fonts"))
-        yamlS = "rst2pdf.yaml"
+        yamlS = "singledoc.yaml"
 
         cmd1S = "rst2pdf " + rvfileT  # input
         cmd2S = " -o " + rvdocT  # output
