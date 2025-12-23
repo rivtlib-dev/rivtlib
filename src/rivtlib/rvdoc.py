@@ -240,17 +240,32 @@ class Cmdp:
         authorS = self.rivD["rv_metaD"]["authors"]
         verS = "  v" + self.rivD["rv_metaD"]["version"]
         spaceS = "  |  "
-        footS = timeS + spaceS + authorS + spaceS + doctitleS + verS
+        footS = spaceS + timeS + spaceS + authorS + spaceS + doctitleS + verS
         pageS = "Page ###Page### of ###Total###"
         pgtemp = ".. raw:: pdf \n\n    PageBreak decoratedPage\n\n "
         self.dr2pS = pgtemp + self.dr2pS
         headfootS = f"""
-.. header:: 
-   {pageS}
+
+.. |mylogo| image:: ./logo.png
+   :width: 150px
+   :align: middle
+
+.. |myline| image:: ./line3.png
+   :width: 2400px
+   :align: middle
+
+   
+.. header::
+    {pageS}
 
 .. footer::
-   {footS}"""
+    |myline|
 
+    |mylogo|  {footS}
+
+"""
+
+        # |mylogo|  {footS}  {pageS}
         self.dr2pS = self.dr2pS + "\n" + headfootS
 
         with open(rvfileT, "w", encoding="utf-8") as f5:

@@ -35,14 +35,6 @@ pageTemplates:
   mainPage:
     showFooter: true
     showHeader: true
-  decoratedPage:
-    frames: [0cm, 0cm, 100%, 100%]
-    showHeader: true
-    showFooter: true
-    defaultFooter: |
-      .. image:: logo.png
-         :align: left
-         :width: 50px
 styles:
   base:
     alignment: TA_LEFT
@@ -126,8 +118,8 @@ styles:
   figure-legend:
     parent: bodytext
   footer:
-    alignment: TA_RIGHT
-    fontName: fontSansBold
+    alignment: TA_CENTER
+    fontName: fontSans
   header:
     alignment: TA_RIGHT
     fontName: fontSansBold
