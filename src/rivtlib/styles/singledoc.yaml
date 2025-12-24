@@ -128,7 +128,7 @@ styles:
     parent: normal
     spaceAfter: 6
     spaceBefore: 20
-    fontName: fontSerif
+    fontName: fontSerif=
     textColor: "#222222"
   heading1:
     fontSize: 110%
