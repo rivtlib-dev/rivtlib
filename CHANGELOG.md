@@ -7,9 +7,10 @@
 ```diff
 + New Features
 
-- Added `_[V]` tag to insert a value in line of text
-- 
-- ([#727](https://github.com/AnswerDotAI/fastcore/issues/727))
+
+  Added `_[V]` tag to insert a value in line of text
+ 
+  ([#727](https://github.com/AnswerDotAI/fastcore/issues/727))
 
 #### Bugs Squashed
 
