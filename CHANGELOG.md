@@ -10,15 +10,13 @@
   
   1. ([#727](https://github.com/AnswerDotAI/fastcore/issues/727))
   
-```diff
-+ Bugs Squashed
-```
+
+#### Bugs Squashed
+
   
   completed xx command
 
-```diff
-+ Breaking Changes  
-```
+#### Breaking Changes  
 
   1. changed order of parameters in commands
 
