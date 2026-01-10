@@ -7,9 +7,9 @@
 ```diff
 + New Features
 ```
-  Added `_[V]` tag to insert a value in line of text
+  1. Added `_[V]` tag to insert a value in line of text
   
-  ([#727](https://github.com/AnswerDotAI/fastcore/issues/727))
+  1. ([#727](https://github.com/AnswerDotAI/fastcore/issues/727))
   
 ```diff
 + Bugs Squashed
@@ -21,7 +21,7 @@
 + Breaking Changes  
 ```
 
-  changed order of parameters in commands
+  1. changed order of parameters in commands
 
 #### [0.7.2]
 
