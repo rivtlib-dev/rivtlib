@@ -13,8 +13,7 @@
 
 #### Bugs Squashed
 
-  
-  completed xx command
+  1. completed xx command
 
 #### Breaking Changes  
 
