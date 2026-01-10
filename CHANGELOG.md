@@ -1,10 +1,10 @@
-# Release notes
+## Release notes
 
 <!-- do not remove -->
 
-## 0.7.3
+### 0.7.3
 
-### New Features
+#### New Features
 
 - Added `_[V]` tag to insert a value in line of text
 - 
