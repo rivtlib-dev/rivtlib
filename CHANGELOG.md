@@ -4,7 +4,8 @@
 
 #### [0.7.3]
 
-#### New Features
+```diff
++ New Features
 
 - Added `_[V]` tag to insert a value in line of text
 - 
