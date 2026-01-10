@@ -7,7 +7,7 @@
 ```diff
 + New Features
 ```
-  1. Added `_[V]` tag to insert a value in line of text
+  1. Added `_[V]` tag that inserts the value of a variable in a line of text
   
   1. ([#727](https://github.com/AnswerDotAI/fastcore/issues/727))
   
