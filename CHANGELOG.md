@@ -10,9 +10,9 @@
 - 
 - ([#727](https://github.com/AnswerDotAI/fastcore/issues/727))
 
-**Bugs Squashed**
+#### Bugs Squashed
 
-**Breaking Changes**  
+#### Breaking Changes  
 
 - changed order of parameters in commands
 
