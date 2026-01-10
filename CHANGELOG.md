@@ -13,6 +13,8 @@
 
 + Bugs Squashed
 
+  completed xx command
+
 + Breaking Changes  
 
   changed order of parameters in commands
