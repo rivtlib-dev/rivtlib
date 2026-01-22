@@ -14,19 +14,19 @@ API functions:
     rv.S(rS) - (Skip) Skip processing of section
     rv.X(rS) - (Exit) Exit processing of rivt file
 
-where the argument rS is a triple quoted utf-8 string (rivt string)
+where the argument rS is a triple quoted rivt string (utf-8)
 
-Settings:
-    rv_authD (dict): author information
-    rv_localB (bool): True - reads and writes to local directory
+Doc comment settings:
+    # rc singledoc: True; False  (default is False)
+
 
 Globals:
     utfS (str): utf doc string
-    rstS (str): rstpdf doc string
-    xstS (str): texpdf doc string
+    rs2S (str): rstpdf doc string
+    rstS (str): texpdf doc string
     lablD (dict): formatting parameters
     foldD (dict): folder and file paths
-    rivD (dict): calculated values
+    rivtD (dict): calculated values
 
 Last letter of var name indicates type:
     A => array
@@ -40,7 +40,7 @@ Last letter of var name indicates type:
     O => object
     P => path
     S => string
-    T => path + file name
+    T => path + file name (path)
 """
 
 import fnmatch
@@ -55,7 +55,6 @@ import __main__
 from rivtlib import rvdoc, rvparse
 
 # region - rivt file name and paths
-# set metadata variables
 rivtP = Path(os.getcwd())
 reptP = Path(os.path.dirname(rivtP))
 rivtT = Path(__main__.__file__)
@@ -68,23 +67,11 @@ if fnmatch.fnmatch(rivtN, "rv[A-Z0-9][0-9][0-9]-*.py"):
     pass
 else:
     print(f"""The rivt file name provided was {rivtN}""")
-    print("""The file name must match  rvDss-anyname.py""")
-    print("""where D is a capital alpha-numeric division label""")
+    print("""The file name must match rvDss-filename.py""")
+    print("""where D is an alpha-numeric division label""")
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
-# endregion
 
-# set rv_localB
-rv_localB = False
-with open(rivtT, "r") as f1:  # noqa: F405
-    rivtL = f1.readlines()
-for lnS in rivtL:
-    if lnS[0] == "#":
-        if "rv_localB" and "True" in lnS:
-            rv_localB = True
-# print(f"\n== {rv_localB=} ==")
-
-# region - file names and paths
 rbaseS = rivtN.split(".")[0]
 rivtpN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
@@ -98,7 +85,19 @@ pubP = Path(rivtP, "publish")
 logsP = Path(storeP, "logs")
 # endregion
 
-if rv_localB:
+# region - flags
+prflagB = False
+rvsingleB = False
+with open(rivtT, "r") as f1:  # noqa: F405
+    rivtL = f1.readlines()
+for lnS in rivtL:
+    if lnS[0:4] == "# rv":
+        if "singledoc" and "True" in lnS:
+            rvsingleB = True
+
+# print(f"={rvsingleB}")
+
+if rvsingleB:
     errlogT = Path(rivtP, errlogN)
     apilogT = Path(rivtP, apilogN)
     bakT = Path(rivtP, bakN)
@@ -108,12 +107,12 @@ else:
     apilogT = Path(logsP, apilogN)
     bakT = Path(logsP, bakN)
     rivtT = Path(rivtP, rivtN)
-
 try:
     package_version = version("rivtlib")
     verS = f"rivtlib version: {package_version}"
 except Exception as e:
     verS = f"rivtlib version not available: {e}"
+# endregion
 
 # region - logs
 warnings.filterwarnings("ignore")
@@ -145,7 +144,7 @@ with open(apilogT, "w") as f4:
 # end region
 
 # region - dictionaries
-rivD = {
+rivtD = {
     "rv_metaD": {
         "authors": " - ",
         "version": " - ",
@@ -158,13 +157,16 @@ rivD = {
 }
 rv_metaD = {}  # metadata
 foldD = {  # folders
-    "rvlocalB": rv_localB,
+    "errlogT": errlogT,
+    "apilogT": apilogT,
+    "bakT": bakT,
+    "rvsingleB": rvsingleB,
     "pthS": " ",
     "srcnS": " ",
     "rivtN": rivtN,  # file name
     "rivtT": rivtT,  # full path name
-    "rbaseS": rbaseS,  # file base name
     "rivtP": Path(os.getcwd()),
+    "rbaseS": rbaseS,  # file base name
     "reptfoldN": os.path.dirname(rivtP),
     "docP": Path(rivtP, "rivDocs"),
     "pdfN": rbaseS + ".pdf",
@@ -183,9 +185,6 @@ foldD = {  # folders
     "style_P": rivtP,
     "tool_P": rivtP,
     "temp_P": rivtP,
-    "errlogT": errlogT,
-    "apilogT": apilogT,
-    "bakT": bakT,
 }
 lablD = {  # dictionary of labels
     "rvtypeS": "",  # section type r,i,v,t,d
@@ -223,10 +222,10 @@ lablD = {  # dictionary of labels
 
 # initialize doc strings
 dutfS = ""
-dr2pS = ""
+drs2S = ""
 drstS = ""
 dhtmS = ""
-cmdS = ""
+dcmdS = ""
 
 
 def cmdhelp():
@@ -243,7 +242,7 @@ def cmdhelp():
     sys.exit()
 
 
-def doc_parse(sS, tS, tagL, cmdL):
+def doc_parse(rS, tS, tagL, cmdL):
     """section string to doc string
     Args:
         sS (str): rivt section
@@ -255,130 +254,123 @@ def doc_parse(sS, tS, tagL, cmdL):
         srsrS (str): rst2pdf output
         srstS (str): reSt output
     """
-    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
-    sL = sS.split("\n")
-    secC = rvparse.Section(tS, sL, foldD, lablD, rivD)
-    sutfS, srsrS, srstS, foldD, lablD, rivD = secC.content(tagL, cmdL)
-    # accumulate doc strings
+    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    rsL = rS.split("\n")
+    secC = rvparse.Rs(tS, rsL, foldD, lablD, rivtD, prflagB, rivtL)
+    sutfS, srs2S, srstS, foldD, lablD, rivtD = secC.content(tagL, cmdL)
     dutfS += sutfS
-    dr2pS += srsrS
+    drs2S += srs2S
     drstS += srstS
-
-    return dutfS, dr2pS, drstS
+    return dutfS, drs2S, drstS
 
 
 def R(rS):
     """Run shell command
     Args:
-        rS (str): rivt section string
+        rS (str): rivt string
     """
-    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["WIN", "OSX", "LINUX"]
+    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    cmdL = ["SHELL"]  # commands from file
     tagL = []
-    dutfS, dr2pS, drstS = doc_parse(rS, "R", tagL, cmdL)
+    tagbL = [
+        "[SHELL]]",  # run commands
+        "[END]]",  # end
+        "[NEWPAGE]]",  # new page
+    ]
+    tagL = tagbL + tagL
+    dutfS, drs2S, drstS = doc_parse(rS, "R", tagL, cmdL)
 
 
 def I(rS):  # noqa: E743
     """Insert static source
     Args:
-        rS (str): rivt section string
+        rS (str): rivt string
     """
-    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
     cmdL = [
-        "IMAGE",
-        "IMAGE2",
-        "FIGURE",
-        "FIGURE2",
-        "TABLE",
-        "TEXT",
+        "IMAGE",  # insert image from file
+        "IMAGE2",  # insert adjacent images from file
+        "TABLE",  # insert table from file
+        "TEXT",  # insert text from filoe
     ]
     tagL = [
-        "#]",
-        "C]",
-        "R]",
-        "E]",
-        "I]",
-        "T]",
-        "G]",
-        "S]",
-        "D]",
-        "U]",
-        "A]",
-        "L]",
-        "-----",
-        "=====",
+        "C]",  # center text
+        "R]",  # right justify text
+        "M]",  # math
+        "L]",  # LaTeX math
+        "#]",  # footnote
+        "G]",  # glossary
+        "S]",  # section link
+        "D]",  # doc link
+        "U]",  # url link
+        "V]",  # var value
+        "E]",  # equation label
+        "T]",  # table label
+        "F]",  # figure label
     ]
     tagbL = [
-        "[INDENT]]",
-        "[ITALIC]]",
-        "[ENDNOTES]]",
-        "[PYTHON]]",
-        "[HTML]]",
-        "[RST]]",
-        "[LATEX]]",
-        "[TEXT]]",
-        "[TOPIC]]",
-        "[END]]",
+        "[INDENT]]",  # indent
+        "[ITALIC]]",  # indent and italicize
+        "[ENDNOTES]]",  # note description
+        "[TEXT]]",  # format text
+        "[TOPIC]]",  # topic
+        "[END]]",  # end
+        "[NEWPAGE]]",  # new page
     ]
     tagL = tagL + tagbL
-    dutfS, dr2pS, drstS = doc_parse(rS, "I", tagL, cmdL)
+    dutfS, drs2S, drstS = doc_parse(rS, "I", tagL, cmdL)
 
 
 def V(rS):
     """Values calculate
     Args:
-        rS (str): rivt section string
+        rS (str): rivt string
     """
-    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
     cmdL = [
-        "IMAGE",
-        "IMAGE2",
-        "FIGURE",
-        "FIGURE2",
-        "TABLE",
-        "VALUES",
-        "PYTHON",
-        ":=",
-        "<=",
+        "IMAGE",  # image from file
+        "IMAGE2",  # adjacent image files
+        "TABLE",  # table from file
+        "VALTABLE",  # value table from file
+        "PYTHON",  # execute Python file
+        " =: ",  # define value
+        " <=: ",  # assign value
+        [" < ", " > ", " != ", " == ", " <= ", " >= "],  # comparisons
     ]
     tagL = [
-        "#]",
-        "C]",
-        "R]",
-        "E]",
-        "I]",
-        "T]",
-        "G]",
-        "S]",
-        "D]",
-        "U]",
-        "-----",
-        "=====",
+        "V]",  # var value
+        "E]",  # equation label
+        "T]",  # table label
+        "F]",  # figure label
     ]
     tagbL = [
-        "[INDENT]]",
-        "[ITALIC]]",
-        "[ENDNOTES]]",
-        "[PYTHON]]",
-        "[HTML]]",
-        "[RST]]",
-        "[LATEX]]",
-        "[TEXT]]",
-        "[TOPIC]]",
-        "[END]]",
+        "[PYTHON]]",  # execute Python script
+        "[END]]",  # end
+        "[NEWPAGE]]",  # new page
     ]
     tagL = tagL + tagbL
-    dutfS, dr2pS, drstS = doc_parse(rS, "V", tagL, cmdL)
+    dutfS, drs2S, drstS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
     """Python and Markup Tools
     Args:
-        rS (str): rivt section string
+        rS (str): rivt string
     """
-    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
-    cmdL = ["| PYTHON |", "LATEX", "HTML", "RST"]
-    tagL = ["[[PYTHON]]", "[[LATEX]]", "[[HTML]]", "[[RST]]"]
+    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    cmdL = [
+        "PYTHON",  # execute Python file
+        "MARKUP",  # execute script file
+    ]
+    tagL = []
+    tagbL = [
+        "[PYTHON]]",  # execute Python script
+        "[MARKUP]]",  # execute script
+        "[END]]",  # end
+        "[NEWPAGE]]",  # new page
+    ]
+    tagL = tagL + tagbL
+
     blkB = False
     blkS = ""
     lL = rS.split("\n")
@@ -386,7 +378,7 @@ def T(rS):
         if blkB:  # tag flag
             if "[[END]]" in lS:
                 blkB = False
-                exec(blkS, globals(), rivD)
+                exec(blkS, globals(), rivtD)
                 blkS = ""
                 continue
             blkS += lS.strip()
@@ -397,7 +389,6 @@ def T(rS):
                 continue
         for subS in cmdL:
             pass
-    # print("eeeeeee", rivD["rv_metaD"])
 
 
 def D(rS):
@@ -406,34 +397,46 @@ def D(rS):
     Writes docs as .txt, .pdf (reportLab or tex) and .html
 
     Args:
-        sS (str): section string
+        rS (str): rivt string
     """
-    global dutfS, dr2pS, drstS, dhtmS, foldD, lablD, rivD
+    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
     # config = ConfigParser()
     # config.read(Path(reptfoldP, "rivt-doc.ini"))
     # headS = config.get("report", "title")
     # footS = config.get("utf", "foot1")
-    cmdL = ["PUBLISH", "ATTACH"]
-    tagL = ["[LAYOUT]]"]
-    wrtdoc = rvdoc.Cmdp(rS, foldD, lablD, cmdL, tagL, dutfS, dr2pS, drstS, rivD)
+    cmdL = ["PUBLISH", "PDFATTACH"]
+    tagbL = ["[LAYOUT]]", "[METADATA]]"]
+    tagL = []
+    tagL = tagL + tagbL
+    wrtdoc = rvdoc.Cmdp(
+        rS, foldD, lablD, cmdL, tagL, dutfS, drs2S, drstS, rivtD
+    )
     mssgS = wrtdoc.cmdx()
     print("\n" + f"{mssgS}")
     sys.exit()
 
 
 def S(rS):
-    """skip section string - not processed
+    """skip rivt string processing
     Args:
-        rS (str): rivt section string
+        rS (str): rivt string
     """
+    global dutfS, drs2S, drstS, dhtmS
+
     shL = rS.split("\n")
-    print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
+    sutfS = srsrS = srstS = (
+        "\n[" + shL[0].strip() + "] : section skipped " + "\n"
+    )
+    print(sutfS)
+    dutfS += sutfS
+    drs2S += srsrS
+    drstS += srstS
 
 
 def X(rS):
-    """exit rivtlib processing
+    """exit rivt file processing
     Args:
-        rS (str): rivt section string
+        rS (str): rivt string
     """
     shL = rS.split("\n")
     logging.info("exit rivt file at: " + shL[0])

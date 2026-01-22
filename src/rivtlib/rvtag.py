@@ -43,19 +43,17 @@ class Tag:
 
          API         Syntax                    Description
         ------- -------------------------- ----------------------------------------
-         I, V      text _[#]  text            endnote number (all)
-         I, V      text _[C]                  center text (all)
-         I, V      text _[R]                  right justify text (all)
-         I, V      label _[E]                 equation number and label (all)
-         I, V      title _[T]                 table number and title (all)[1]
-         I, V      text _[G] term to link     link term to glossary (all)
-         I, V      text _[S] section link     link to section in doc (all)
+         I         text _[C]                  center text (all)
+         I         text _[R]                  right justify text (all)
+         I         math _[M]                  format ASCII math (all)
+         I         math _[L]                  format LaTeX math (all)
+         I         text _[#]  text            endnote number (all)
+         I         text _[G] term to link     link term to glossary (all)
+         I         text _[S] section link     link to section in doc (all)
          I, V      text _[D] report link      link to doc in report (all)
          I, V      text _[U] external url     external url link (all)
-         I, V      \-\-\-\-\-                 >4 dashes inserts line (all)[2]
-         I, V      \=\=\=\=\=                 >4 underscores inserts page (all)[2]
-         I         math _[L]                  format LaTeX math (all)
-         I         math _[A]                  format ASCII math (all)
+         I, V      label _[E]                 equation number and label (all)
+         I, V      title _[T]                 table number and title (all)[1]
 
          Args:
              tagS (str):  last two characers of tag symbol
@@ -84,18 +82,14 @@ class Tag:
 
          API         Syntax                    Description
         ------- -------------------------- ----------------------------------------
-        R        _[[WIN]] label, *wait;nowait*           Windows command script (all)
-        R        _[[MACOS]] label, *wait;nowait*         Mac shell script (all)
-        R        _[[LINUX]] label, *wait;nowait*         Linux shell script (all)
+        R        _[[SHELL]] label, *wait;nowait*         Windows command script (all)
         I, V     _[[INDENT]] spaces (4 default)          Indent (all)
         I, V     _[[ITALIC]] spaces (4 default)          Italic indent - (all)
         I, V     _[[ENDNOTES]] optional label            Endnote descriptions (all)
         I, V     _[[TEXT]] optional language             *literal*, code (all)
         I, V     _[[TOPIC]] topic                        Topic (all)
         T        _[[PYTHON]] label, *rvspace*;newspace   Python script (all)
-        T        _[[LATEX]] label                        LaTeX markup (pdf)[1]
-        T        _[[HTML]] label                         HTML markup (html)
-        T        _[[RST]] label                          reStructuredText markup (all)
+        T        _[[MARKUP]] label                       LaTeX markup (pdf)[1]
         D        _[[LAYOUT]] label                       Doc format settings (all)
         ALL      _[[END]]                                End block (all)
 
@@ -130,6 +124,15 @@ class Tag:
         self.rS = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
         # endregion
 
+    def lR(self):
+        """right justify text"""
+        # region
+        lineS = self.strLS
+        self.uS = lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.r2S = lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.rS = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
+        # endregion
+
     def lN(self):
         """number footnote"""
         # region
@@ -142,22 +145,7 @@ class Tag:
         self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
         # endregion
 
-    def lE(self):
-        """number equation"""
-        # region
-        lineS = self.strLS
-        enumI = int(self.lablD["equI"])
-        self.lablD["equI"] = enumI + 1
-        fillS = " [Eq " + str(enumI) + "]"
-        refS = lineS + fillS
-        self.uS = refS.rjust(self.lablD["widthI"]) + "\n"
-        self.r2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
-        self.rS = (
-            ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> \n\n"
-        )
-        # endregion
-
-    def lA(self):
+    def lM(self):
         """format sympy"""
         # region
         lineS = self.strLS
@@ -169,6 +157,16 @@ class Tag:
         self.uS = lineS + "\n"
         self.r2S = "\n\n.. code:: \n\n\n" + indlineS + "\n\n"
         self.rS = ".. code:: \n\n   " + indlineS + "\n\n"
+        # endregion
+
+    def lU(self):
+        "format url link"
+        # region
+        lineS = self.strLS
+        lineL = lineS.split(",")
+        self.uS = lineL[0] + ": " + lineL[1]
+        self.r2S = ".. _" + lineL[0] + ": " + lineL[1]
+        self.rS = ".. _" + lineL[0] + ": " + lineL[1]
         # endregion
 
     def lT(self):
@@ -183,54 +181,18 @@ class Tag:
         self.rS = "\n**Table " + fillS + "**: " + lineS
         # endregion
 
-    def lU(self):
-        "format url link"
+    def lE(self):
+        """number equation"""
         # region
         lineS = self.strLS
-        lineL = lineS.split(",")
-        self.uS = lineL[0] + ": " + lineL[1]
-        self.r2S = ".. _" + lineL[0] + ": " + lineL[1]
-        self.rS = ".. _" + lineL[0] + ": " + lineL[1]
-        # endregion
-
-    def lH(self):
-        "horizontal line"
-        # region
-        self.uS = "-" * 80
-        self.r2S = "-" * 80
-        self.rS = "-" * 80
-        # endregion
-
-    def lP(self):
-        "new page"
-        # region
-        pgnS = str(self.lablD["pageI"])
-        self.uS = (
-            "\n"
-            + "=" * (int(self.lablD["widthI"]) - 10)
-            + " Page "
-            + pgnS
-            + "\n"
-        )
-        # self.uS = self.lablD["headuS"].replace("p##", pagenoS)
-        self.lablD["pageI"] = int(pgnS) + 1
-        self.r2S = (
-            "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
-            + self.uS
-            + "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
-        )
+        enumI = int(self.lablD["equI"])
+        self.lablD["equI"] = enumI + 1
+        fillS = " [Eq " + str(enumI) + "]"
+        refS = lineS + fillS
+        self.uS = refS.rjust(self.lablD["widthI"]) + "\n"
+        self.r2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
         self.rS = (
-            "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
-            + self.uS
-            + "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
+            ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> \n\n"
         )
         # endregion
 
@@ -288,4 +250,37 @@ class Tag:
         self.lablD["tableI"] = tnumI + 1
         luS = "Table " + str(tnumI) + " - " + blockS
         lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
+        # endregion
+
+    def bP(self):
+        "new page"
+        # region
+        pgnS = str(self.lablD["pageI"])
+        self.uS = (
+            "\n"
+            + "=" * (int(self.lablD["widthI"]) - 10)
+            + " Page "
+            + pgnS
+            + "\n"
+        )
+        # self.uS = self.lablD["headuS"].replace("p##", pagenoS)
+        self.lablD["pageI"] = int(pgnS) + 1
+        self.r2S = (
+            "\n"
+            + "_" * self.lablD["widthI"]
+            + "\n"
+            + self.uS
+            + "\n"
+            + "_" * self.lablD["widthI"]
+            + "\n"
+        )
+        self.rS = (
+            "\n"
+            + "_" * self.lablD["widthI"]
+            + "\n"
+            + self.uS
+            + "\n"
+            + "_" * self.lablD["widthI"]
+            + "\n"
+        )
         # endregion

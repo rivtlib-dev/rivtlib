@@ -9,6 +9,7 @@
         "editor.lineHighlightBorder": "#34495d",
         "list.inactiveSelectionBackground": "#213148",
     },
+    "workbench.editor.tabSizing": "shrink",
     "terminal.integrated.fontSize": 16,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "vsicons.dontShowNewVersionMessage": true,
@@ -190,4 +191,5 @@
         "sympy",
     ],
     "cSpell.enabled": false,
+    "window.zoomLevel": 1,
 }

@@ -27,21 +27,19 @@ class Cmd:
 
      API        Command                                                RW   File Types
     ---------  ------------------------------------------------------- --- -----------------
-    rv.R        | LINUX | relative path | *wait;nowait*                 R     *.sh*
-    rv.R        | MACOS | relative path | *wait;nowait*                 R     *.sh*
-    rv.R        | WIN | relative path   | *wait;nowait*                 R     *.bat, .cmd*
-    rv.I, V     | IMAGE | relative path |  scale, caption (_[I])        R     *.png, .jpg*
-    rv.I, V     | IMAGE2 | relative path | s1, s2, c1, c2 (_[I])        R     *.png, jpg*
+    rv.R        | SHELL | relative path | *wait;nowait*                 R     *.sh*
+    rv.I, V     | IMAGE | relative path |  scale, caption, fignum       R     *.png, .jpg*
+    rv.I, V     | IMAGE2 | relative path | s1, s2, c1, c2               R     *.png, jpg*
     rv.I, V     | TABLE | relative path | width, l;c;r, title           R     *csv, txt, xlsx*
     rv.I, V     | TEXT | relative path |  *normal;literal* ;code        R     *txt, code*
     rv.V        | VALUES | relative path | label (_[T])                 R     *csv*
+    rv.V        | VALTABLE | relative path | width, l;c;r, title        R     *csv, txt, xlsx*
     rv.V       a := 1*IN  | unit1, unit2, decimal | descrip (_[E])[1]   W     define a value
-    rv.V       b <= a + 3*FT | unit1, unit2, decimal | descrip (_[E])   W     assign a value
+    rv.V       b <=: a + 3*FT | unit1, unit2, decimal | descrip (_[E])  W     assign a value
     rv.V       c <= func1(x,y) | unit1, unit2, decimal | descrip (_[E]) W     assign a value
     rv.V, T     | PYTHON | relative path | *rv-space*; userspace        R     *py*
-    rv.T        | HTML | relative path | label                          R     *html*
-    rv.T        | LATEX | relative path | label                         R     *tex*
-    rv.D        | ATTACH | relative path | cover_page_title             W     *pdf*
+    rv.T        | MARKUP | relative path | label                        R     *html*   *tex*
+    rv.D        | ATTACHPDF | relative path | cover_page_title          W     *pdf*
     rv.D        | PUBLISH | relative path | *pdf;pdftex;text;html*      W     *pdf, html, txt*
 
     """
@@ -329,115 +327,48 @@ class Cmd:
         self.eqrs = lineS + " - " + fillS + "\n"
         # endregion
 
-    def FIGURE(self):
-        """insert image
-
-        | FIGURE | rel. path file | scale factor, caption
-        """
-        # region
-        parL = self.parS.split(",")
-        capS = parL[1]
-        scS = parL[0].strip()
-        self.strpS = capS.strip()
-        self.cF()
-
-        try:
-            img1 = Image.open(self.inspS)
-            _display(img1)
-        except Exception:
-            pass
-
-        self.uS = self.uS + " [file: " + self.fileS + " ] \n"
-        self.r2s = (
-            "\n\n.. image:: "
-            + self.inspS
-            + "\n"
-            + "   :width: "
-            + scS
-            + " %"
-            + "\n"
-            + "   :align: center"
-            + "\n\n\n"
-            + ".. class:: center \n\n"
-            + "   "
-            + capS
-            + "\n\n"
-        )
-        self.rs = (
-            "\n\n.. image:: "
-            + self.inspS
-            + "\n"
-            + "   :width: "
-            + scS
-            + " %"
-            + "\n"
-            + "   :align: center"
-            + "\n\n\n"
-            + ".. class:: center \n\n"
-            + "   "
-            + capS
-            + "\n"
-        )
-
-        # endregion
-
-    def FIGURE2(self):
-        """insert side by side images
-
-        |IMG2| rel. pth, rel. pth | sf1, sf2, c1, c2 (_[F])
-        """
-        # region
-        # print(f"{parS=}")
-        parL = self.parS.split(",")
-        fileL = self.pthS.split(",")
-        file1P = Path(fileL[0])
-        file2P = Path(fileL[1])
-        cap1S = parL[0].strip()
-        cap2S = parL[1].strip()
-        scale1S = parL[2].strip()
-        scale2S = parL[3].strip()
-        figS = "Fig. "
-        if parL[2] == "_[F]":
-            numS = str(self.lablD["fnum"])
-            self.lablD["fnum"] = int(numS) + 1
-            figS = figS + numS + cap1S
-
-        self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
-        self.r2s = (
-            "\n.. image:: "
-            + self.pthS
-            + "\n"
-            + "   :scale: "
-            + scale1S
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n"
-        )
-        # endregion
-
     def IMAGE(self):
         """insert image
 
-        | IMAGE | rel. path file | scale factor
+        | FIGURE | rel. path file | caption, scale, fignum
         """
         # region
-        scS = self.parS.strip()
+        parL = self.parS.split(",")
+        capS = parL[0].strip()
+        scS = parL[1].strip()
+        figS = parL[2].strip()
+
+        if figS == "num":
+            numS = str(self.lablD["figI"])
+            self.lablD["fnum"] = int(numS) + 1
+            lablS = "Fig. " + numS + " "
+        else:
+            lablS = ""
+        if capS == "-":
+            capS = ""
+        lablS = lablS + capS + " "
+
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
+            self.uS = lablS
         except Exception:
-            pass
+            self.uS = lablS
 
-        self.uS = self.uS + " [file: " + self.fileS + " ] \n"
+        self.uS = "\n" + self.uS + " [file: " + self.fileS + " ] \n"
         self.r2s = (
             "\n\n.. image:: "
             + self.inspS
             + "\n"
             + "   :width: "
             + scS
+            + " %"
             + "\n"
             + "   :align: center"
+            + "\n\n\n"
+            + ".. class:: center \n\n"
+            + "   "
+            + capS
             + "\n\n"
         )
         self.rs = (
@@ -449,9 +380,12 @@ class Cmd:
             + " %"
             + "\n"
             + "   :align: center"
-            + "\n\n"
+            + "\n\n\n"
+            + ".. class:: center \n\n"
+            + "   "
+            + capS
+            + "\n"
         )
-
         # endregion
 
     def IMAGE2(self):
@@ -572,18 +506,16 @@ class Cmd:
         self.rs = fileS
         # endregion
 
-    def VALUES(self):
+    def VALTABLE(self):
         """read file and insert values
 
-        | VALUE | relative path | title (_[T])
+        | VALTABLE | relative path | title (_[T])
         """
         # region
         parL = self.parS.split(",")
         titleS = parL[0].strip()
-        sliceS = " "
         fiS = " [file: " + self.fileS + "]" + "\n\n"
-        if "_[T]" in parL[1]:
-            sliceS = parL[1].replace("_[T]", " ").strip()
+        if parL[2].strip() == "num":
             tnumI = int(self.lablD["tableI"])
             self.lablD["tableI"] = tnumI + 1
             fillS = str(tnumI)
@@ -602,6 +534,7 @@ class Cmd:
         with open(self.insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         # extract rows
+        sliceS = parL[1].strip()
         sliceL = sliceS.split(":")
         if sliceL[1].strip() == "0":
             sliceO = slice(int(sliceL[0]), len(readL))

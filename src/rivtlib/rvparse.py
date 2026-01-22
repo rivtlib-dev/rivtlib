@@ -11,25 +11,28 @@ from io import StringIO
 from pathlib import Path
 
 import tabulate
+from fastcore.utils import store_attr
 
 import __main__
 
 from . import rvcmd, rvtag
 
 
-class Section:
-    """convert rivt string to utf and reST doc strings"""
+class Rs:
+    """convert rivt string to formatted text and reST strings"""
 
-    def __init__(self, stS, sL, foldD, lablD, rivD):
-        """process section headers and preprocess string
+    def __init__(self, stS, rsL, foldD, lablD, rivtD, prflagB, rivtL):
+        """process logs, header and preprocess content
+
         Args:
             stS (str): section type
-            sL (list): rivt section lines
+            rsL (list): rivt string list
         """
-        # region
+        store_attr()
+        # region - write header to apilog
         apilogT = foldD["apilogT"]
         with open(apilogT, "a") as f4:
-            f4.write(sL[0] + "\n")
+            f4.write(rsL[0] + "\n")
         errlogT = foldD["errlogT"]
         warnings.filterwarnings("ignore")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
@@ -43,20 +46,15 @@ class Section:
             filemode="w",
         )
         self.logging = logging
-        self.foldD = foldD
-        self.lablD = lablD
-        self.rivD = rivD
-        self.stS = stS
         sutfS = ""  # utf doc
         srsrS = ""  # rst2pdf doc
         srstS = ""  # rest doc
         spL = []  # preprocessed lines
         # section header
-        hL = sL[0].split("|")
+        hL = rsL[0].split("|")
         lablD["docS"] = hL[0].strip()  # section title
         if hL[0].strip()[0:2] == "--":
-            lablD["docS"] = hL[0].split("--")[1][1]  # section title
-            sutfS = "\n"
+            lablD["docS"] = hL[0].split("--")[1][1]
             srsrS = "\n"
             srstS = "\n"
         else:
@@ -71,6 +69,12 @@ class Section:
             srstS = "\n" + headS + "\n" + bordrS
             print(sutfS)  # STDOUT section header
 
+        if not prflagB:
+            file_path = str(foldD["rivtT"])
+            for linenumI, lineS in enumerate(rivtL):
+                if rsL[0] in lineS:
+                    print(f"{file_path}:{linenumI + 1}\n")
+                    break
         try:
             paraL = hL[1].strip().split("|")
         except Exception:
@@ -99,7 +103,7 @@ class Section:
         self.srstS = srstS  # rest doc
 
         spL = []  # strip leading spaces and comments from section content
-        for slS in sL[1:]:
+        for slS in rsL[1:]:
             if len(slS) < 5:  # blank line to new line
                 slS = "\n"
                 spL.append(slS)
@@ -143,7 +147,7 @@ class Section:
         srstS = self.srstS
         foldD = self.foldD
         lablD = self.lablD
-        rivD = self.rivD
+        rivD = self.rivtD
 
         for slS in self.spL:  # loop over section lines
             # print(f"{slS=}")
