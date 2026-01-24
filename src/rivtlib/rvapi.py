@@ -57,9 +57,9 @@ from rivtlib import rvdoc, rvparse
 # region - rivt file name and paths
 rivtP = Path(os.getcwd())
 reptP = Path(os.path.dirname(rivtP))
-rivtT = Path(__main__.__file__)
-rivtN = (rivtT.name).strip()
-modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
+rivtN = os.path.basename(__main__.__file__)
+rivtT = Path(rivtP, rivtN)
+print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
 rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 
@@ -85,7 +85,7 @@ pubP = Path(rivtP, "publish")
 logsP = Path(storeP, "logs")
 # endregion
 
-# region - flags
+# region - rivt file flags
 prflagB = False
 rvsingleB = False
 with open(rivtT, "r") as f1:  # noqa: F405
@@ -119,7 +119,7 @@ warnings.filterwarnings("ignore")
 try:
     logging.basicConfig(
         level=logging.DEBUG,
-        format="%(asctime)-8s  " + modnameS + "   %(levelname)-8s %(message)s",
+        format="%(asctime)-8s  " + rbaseS + "   %(levelname)-8s %(message)s",
         datefmt="%m-%d %H:%M",
         filename=errlogT,
         filemode="w",
@@ -145,7 +145,7 @@ with open(apilogT, "w") as f4:
 
 # region - dictionaries
 rivtD = {
-    "rv_metaD": {
+    "metaD": {
         "authors": " - ",
         "version": " - ",
         "email": " - ",
@@ -155,7 +155,7 @@ rivtD = {
         "fork2": [" - "],
     },
 }
-rv_metaD = {}  # metadata
+metaD = {}  # metadata
 foldD = {  # folders
     "errlogT": errlogT,
     "apilogT": apilogT,
@@ -256,8 +256,8 @@ def doc_parse(rS, tS, tagL, cmdL):
     """
     global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
     rsL = rS.split("\n")
-    secC = rvparse.Rs(tS, rsL, foldD, lablD, rivtD, prflagB, rivtL)
-    sutfS, srs2S, srstS, foldD, lablD, rivtD = secC.content(tagL, cmdL)
+    conC = rvparse.Rs(tS, rsL, foldD, lablD, rivtD, prflagB, rivtL)
+    sutfS, srs2S, srstS, foldD, lablD, rivtD = conC.content(tS, tagL, cmdL)
     dutfS += sutfS
     drs2S += srs2S
     drstS += srstS
@@ -327,6 +327,7 @@ def V(rS):
         rS (str): rivt string
     """
     global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    compL = [" < ", " > ", " != ", " == ", " <= ", " >= "]
     cmdL = [
         "IMAGE",  # image from file
         "IMAGE2",  # adjacent image files
@@ -335,7 +336,7 @@ def V(rS):
         "PYTHON",  # execute Python file
         " =: ",  # define value
         " <=: ",  # assign value
-        [" < ", " > ", " != ", " == ", " <= ", " >= "],  # comparisons
+        compL,  # comparisons
     ]
     tagL = [
         "V]",  # var value

@@ -46,7 +46,7 @@ class Cmdp:
         self.pthS = ""
         self.parS = ""
         self.sL = sS.split("\n")
-        self.rvlocalB = foldD["rvlocalB"]
+        self.rvlocalB = foldD["rvsingleB"]
         self.rivtP = foldD["rivtP"]
         errlogT = foldD["errlogT"]
         apilogT = foldD["apilogT"]
@@ -137,10 +137,10 @@ class Cmdp:
         else:
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
 
-        verS = "  v" + self.rivD["rv_metaD"]["version"]
+        verS = "  v" + self.rivD["metaD"]["version"]
         doctitleS = self.foldD["rbaseS"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        authorS = self.rivD["rv_metaD"]["authors"]
+        authorS = self.rivD["metaD"]["authors"]
         borderS = "=" * 80
         hdlS = timeS + " | " + authorS + " | " + doctitleS + verS
         headS = "\n" + hdlS.rjust(80) + "\n" + borderS + "\n"
@@ -180,8 +180,8 @@ class Cmdp:
         # add layout info
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.foldD["rbaseS"]
-        authorS = self.rivD["rv_metaD"]["authors"]
-        verS = "  v" + self.rivD["rv_metaD"]["version"]
+        authorS = self.rivD["metaD"]["authors"]
+        verS = "  v" + self.rivD["metaD"]["version"]
         spaceS = "  |  "
         headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
         headerS = f"""
@@ -224,7 +224,6 @@ class Cmdp:
         rvstyleP = os.path.join(
             pypathS, "Lib", "site-packages", "rivtlib", "styles"
         )
-
         rvfileS = self.foldD["rbaseS"] + ".rst2"
         rvdocS = self.foldD["rbaseS"] + ".pdf"
         if self.rvlocalB:
@@ -233,12 +232,11 @@ class Cmdp:
         else:
             rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
-
         # add layout info
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.foldD["rbaseS"]
-        authorS = self.rivD["rv_metaD"]["authors"]
-        verS = "  v" + self.rivD["rv_metaD"]["version"]
+        authorS = self.rivD["metaD"]["authors"]
+        verS = "  v" + self.rivD["metaD"]["version"]
         spaceS = "  |  "
         footS = spaceS + timeS + spaceS + authorS + spaceS + doctitleS + verS
         pageS = "Page ###Page### of ###Total###"

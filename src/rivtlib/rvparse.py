@@ -68,7 +68,7 @@ class Rs:
             srsrS = "\n" + headS + "\n" + bordrS
             srstS = "\n" + headS + "\n" + bordrS
             print(sutfS)  # STDOUT section header
-
+        # insert interactive link
         if not prflagB:
             file_path = str(foldD["rivtT"])
             for linenumI, lineS in enumerate(rivtL):
@@ -96,12 +96,10 @@ class Rs:
                 foldD["publicB"] = False
             if "public" in paraL:
                 foldD["publicB"] = True
-
-        self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
         self.sutfS = sutfS  # utf doc
         self.srsrS = srsrS  # rst2pdf doc
         self.srstS = srstS  # rest doc
-
+        self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
         spL = []  # strip leading spaces and comments from section content
         for slS in rsL[1:]:
             if len(slS) < 5:  # blank line to new line
@@ -113,16 +111,14 @@ class Rs:
             if "." * 5 in slS:  # page break to tag
                 slS = "    _[P]"
             spL.append(slS[4:])
-
         self.spL = spL  # preprocessed list
-        self.stS = stS  # section type
         # endregion
 
-    def content(self, tagL, cmdL):
-        """parse section content
+    def content(self, tS, tagL, cmdL):
+        """parse content substring
         Args:
-            tagL (list): list of valid tags
-            cmdL (list): list of valid commands
+            tagL (list): tag list
+            cmdL (list): command list
         Returns:
             sutfS (str): utf doc string
             srsrS (str): rst2pdf doc string
@@ -221,33 +217,54 @@ class Rs:
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # verify scope
-                    cmC = rvcmd.Cmd(foldD, lablD, rivD, rivL, parL)
+                    cmC = rvcmd.Cmd(self.stS, foldD, lablD, rivD, rivL, parL)
                     uS, rS, xS, foldD, lablD, rivD, rivL = cmC.cmdx(cmdS)
                     sutfS += uS + "\n"
                     srsrS += rS + "\n"
                     srstS += xS + "\n"
                     print(uS)  # STDOUT- command
                     continue
-            if ":=" in slS:
-                if ":=" in cmdL:
-                    lineS = slS.strip()
-                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.vdefine(
-                        lineS
-                    )
-                    tabL.append(tbL)
-                    continue
-            if "<=" in slS:
-                if "<=" in cmdL:
-                    lineS = slS.strip()
-                    tC = rvcmd.Cmd(foldD, lablD, rivD, rivL, lineS)
-                    uS, rS, xS, foldD, lablD, rivD, rivL = tC.vassign(lineS)
-                    sutfS += uS + "\n"
-                    srsrS += rS + "\n"
-                    srstS += xS + "\n"
-                    print(uS)  # STDOUT - equation table
-                    continue
-            elif "_[" in slS:  # tags
+            if tS == "V":  # compare
+                if " =: " in slS:
+                    if " =: " in cmdL:
+                        lineS = slS.strip()
+                        tC = rvcmd.Cmd(
+                            self.stS, foldD, lablD, rivD, rivL, lineS
+                        )
+                        uS, rS, xS, foldD, lablD, rivD, rivL, tbL = tC.vdefine(
+                            lineS
+                        )
+                        tabL.append(tbL)
+                        continue
+                if " <=: " in slS:
+                    if " <=: " in cmdL:
+                        lineS = slS.strip()
+                        tC = rvcmd.Cmd(
+                            self.stS, foldD, lablD, rivD, rivL, lineS
+                        )
+                        uS, rS, xS, foldD, lablD, rivD, rivL = tC.vassign(lineS)
+                        sutfS += uS + "\n"
+                        srsrS += rS + "\n"
+                        srstS += xS + "\n"
+                        print(uS)  # STDOUT - equation table
+                        continue
+                for subS in cmdL[7]:
+                    if subS in slS:
+                        matchS = subS
+                        lineS = slS.strip()
+                        tC = rvcmd.Cmd(
+                            self.stS, foldD, lablD, rivD, rivL, lineS
+                        )
+                        uS, rS, xS, foldD, lablD, rivD, rivL = tC.vcompare(
+                            lineS, matchS
+                        )
+                        sutfS += uS + "\n"
+                        srsrS += rS + "\n"
+                        srstS += xS + "\n"
+                        print(uS)  # STDOUT - equation table
+                        continue
+                continue
+            if "_[" in slS:  # tags
                 slL = slS.split("_[")
                 lineS = slL[0].strip()
                 tagS = slL[1].strip()
@@ -275,7 +292,7 @@ class Rs:
         # export values file
         if self.stS == "V" and len(rivL) > 0:
             fileS = lablD["valprfx"] + str(lablD["secnumI"]) + ".csv"
-            if foldD["rvlocalB"]:
+            if foldD["rvsingleB"]:
                 fileP = Path(foldD["val_P"], fileS)
             else:
                 fileP = Path(foldD["val_P"], fileS)
