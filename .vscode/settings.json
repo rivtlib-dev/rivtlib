@@ -113,7 +113,7 @@
                 "name": "ExplorerSort",
                 "color": "yellow",
                 "useVsCodeApi": true,
-                "command": "extension.toggleExplorerSortOrder",
+                "command": "settings.cycle.ExplorerSort1",
             },
         ]
     },
@@ -136,8 +136,8 @@
     "explorer.sortOrder": "type",
     "settings.cycle": [
         {
-            "id": "explorerSort2", // must be unique
-            "overrideWorkspaceSettings": false,
+            "id": "ExplorerSort1", // must be unique
+            "overrideWorkspaceSettings": true,
             "values": [
                 {
                     "explorer.sortOrder": "name"

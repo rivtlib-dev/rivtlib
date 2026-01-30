@@ -14,33 +14,14 @@ import __main__
 
 
 class Cmdp:
-    """publish object
-
-    syntax:
-        | PUBLISH| init rel. path | text, html, rst2pdf, texpdf
-        | APPEND | rel. path | doc;report
-        | PREPEND | rel. path | doc;report
-
+    """Publish object
+    Args:
+        foldD (dict): folders
+        lablD (dict): labels
+        sS (str): section text
     """
 
-    def __init__(
-        self,
-        sS,
-        foldD,
-        lablD,
-        cmdL,
-        tagL,
-        dutfS,
-        dr2pS,
-        drstS,
-        rivD,
-    ):
-        """Publish object
-        Args:
-            foldD (dict): folders
-            lablD (dict): labels
-            sS (str): section text
-        """
+    def __init__(self, sS, foldD, lablD, cmdL, tagL, dutfS, dr2pS, drstS, rivD):
         # region
         store_attr()
         self.pthS = ""
@@ -82,11 +63,11 @@ class Cmdp:
     def cmdx(self):
         """parse commands and blocks in D API
         Commands:
-            | PUBLISH | init rel. path | text; rst2pdf; texpdf
-            | APPEND | relative path | report;doc
-            | PREPEND | relative path | report;doc
+            | PUBLISH | doc name; - | text; html; rlabpdf; texpdf
+            | ATTACHPDF | rel. path | prepend;append
 
-        blocks:
+        Blocks:
+            _[[METADATA]]
             _[[LAYOUT]]
             _[[END]]
 
@@ -107,7 +88,7 @@ class Cmdp:
                     # print(dtypeS)
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
-                elif pL[0].strip() == "APPEND":
+                elif pL[0].strip() == "ATTACHPDF":
                     dtypeS = "appendx"
                     self.pthS = pL[1].strip()
                     self.parS = pL[2].strip()
@@ -213,7 +194,7 @@ class Cmdp:
 
         return "rvdoc written: " + rvdocS + "\n" + "readme written: README.txt"
 
-    def rst2pdfx(self):
+    def rlabpdfOkx(self):
         """write rst2pdf doc and readme file
 
         Returns:
