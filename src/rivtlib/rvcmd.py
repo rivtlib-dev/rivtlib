@@ -73,17 +73,9 @@ class Cmd:
         self.rs = ""
         self.insP = Path(foldD["rivtP"], self.fileS)
         self.inspS = str(self.insP.as_posix())
-        rivimp = vars(rvunit)
-        self.rivD = rivD | rivimp
+        rvunitD = vars(rvunit)
+        self.rivD = rivD | rvunitD
         # endregion
-
-    def prRed(self, s):
-        # s is the string, 91m sets the color to bright red
-        return f"\033[91m{s}\033[00m"
-
-    def prGreen(self, s):
-        # 92m sets the color to bright green
-        return f"\033[92m{s}\033[00m"
 
     def cmdx(self, cmdS):
         """parse section
@@ -93,7 +85,6 @@ class Cmd:
         Returns:
             uS, rS, xS, foldD, lablD, rivD, rivL
         """
-        # region
         method = getattr(self, cmdS)
         method()
 
@@ -106,73 +97,6 @@ class Cmd:
             self.rivD,
             self.rivL,
         )
-        # endregion
-
-    def vdefine(self, valS):
-        """define value :=
-
-            a := .5 * 2*IN | unit1, unit2, decimal | ref
-
-        Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL, tbL
-
-        """
-
-        # region
-        tbL = []
-        vaL = valS.split("|")
-        # print(f"{valS=}")
-        # print(f"{vaL=}")
-        eqS = vaL[0].strip()
-        eqS = eqS.replace(" =: ", " = ")
-        varS = eqS.split("=")[0].strip()
-        valS = eqS.split("=")[1].strip()
-        unitL = vaL[1].split(",")
-        unit1S, unit2S, dec1S = (
-            unitL[0].strip(),
-            unitL[1].strip(),
-            unitL[2].strip(),
-        )
-        descripS = vaL[2].strip()
-        # rivL append
-        exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
-        self.rivL.append(exvS)
-        # rivD append
-        try:
-            exec(eqS, globals(), self.rivD)
-        except ValueError as ve:
-            print(f"A ValueError occurred: {ve}")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-        # format
-        decS = "%." + dec1S + "f"
-        Unum.set_format(value_format=decS, auto_norm=False, unitless="")
-        valU = eval(varS, {}, self.rivD)
-        if type(valU) is Unum:
-            val2S = str(valU.cast_unit(eval(unit2S)))
-            val1U = valU.cast_unit(eval(unit1S))
-            if val1U.number() == 1.0:
-                val1S = str((1 + 10**-10) * val1U)
-            else:
-                val1S = str(valU.cast_unit(eval(unit1S)))
-        else:
-            val1S = str(valU)
-            val2S = str(valU)
-        # print(f"{self.rivtvD=}")
-        self.rivD[varS] = valU  # rivt dictionary
-        tbL = [varS, val1S, val2S, descripS]  # append row
-
-        return (
-            self.uS,
-            self.r2s,
-            self.rs,
-            self.foldD,
-            self.lablD,
-            self.rivD,
-            self.rivL,
-            tbL,
-        )
-        # endregion
 
     def vassign(self, aeqS):
         """format equation and assign value
@@ -263,8 +187,8 @@ class Cmd:
             )
         )
         uS += output.getvalue()
-        r2S += output.getvalue()
-        rS += output.getvalue()
+        r2S += output.getvalue() + "\n"
+        rS += output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
 
@@ -319,6 +243,183 @@ class Cmd:
         )
 
     # endregion
+
+    def vfunc(self, aeqS):
+        """format function and assign value
+
+            equation tag  <=:
+            a :=: b + 2 | unit1, unit2, decimal | ref
+
+        Returns:
+            uS, r2S, rS, foldD, lablD, rivD, rivL
+        """
+        # region
+        lpL = aeqS.split("|")
+        eqS = lpL[0]
+        eqS = eqS.replace(" :=: ", " = ").strip()
+        unit1S, unit2S, dec1S = lpL[1].split(",")
+        unit1S, unit2S, dec1S = unit1S.strip(), unit2S.strip(), dec1S.strip()
+        refS = lpL[2].strip()
+        decS = "%." + dec1S + "f"
+        Unum.set_format(value_format=decS, auto_norm=True, unitless="")
+        # print(dir(Unum.set_format))
+        # wI = self.lablD["widthI"]
+
+        # symbolic equation
+        spL = eqS.split("=")
+        spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+        eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+        eq1S = textwrap.indent(eq1S, "    ")
+        if "_[E]" in refS:
+            refS = refS.replace("_[E]", "")
+            enumI = int(self.lablD["equI"])
+            self.lablD["equI"] = enumI + 1
+            fillS = " [Eq " + str(enumI) + "]"
+            refS = refS + fillS
+            equS = refS.rjust(self.lablD["widthI"]) + "\n"
+            eqr2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
+            eqrS = (
+                ".. raw:: html\n\n"
+                + '   <p align="right">'
+                + refS
+                + "</p> \n\n"
+            )
+        else:
+            refS = refS.rjust(self.lablD["widthI"])
+            eqr2S = refS + "\n"
+            eqrS = (
+                ".. raw:: html\n\n"
+                + '   <p align="right">'
+                + refS
+                + "</p> +\n\n"
+            )
+
+        if unit1S != "-":
+            exec(eqS, globals(), self.rivD)
+        else:
+            cmdS = spL[0] + " = " + spL[1]
+            exec(cmdS, globals(), self.rivD)
+
+        uS = "\n" + equS + "\n" + eq1S + "\n\n"
+        r2S = "\n\n" + eqr2S + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
+        rS = "\n\n" + eqrS + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
+
+        # rivD append
+        valU = eval(spL[0], globals(), self.rivD)
+        self.rivD[spL[0]] = valU
+
+        # result table
+        hdr1L = []
+        tbl1L = []
+        hdr1L.append(spL[0])
+        hdr1L.append("[" + spL[0] + "]")
+        alignL = ["center", "center"]
+        tblfmt = "rst"
+        tblL = [tbl1L]
+        val1U = valU.cast_unit(eval(unit1S))
+        val2U = valU.cast_unit(eval(unit2S))
+        tbl1L.append(str(val1U))
+        tbl1L.append(str(val2U))
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tblL,
+                tablefmt=tblfmt,
+                headers=hdr1L,
+                showindex=False,
+                colalign=alignL,
+            )
+        )
+        uS += output.getvalue()
+        r2S += output.getvalue() + "\n"
+        rS += output.getvalue() + "\n"
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+
+        # rivL append
+        ex2S = spL[0].strip() + " = " + str(val1U)
+        exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
+        self.rivL.append(exvS)
+
+        return (
+            uS,
+            r2S,
+            rS,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
+        )
+
+    # endregion
+
+    def vdefine(self, valS):
+        """define value :=
+
+            a := .5 * 2*IN | unit1, unit2, decimal | ref
+
+        Returns:
+            uS, r2S, rS, foldD, lablD, rivD, rivL, tbL
+
+        """
+
+        # region
+        tbL = []
+        vaL = valS.split("|")
+        # print(f"{valS=}")
+        # print(f"{vaL=}")
+        eqS = vaL[0].strip()
+        eqS = eqS.replace(" ==: ", " = ")
+        varS = eqS.split("=")[0].strip()
+        valS = eqS.split("=")[1].strip()
+        unitL = vaL[1].split(",")
+        unit1S, unit2S, dec1S = (
+            unitL[0].strip(),
+            unitL[1].strip(),
+            unitL[2].strip(),
+        )
+        descripS = vaL[2].strip()
+        # rivL append
+        exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
+        self.rivL.append(exvS)
+        # rivD append
+        try:
+            exec(eqS, globals(), self.rivD)
+        except ValueError as ve:
+            print(f"A ValueError occurred: {ve}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+        # format
+        decS = "%." + dec1S + "f"
+        Unum.set_format(value_format=decS, auto_norm=False, unitless="")
+        valU = eval(varS, {}, self.rivD)
+        if type(valU) is Unum:
+            val2S = str(valU.cast_unit(eval(unit2S)))
+            val1U = valU.cast_unit(eval(unit1S))
+            if val1U.number() == 1.0:
+                val1S = str((1 + 10**-10) * val1U)
+            else:
+                val1S = str(valU.cast_unit(eval(unit1S)))
+        else:
+            val1S = str(valU)
+            val2S = str(valU)
+        # print(f"{self.rivtvD=}")
+        self.rivD[varS] = valU  # rivt dictionary
+        tbL = [varS, val1S, val2S, descripS]  # append row
+
+        return (
+            self.uS,
+            self.r2s,
+            self.rs,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
+            tbL,
+        )
+        # endregion
 
     def vcompare(self, compS, opS):
         """compare values
@@ -385,8 +486,9 @@ class Cmd:
         valU = eval(spL[1], globals(), self.rivD)
         val2U = valU.cast_unit(eval(unitS))
         val1L = [val1U, opS, val2U]
+        valsepL = ["---", "---", "---"]
         val2L = [val1U / val2U, "ratio", val2U / val1U]
-        tblL = [val1L, val2L]
+        tblL = [val1L, valsepL, val2L]
         # tabulate
         sys.stdout.flush()
         old_stdout = sys.stdout
@@ -401,18 +503,20 @@ class Cmd:
             )
         )
         uS += "\n" + output.getvalue()
-        r2S += "\n" + output.getvalue()
-        rS += "\n" + output.getvalue()
+        r2S += "\n" + output.getvalue() + "\n"
+        rS += "\n" + output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
         # compare
         resultB = eval(eqS, {}, self.rivD)
         chkS = ""
         if resultB:
-            chkS = self.prGreen(trueS)
+            chkS = "\033[92m" + trueS + "\033[00m"
+            chktxtS = trueS
         else:
-            chkS = self.prRed(falseS)
-        uS += "\n" + chkS.rjust(self.lablD["widthI"]) + "\n"
+            chkS = "\033[91m" + falseS + "\033[00m"
+            chktxtS = falseS
+        uS += "\n" + chktxtS.rjust(self.lablD["widthI"]) + "\n"
         r2S += "\n.. class:: right\n\n   " + chkS + "\n\n\n"
         rS += (
             "\n"

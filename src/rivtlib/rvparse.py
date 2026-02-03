@@ -63,7 +63,7 @@ class Rs:
             snumS = "[ " + str(snumI) + stS.lower() + " ]"
             headS = snumS + " " + hL[0].strip()
             headS = snumS + " " + hL[0].strip()
-            bordrS = lablD["widthI"] * "-"
+            bordrS = lablD["widthI"] * "-" + "\n"
             sutfS = "\n" + headS + "\n" + bordrS
             srsrS = "\n" + headS + "\n" + bordrS
             srstS = "\n" + headS + "\n" + bordrS
@@ -225,8 +225,8 @@ class Rs:
                     print(uS)  # STDOUT- command
                     continue
             if tS == "V":  # compare
-                if " =: " in slS:
-                    if " =: " in cmdL:
+                if " ==: " in slS:
+                    if " ==: " in cmdL:
                         lineS = slS.strip()
                         tC = rvcmd.Cmd(
                             self.stS, foldD, lablD, rivD, rivL, lineS
@@ -248,7 +248,19 @@ class Rs:
                         srstS += xS + "\n"
                         print(uS)  # STDOUT - equation table
                         continue
-                for subS in cmdL[7]:
+                if " :=: " in slS:
+                    if " :=: " in cmdL:
+                        lineS = slS.strip()
+                        tC = rvcmd.Cmd(
+                            self.stS, foldD, lablD, rivD, rivL, lineS
+                        )
+                        uS, rS, xS, foldD, lablD, rivD, rivL = tC.vfunc(lineS)
+                        sutfS += uS + "\n"
+                        srsrS += rS + "\n"
+                        srstS += xS + "\n"
+                        print(uS)  # STDOUT - equation table
+                        continue
+                for subS in cmdL[8]:
                     if subS in slS:
                         matchS = subS
                         lineS = slS.strip()

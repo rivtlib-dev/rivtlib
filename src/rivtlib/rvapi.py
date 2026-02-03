@@ -334,8 +334,9 @@ def V(rS):
         "TABLE",  # table from file
         "VALTABLE",  # value table from file
         "PYTHON",  # execute Python file
-        " =: ",  # define value
+        " ==: ",  # define value
         " <=: ",  # assign value
+        " :=: ",  # assign value
         compL,  # comparisons
     ]
     tagL = [

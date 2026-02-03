@@ -133,7 +133,7 @@
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "explorer.compactFolders": false,
-    "explorer.sortOrder": "type",
+    "explorer.sortOrder": "name",
     "settings.cycle": [
         {
             "id": "ExplorerSort1", // must be unique

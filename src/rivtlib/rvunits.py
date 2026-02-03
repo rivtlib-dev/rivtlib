@@ -74,9 +74,10 @@ WB = new_unit("Wb", VO * SIEMENS, "weber")
 TS = new_unit("TS", WB / M**2, "tesla")
 HENRY = new_unit("H", WB / A, "henry")
 #
+#
 # ============  DO NOT MODIFY FILE ABOVE THIS LINE  ===========================
 #
-# -------------------------------- metric
+# --------------------------------------------------- metric
 #
 G = new_unit("G", 9.80665 * M / S**2, "gravity acceleration")
 # pressure
@@ -87,8 +88,8 @@ kPA = new_unit("kPA", PA * (10**3), "kilopascals")
 kN = new_unit("kN", N * (10**3), "kilonewton")
 MN = new_unit("mN", N * (10**6), "meganewton")
 km = new_unit("kM", M * (10**3), "kilometer")
-kNm3_ = new_unit("kNm3_", kN / (M**3), "kilonewton per cubic meter")
-kNm_ = new_unit("kNm_", kN / (M), "kilonewton per meter")
+kN_m3 = new_unit("kN_m3", kN / (M**3), "kilonewton per cubic meter")
+kN_m = new_unit("kN_m", kN / (M), "kilonewton per meter")
 mkN = new_unit("mkN", (kN * M), "meter-kilonewton")
 # area
 sqm = new_unit("sqm", (M**2), "square meter")
@@ -96,7 +97,7 @@ cm2 = new_unit("cm2", (cm**2), "square centimeter")
 cm3 = new_unit("cm3", (cm**3), "cubic centimeter")
 cm4 = new_unit("cm4", (cm**4), "cm to fourth power")
 #
-# ------------------------------ imperial
+# ------------------------------------------------- imperial
 #
 # length
 inch = new_unit("inch", M / 39.370079, "inch")
@@ -120,7 +121,7 @@ in3 = new_unit("in3", inch**3, "cubic inches")
 in4 = new_unit("in4", inch**4, "inches to fourth power")
 # pressure
 psf = new_unit("psf", lbf / ft**2, "pounds per square foot")
-lbin2_ = new_unit("lbin2_", lbf / inch**2, "pounds per square inch")
+lb_in2 = new_unit("lb_in2", lbf / inch**2, "pounds per square inch")
 ksf = new_unit("ksf", kips / ft**2, "kips per square foot")
 ksi = new_unit("ksi", kips / inch**2, "kips per square inch")
 # density

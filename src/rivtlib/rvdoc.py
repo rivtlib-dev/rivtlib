@@ -21,7 +21,9 @@ class Cmdp:
         sS (str): section text
     """
 
-    def __init__(self, sS, foldD, lablD, cmdL, tagL, dutfS, dr2pS, drstS, rivD):
+    def __init__(
+        self, sS, foldD, lablD, cmdL, tagL, dutfS, drlabS, drstS, rivD
+    ):
         # region
         store_attr()
         self.pthS = ""
@@ -137,6 +139,91 @@ class Cmdp:
 
         return "rvdoc written: " + rvdocS + "\n" + "readme written: README.txt"
 
+    def rlabpdfx(self):
+        """write rst2pdf doc and readme file
+
+        Returns:
+            msgS (str): completion message
+        """
+        # region
+        pypathS = os.path.dirname(sys.executable)
+        rvstyleP = os.path.join(
+            pypathS,
+            "Lib",
+            "site-packages",
+            "rivtlib",
+            "styles",
+        )
+        rvfileS = self.foldD["rbaseS"] + ".rst2"
+        rvdocS = self.foldD["rbaseS"] + ".pdf"
+        if self.rvlocalB:
+            rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
+            rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
+        else:
+            rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
+            rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        doctitleS = self.foldD["rbaseS"]
+        authorS = self.rivD["metaD"]["authors"]
+        verS = "  v" + self.rivD["metaD"]["version"]
+        spaceS = "  |  "
+        logoS = "logo.png"
+        lineS = str(Path(rvstyleP, "line.png"))
+        print("ccccc", lineS)
+        footS = spaceS + timeS + spaceS + authorS + spaceS + doctitleS + verS
+        pageS = "Page ###Page### of ###Total###"
+        pgtemp = ".. raw:: pdf \n\n    PageBreak decoratedPage\n\n "
+        self.docrlabS = pgtemp + self.drlabS
+        headfootS = f"""
+
+.. |mylogo| image:: {logoS}
+   :width: 150px
+   :align: middle
+
+.. |myline| image:: {lineS}
+   :width: 2400px
+   :align: middle
+
+.. header::
+    {pageS}
+
+.. footer::
+    |myline|
+
+    |mylogo|  {footS}
+
+"""
+
+        self.docrlabS = self.docrlabS + "\n" + headfootS
+
+        with open(rvfileT, "w", encoding="utf-8") as f5:
+            f5.write(self.drlabS)
+        with open("README.txt", "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
+
+        iniP = str(Path(rvstyleP, "layout.ini"))
+        fontP = str(Path(rvstyleP, "fonts"))
+        yamlS = "rlabpdf.yaml"
+        cmd1S = "rst2pdf " + rvfileT  # input
+        cmd2S = " -o " + rvdocT  # output
+        cmd3S = " --config=" + iniP  # config
+        cmd4S = " --font-path=" + fontP  # fonts
+        cmd5S = " --stylesheet-path=" + rvstyleP  # style path
+        cmd6S = " --stylesheets=" + yamlS  # styles
+        rlabcmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
+        print("rlabcmdS=", rlabcmdS)
+        try:
+            result = subprocess.run(rlabcmdS, shell=True, check=True)
+            if not result.returncode:
+                print("\nrst2pdf script executed successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing script: {e}")
+            print("Stderr:", e.stderr)
+        except FileNotFoundError:
+            print(f"Error: Script not found at {rvfileT}")
+
+        return "rvdoc written: " + rvdocS + "\n" + "readme written: README.txt"
+
     def htmlx(self):
         """write html doc and readme file
 
@@ -186,90 +273,6 @@ class Cmdp:
             result = subprocess.run(htmlcmdS, shell=True, check=True)
             if not result.returncode:
                 print("\nHTML script executed successfully.")
-        except subprocess.CalledProcessError as e:
-            print(f"Error executing script: {e}")
-            print("Stderr:", e.stderr)
-        except FileNotFoundError:
-            print(f"Error: Script not found at {rvfileT}")
-
-        return "rvdoc written: " + rvdocS + "\n" + "readme written: README.txt"
-
-    def rlabpdfOkx(self):
-        """write rst2pdf doc and readme file
-
-        Returns:
-            msgS (str): completion message
-        """
-        # region
-        pypathS = os.path.dirname(sys.executable)
-        rvstyleP = os.path.join(
-            pypathS, "Lib", "site-packages", "rivtlib", "styles"
-        )
-        rvfileS = self.foldD["rbaseS"] + ".rst2"
-        rvdocS = self.foldD["rbaseS"] + ".pdf"
-        if self.rvlocalB:
-            rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
-        else:
-            rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
-        # add layout info
-        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        doctitleS = self.foldD["rbaseS"]
-        authorS = self.rivD["metaD"]["authors"]
-        verS = "  v" + self.rivD["metaD"]["version"]
-        spaceS = "  |  "
-        footS = spaceS + timeS + spaceS + authorS + spaceS + doctitleS + verS
-        pageS = "Page ###Page### of ###Total###"
-        pgtemp = ".. raw:: pdf \n\n    PageBreak decoratedPage\n\n "
-        self.dr2pS = pgtemp + self.dr2pS
-        headfootS = f"""
-
-.. |mylogo| image:: ./logo.png
-   :width: 150px
-   :align: middle
-
-.. |myline| image:: ./line3.png
-   :width: 2400px
-   :align: middle
-
-   
-.. header::
-    {pageS}
-
-.. footer::
-    |myline|
-
-    |mylogo|  {footS}
-
-"""
-
-        # |mylogo|  {footS}  {pageS}
-        self.dr2pS = self.dr2pS + "\n" + headfootS
-
-        with open(rvfileT, "w", encoding="utf-8") as f5:
-            f5.write(self.dr2pS)
-        with open("README.txt", "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
-
-        iniP = str(Path(rvstyleP, ".ini"))
-        fontP = str(Path(rvstyleP, "fonts"))
-        yamlS = "singledoc.yaml"
-
-        cmd1S = "rst2pdf " + rvfileT  # input
-        cmd2S = " -o " + rvdocT  # output
-        cmd3S = " --config=" + iniP  # config
-        cmd4S = " --font-path=" + fontP  # fonts
-        cmd5S = " --stylesheet-path=" + rvstyleP  # style path
-        cmd6S = " --stylesheets=" + yamlS  # styles
-        rst2cmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
-        # print("rst2cmdS=", rst2cmdS)
-        #
-
-        try:
-            result = subprocess.run(rst2cmdS, shell=True, check=True)
-            if not result.returncode:
-                print("\nrst2pdf script executed successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
