@@ -94,7 +94,6 @@ class Cmdp:
             msgS (str): completion message
         """
         # region
-
         typeS = ""
         msgS = ""
         ptempS = ""
@@ -168,12 +167,21 @@ class Cmdp:
         self.footerS = self.configL["general"]["footer"]
         self.pagesizeS = self.configL["general"]["pagesize"]
         self.marginS = self.configL["general"]["margins"]
-        self.headerS = self.configL["rlabpdf"]["header"]
-        self.styleS = self.configL["rlabpdf"]["stylesheet"]
-        self.coverS = self.configL["rlabpdf"]["cover"]
+        self.rlabheaderS = self.configL["rlabpdf"]["header"]
+        self.rlabstyleS = self.configL["rlabpdf"]["stylesheet"]
+        self.rlabcoverS = self.configL["rlabpdf"]["cover"]
 
     def metadatax(self):
-        print("metadata")
+        """read meta block as config file
+
+        Returns:
+            msgS (str): completion message
+        """
+
+        self.configL = configparser.ConfigParser()
+        self.configL.read_string(self.blockS)
+        self.authorS = self.configL["primary"]["authors"]
+        self.versionS = self.configL["primary"]["version"]
 
     def attachpdfx(self):
         """_summary_"""
@@ -196,6 +204,7 @@ class Cmdp:
             "rivtlib",
             "styles",
         )
+        versionS = "v-0"
         rvfileS = self.foldD["rbaseS"] + ".rst2"
         rvdocS = self.foldD["rbaseS"] + ".pdf"
         if self.rvlocalB:
@@ -207,41 +216,45 @@ class Cmdp:
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
             rvsrcP = Path(self.foldD["srcP"])
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        doctitleS = self.docnameS
-        authorS = self.rivD["metaD"]["authors"]
-        verS = "  v" + self.rivD["metaD"]["version"]
-        print("doc name:  ", doctitleS)
-
-        footS = (
-            "   |  "
-            + " " * 30
-            + timeS
-            + "  |  "
+        doctitleS = "**" + self.docnameS + "**"
+        versionS = "v-" + self.versionS.strip()
+        authorS = self.authorS.strip()
+        footblkS = (
+            doctitleS
+            + "  **|**  "
             + authorS
-            + "  |  "
-            + doctitleS
-            + verS
+            + "  **|**  "
+            + timeS
+            + "  **|**  "
+            + versionS
+            + "\n"
+        )
+        pageS = "   Page ###Page### of ###Total###"
+        imglogoS = " " + self.logopathS
+        imgS = (
+            ".. |blklogo| image::"
+            + imglogoS
+            + "\n"
+            + "   :width: 175px\n"
+            + "   :alt: logo\n\n"
         )
 
-        pageS = "   Page ###Page### of ###Total###"
-        imglogoS = self.logopathS
-        gsizeS = "\n      :width: 150px \n      :align: right\n\n"
-
-        headfootS = (
-            ".. header::\n\n"
-            + pageS
-            + "\n\n"
-            + ".. footer:: \n\n"
-            + "   .. image:: "
-            + imglogoS
-            + gsizeS
-            + "\n\n"
+        headS = ".. header::\n\n" + pageS + "\n\n"
+        footS = (
+            ".. footer:: \n\n"
+            + "   .. list-table::\n"
+            + "      :class: foottable2\n"
+            + "      :align: center\n"
+            + "      :widths: 88 12\n"
+            + " \n"
+            + "      * - "
+            + footblkS
+            + "        - |blklogo|\n\n"
         )
 
         pgtemp = ".. contents:: " + self.docnameS + "\n   :depth: 2 \n\n "
-        # pgtemp = ".. raw:: pdf \n\n    PageBreak decoratedPage\n\n "
         self.drlabS = pgtemp + self.drlabS
-        self.drlabS = self.drlabS + "\n" + headfootS
+        self.drlabS = self.drlabS + "\n" + imgS + headS + footS
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drlabS)
@@ -262,7 +275,7 @@ class Cmdp:
         try:
             result = subprocess.run(rlabcmdS, shell=True, check=True)
             if not result.returncode:
-                print("\nrst2pdf script executed successfully.")
+                print("\nrlabdf script executed successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
@@ -341,13 +354,14 @@ class Cmdp:
         else:
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
 
-        verS = "  v" + self.rivD["metaD"]["version"]
-        doctitleS = self.foldD["rbaseS"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        authorS = self.rivD["metaD"]["authors"]
+        doctitleS = self.docnameS
+        versionS = "v-" + self.versionS.strip()
+        authorS = self.authorS.strip()
+
         borderS = "=" * 80
-        hdlS = timeS + " | " + authorS + " | " + doctitleS + verS
-        headS = "\n" + hdlS.rjust(80) + "\n" + borderS + "\n"
+        hdlS = doctitleS + " | " + authorS + " | " + timeS + " | " + versionS
+        headS = "\n" + hdlS + "\n" + borderS + "\n"
         self.dutfS = headS + "\n" + self.dutfS
 
         with open(rvdocT, "w", encoding="utf-8") as f5:

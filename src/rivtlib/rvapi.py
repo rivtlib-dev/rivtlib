@@ -414,7 +414,7 @@ def D(rS):
         rS, foldD, lablD, cmdL, tagL, dutfS, drs2S, drstS, rivtD
     )
     mssgS = wrtdoc.cmdx()
-    print("\n" + f"{mssgS}")
+    print(f"{mssgS}")
     sys.exit()
 
 

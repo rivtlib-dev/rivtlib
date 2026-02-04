@@ -42,7 +42,7 @@ styles:
     allowWidows: false
     backColor: null
     borderColor: null
-    borderPadding: 0
+    borderPadding: 5
     borderRadius: null
     borderWidth: 0
     bulletFontName: fontMono
@@ -162,8 +162,8 @@ styles:
   hint-heading:
     parent: admonition-heading
   image:
-    spaceBefore: 18
-    spaceAfter: 12
+    spaceBefore: 5
+    spaceAfter: 5
     alignment: TA_CENTER
     parent: bodytext
   important:
@@ -231,18 +231,43 @@ styles:
     fontSize: 85%
     parent: title
     spaceBefore: 12
+  foottable2:
+    commands:
+    - - VALIGN
+      - - 0
+        - 0
+      - - -1
+        - -1
+      - TOP
+    - - BOTTOMPADDING
+      - - 0
+        - 0
+      - - -1
+        - -1
+      - 0
+    - - TOPPADDING
+      - - 0
+        - 0
+      - - -1
+        - -1
+      - -10
   table:
-    spaceBefore: 0
+    spaceBefore: 6
     spaceAfter: 6
     parent: normal
     alignment: TA_CENTER
+    borderPadding: 5
+    leftPadding: 6
+    rightPadding: 6
+    topPadding: 5
+    bottomPadding: 5
     commands:
       - - VALIGN
         - - 0
           - 0
         - - -1
           - -1
-        - TOP
+        - BOTTOM
       - - INNERGRID
         - - 0
           - 0
@@ -264,17 +289,30 @@ styles:
           - -1
         - 0.25
         - black
+      - - BOTTOMPADDING
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 5
+      - - TOPPADDING
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 5
   table-body:
     parent: normal
   table-heading:
     alignment: TA_CENTER
-    borderPadding: 0
+    borderPadding: 5
     fontName: fontSansBold
     valign: BOTTOM
   table-title:
     alignment: TA_CENTER
     keepWithNext: false
     parent: heading4
+    borderPadding: 5
   tableofcontents:
     parent: normal
   tip:
