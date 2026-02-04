@@ -22,12 +22,18 @@ class Rs:
     """convert rivt string to formatted text and reST strings"""
 
     def __init__(self, stS, rsL, foldD, lablD, rivtD, prflagB, rivtL):
-        """process logs, header and preprocess content
+        """process logs, header and preprocess content substring
 
         Args:
-            stS (str): section type
-            rsL (list): rivt string list
+            stS (_type_): rivt string type
+            rsL (_type_): rivt string list
+            foldD (_type_): _description_
+            lablD (_type_): _description_
+            rivtD (_type_): _description_
+            prflagB (_type_): _description_
+            rivtL (_type_): _description_
         """
+
         store_attr()
         # region - write header to apilog
         apilogT = foldD["apilogT"]
