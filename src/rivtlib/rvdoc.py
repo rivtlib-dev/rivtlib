@@ -1,3 +1,4 @@
+import configparser
 import logging
 import os
 import subprocess
@@ -10,19 +11,35 @@ from fastcore.utils import store_attr
 
 import __main__
 
-# from templates.pdfcover import content, cover, mainpage --
-
 
 class Cmdp:
-    """Publish object
+    """doc publish object
+
     Args:
-        foldD (dict): folders
-        lablD (dict): labels
-        sS (str): section text
+        Args:
+            foldD (dict): folders
+            lablD (dict): labels
+            rivD (dict): values
+            rivL (list): values for export
+
+        Vars:
+            sS (str): rv.D API content substring
+            uS (str): utf doc string
+            r2S (str): rlabpdf doc string
+            rS (str): reST doc string
     """
 
     def __init__(
-        self, sS, foldD, lablD, cmdL, tagL, dutfS, drlabS, drstS, rivD
+        self,
+        sS,
+        foldD,
+        lablD,
+        cmdL,
+        tagL,
+        dutfS,
+        drlabS,
+        drstS,
+        rivD,
     ):
         # region
         store_attr()
@@ -33,6 +50,7 @@ class Cmdp:
         self.rivtP = foldD["rivtP"]
         errlogT = foldD["errlogT"]
         apilogT = foldD["apilogT"]
+        self.confg = []
 
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
@@ -46,7 +64,6 @@ class Cmdp:
         )
         warnings.filterwarnings("ignore")
         self.logging = logging
-
         # strip leading spaces and comments from section
         sL = sS.split("\n")  # unprocessed lines
         spL = []
@@ -56,10 +73,10 @@ class Cmdp:
             if len(slS.strip()) > 0:
                 spL.append(slS[4:])
         self.spL = spL  # preprocessed list
-
         with open(apilogT, "a") as f4:
             f4.write(self.sL[0] + "\n")
         self.logging.info("SECTION : " + self.sL[0])
+
         # endregion
 
     def cmdx(self):
@@ -80,64 +97,89 @@ class Cmdp:
 
         typeS = ""
         msgS = ""
+        ptempS = ""
+        blockB = False
+        self.blockS = """"""
+        self.docnameS = " "
         for pS in self.spL:
             pL = pS[1:].split("|")
             if len(pL) > 0 and pL[0].strip() in self.cmdL:
                 if pL[0].strip() == "PUBLISH":
                     typeS = str(pL[2].strip())
+                    self.docnameS = str(pL[1].strip()).strip()
+                    if self.docnameS == "-":
+                        self.docnameS = self.foldD["docnameS"]
                     self.stylefile = pL[1].strip()
                     dtypeS = typeS + ("x")
                     # print(dtypeS)
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
                 elif pL[0].strip() == "ATTACHPDF":
-                    dtypeS = "appendx"
-                    self.pthS = pL[1].strip()
-                    self.parS = pL[2].strip()
-                    obj = getattr(Cmdp, dtypeS)
-                    msgS = obj(self)
-                elif pL[0].strip() == "PREPEND":
-                    dtypeS = "prependx"
+                    dtypeS = "attachpdfx"
                     self.pthS = pL[1].strip()
                     self.parS = pL[2].strip()
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
                 else:
                     pass
+            if "_[[" in pS and ("_[[END]]" not in pS):  # block tags
+                bsL = pS.split("]]")
+                tagS = bsL[0].strip()
+                if tagS in self.tagL:  # check list
+                    # print(f"{tagS=}")
+                    self.logging.info(f"block tag : {tagS}]]")
+                    ptempS = tagS = bsL[0].strip()
+                    textS = bsL[1].strip()
+                    self.blockS = """"""
+                    blockB = True
+                    continue
+            if blockB and ("_[[END]]" in pS):  # block accumulate
+                if "LAYOUT" in ptempS:
+                    ptempS = ""
+                    obj = getattr(Cmdp, "layoutx")
+                    msgS = obj(self)
+                    self.blockS = """"""
+                    continue
+                elif "METADATA" in ptempS:
+                    ptempS = ""
+                    obj = getattr(Cmdp, "metadatax")
+                    msgS = obj(self)
+                    self.blockS = """"""
+                    continue
+            if blockB:
+                self.blockS += pS + "\n"
+                # print("vvvv", self.blockS)
+            else:  # everything else
+                pass
 
         return msgS
         # endregion
 
-    def textx(self):
-        """write text doc and readme files
+    def layoutx(self):
+        """read layout block as config file
 
         Returns:
             msgS (str): completion message
         """
-        rvdocS = self.foldD["rbaseS"] + ".txt"
-        if self.rvlocalB:
-            rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
-        else:
-            rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
 
-        verS = "  v" + self.rivD["metaD"]["version"]
-        doctitleS = self.foldD["rbaseS"]
-        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        authorS = self.rivD["metaD"]["authors"]
-        borderS = "=" * 80
-        hdlS = timeS + " | " + authorS + " | " + doctitleS + verS
-        headS = "\n" + hdlS.rjust(80) + "\n" + borderS + "\n"
+        self.configL = configparser.ConfigParser()
+        self.configL.read_string(self.blockS)
+        self.logopathS = self.configL["general"]["logopath"]
+        self.footerS = self.configL["general"]["footer"]
+        self.pagesizeS = self.configL["general"]["pagesize"]
+        self.marginS = self.configL["general"]["margins"]
+        self.headerS = self.configL["rlabpdf"]["header"]
+        self.styleS = self.configL["rlabpdf"]["stylesheet"]
+        self.coverS = self.configL["rlabpdf"]["cover"]
 
-        # add layout info
+    def metadatax(self):
+        print("metadata")
 
-        self.dutfS = headS + "\n" + self.dutfS
+    def attachpdfx(self):
+        """_summary_"""
 
-        with open(rvdocT, "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
-        with open("README.txt", "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
-
-        return "rvdoc written: " + rvdocS + "\n" + "readme written: README.txt"
+        msgS = "attachment"
+        return msgS
 
     def rlabpdfx(self):
         """write rst2pdf doc and readme file
@@ -159,42 +201,47 @@ class Cmdp:
         if self.rvlocalB:
             rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
             rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
+            rvsrcP = Path(self.foldD["src_P"])
         else:
             rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+            rvsrcP = Path(self.foldD["srcP"])
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        doctitleS = self.foldD["rbaseS"]
+        doctitleS = self.docnameS
         authorS = self.rivD["metaD"]["authors"]
         verS = "  v" + self.rivD["metaD"]["version"]
-        spaceS = "  |  "
-        logoS = "logo.png"
-        lineS = str(Path(rvstyleP, "line.png"))
-        print("ccccc", lineS)
-        footS = spaceS + timeS + spaceS + authorS + spaceS + doctitleS + verS
-        pageS = "Page ###Page### of ###Total###"
-        pgtemp = ".. raw:: pdf \n\n    PageBreak decoratedPage\n\n "
-        self.docrlabS = pgtemp + self.drlabS
-        headfootS = f"""
+        print("doc name:  ", doctitleS)
 
-.. |mylogo| image:: {logoS}
-   :width: 150px
-   :align: middle
+        footS = (
+            "   |  "
+            + " " * 30
+            + timeS
+            + "  |  "
+            + authorS
+            + "  |  "
+            + doctitleS
+            + verS
+        )
 
-.. |myline| image:: {lineS}
-   :width: 2400px
-   :align: middle
+        pageS = "   Page ###Page### of ###Total###"
+        imglogoS = self.logopathS
+        gsizeS = "\n      :width: 150px \n      :align: right\n\n"
 
-.. header::
-    {pageS}
+        headfootS = (
+            ".. header::\n\n"
+            + pageS
+            + "\n\n"
+            + ".. footer:: \n\n"
+            + "   .. image:: "
+            + imglogoS
+            + gsizeS
+            + "\n\n"
+        )
 
-.. footer::
-    |myline|
-
-    |mylogo|  {footS}
-
-"""
-
-        self.docrlabS = self.docrlabS + "\n" + headfootS
+        pgtemp = ".. contents:: " + self.docnameS + "\n   :depth: 2 \n\n "
+        # pgtemp = ".. raw:: pdf \n\n    PageBreak decoratedPage\n\n "
+        self.drlabS = pgtemp + self.drlabS
+        self.drlabS = self.drlabS + "\n" + headfootS
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drlabS)
@@ -211,7 +258,7 @@ class Cmdp:
         cmd5S = " --stylesheet-path=" + rvstyleP  # style path
         cmd6S = " --stylesheets=" + yamlS  # styles
         rlabcmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
-        print("rlabcmdS=", rlabcmdS)
+        # print("rlabcmdS=", rlabcmdS)
         try:
             result = subprocess.run(rlabcmdS, shell=True, check=True)
             if not result.returncode:
@@ -222,7 +269,9 @@ class Cmdp:
         except FileNotFoundError:
             print(f"Error: Script not found at {rvfileT}")
 
-        return "rvdoc written: " + rvdocS + "\n" + "readme written: README.txt"
+        return (
+            "rlab pdf written: " + rvdocS + "\n" + "readme written: README.txt"
+        )
 
     def htmlx(self):
         """write html doc and readme file
@@ -252,10 +301,7 @@ class Cmdp:
         verS = "  v" + self.rivD["metaD"]["version"]
         spaceS = "  |  "
         headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
-        headerS = f"""
-   .. header:: 
-      {headS}     
-"""
+        headerS = f".. header::\n\n   {headS}"
 
         self.drstS = headerS + self.drstS + "\n"
 
@@ -279,7 +325,39 @@ class Cmdp:
         except FileNotFoundError:
             print(f"Error: Script not found at {rvfileT}")
 
-        return "rvdoc written: " + rvdocS + "\n" + "readme written: README.txt"
+        return (
+            "html doc written: " + rvdocS + "\n" + "readme written: README.txt"
+        )
+
+    def textx(self):
+        """write text doc and readme files
+
+        Returns:
+            msgS (str): completion message
+        """
+        rvdocS = self.foldD["rbaseS"] + ".txt"
+        if self.rvlocalB:
+            rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
+        else:
+            rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+
+        verS = "  v" + self.rivD["metaD"]["version"]
+        doctitleS = self.foldD["rbaseS"]
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        authorS = self.rivD["metaD"]["authors"]
+        borderS = "=" * 80
+        hdlS = timeS + " | " + authorS + " | " + doctitleS + verS
+        headS = "\n" + hdlS.rjust(80) + "\n" + borderS + "\n"
+        self.dutfS = headS + "\n" + self.dutfS
+
+        with open(rvdocT, "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
+        with open("README.txt", "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
+
+        return (
+            "text doc written: " + rvdocS + "\n" + "readme written: README.txt"
+        )
 
     def texpdfx(self):
         """Modify TeX file to avoid problems with escapes:
@@ -311,6 +389,9 @@ class Cmdp:
         :type pdffileS: _type_
 
         """
+        rvfileS = self.foldD["rbaseS"] + ".rst"
+        rvdocS = self.foldD["rbaseS"] + ".html"
+
         #  # region
         #     startS = str(lablD["pageI"])
         #     doctitleS = str(lablD["doctitleS"])
@@ -584,14 +665,9 @@ class Cmdp:
         #         print("INFO: temporary Tex files deleted \n", flush=True)
         #    # endregion
 
-    def appendx(self):
-        """_summary_"""
-
-        msgS = "attachment"
-        return msgS
-
-    def prependx(self):
-        """_summary_"""
-
-        msgS = "attachment"
-        return msgS
+        return (
+            "tex pdf doc written: "
+            + rvdocS
+            + "\n"
+            + "readme written: README.txt"
+        )

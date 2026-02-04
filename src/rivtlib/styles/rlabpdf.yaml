@@ -1,8 +1,8 @@
 fontsAlias:
-  fontSerif: OpenSans-Regular
-  fontSerifBold: OpenSans-Bold
-  fontSerifBoldItalic: OpenSans-BoldItalic
-  fontSerifItalic: OpenSans-Italic
+  fontSerif: DejaVuSans
+  fontSerifBold: DejaVuSans-Bold
+  fontSerifBoldItalic: DejaVuSans-BoldOblique
+  fontSerifItalic: DejaVuSans-Oblique
   fontMono: DejaVuSansMono
   fontMonoBold: DejaVuSansMono-Bold
   fontMonoBoldItalic: DejaVuSansMono-BoldOblique
@@ -77,8 +77,11 @@ styles:
     keepWithNext: false
     parent: heading
     fontName: fontSansBold
-  center:
-    alignment: center
+  align-center:
+    alignment: TA_CENTER
+    parent: bodytext
+  align-right:
+    alignment: TA_RIGHT
     parent: bodytext
   code:
     spaceBefore: 6
@@ -89,6 +92,14 @@ styles:
     borderWidth: 0.5
     leftIndent: 0
     parent: literal
+  compgreen:
+    textColor: green
+    alignment: TA_RIGHT
+    fontName: fontSansBold
+  compred:
+    textColor: red
+    alignment: TA_RIGHT
+    fontName: fontSansBold
   contents:
     parent: normal
   figure:
@@ -128,7 +139,7 @@ styles:
     parent: normal
     spaceAfter: 6
     spaceBefore: 20
-    fontName: fontSerif=
+    fontName: fontSerif
     textColor: "#222222"
   heading1:
     fontSize: 110%
@@ -198,9 +209,6 @@ styles:
         - - -1
           - -1
         - 0
-  right:
-    alignment: right
-    parent: bodytext
   rubric:
     alignment: TA_CENTER
     parent: bodytext

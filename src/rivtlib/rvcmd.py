@@ -41,8 +41,6 @@ class Cmd:
     rv.V        b < a | true text, false text, decimal | descrip (_[E])   W     assign a value
     rv.V,T      | PYTHON | relative path | *rv-space*; userspace          R     *py*
     rv.T        | MARKUP | relative path | label                          R     *html*   *tex*
-    rv.D        | ATTACHPDF | relative path | cover_page_title            W     *pdf*
-    rv.D        | PUBLISH | relative path | *pdf;pdftex;text;html*        W     *pdf, html, txt*
     """
 
     def __init__(self, stS, foldD, lablD, rivD, rivL, parL):
@@ -125,13 +123,15 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
         if "_[E]" in refS:
+            wI = self.lablD["widthI"]
             refS = refS.replace("_[E]", "")
             enumI = int(self.lablD["equI"])
             self.lablD["equI"] = enumI + 1
-            fillS = " [Eq " + str(enumI) + "]"
+            equS = (refS + " [Eq " + str(enumI) + "]").rjust(wI)
+            equS += "\n"
+            fillS = " **[Eq " + str(enumI) + "]**"
             refS = refS + fillS
-            equS = refS.rjust(self.lablD["widthI"]) + "\n"
-            eqr2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
+            eqr2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
             eqrS = (
                 ".. raw:: html\n\n"
                 + '   <p align="right">'
@@ -271,13 +271,15 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
         if "_[E]" in refS:
+            wI = self.lablD["widthI"]
             refS = refS.replace("_[E]", "")
             enumI = int(self.lablD["equI"])
             self.lablD["equI"] = enumI + 1
-            fillS = " [Eq " + str(enumI) + "]"
+            equS = (refS + " [Eq " + str(enumI) + "]").rjust(wI)
+            equS += "\n"
+            fillS = " **[Eq " + str(enumI) + "]**"
             refS = refS + fillS
-            equS = refS.rjust(self.lablD["widthI"]) + "\n"
-            eqr2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
+            eqr2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
             eqrS = (
                 ".. raw:: html\n\n"
                 + '   <p align="right">'
@@ -451,13 +453,15 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
         if " _[E]" in refS:
+            wI = self.lablD["widthI"]
             refS = refS.replace("_[E]", "")
             enumI = int(self.lablD["equI"])
             self.lablD["equI"] = enumI + 1
-            fillS = " [Eq " + str(enumI) + "]"
+            equS = (refS + " [Eq " + str(enumI) + "]").rjust(wI)
+            equS += "\n"
+            fillS = " **[Eq " + str(enumI) + "]**"
             refS = refS + fillS
-            equS = refS.rjust(self.lablD["widthI"]) + "\n"
-            eqr2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
+            eqr2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
             eqrS = (
                 ".. raw:: html\n\n"
                 + '   <p align="right">'
@@ -486,7 +490,7 @@ class Cmd:
         valU = eval(spL[1], globals(), self.rivD)
         val2U = valU.cast_unit(eval(unitS))
         val1L = [val1U, opS, val2U]
-        valsepL = ["---", "---", "---"]
+        valsepL = [":", ":", ":"]
         val2L = [val1U / val2U, "ratio", val2U / val1U]
         tblL = [val1L, valsepL, val2L]
         # tabulate
@@ -502,6 +506,7 @@ class Cmd:
                 colalign=alignL,
             )
         )
+        stdS = equS + "\n" + output.getvalue()
         uS += "\n" + output.getvalue()
         r2S += "\n" + output.getvalue() + "\n"
         rS += "\n" + output.getvalue() + "\n"
@@ -513,11 +518,15 @@ class Cmd:
         if resultB:
             chkS = "\033[92m" + trueS + "\033[00m"
             chktxtS = trueS
+            chkrS = ":compgreen:`" + trueS + "`"
         else:
             chkS = "\033[91m" + falseS + "\033[00m"
             chktxtS = falseS
+            chkrS = ":compred:`" + falseS + "`"
+        stdS += "\n" + chkS.rjust(self.lablD["widthI"]) + "\n"
         uS += "\n" + chktxtS.rjust(self.lablD["widthI"]) + "\n"
-        r2S += "\n.. class:: right\n\n   " + chkS + "\n\n\n"
+        r2S += "\n.. role:: compred\n\n.. role:: compgreen\n\n"
+        r2S += "\n.. class:: align-right\n\n   " + chkrS + "\n"
         rS += (
             "\n"
             + ".. raw:: html\n\n"
@@ -526,6 +535,7 @@ class Cmd:
             + "</p> \n\n"
         )
         return (
+            stdS,
             uS,
             r2S,
             rS,
@@ -577,7 +587,7 @@ class Cmd:
     def IMAGE(self):
         """insert image
 
-        | FIGURE | rel. path file | caption, scale, fignum
+        | IMAGE | rel. path file | caption, scale, fignum
         """
         # region
         parL = self.parS.split(",")
@@ -609,11 +619,11 @@ class Cmd:
             + "\n"
             + "   :width: "
             + scS
-            + " %"
+            + "%"
             + "\n"
             + "   :align: center"
             + "\n\n\n"
-            + ".. class:: center \n\n"
+            + ".. class:: align-center \n\n"
             + "   "
             + capS
             + "\n\n"
@@ -628,7 +638,7 @@ class Cmd:
             + "\n"
             + "   :align: center"
             + "\n\n\n"
-            + ".. class:: center \n\n"
+            + ".. class:: align-center \n\n"
             + "   "
             + capS
             + "\n"

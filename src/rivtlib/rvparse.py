@@ -106,7 +106,7 @@ class Rs:
                 slS = "\n"
                 spL.append(slS)
                 continue
-            if "#" in slS[:5]:  # skip comment line
+            if "##" in slS[:6]:  # skip comment line
                 continue
             if "." * 5 in slS:  # page break to tag
                 slS = "    _[P]"
@@ -145,7 +145,7 @@ class Rs:
         lablD = self.lablD
         rivD = self.rivtD
 
-        for slS in self.spL:  # loop over section lines
+        for slS in self.spL:  # loop over content substring
             # print(f"{slS=}")
             if self.stS == "I":
                 txt2L = []
@@ -267,13 +267,13 @@ class Rs:
                         tC = rvcmd.Cmd(
                             self.stS, foldD, lablD, rivD, rivL, lineS
                         )
-                        uS, rS, xS, foldD, lablD, rivD, rivL = tC.vcompare(
-                            lineS, matchS
+                        stdS, uS, rS, xS, foldD, lablD, rivD, rivL = (
+                            tC.vcompare(lineS, matchS)
                         )
                         sutfS += uS + "\n"
                         srsrS += rS + "\n"
                         srstS += xS + "\n"
-                        print(uS)  # STDOUT - equation table
+                        print(stdS)  # STDOUT - compare table
                         continue
                 continue
             if "_[" in slS:  # tags

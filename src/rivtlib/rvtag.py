@@ -41,19 +41,21 @@ class Tag:
     def taglx(self, tagS):
         """formats a line
 
-         API         Syntax                    Description
+         API         Syntax                    Description (output types)
         ------- -------------------------- ----------------------------------------
          I         text _[C]                  center text (all)
          I         text _[R]                  right justify text (all)
          I         math _[M]                  format ASCII math (all)
          I         math _[L]                  format LaTeX math (all)
-         I         text _[#]  text            endnote number (all)
+         I         text _[#] text             endnote number (all)
          I         text _[G] term to link     link term to glossary (all)
          I         text _[S] section link     link to section in doc (all)
          I, V      text _[D] report link      link to doc in report (all)
          I, V      text _[U] external url     external url link (all)
-         I, V      label _[E]                 equation number and label (all)
-         I, V      title _[T]                 table number and title (all)[1]
+         I, V     label _[E]                  equation number and label (all)
+         I, V     label _[I]                  image number and label (all)
+         I, V     title _[T]                  table number and title (all)
+         all      text  _[P]                  new page (rlabpdf, texpdf)
 
          Args:
              tagS (str):  last two characers of tag symbol
@@ -80,18 +82,18 @@ class Tag:
     def tagbx(self, tagS):
         """formats a block
 
-         API         Syntax                    Description
+         API         Syntax                    Description (output types)
         ------- -------------------------- ----------------------------------------
         R        _[[SHELL]] label, *wait;nowait*         Windows command script (all)
         I, V     _[[INDENT]] spaces (4 default)          Indent (all)
-        I, V     _[[ITALIC]] spaces (4 default)          Italic indent - (all)
+        I, V     _[[ITALIC]] spaces (4 default)          Italic indent  (all)
         I, V     _[[ENDNOTES]] optional label            Endnote descriptions (all)
         I, V     _[[TEXT]] optional language             *literal*, code (all)
         I, V     _[[TOPIC]] topic                        Topic (all)
         T        _[[PYTHON]] label, *rvspace*;newspace   Python script (all)
         T        _[[MARKUP]] label                       LaTeX markup (pdf)[1]
         D        _[[LAYOUT]] label                       Doc format settings (all)
-        ALL      _[[END]]                                End block (all)
+        all      _[[END]]                                End block (all)
 
         Args:
             tagS (str): characters of tag symbol with leading "_[" stripped
@@ -120,8 +122,8 @@ class Tag:
         # region
         lineS = self.strLS
         self.uS = lineS.center(int(self.lablD["widthI"])) + "\n"
-        self.r2S = lineS.center(int(self.lablD["widthI"])) + "\n"
-        self.rS = "\n::\n\n" + lineS.center(int(self.lablD["widthI"])) + "\n"
+        self.r2S = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
+        self.rS = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
         # endregion
 
     def lR(self):
@@ -177,8 +179,20 @@ class Tag:
         self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         self.uS = "\nTable " + str(tnumI) + ": " + lineS
-        self.r2S = "\n**Table " + fillS + "**: " + lineS
-        self.rS = "\n**Table " + fillS + "**: " + lineS
+        self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
+        self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
+        # endregion
+
+    def lI(self):
+        """number image"""
+        # region
+        lineS = self.strLS
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
+        fillS = str(tnumI)
+        self.uS = "\nTable " + str(tnumI) + ": " + lineS
+        self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
+        self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
         # endregion
 
     def lE(self):
@@ -187,10 +201,11 @@ class Tag:
         lineS = self.strLS
         enumI = int(self.lablD["equI"])
         self.lablD["equI"] = enumI + 1
-        fillS = " [Eq " + str(enumI) + "]"
+        fillS = " **[Eq " + str(enumI) + "]**"
         refS = lineS + fillS
-        self.uS = refS.rjust(self.lablD["widthI"]) + "\n"
-        self.r2S = "\n.. class:: right\n\n   " + refS + "\n\n\n"
+        self.uS = lineS + " [Eq " + str(enumI) + "]".rjust(self.lablD["widthI"])
+        self.uS += "\n"
+        self.r2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
         self.rS = (
             ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> \n\n"
         )

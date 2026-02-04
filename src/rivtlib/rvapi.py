@@ -176,6 +176,7 @@ foldD = {  # folders
     "publicT": Path(rivtP, "public", rivtpN),
     "public_T": Path(rivtP, rivtpN),
     "srcP": srcP,
+    "src_P": Path(rivtP),
     "storeP": storeP,
     "valP": Path(srcP, "values"),
     "toolP": Path(srcP, "tools"),
@@ -402,14 +403,13 @@ def D(rS):
         rS (str): rivt string
     """
     global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
-    # config = ConfigParser()
-    # config.read(Path(reptfoldP, "rivt-doc.ini"))
-    # headS = config.get("report", "title")
-    # footS = config.get("utf", "foot1")
-    cmdL = ["PUBLISH", "PDFATTACH"]
-    tagbL = ["[LAYOUT]]", "[METADATA]]"]
+    cmdL = ["PUBLISH", "ATTACHPDF"]
+    tagbL = ["_[[LAYOUT", "_[[METADATA", "_[[END"]
     tagL = []
     tagL = tagL + tagbL
+    dutfS += "\nend of doc\n"
+    drs2S += "\nend of doc\n"
+    drstS += "\nend of doc\n"
     wrtdoc = rvdoc.Cmdp(
         rS, foldD, lablD, cmdL, tagL, dutfS, drs2S, drstS, rivtD
     )
