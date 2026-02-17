@@ -1,0 +1,513 @@
+// ========================================================================== //
+// top
+{
+    "window.title": "${dirty}${activeEditorLong}${separator}${separator} profile: ${profileName}${separator} repo: ${activeRepositoryName}",
+    "settings.cycle": [
+        {
+            "id": "explorerSort2", // must be unique
+            "overrideWorkspaceSettings": false,
+            "values": [
+                {
+                    "explorer.sortOrder": "name"
+                },
+                {
+                    "explorer.sortOrder": "type"
+                },
+                {
+                    "explorer.sortOrder": "modified"
+                }
+            ]
+        }
+    ],
+    "editor.colorDecoratorsActivatedOn": "clickAndHover",
+    "files.associations": {
+        "*.py": "python"
+    },
+    "projectManager.git.baseFolders": [
+        "c:\\git"
+    ],
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "fsdeploy.deployOnSave": true,
+    "fsdeploy.nodes": [
+        {
+            "source": "C:/git/rivt-single-doc-git",
+            "target": "E:/OneDrive/StL-rivt/rivt-single-doc",
+            "include": "**/*.*",
+            "exclude": ".git,.gitignore",
+            "deleteTargetOnDeploy": true,
+        },
+        {
+            "source": "C:/git/rivt-single-doc-git",
+            "target": "C:/OneDrive/StL-rivt/rivt-single-doc",
+            "include": "**/*.*",
+            "exclude": ".git,.gitignore",
+            "deleteTargetOnDeploy": true,
+        }
+    ],
+    "actionButtons": {
+        "defaultColor": "#ff0034",
+        "reloadButton": "♻️",
+        "loadNpmCommands": false,
+        "commands": [
+            {
+                "name": "Note",
+                "color": "green",
+                "useVsCodeApi": false,
+                "command": "code note.txt && exit",
+            },
+            {
+                "name": "Setting",
+                "color": "green",
+                "useVsCodeApi": true,
+                "command": "workbench.action.openSettings2",
+            },
+            {
+                "name": "KeyBind",
+                "color": "green",
+                "useVsCodeApi": true,
+                "command": "workbench.action.openGlobalKeybindings",
+            },
+            {
+                "name": "ToggleSpell",
+                "color": "green",
+                "useVsCodeApi": true,
+                "command": "cSpell.toggleEnableSpellChecker",
+            },
+            {
+                "name": "GoTo",
+                "color": "red",
+                "useVsCodeApi": true,
+                "command": "workbench.action.gotoLine",
+            },
+            {
+                "name": "RunCell",
+                "color": "red",
+                "useVsCodeApi": true,
+                "command": "jupyter.runcurrentcell",
+            },
+            {
+                "name": "FoldAll",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldLevel2"
+            },
+            {
+                "name": "Unfold",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.unfoldAll"
+            },
+            {
+                "name": "FoldX",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldAllExcept"
+            },
+            {
+                "name": "UnFoldX",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.unfoldAllExcept"
+            },
+            {
+                "name": "Recursive",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.unfoldRecursively"
+            },
+            {
+                "name": "ExplorerSort",
+                "color": "yellow",
+                "useVsCodeApi": true,
+                "command": "settings.cycle.explorerSort2"
+            },
+            {
+                "name": "NewFile",
+                "color": "yellow",
+                "useVsCodeApi": true,
+                "command": "ShortcutMenuBar.newFile"
+            }
+        ]
+    },
+    "todohighlight.include": [
+        "**/*.py"
+    ],
+    "todohighlight.isEnable": true,
+    "todohighlight.isCaseSensitive": true,
+    "todohighlight.maxFilesForSearch": 5120,
+    "todohighlight.toggleURI": false,
+    "todohighlight.defaultStyle": {
+        "color": "grey",
+        "backgroundColor": "editor.background",
+        "border": "none",
+        "isWholeLine": false,
+    },
+    "todohighlight.keywords": [
+        {
+            "text": "# %%",
+            "color": "#a19e6d",
+            "isWholeLine": true,
+        },
+        {
+            "text": "rv.R",
+            "color": "#e8c468",
+            "isWholeLine": true,
+        },
+        {
+            "text": "rv.I",
+            "color": "#e8c468",
+            "isWholeLine": true,
+        },
+        {
+            "text": "rv.V",
+            "color": "#e8c468",
+            "isWholeLine": true,
+        },
+        {
+            "text": "rv.T",
+            "color": "#e8c468",
+            "isWholeLine": true,
+        },
+        {
+            "text": "rv.D",
+            "color": "#e8c468",
+            "isWholeLine": true,
+        },
+        {
+            "text": "rv.S",
+            "color": "darkorange",
+            "isWholeLine": true,
+        },
+        {
+            "text": "rv.X",
+            "color": "darkorange",
+            "isWholeLine": true,
+        },
+        {
+            "text": "##",
+            "color": "darkorange",
+            "isWholeLine": true,
+        },
+        {
+            "text": " :=: ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " =: ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " <=: ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " < ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " > ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " <= ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " => ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " != ",
+            "color": "#e76e50",
+        },
+        {
+            "text": " == ",
+            "color": "#e76e50",
+        },
+        {
+            "text": "\"\"\")",
+            "color": "#e8c468",
+            "isWholeLine": true,
+        },
+        {
+            "text": "| IMAGE |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| IMAGE2 |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| TABLE |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| TEXT |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| VALTABLE |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| PUBLISH |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| ATTACHPDF |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| PYTHON |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "| MARKUP |",
+            "color": "#0f8f69",
+        },
+        {
+            "text": "_[#]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[C]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[R]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[T]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[E]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[F]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[M]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[L]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[D]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[S]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[U]",
+            "color": "#4989a2",
+        },
+        {
+            "text": "_[[SHELL]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[BOX]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[TOPIC]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[INDENT]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[ITALLIC]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[TEXT]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[PYTHON]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[SCRIPT]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[LAYOUT]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[METADATA]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[ENDNOTES]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[END]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+        {
+            "text": "_[[NEWPAGE]]",
+            "color": "#4989a2",
+            "isWholeLine": true,
+        },
+    ],
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "terminal.integrated.fontSize": 16,
+    "terminal.integrated.scrollback": 5000,
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.startupEditor": "none",
+    "workbench.sideBar.location": "right",
+    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.colorCustomizations": {
+        "tab.activeBackground": "#2a2570",
+        "tab.inactiveBackground": "#606068",
+        "editor.selectionBackground": "#264f78",
+        "editor.selectionHighlightBorder": "#264f78",
+        "editor.lineHighlightBorder": "#34495d",
+        "list.inactiveSelectionBackground": "#213148",
+    },
+    "workbench.editorAssociations": {
+        "git:/**/*.code-snippets": "default",
+        "gitlens:/**/*.code-snippets": "default",
+        "*.svg": "default",
+    },
+    "python.languageServer": "Pylance",
+    "[python]": {
+        "editor.indentSize": "tabSize",
+        "editor.formatOnType": false,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.stickyScroll.enabled": false,
+    },
+    "jupyter.interactiveWindow.textEditor.executeSelection": true,
+    "jupyter.askForKernelRestart": false,
+    "python.analysis.enablePytestSupport": false,
+    "notebook.defaultFormatter": "charliermarsh.ruff",
+    "notebook.outline.showCodeCells": true,
+    "notebook.output.textLineLimit": 400,
+    "jupyter.themeMatplotlibPlots": true,
+    "python.terminal.executeInFileDir": true,
+    "jupyter.widgetScriptSources": [
+        "jsdelivr.com",
+        "unpkg.com"
+    ],
+    "jupyter.interactiveWindow.cellMarker.decorateCells": "allCells",
+    "insertDateString.format": "MM-DD-YYYY hh:mm:ss",
+    "insertDateString.formatDate": "MM-DD-YYYY",
+    "seito-openfile.searchSubFoldersOfWorkspaceFolders": [],
+    "seito-openfile.openNewTab": true,
+    "seito-openfile.searchPaths": [],
+    "seito-openfile.notFoundTriggerQuickOpen": false,
+    "editor.parameterHints.enabled": false,
+    "editor.foldingStrategy": "auto",
+    "editor.tokenColorCustomizations": {
+        "[*Dark*]": {
+            "textMateRules": [
+                {
+                    "scope": [
+                        "string.quoted.multi.python",
+                        "meta.function-call.arguments.python",
+                        "meta.function-call.python",
+                        "meta.member.access.python",
+                        "source.python"
+                    ],
+                    "settings": {
+                        "foreground": "#bfc0c0"
+                    }
+                },
+            ]
+        }
+    },
+    "editor.rulers": [
+        {
+            "column": 80,
+            "color": "#3d3d3d"
+        },
+    ],
+    "editor.formatOnSave": true,
+    "editor.formatOnType": false,
+    "editor.parameterHints.cycle": false,
+    "editor.hover.enabled": "off",
+    "editor.minimap.enabled": false,
+    "editor.mouseWheelZoom": true,
+    "editor.renderWhitespace": "none",
+    "editor.suggest.showTypeParameters": false,
+    "editor.fontSize": 16,
+    "editor.guides.indentation": false,
+    "editor.inlayHints.enabled": "off",
+    "editor.formatOnPaste": false,
+    "editor.codeLens": true,
+    "editor.defaultColorDecorators": "always",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.snippetSuggestions": "top",
+    "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "on",
+        "strings": "on"
+    },
+    "editor.unicodeHighlight.nonBasicASCII": false,
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "ShortcutMenuBar.saveAll": true,
+    "ShortcutMenuBar.beautify": false,
+    "ShortcutMenuBar.showCommands": false,
+    "ShortcutMenuBar.navigateBack": false,
+    "ShortcutMenuBar.navigateForward": false,
+    "ShortcutMenuBar.commentLine": false,
+    "ShortcutMenuBar.toggleWordWrap": true,
+    "ShortcutMenuBar.openFilesList": true,
+    "ShortcutMenuBar.findReplace": false,
+    "ShortcutMenuBar.openSettings": false,
+    "latex-workshop.message.warning.show": false,
+    "accessibility.verbosity.notification": false,
+    "git.postCommitCommand": "sync",
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "cSpell.userWords": [
+        "buildable",
+        "rivt",
+        "autonumber",
+        "Codespace",
+        "rivtcalc",
+        "sympy",
+    ],
+    "cSpell.words": [
+        "asce",
+        "autopep",
+        "docstrings",
+        "noprint",
+        "rivtlib",
+        "stds",
+        "yapf"
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": [],
+    "python.analysis.autoImportCompletions": false,
+    "window.zoomLevel": 1,
+}
+// ========================================================================== //
+// bottom

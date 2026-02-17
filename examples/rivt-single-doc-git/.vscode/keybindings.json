@@ -1,0 +1,574 @@
+// rivt key bindings - copy to VSCode keybinding JSON file
+{
+    "key": "ctrl+alt+c",
+    "command": "runCommands",
+    "args": {
+        "commands": [
+            "editor.action.clipboardCopyAction", // Copies the current line
+            "editor.action.insertLineBefore", // Inserts a new line above
+            {
+                "command": "editor.action.insertSnippet",
+                "args": {
+                    "snippet": "# %% ${CLIPBOARD}" // The snippet to insert
+                }
+            }
+        ]
+    }
+},
+{
+    "key": "ctrl+alt+z",
+    "command": "workbench.action.reloadWindow"
+},
+{
+    "key": "ctrl+0",
+    "command": "-workbench.action.focusSideBar"
+},
+{
+    "key": "ctrl+1",
+    "command": "workbench.action.firstEditorInGroup"
+},
+{
+    "key": "ctrl+9",
+    "command": "workbench.scm.focus"
+},
+{
+    "key": "ctrl+1",
+    "command": "-workbench.action.focusFirstEditorGroup"
+},
+{
+    "key": "ctrl+2",
+    "command": "workbench.action.nextEditorInGroup"
+},
+{
+    "key": "ctrl+3",
+    "command": "-workbench.action.focusThirdEditorGroup"
+},
+{
+    "key": "ctrl+3",
+    "command": "workbench.action.previousEditor"
+},
+{
+    "key": "ctrl+8",
+    "command": "workbench.explorer.fileView.focus"
+},
+{
+    "key": "ctrl+9",
+    "command": "workbench.action.lastEditorInGroup"
+},
+{
+    "key": "ctrl+alt+6",
+    "command": "-ShortcutMenuBar.userButton06"
+},
+{
+    "key": "ctrl+alt+7",
+    "command": "-ShortcutMenuBar.userButton07"
+},
+{
+    "key": "ctrl+alt+8",
+    "command": "-ShortcutMenuBar.userButton08"
+},
+{
+    "key": "ctrl+alt+9",
+    "command": "-ShortcutMenuBar.userButton09"
+},
+{
+    "key": "ctrl+alt+b",
+    "command": "file-browser.open"
+},
+{
+    "key": "ctrl+r",
+    "command": "-workbench.action.reloadWindow",
+    "when": "isDevelopment"
+},
+{
+    "key": "ctrl+shift+r",
+    "command": "editor.action.startFindReplaceAction",
+    "when": "editorFocus || editorIsOpen"
+},
+{
+    "key": "ctrl+alt+[",
+    "command": "editor.unfoldRecursively",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+shift+w",
+    "command": "workbench.action.closeWindow"
+},
+{
+    "key": "ctrl+alt+w",
+    "command": "workbench.action.closeActiveEditor"
+},
+{
+    "key": "ctrl+alt+a",
+    "command": "editor.foldAll"
+},
+{
+    "key": "ctrl+shift+d",
+    "command": "autoDocstring.generateDocstring",
+    "when": "editorTextFocus"
+},
+{
+    "key": "ctrl+shift+right",
+    "command": "-cursorWordAccessibilityRightSelect",
+    "when": "accessibilityModeEnabled && textInputFocus"
+},
+{
+    "key": "ctrl+shift+right",
+    "command": "-cursorWordEndRightSelect",
+    "when": "textInputFocus"
+},
+{
+    "key": "ctrl+shift+left",
+    "command": "-cursorWordStartLeftSelect",
+    "when": "textInputFocus"
+},
+{
+    "key": "ctrl+shift+left",
+    "command": "-cursorWordAccessibilityLeftSelect",
+    "when": "accessibilityModeEnabled && textInputFocus"
+},
+{
+    "key": "shift+alt+left",
+    "command": "workbench.action.nextPanelView"
+},
+{
+    "key": "alt+right",
+    "command": "-workbench.action.terminal.focusNextPane",
+    "when": "terminalFocus"
+},
+{
+    "key": "alt+right",
+    "command": "workbench.action.focusRightGroup"
+},
+{
+    "key": "alt+left",
+    "command": "workbench.action.focusLeftGroup"
+},
+{
+    "key": "ctrl+alt+\\",
+    "command": "-jupyter.selectCellContents",
+    "when": "editorTextFocus && jupyter.hascodecells && !jupyter.webExtension && !notebookEditorFocused"
+},
+{
+    "key": "ctrl+alt+\\",
+    "command": "python.execInTerminal-icon"
+},
+{
+    "key": "ctrl+alt+/",
+    "command": "python.debugInTerminal"
+},
+{
+    "key": "ctrl+l ctrl+b",
+    "command": "-latex-workshop.shortcut.textbf",
+    "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
+},
+{
+    "key": "ctrl+l alt+b",
+    "command": "-latex-workshop.build",
+    "when": "config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
+},
+{
+    "key": "ctrl+l ctrl+b",
+    "command": "latex-workshop.build",
+    "when": "config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
+},
+{
+    "key": "ctrl+=",
+    "command": "-workbench.action.zoomIn"
+},
+{
+    "key": "ctrl+=",
+    "command": "workbench.action.tasks.build",
+    "when": "taskCommandsRegistered"
+},
+{
+    "key": "ctrl+shift+b",
+    "command": "-workbench.action.tasks.build",
+    "when": "taskCommandsRegistered"
+},
+{
+    "key": "ctrl+-",
+    "command": "-workbench.action.zoomOut"
+},
+{
+    "key": "ctrl+-",
+    "command": "workbench.action.tasks.runTask"
+},
+{
+    "key": "ctrl+alt+s",
+    "command": "ShortcutMenuBar.userButton09"
+},
+{
+    "key": "ctrl+alt+e",
+    "command": "extension.toggle"
+},
+{
+    "key": "ctrl+8",
+    "command": "-workbench.action.focusEighthEditorGroup"
+},
+{
+    "key": "ctrl+shift+2",
+    "command": "-autoDocstring.generateDocstring",
+    "when": "editorTextFocus"
+},
+{
+    "key": "ctrl+shift+x",
+    "command": "git.push"
+},
+{
+    "key": "ctrl+shift+x",
+    "command": "-extension.vscode-git-automator.pushLocalCommits"
+},
+{
+    "key": "ctrl+shift+x",
+    "command": "-workbench.view.extensions",
+    "when": "viewContainer.workbench.view.extensions.enabled"
+},
+{
+    "key": "ctrl+shift+1",
+    "command": "-editor.action.replaceOne",
+    "when": "editorFocus && findWidgetVisible"
+},
+{
+    "key": "ctrl+shift+1",
+    "command": "-search.action.replace",
+    "when": "matchFocus && replaceActive && searchViewletVisible"
+},
+{
+    "key": "ctrl+shift+1",
+    "command": "-search.action.replaceAllInFile",
+    "when": "fileMatchFocus && replaceActive && searchViewletVisible"
+},
+{
+    "key": "ctrl+shift+1",
+    "command": "-search.action.replaceAllInFolder",
+    "when": "folderMatchFocus && replaceActive && searchViewletVisible"
+},
+{
+    "key": "ctrl+alt+1",
+    "command": "workbench.action.focusFirstEditorGroup"
+},
+{
+    "key": "ctrl+shift+enter",
+    "command": "notebook.execute"
+},
+{
+    "key": "ctrl+shift+enter",
+    "command": "jupyter.runallcells"
+},
+{
+    "key": "ctrl+shift+2",
+    "command": "-workbench.action.terminal.sendSequence",
+    "when": "terminalFocus"
+},
+{
+    "key": "ctrl+k ctrl+pagedown",
+    "command": "-workbench.action.nextEditorInGroup"
+},
+{
+    "key": "ctrl+shift+3",
+    "command": "workbench.action.previousEditorInGroup"
+},
+{
+    "key": "ctrl+k ctrl+pageup",
+    "command": "-workbench.action.previousEditorInGroup"
+},
+{
+    "key": "ctrl+alt+'",
+    "command": "editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+},
+{
+    "key": "shift+alt+a",
+    "command": "-editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+},
+{
+    "key": "ctrl+alt+enter",
+    "command": "-notebook.cell.execute",
+    "when": "notebookCellListFocused && notebookMissingKernelExtension && !notebookCellExecuting && notebookCellType == 'code' || notebookCellListFocused && !notebookCellExecuting && notebookCellType == 'code' && notebookKernelCount > 0 || notebookCellListFocused && !notebookCellExecuting && notebookCellType == 'code' && notebookKernelSourceCount > 0"
+},
+{
+    "key": "ctrl+alt+enter",
+    "command": "-notebook.cell.quitEdit",
+    "when": "inputFocus && notebookEditorFocused && notebookCellType == 'markup'"
+},
+{
+    "key": "ctrl+alt+enter",
+    "command": "-editor.action.replaceAll",
+    "when": "editorFocus && findWidgetVisible"
+},
+{
+    "key": "ctrl+alt+enter",
+    "command": "-search.action.replaceAll",
+    "when": "replaceActive && searchViewletVisible && !findWidgetVisible"
+},
+{
+    "key": "ctrl+alt+enter",
+    "command": "jupyter.runtoline"
+},
+{
+    "key": "ctrl+alt+x",
+    "command": "-workbench.view.extension.latex-workshop-activitybar",
+    "when": "!config.latex-workshop.bind.altKeymap.enabled"
+},
+{
+    "key": "ctrl+shift+backspace",
+    "command": "-search.searchEditor.action.deleteFileResults",
+    "when": "inSearchEditor"
+},
+{
+    "key": "ctrl+shift+-",
+    "command": "-workbench.action.zoomOut"
+},
+{
+    "key": "alt+.",
+    "command": "editor.action.quickFix",
+    "when": "editorHasCodeActionsProvider && editorTextFocus && !editorReadonly"
+},
+{
+    "key": "ctrl+.",
+    "command": "-editor.action.quickFix",
+    "when": "editorHasCodeActionsProvider && editorTextFocus && !editorReadonly"
+},
+{
+    "key": "alt+7",
+    "command": "-workbench.action.openEditorAtIndex7"
+},
+{
+    "key": "alt+7",
+    "command": "insertDateString.insertTime"
+},
+{
+    "key": "alt+8",
+    "command": "insertDateString.insertDate"
+},
+{
+    "key": "alt+9",
+    "command": "-workbench.action.openEditorAtIndex9"
+},
+{
+    "key": "alt+8",
+    "command": "-workbench.action.openEditorAtIndex8"
+},
+{
+    "key": "ctrl+shift+e",
+    "command": "-workbench.view.explorer",
+    "when": "viewContainer.workbench.view.explorer.enabled"
+},
+{
+    "key": "ctrl+shift+e",
+    "command": "-workbench.action.quickOpenNavigatePreviousInFilePicker",
+    "when": "inFilesPicker && inQuickOpen"
+},
+{
+    "key": "ctrl+alt+s d",
+    "command": "-data.preview.on.side"
+},
+{
+    "key": "ctrl+alt+e",
+    "command": "-r.runFromLineToEnd",
+    "when": "editorTextFocus && editorLangId == 'r'"
+},
+{
+    "key": "ctrl+alt+2",
+    "command": "-ShortcutMenuBar.userButton02"
+},
+{
+    "key": "ctrl+alt+1",
+    "command": "-ShortcutMenuBar.userButton01"
+},
+{
+    "key": "ctrl+alt+g",
+    "command": "-workbench.action.terminal.sendSequence",
+    "when": "terminalFocus"
+},
+{
+    "key": "ctrl+alt+g",
+    "command": "workbench.action.focusNextGroup"
+},
+{
+    "key": "ctrl+pageup",
+    "command": "-workbench.action.previousEditor"
+},
+{
+    "key": "alt+q",
+    "command": "-seito-openfile.openFileLikeThisFile"
+},
+{
+    "key": "ctrl+k ctrl+]",
+    "command": "-editor.unfoldRecursively",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+alt+]",
+    "command": "editor.foldRecursively",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+k ctrl+[",
+    "command": "-editor.foldRecursively",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+numpad_add",
+    "command": "-workbench.action.zoomIn"
+},
+{
+    "key": "ctrl+shift+-",
+    "command": "-notebook.cell.split",
+    "when": "editorTextFocus && inputFocus && notebookEditorFocused && !notebookOutputInputFocused"
+},
+{
+    "key": "ctrl+shift+-",
+    "command": "workbench.action.zoomOut"
+},
+{
+    "key": "ctrl+numpad_subtract",
+    "command": "-workbench.action.zoomOut"
+},
+{
+    "key": "alt+q",
+    "command": "-rewrap.rewrapComment",
+    "when": "editorTextFocus"
+},
+{
+    "key": "alt+a",
+    "command": "extension.AlignColumn"
+},
+// from environment variables
+{
+    "key": "ctrl+alt+r",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus",
+    "args": {
+        "snippet": "rv.R(\"\"\" ${1:section} | ${2:none} \n  \n    ${0:text} \n \n    \"\"\")"
+    }
+},
+{
+    "key": "ctrl+alt+i",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus",
+    "args": {
+        "snippet": "rv.I(\"\"\" ${1:section} | ${2:none} \n  \n    ${0:text} \n \n    \"\"\")"
+    }
+},
+{
+    "key": "ctrl+alt+v",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus",
+    "args": {
+        "snippet": "rv.V(\"\"\" ${1:section} | ${2:none} \n  \n    ${0:text} \n \n    \"\"\")"
+    }
+},
+{
+    "key": "ctrl+alt+t",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus",
+    "args": {
+        "snippet": "rv.T(\"\"\" ${1:section} | ${2:none} \n  \n    ${0:text} \n \n    \"\"\")"
+    }
+},
+{
+    "key": "ctrl+alt+-",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus",
+    "args": {
+        "snippet": "_[${0:tag}]"
+    }
+},
+{
+    "key": "ctrl+]",
+    "command": "-editor.action.indentLines",
+    "when": "editorTextFocus && !editorReadonly"
+},
+{
+    "key": "ctrl+]",
+    "command": "-restructuredtext.editor.listEditing.onIndentLines",
+    "when": "editorTextFocus && !suggestWidgetVisible && editorLangId == 'restructuredtext'"
+},
+{
+    "key": "ctrl+[",
+    "command": "-editor.action.outdentLines",
+    "when": "editorTextFocus && !editorReadonly"
+},
+{
+    "key": "ctrl+[",
+    "command": "-restructuredtext.editor.listEditing.onOutdentLines",
+    "when": "editorTextFocus && !suggestWidgetVisible && editorLangId == 'restructuredtext'"
+},
+{
+    "key": "ctrl+u",
+    "command": "editor.unfold",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+shift+]",
+    "command": "-editor.unfold",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+u",
+    "command": "-cursorUndo",
+    "when": "textInputFocus"
+},
+{
+    "key": "ctrl+shift+[",
+    "command": "-editor.fold",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+f2",
+    "command": "-editor.action.changeAll",
+    "when": "editorTextFocus && !editorReadonly"
+},
+{
+    "key": "ctrl+k ctrl+j",
+    "command": "-editor.unfoldAll",
+    "when": "editorTextFocus && foldingEnabled"
+},
+{
+    "key": "ctrl+alt+[",
+    "command": "-latex-workshop.promote-sectioning",
+    "when": "editorTextFocus && !config.latex-workshop.bind.altKeymap.enabled && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^doctex$|^rsweave$|^jlweave$|^pweave$/"
+},
+{
+    "key": "ctrl+alt+[",
+    "command": "-jupyter.gotoPrevCellInFile",
+    "when": "editorTextFocus && jupyter.hascodecells && !jupyter.webExtension && !notebookEditorFocused"
+},
+{
+    "key": "ctrl+shift+[",
+    "command": "-notebook.fold",
+    "when": "notebookEditorFocused && !inputFocus && activeEditor == 'workbench.editor.notebook'"
+},
+{
+    "key": "ctrl+shift+]",
+    "command": "-notebook.unfold",
+    "when": "notebookEditorFocused && !inputFocus && activeEditor == 'workbench.editor.notebook'"
+},
+{
+    "key": "ctrl+alt+]",
+    "command": "-jupyter.gotoNextCellInFile",
+    "when": "editorTextFocus && jupyter.hascodecells && !jupyter.webExtension && !notebookEditorFocused"
+},
+{
+    "key": "ctrl+alt+]",
+    "command": "-latex-workshop.demote-sectioning",
+    "when": "editorTextFocus && !config.latex-workshop.bind.altKeymap.enabled && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^doctex$|^rsweave$|^jlweave$|^pweave$/"
+},
+{
+    "key": "ctrl+shift+b",
+    "command": "bookmarks.toggle",
+    "when": "editorTextFocus"
+},
+{
+    "key": "ctrl+alt+k",
+    "command": "-bookmarks.toggle",
+    "when": "editorTextFocus"
+},
+{
+    "key": "alt+v",
+    "command": "vscode-infra.webviewImageViewer"
+}
+]

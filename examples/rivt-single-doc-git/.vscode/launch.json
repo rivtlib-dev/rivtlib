@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Python",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "console": "integratedTerminal",
+            "program": "${file}",
+            "cwd": "${fileDirname}",
+            "env": {
+                "name": "value"
+            }
+        },
+    ]
+}

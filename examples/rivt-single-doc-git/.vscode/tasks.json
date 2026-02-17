@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "rv-update",
+      "type": "shell",
+      "command": "pip3 install --upgrade --no-deps git+https://github.com/rivtlib/rivtlib-code",
+      "windows": {
+        "command": "pip install --upgrade --no-deps git+https://github.com/rivtlib/rivtlib-code"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "rv-install",
+      "type": "shell",
+      "command": "pip3 install --upgrade git+https://github.com/rivt-code/rivtlib",
+      "windows": {
+        "command": "pip install --upgrade git+https://github.com/rivt-code/rivtlib"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "rv-search",
+      "type": "shell",
+      "command": "xdg-open start https://github.com/search?q=rivt+${input:rivsearch}+in%3Areadmeref=simplesearch",
+      "windows": {
+        "command": "start https://github.com/search?q=rivt+${input:rivsearch}+in%3Areadme"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "lintpy",
+      "type": "shell",
+      "command": "autopep8 -i ${file}",
+      "windows": {
+        "command": "autopep8 -i ${file}"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "panel": "new",
+        "close": true
+      }
+    },
+  ],
+  "inputs": [
+    {
+      "id": "rv-search2",
+      "description": "rivt+search+terms:",
+      "default": "beam",
+      "type": "promptString"
+    },
+  ]
+}

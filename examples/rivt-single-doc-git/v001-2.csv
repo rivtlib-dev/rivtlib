@@ -1,0 +1,8 @@
+D_1 = 3.8*psf,psf,kPA,2,joists DL
+D_2 = 2.1*psf,psf,kPA,2,plywood DL
+D_3 = 10.0*psf,psf,kPA,2,partitions DL
+D_4 = 2*0.5*klf,klf,kN_m,2,fixed machinery  DL
+L_1 = 40*psf,psf,kPA,2,ASCE7-O5 LL
+dl_1 = 1.24 klf,klf,kN_m,2,dead load : ASCE7-05 2.3.2   **[Eq 2]**
+ll_1 = 0.13 klf,klf,kN_m,2,live load : ASCE7-05 2.3.2  **[Eq 3]**
+omega_1 = 1.37 klf,klf,kN_m,2,total load : ASCE7-05 2.3.2  **[Eq 4]**

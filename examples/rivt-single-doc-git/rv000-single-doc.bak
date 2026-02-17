@@ -1,0 +1,90 @@
+#! python
+import rivtlib.rvapi as rv
+
+# rv rv_localB: True
+# rv rv_docnameS: Example Single Doc
+
+# %% loads
+rv.I("""Load Combinations 
+
+    ASCE 7-05 Load Effects _[T]
+    ============= ================================================
+    Equation No.    Load Combination
+    ============= ================================================
+    16-1           1.4(D+F)
+    16-2           1.2(D+F+T) + 1.6(L+H) + 0.5(Lr or S or R)
+    16-3           1.2(D+F+T) + 1.6(Lr or S or R) + (f1L or 0.8W)
+    ============= ================================================
+
+    | FIGURE | s-beam.png | 65, Beam Geometry
+
+    Bending Stress Formula _[E]
+    σ1 = M1 / S1 _[A]
+
+    """)
+# %% values
+rv.V("""Loads and Geometry 
+
+    Beam Loads _[T]
+    D_1 := 3.8*psf | psf, kPA, 2 | joists DL         
+    D_2 := 2.1*psf | psf, kPA, 2 | plywood DL          
+    D_3 := 10.0*psf | psf, kPA, 2 | partitions DL       
+    D_4 := 2*0.5*klf |klf, kN_m , 2 | fixed machinery  DL
+    L_1 := 40*psf | psf, kPA, 2 | ASCE7-O5 LL 
+    
+    | VALUES | s-beam1-v.csv | Beam Geometry, 0:0  _[T]
+
+    Uniform Distributed Loads
+    dl_1 <= 1.2 * (W_1 * (D_1 + D_2 + D_3) + D_4) | klf, kN_m, 2 | dead load : ASCE7-05 2.3.2  _[E]
+
+    ll_1 <= 1.6 * W_1 * L_1 | klf, kN_m, 2 | live load : ASCE7-05 2.3.2 _[E]
+    
+    omega_1 <= dl_1 + ll_1 | klf, kN_m, 2 | total load : ASCE7-05 2.3.2 _[E]
+
+    """)
+# %% section properties
+rv.V("""Beam Section Properties
+
+    | PYTHON | s-sectprop.py | nodocstring
+
+    section_1 <= rectsect(10*inch, 18*inch) | in3, cm3, 2 | function: rect sect modulus _[E]
+
+    inertia_1 <= rectinertia(10*inch, 18*inch) | in4, cm4, 1 | function: rect moment inertia _[E]
+
+    """)
+# %% force
+rv.V("""Force and Stress
+        
+        m_1 <= omega_1 * S_1**2 / 8 | ftkips, mkN, 2 | mid-span UDL moment _[E]
+
+        fb_1 <= m_1 / section_1 | psi, MPA, 1 | bending stress _[E]
+    
+    """)
+# %% tool
+rv.T("""Metadata
+
+    _[[PYTHON]] 
+    rv_metaD = {
+    "authors": "rholland",
+    "version": "0.7.2",
+    "email": "rod.h.holland@gmail.com",
+    "repo": "https://github.com/rivt-info/rivt-single-doc",
+    "license": "https://opensource.org/license/mit/",
+    "fork1": ["author", "version", "email", "repo"],
+    "fork2": [],
+    }
+    _[[END]]
+
+    """)
+# %% doc
+rv.D("""Publish Doc 
+
+    _[[LAYOUT]]
+        logopathS: logo.png 
+        pdfheaderL: [docnameS, pageS, totalpageS]
+        footerL: [logo, filenaem, date, time]
+    _[[END]]
+    
+    | PUBLISH | rivt | rst2pdf
+
+    """)
