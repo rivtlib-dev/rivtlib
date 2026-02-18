@@ -100,5 +100,5 @@ rv.D("""Publish Doc
     width=80    
     _[[END]]
     
-    | PUBLISH | Single Doc Example 1 | text
+    | PUBLISH | Single Doc Example 1 | html
     """)
