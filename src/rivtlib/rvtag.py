@@ -203,7 +203,9 @@ class Tag:
         self.lablD["equI"] = enumI + 1
         fillS = " **[Eq " + str(enumI) + "]**"
         refS = lineS + fillS
-        self.uS = lineS + " [Eq " + str(enumI) + "]".rjust(self.lablD["widthI"])
+        self.uS = (lineS + " [Eq " + str(enumI) + "]").rjust(
+            self.lablD["widthI"]
+        )
         self.uS += "\n"
         self.r2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
         self.rS = (

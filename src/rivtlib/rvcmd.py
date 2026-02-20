@@ -490,9 +490,8 @@ class Cmd:
         valU = eval(spL[1], globals(), self.rivD)
         val2U = valU.cast_unit(eval(unitS))
         val1L = [val1U, opS, val2U]
-        valsepL = [":", ":", ":"]
         val2L = [val1U / val2U, "ratio", val2U / val1U]
-        tblL = [val1L, valsepL, val2L]
+        tblL = [val1L, val2L]
         # tabulate
         sys.stdout.flush()
         old_stdout = sys.stdout

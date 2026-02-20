@@ -377,7 +377,7 @@
         },
     ],
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
-    "terminal.integrated.fontSize": 16,
+    "terminal.integrated.fontSize": 14,
     "terminal.integrated.scrollback": 5000,
     "workbench.editor.empty.hint": "hidden",
     "workbench.startupEditor": "none",

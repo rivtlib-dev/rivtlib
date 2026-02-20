@@ -1,18 +1,18 @@
-02-16 17:43  rv001-single-doc   INFO     Doc start
-02-16 17:43  rv001-single-doc   INFO     rivtlib version: 0.8.1
-02-16 17:43  rv001-single-doc   INFO     rivt backup : C:\git\rivtlib-git\examples\rivt-single-doc\rv001-single-doc.bak
-02-16 17:43  rv001-single-doc   INFO     SECTION 1 - type I
-02-16 17:43  rv001-single-doc   INFO     tag : _[T]
-02-16 17:43  rv001-single-doc   INFO     command : IMAGE
-02-16 17:43  rv001-single-doc   DEBUG    STREAM b'IHDR' 16 13
-02-16 17:43  rv001-single-doc   DEBUG    STREAM b'pHYs' 41 9
-02-16 17:43  rv001-single-doc   DEBUG    STREAM b'IDAT' 62 8192
-02-16 17:43  rv001-single-doc   INFO     tag : _[E]
-02-16 17:43  rv001-single-doc   INFO     tag : _[M]
-02-16 17:43  rv001-single-doc   INFO     SECTION 2 - type V
-02-16 17:43  rv001-single-doc   INFO     command : VALTABLE
-02-16 17:43  rv001-single-doc   INFO     SECTION 3 - type V
-02-16 17:43  rv001-single-doc   INFO     command : PYTHON
-02-16 17:43  rv001-single-doc   INFO     SECTION : Publish Doc 
-02-16 17:43  rv001-single-doc   INFO     block tag : _[[METADATA]]
-02-16 17:43  rv001-single-doc   INFO     block tag : _[[LAYOUT]]
+02-20 12:52  rv001-single-doc   INFO     Doc start
+02-20 12:52  rv001-single-doc   INFO     rivtlib version: 0.8.1
+02-20 12:52  rv001-single-doc   INFO     rivt backup : C:\git\rivtlib-git\examples\rivt-single-doc\rv001-single-doc.bak
+02-20 12:52  rv001-single-doc   INFO     SECTION 1 - type I
+02-20 12:52  rv001-single-doc   INFO     tag : _[T]
+02-20 12:52  rv001-single-doc   INFO     command : IMAGE
+02-20 12:52  rv001-single-doc   DEBUG    STREAM b'IHDR' 16 13
+02-20 12:52  rv001-single-doc   DEBUG    STREAM b'pHYs' 41 9
+02-20 12:52  rv001-single-doc   DEBUG    STREAM b'IDAT' 62 8192
+02-20 12:52  rv001-single-doc   INFO     tag : _[E]
+02-20 12:52  rv001-single-doc   INFO     tag : _[M]
+02-20 12:52  rv001-single-doc   INFO     SECTION 2 - type V
+02-20 12:52  rv001-single-doc   INFO     command : VALTABLE
+02-20 12:52  rv001-single-doc   INFO     SECTION 3 - type V
+02-20 12:52  rv001-single-doc   INFO     command : PYTHON
+02-20 12:52  rv001-single-doc   INFO     SECTION : Publish Doc 
+02-20 12:52  rv001-single-doc   INFO     block tag : _[[METADATA]]
+02-20 12:52  rv001-single-doc   INFO     block tag : _[[LAYOUT]]

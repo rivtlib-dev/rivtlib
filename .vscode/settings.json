@@ -10,7 +10,7 @@
         "list.inactiveSelectionBackground": "#213148",
     },
     "workbench.editor.tabSizing": "shrink",
-    "terminal.integrated.fontSize": 16,
+    "terminal.integrated.fontSize": 14,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "vsicons.dontShowNewVersionMessage": true,
     "fsdeploy.deployOnSave": true,

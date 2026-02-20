@@ -1,6 +1,6 @@
 [project]
 name = "rivtlib"
-version = "0.8.2"
+version = "0.8.3"
 description = "install rivtlib project"
 authors = [{ name = "rod holland", email = "rholland@structurelabs.com" }]
 requires-python = ">=3.13"
@@ -36,6 +36,7 @@ dependencies = [
     "sphinxcontrib-serializinghtml>=2.0.0",
     "pyside6>=6.10.1",
     "pyzo>=4.20.0",
+    "github-clone>=1.2.0",
 ]
 
 [build-system]
