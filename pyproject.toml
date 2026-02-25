@@ -1,6 +1,6 @@
 [project]
 name = "rivtlib"
-version = "0.8.3"
+version = "1.0.0.a1"
 description = "install rivtlib project"
 authors = [{ name = "rod holland", email = "rholland@structurelabs.com" }]
 requires-python = ">=3.13"
