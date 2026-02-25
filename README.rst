@@ -20,13 +20,13 @@ A *rivt file* publishes a formatted *rivt doc* as a text, PDF or HTML file. A
 includes rivt markup. A collection of *rivt docs* may be linked and collated as
 a *rivt report*. The rivt user manual is `here <https://rivt.info>`__.
 
-rivt files can function as a front and back end for:
+*rivt files* can function as a front and back end for:
 
 #. software control
 #. visualization
 #. instrumentation
 
-rivt docs can be used for:
+*rivt docs* can be used for:
 
 #. internal communication
 #. research documentation
@@ -34,9 +34,9 @@ rivt docs can be used for:
 #. technical reports
 #. funding applications
 
-Because rivt is compatible with collaborative tools it may be used in:
+*rivt* is compatible with collaborative tools and may be used for:
 
 #. teaching
-#. for presentations
+#. presentations
 #. real time collaboration
 
