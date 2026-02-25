@@ -1,8 +1,8 @@
 [project]
 name = "rivtlib"
-version = "1.0.0a1"
-description = "install rivtlib project"
-authors = [{ name = "rod holland", email = "rholland@structurelabs.com" }]
+version = "1.0.0a2"
+description = "a package for editing and formatting engineering documents"
+authors = [{ name = "rholland", email = "support@structurelabs.com" }]
 requires-python = ">=3.13"
 
 dependencies = [
@@ -38,6 +38,14 @@ dependencies = [
     "pyzo>=4.20.0",
     "github-clone>=1.2.0",
 ]
+
+readme = "README.rst"
+
+[project.urls]
+"docs" = "https://rivt.info"
+"repository" = "https://github.com/rivtlib-dev/rivtlib"
+"documentation" = "https://rivtlib.dev"
+"changelog" = "https://github.com/rivtlib-dev/rivtlib/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["uv_build"]
