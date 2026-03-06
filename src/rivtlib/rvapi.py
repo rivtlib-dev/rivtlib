@@ -57,7 +57,10 @@ from rivtlib import rvdoc, rvparse
 # region - rivt file name and paths
 rivtP = Path(os.getcwd())
 reptP = Path(os.path.dirname(rivtP))
-rivtN = os.path.basename(__main__.__file__)
+try:
+    rivtN = os.path.basename(__main__.__file__)
+except Exception:
+    rivtN = os.path.basename(__main__.__name__)
 rivtT = Path(rivtP, rivtN)
 print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
@@ -110,7 +113,7 @@ else:
 try:
     package_version = version("rivtlib")
     verS = f"rivtlib version: {package_version}"
-except Exception as e:
+except Exception:
     verS = f"rivtlib version not available: {e}"
 # endregion
 

@@ -1,6 +1,6 @@
 [project]
 name = "rivtlib"
-version = "1.0.0a2"
+version = "1.0.0a5"
 description = "a package for editing and formatting engineering documents"
 authors = [{ name = "rholland", email = "support@structurelabs.com" }]
 requires-python = ">=3.13"
@@ -25,6 +25,7 @@ dependencies = [
     "sphinx-copybutton>=0.5.2",
     "sphinx_design>=0.6.1",
     "sphinx-favicon>=1.0.1",
+    "sphinx-new-tab-link>=0.8.1",
     "sphinx-togglebutton>=0.3.2",
     "sphinxcontrib-applehelp>=2.0.0",
     "sphinxcontrib-devhelp>=2.0.0",
@@ -34,15 +35,16 @@ dependencies = [
     "sphinxcontrib-jsmath>=1.0.1",
     "sphinxcontrib-qthelp>=2.0.0",
     "sphinxcontrib-serializinghtml>=2.0.0",
-    "pyside6>=6.10.1",
+    "pyside6>=6.8.0.2",
     "pyzo>=4.20.0",
     "github-clone>=1.2.0",
+    "rivtlib",
 ]
 
 readme = "README.rst"
 
 [project.urls]
-"docs" = "https://rivt.info"
+"user manual" = "https://rivt.info"
 "repository" = "https://github.com/rivtlib-dev/rivtlib"
 "documentation" = "https://rivtlib.dev"
 "changelog" = "https://github.com/rivtlib-dev/rivtlib/blob/main/CHANGELOG.md"
