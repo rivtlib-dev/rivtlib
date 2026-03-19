@@ -35,11 +35,10 @@ class Rs:
         """
 
         store_attr()
-        # region - write header to apilog
-        apilogT = foldD["apilogT"]
-        with open(apilogT, "a") as f4:
-            f4.write(rsL[0] + "\n")
+        # region - write header to errlog
         errlogT = foldD["errlogT"]
+        with open(errlogT, "a") as f4:
+            f4.write(rsL[0] + "\n")
         warnings.filterwarnings("ignore")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(

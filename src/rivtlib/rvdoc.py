@@ -29,18 +29,7 @@ class Cmdp:
             rS (str): reST doc string
     """
 
-    def __init__(
-        self,
-        sS,
-        foldD,
-        lablD,
-        cmdL,
-        tagL,
-        dutfS,
-        drlabS,
-        drstS,
-        rivD,
-    ):
+    def __init__(self, sS, foldD):
         # region
         store_attr()
         self.pthS = ""
@@ -49,7 +38,6 @@ class Cmdp:
         self.rvlocalB = foldD["rvsingleB"]
         self.rivtP = foldD["rivtP"]
         errlogT = foldD["errlogT"]
-        apilogT = foldD["apilogT"]
         self.confg = []
 
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
@@ -73,21 +61,19 @@ class Cmdp:
             if len(slS.strip()) > 0:
                 spL.append(slS[4:])
         self.spL = spL  # preprocessed list
-        with open(apilogT, "a") as f4:
+        with open(errlogT, "a") as f4:
             f4.write(self.sL[0] + "\n")
         self.logging.info("SECTION : " + self.sL[0])
-
         # endregion
 
     def cmdx(self):
-        """parse commands and blocks in D API
+        """parse commands and blocks in Doc API
         Commands:
-            | PUBLISH | doc name; - | text; html; rlabpdf; texpdf
+            | PUBLISH | doc name; - | text; html; pdf; texpdf
             | ATTACHPDF | rel. path | prepend;append
 
         Blocks:
             _[[METADATA]]
-            _[[LAYOUT]]
             _[[END]]
 
         Returns:
@@ -121,25 +107,18 @@ class Cmdp:
                     msgS = obj(self)
                 else:
                     pass
-            if "_[[" in pS and ("_[[END]]" not in pS):  # block tags
+            if "_[[" in pS and ("_[[END]]" not in pS):  # block accumulate
                 bsL = pS.split("]]")
                 tagS = bsL[0].strip()
                 if tagS in self.tagL:  # check list
                     # print(f"{tagS=}")
                     self.logging.info(f"block tag : {tagS}]]")
                     ptempS = tagS = bsL[0].strip()
-                    textS = bsL[1].strip()
                     self.blockS = """"""
                     blockB = True
                     continue
-            if blockB and ("_[[END]]" in pS):  # block accumulate
-                if "LAYOUT" in ptempS:
-                    ptempS = ""
-                    obj = getattr(Cmdp, "layoutx")
-                    msgS = obj(self)
-                    self.blockS = """"""
-                    continue
-                elif "METADATA" in ptempS:
+            if blockB and ("_[[END]]" in pS):  # block terminate
+                if "METADATA" in ptempS:
                     ptempS = ""
                     obj = getattr(Cmdp, "metadatax")
                     msgS = obj(self)
@@ -147,18 +126,17 @@ class Cmdp:
                     continue
             if blockB:
                 self.blockS += pS + "\n"
-                # print("vvvv", self.blockS)
             else:  # everything else
                 pass
 
         return msgS
         # endregion
 
-    def layoutx(self):
-        """read layout block as config file
+    def metadatax(self):
+        """read meta block as config file
 
         Returns:
-            msgS (str): completion message
+            msgS (str): metadata read
         """
 
         self.configL = configparser.ConfigParser()
@@ -167,30 +145,64 @@ class Cmdp:
         self.footerS = self.configL["general"]["footer"]
         self.pagesizeS = self.configL["general"]["pagesize"]
         self.marginS = self.configL["general"]["margins"]
-        self.rlabheaderS = self.configL["rlabpdf"]["header"]
-        self.rlabstyleS = self.configL["rlabpdf"]["stylesheet"]
-        self.rlabcoverS = self.configL["rlabpdf"]["cover"]
-
-    def metadatax(self):
-        """read meta block as config file
-
-        Returns:
-            msgS (str): completion message
-        """
-
+        self.rlabheaderS = self.configL["pdf"]["header"]
+        self.rlabstyleS = self.configL["pdf"]["stylesheet"]
+        self.rlabcoverS = self.configL["pdf"]["cover"]
         self.configL = configparser.ConfigParser()
         self.configL.read_string(self.blockS)
         self.authorS = self.configL["primary"]["authors"]
         self.versionS = self.configL["primary"]["version"]
 
     def attachpdfx(self):
-        """_summary_"""
+        """attach pdf or insert pdf as download file"""
 
         msgS = "attachment"
         return msgS
 
-    def rlabpdfx(self):
-        """write rst2pdf doc and readme file
+    def htmlx(self):
+        """write readme and sphinx-html files
+
+        Returns:
+            msgS (str): completion message
+
+        """
+        rvfileS = self.foldD["rbaseS"] + ".rst"
+        rvdocS = self.foldD["rbaseS"] + ".html"
+        if self.rvlocalB:
+            rvfileT = str(Path(self.foldD["rstdocs_P"], rvfileS))
+            rvdocT = str(Path(self.foldD["htmldocs_P"], rvdocS))
+        else:
+            rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
+            rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
+
+        # add layout info
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        doctitleS = self.foldD["rbaseS"]
+        authorS = self.rivD["metaD"]["authors"]
+        verS = "  v" + self.rivD["metaD"]["version"]
+        spaceS = "  |  "
+        headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
+        headerS = f".. header::\n\n   {headS}\n"
+        self.drstS = headerS + self.drstS + "\n"
+        with open(rvfileT, "w", encoding="utf-8") as f5:
+            f5.write(self.drstS)
+        with open("README.txt", "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
+        htmlcmdS = f"sphinx-build -E -D root_doc={self.foldD['rbaseS']} rstdocs htmldocs \n"
+        try:
+            result = subprocess.run(htmlcmdS, shell=True, check=True)
+            if not result.returncode:
+                print("\nhtml script executed successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing script: {e}")
+            print("Stderr:", e.stderr)
+        return (
+            f"html doc written: {str(rvdocT)} \n"
+            + "readme file written: README.txt"
+        )
+
+    def pdfx(self):
+        """write readme and sphinx-rst2pdf files
 
         Returns:
             msgS (str): completion message
@@ -210,11 +222,9 @@ class Cmdp:
         if self.rvlocalB:
             rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
             rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
-            rvsrcP = Path(self.foldD["src_P"])
         else:
             rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
             rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
-            rvsrcP = Path(self.foldD["srcP"])
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = "**" + self.docnameS + "**"
         versionS = "v-" + self.versionS.strip()
@@ -231,6 +241,7 @@ class Cmdp:
         )
         pageS = "   Page ###Page### of ###Total###"
         imglogoS = " " + self.logopathS
+
         imgS = (
             ".. |blklogo| image::"
             + imglogoS
@@ -238,7 +249,6 @@ class Cmdp:
             + "   :width: 175px\n"
             + "   :alt: logo\n\n"
         )
-
         headS = ".. header::\n\n" + pageS + "\n\n"
         footS = (
             ".. footer:: \n\n"
@@ -251,16 +261,13 @@ class Cmdp:
             + footblkS
             + "        - |blklogo|\n\n"
         )
-
         pgtemp = ".. contents:: " + self.docnameS + "\n   :depth: 2 \n\n "
         self.drlabS = pgtemp + self.drlabS
         self.drlabS = self.drlabS + "\n" + imgS + headS + footS
-
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drlabS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-
         iniP = str(Path(rvstyleP, "layout.ini"))
         fontP = str(Path(rvstyleP, "fonts"))
         yamlS = "rlabpdf.yaml"
@@ -282,77 +289,25 @@ class Cmdp:
         except FileNotFoundError:
             print(f"Error: Script not found at {rvfileT}")
 
-        return (
-            "rlab pdf written: " + rvdocS + "\n" + "readme written: README.txt"
-        )
-
-    def htmlx(self):
-        """write html doc and readme file
-
-        Returns:
-            msgS (str): completion message
-
-        """
-        pypathS = os.path.dirname(sys.executable)
-        rvstyleP = os.path.join(
-            pypathS, "Lib", "site-packages", "rivtlib", "styles"
-        )
-
-        rvfileS = self.foldD["rbaseS"] + ".rst"
-        rvdocS = self.foldD["rbaseS"] + ".html"
-        if self.rvlocalB:
-            rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
-        else:
-            rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
-
-        # add layout info
-        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        doctitleS = self.foldD["rbaseS"]
-        authorS = self.rivD["metaD"]["authors"]
-        verS = "  v" + self.rivD["metaD"]["version"]
-        spaceS = "  |  "
-        headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
-        headerS = f".. header::\n\n   {headS}"
-
-        self.drstS = headerS + self.drstS + "\n"
-
-        with open(rvfileT, "w", encoding="utf-8") as f5:
-            f5.write(self.drstS)
-        with open("README.txt", "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
-
-        cmd4S = " --font-path="  # fonts
-        cmd5S = " --stylesheet-path=" + os.path.join(rvstyleP, "singledoc.css")
-        htmlS = "rst2html5" + cmd5S
-
-        try:
-            htmlcmdS = htmlS + " " + rvfileT + " " + rvdocT
-            result = subprocess.run(htmlcmdS, shell=True, check=True)
-            if not result.returncode:
-                print("\nHTML script executed successfully.")
-        except subprocess.CalledProcessError as e:
-            print(f"Error executing script: {e}")
-            print("Stderr:", e.stderr)
-        except FileNotFoundError:
-            print(f"Error: Script not found at {rvfileT}")
+        # sphinx-build -b pdf rstdocs pdfdocs
+        # echo.Build finished. The PDF files are in pdfdocs
 
         return (
-            "html doc written: " + rvdocS + "\n" + "readme written: README.txt"
+            f"text doc written: {str(rvdocT)} \n"
+            + "readme file written: README.txt"
         )
 
     def textx(self):
-        """write text doc and readme files
+        """write readme and text files
 
         Returns:
             msgS (str): completion message
         """
         rvdocS = self.foldD["rbaseS"] + ".txt"
         if self.rvlocalB:
-            rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
+            rvdocT = str(Path(self.foldD["textdocs_P"], rvdocS))
         else:
-            rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+            rvdocT = str(Path(self.foldD["rivtpubP"], "text", rvdocS))
 
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.docnameS
@@ -370,10 +325,11 @@ class Cmdp:
             f5.write(self.dutfS)
 
         return (
-            "text doc written: " + rvdocS + "\n" + "readme written: README.txt"
+            f"text doc written: {str(rvdocT)} \n"
+            + "readme file written: README.txt"
         )
 
-    def texpdfx(self):
+    def latexx(self):
         """Modify TeX file to avoid problems with escapes:
 
         -  Replace marker "aaxbb " inserted by rivt with

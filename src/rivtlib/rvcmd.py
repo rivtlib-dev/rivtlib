@@ -35,7 +35,7 @@ class Cmd:
     rv.I,V      | TEXT | relative path |  *normal;literal* ;code          R     *txt, code*
     rv.V        | VALUES | relative path | label (_[T])                   R     *csv*
     rv.V        | VALTABLE | relative path | width, l;c;r, title          R     *csv, txt, xlsx*
-    rv.V        a := 1*IN  | unit1, unit2, decimal | descrip (_[E])[1]    W     define a value
+    rv.V        a :=: 1*IN  | unit1, unit2, decimal | descrip (_[E])[1]   W     define a value
     rv.V        b <=: a + 3*FT | unit1, unit2, decimal | descrip (_[E])   W     assign a value
     rv.V        c <=: func1(x,y) | unit1, unit2, decimal | descrip (_[E]) W     assign a value
     rv.V        b < a | true text, false text, decimal | descrip (_[E])   W     assign a value
@@ -358,9 +358,9 @@ class Cmd:
     # endregion
 
     def vdefine(self, valS):
-        """define value :=
+        """define value ==:
 
-            a := .5 * 2*IN | unit1, unit2, decimal | ref
+            a ==: .5 * 2*IN | unit1, unit2, decimal | ref
 
         Returns:
             uS, r2S, rS, foldD, lablD, rivD, rivL, tbL

@@ -79,7 +79,6 @@ rbaseS = rivtN.split(".")[0]
 rivtpN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
 bakN = rbaseS + ".bak"
-apilogN = docnumS + "api.txt"
 errlogN = docnumS + "log.txt"
 publicP = Path(rivtP, "public")
 srcP = Path(rivtP, "src")
@@ -102,12 +101,10 @@ for lnS in rivtL:
 
 if rvsingleB:
     errlogT = Path(rivtP, errlogN)
-    apilogT = Path(rivtP, apilogN)
     bakT = Path(rivtP, bakN)
     rivtT = Path(rivtP, rivtN)
 else:
     errlogT = Path(logsP, errlogN)
-    apilogT = Path(logsP, apilogN)
     bakT = Path(logsP, bakN)
     rivtT = Path(rivtP, rivtN)
 try:
@@ -140,10 +137,6 @@ try:
     logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
 except Exception:
     pass
-# api log
-with open(apilogT, "w") as f4:
-    f4.write("API log: " + rivtN + "\n")
-    f4.write("---------------------------------------\n")
 # end region
 
 # region - dictionaries
@@ -161,7 +154,6 @@ rivtD = {
 metaD = {}  # metadata
 foldD = {  # folders
     "errlogT": errlogT,
-    "apilogT": apilogT,
     "bakT": bakT,
     "rvsingleB": rvsingleB,
     "pthS": " ",
@@ -175,9 +167,7 @@ foldD = {  # folders
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
     "rivtpubP": Path(rivtP, "publish"),
-    "rivtpub_P": Path(rivtP),
     "publicT": Path(rivtP, "public", rivtpN),
-    "public_T": Path(rivtP, rivtpN),
     "srcP": srcP,
     "src_P": Path(rivtP),
     "storeP": storeP,
@@ -185,6 +175,12 @@ foldD = {  # folders
     "toolP": Path(srcP, "tools"),
     "styleP": Path(srcP, "styles"),
     "tempP": Path(srcP, "temp"),
+    "public_T": Path(rivtP, rivtpN),
+    "textdocs_P": Path(rivtP, "textdocs"),
+    "pdfdocs_P": Path(rivtP, "pdfdocs"),
+    "htmldocs_P": Path(rivtP, "htmldocs"),
+    "latexdocs_P": Path(rivtP, "latexdocs"),
+    "rstdocs_P": Path(rivtP, "rstdocs"),
     "val_P": rivtP,
     "style_P": rivtP,
     "tool_P": rivtP,
