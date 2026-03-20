@@ -644,10 +644,14 @@ class Cmdp:
 
         self.configL = configparser.ConfigParser()
         self.configL.read_string(self.blockS)
-        self.authorS = self.configL["metadata"]["authors"]
-        self.versionS = self.configL["metadata"]["version"]
-        self.versionS = self.configL["metadata"]["repo"]
-        self.versionS = self.configL["metadata"]["license"]
+        self.authorS = self.configL["doc"]["authors"]
+        self.verS = self.configL["doc"]["version"]
+        self.repoS = self.configL["doc"]["repo"]
+        self.liceS = self.configL["doc"]["license"]
+        self.f1_authorS = self.configL["doc"]["fork1_authors"]
+        self.f1_verS = self.configL["doc"]["fork1_version"]
+        self.f1_repoS = self.configL["doc"]["fork1_repo"]
+        self.f1_liceS = self.configL["doc"]["fork1_license"]
         self.logopathS = self.configL["layout"]["logoname"]
         self.footerS = self.configL["layout"]["pdf_footer"]
         self.pagesizeS = self.configL["layout"]["pdf_pagesize"]
