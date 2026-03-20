@@ -29,7 +29,9 @@ class Cmdp:
             rS (str): reST doc string
     """
 
-    def __init__(self, sS, foldD):
+    def __init__(
+        self, sS, foldD, lablD, cmdL, tagL, dutfS, drs2S, drstS, rivtD
+    ):
         # region
         store_attr()
         self.pthS = ""
@@ -80,7 +82,6 @@ class Cmdp:
             msgS (str): completion message
         """
         # region
-        typeS = ""
         msgS = ""
         ptempS = ""
         blockB = False
@@ -88,15 +89,13 @@ class Cmdp:
         self.docnameS = " "
         for pS in self.spL:
             pL = pS[1:].split("|")
-            if len(pL) > 0 and pL[0].strip() in self.cmdL:
+            if len(pL) > 0 and pL[0].strip() in self.cmdL:  #
                 if pL[0].strip() == "PUBLISH":
                     typeS = str(pL[2].strip())
                     self.docnameS = str(pL[1].strip()).strip()
                     if self.docnameS == "-":
                         self.docnameS = self.foldD["docnameS"]
-                    self.stylefile = pL[1].strip()
                     dtypeS = typeS + ("x")
-                    # print(dtypeS)
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
                 elif pL[0].strip() == "ATTACHPDF":
@@ -132,33 +131,6 @@ class Cmdp:
         return msgS
         # endregion
 
-    def metadatax(self):
-        """read meta block as config file
-
-        Returns:
-            msgS (str): metadata read
-        """
-
-        self.configL = configparser.ConfigParser()
-        self.configL.read_string(self.blockS)
-        self.logopathS = self.configL["general"]["logopath"]
-        self.footerS = self.configL["general"]["footer"]
-        self.pagesizeS = self.configL["general"]["pagesize"]
-        self.marginS = self.configL["general"]["margins"]
-        self.rlabheaderS = self.configL["pdf"]["header"]
-        self.rlabstyleS = self.configL["pdf"]["stylesheet"]
-        self.rlabcoverS = self.configL["pdf"]["cover"]
-        self.configL = configparser.ConfigParser()
-        self.configL.read_string(self.blockS)
-        self.authorS = self.configL["primary"]["authors"]
-        self.versionS = self.configL["primary"]["version"]
-
-    def attachpdfx(self):
-        """attach pdf or insert pdf as download file"""
-
-        msgS = "attachment"
-        return msgS
-
     def htmlx(self):
         """write readme and sphinx-html files
 
@@ -174,16 +146,6 @@ class Cmdp:
         else:
             rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
             rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
-
-        # add layout info
-        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        doctitleS = self.foldD["rbaseS"]
-        authorS = self.rivD["metaD"]["authors"]
-        verS = "  v" + self.rivD["metaD"]["version"]
-        spaceS = "  |  "
-        headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
-        headerS = f".. header::\n\n   {headS}\n"
-        self.drstS = headerS + self.drstS + "\n"
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
@@ -201,101 +163,124 @@ class Cmdp:
             + "readme file written: README.txt"
         )
 
+        # add layout info
+        # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        # doctitleS = self.foldD["rbaseS"]
+        # authorS = self.rivD["metaD"]["authors"]
+        # verS = "  v" + self.rivD["metaD"]["version"]
+        # spaceS = "  |  "
+        # headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
+        # headerS = f".. header::\n\n   {headS}\n"
+        # self.drstS = headerS + self.drstS + "\n"
+
     def pdfx(self):
-        """write readme and sphinx-rst2pdf files
+        """write readme and sphinx-pdf files
 
         Returns:
             msgS (str): completion message
         """
         # region
-        pypathS = os.path.dirname(sys.executable)
-        rvstyleP = os.path.join(
-            pypathS,
-            "Lib",
-            "site-packages",
-            "rivtlib",
-            "styles",
-        )
-        versionS = "v-0"
-        rvfileS = self.foldD["rbaseS"] + ".rst2"
+        rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".pdf"
         if self.rvlocalB:
-            rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
+            rvfileT = str(Path(self.foldD["rstdocs_P"], rvfileS))
+            rvdocT = str(Path(self.foldD["pdfdocs_P"], rvdocS))
         else:
-            rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
-        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        doctitleS = "**" + self.docnameS + "**"
-        versionS = "v-" + self.versionS.strip()
-        authorS = self.authorS.strip()
-        footblkS = (
-            doctitleS
-            + "  **|**  "
-            + authorS
-            + "  **|**  "
-            + timeS
-            + "  **|**  "
-            + versionS
-            + "\n"
-        )
-        pageS = "   Page ###Page### of ###Total###"
-        imglogoS = " " + self.logopathS
-
-        imgS = (
-            ".. |blklogo| image::"
-            + imglogoS
-            + "\n"
-            + "   :width: 175px\n"
-            + "   :alt: logo\n\n"
-        )
-        headS = ".. header::\n\n" + pageS + "\n\n"
-        footS = (
-            ".. footer:: \n\n"
-            + "   .. list-table::\n"
-            + "      :class: foottable2\n"
-            + "      :align: center\n"
-            + "      :widths: 88 12\n"
-            + " \n"
-            + "      * - "
-            + footblkS
-            + "        - |blklogo|\n\n"
-        )
-        pgtemp = ".. contents:: " + self.docnameS + "\n   :depth: 2 \n\n "
-        self.drlabS = pgtemp + self.drlabS
-        self.drlabS = self.drlabS + "\n" + imgS + headS + footS
+            rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
+            rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
         with open(rvfileT, "w", encoding="utf-8") as f5:
-            f5.write(self.drlabS)
+            f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-        iniP = str(Path(rvstyleP, "layout.ini"))
-        fontP = str(Path(rvstyleP, "fonts"))
-        yamlS = "rlabpdf.yaml"
-        cmd1S = "rst2pdf " + rvfileT  # input
-        cmd2S = " -o " + rvdocT  # output
-        cmd3S = " --config=" + iniP  # config
-        cmd4S = " --font-path=" + fontP  # fonts
-        cmd5S = " --stylesheet-path=" + rvstyleP  # style path
-        cmd6S = " --stylesheets=" + yamlS  # styles
-        rlabcmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
-        # print("rlabcmdS=", rlabcmdS)
+        htmlcmdS = f"sphinx-build -E -b pdf -D root_doc={self.foldD['rbaseS']} rstdocs pdfdocs \n"
         try:
-            result = subprocess.run(rlabcmdS, shell=True, check=True)
+            result = subprocess.run(htmlcmdS, shell=True, check=True)
             if not result.returncode:
-                print("\nrlabdf script executed successfully.")
+                print("\npdf script executed successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
-        except FileNotFoundError:
-            print(f"Error: Script not found at {rvfileT}")
-
-        # sphinx-build -b pdf rstdocs pdfdocs
-        # echo.Build finished. The PDF files are in pdfdocs
-
         return (
-            f"text doc written: {str(rvdocT)} \n"
+            f"pdf doc written: {str(rvdocT)} \n"
             + "readme file written: README.txt"
         )
+        # endregion
+
+        # # add layout info
+        # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        # doctitleS = self.foldD["rbaseS"]
+        # authorS = self.rivD["metaD"]["authors"]
+        # verS = "  v" + self.rivD["metaD"]["version"]
+        # spaceS = "  |  "
+        # headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
+        # headerS = f".. header::\n\n   {headS}\n"
+        # self.drstS = headerS + self.drstS + "\n"
+
+        # versionS = "v-0"
+        # rvfileS = self.foldD["rbaseS"] + ".rst2"
+        # rvdocS = self.foldD["rbaseS"] + ".pdf"
+        # if self.rvlocalB:
+        #     rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
+        #     rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
+        # else:
+        #     rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
+        #     rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+        # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        # doctitleS = "**" + self.docnameS + "**"
+        # versionS = "v-" + self.versionS.strip()
+        # authorS = self.authorS.strip()
+        # footblkS = (
+        #     doctitleS
+        #     + "  **|**  "
+        #     + authorS
+        #     + "  **|**  "
+        #     + timeS
+        #     + "  **|**  "
+        #     + versionS
+        #     + "\n"
+        # )
+        # pageS = "   Page ###Page### of ###Total###"
+        # imglogoS = " " + self.logopathS
+
+        # imgS = (
+        #     ".. |blklogo| image::"
+        #     + imglogoS
+        #     + "\n"
+        #     + "   :width: 175px\n"
+        #     + "   :alt: logo\n\n"
+        # )
+        # headS = ".. header::\n\n" + pageS + "\n\n"
+        # footS = (
+        #     ".. footer:: \n\n"
+        #     + "   .. list-table::\n"
+        #     + "      :class: foottable2\n"
+        #     + "      :align: center\n"
+        #     + "      :widths: 88 12\n"
+        #     + " \n"
+        #     + "      * - "
+        #     + footblkS
+        #     + "        - |blklogo|\n\n"
+        # )
+        # pgtemp = ".. contents:: " + self.docnameS + "\n   :depth: 2 \n\n "
+        # self.drlabS = pgtemp + self.drlabS
+        # self.drlabS = self.drlabS + "\n" + imgS + headS + footS
+        # with open(rvfileT, "w", encoding="utf-8") as f5:
+        #     f5.write(self.drlabS)
+        # with open("README.txt", "w", encoding="utf-8") as f5:
+        #     f5.write(self.dutfS)
+        # iniP = str(Path(rvstyleP, "layout.ini"))
+        # fontP = str(Path(rvstyleP, "fonts"))
+        # yamlS = "rlabpdf.yaml"
+        # cmd1S = "rst2pdf " + rvfileT  # input
+        # cmd2S = " -o " + rvdocT  # output
+        # cmd3S = " --config=" + iniP  # config
+        # cmd4S = " --font-path=" + fontP  # fonts
+        # cmd5S = " --stylesheet-path=" + rvstyleP  # style path
+        # cmd6S = " --stylesheets=" + yamlS  # styles
+        # rlabcmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
+        # print("rlabcmdS=", rlabcmdS)
+        # sphinx-build -b pdf rstdocs pdfdocs
+        # echo.Build finished. The PDF files are in pdfdocs
 
     def textx(self):
         """write readme and text files
@@ -359,6 +344,14 @@ class Cmdp:
         :type pdffileS: _type_
 
         """
+        pypathS = os.path.dirname(sys.executable)
+        rvstyleP = os.path.join(
+            pypathS,
+            "Lib",
+            "site-packages",
+            "rivtlib",
+            "styles",
+        )
         rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".html"
 
@@ -641,3 +634,31 @@ class Cmdp:
             + "\n"
             + "readme written: README.txt"
         )
+
+    def metadatax(self):
+        """read meta block as config file
+
+        Returns:
+            msgS (str): metadata read
+        """
+
+        self.configL = configparser.ConfigParser()
+        self.configL.read_string(self.blockS)
+        self.authorS = self.configL["metadata"]["authors"]
+        self.versionS = self.configL["metadata"]["version"]
+        self.versionS = self.configL["metadata"]["repo"]
+        self.versionS = self.configL["metadata"]["license"]
+        self.logopathS = self.configL["layout"]["logoname"]
+        self.footerS = self.configL["layout"]["pdf_footer"]
+        self.pagesizeS = self.configL["layout"]["pdf_pagesize"]
+        self.marginS = self.configL["layout"]["pdf_margins"]
+        self.rlabheaderS = self.configL["layout"]["pdf_header"]
+        self.rlabstyleS = self.configL["layout"]["latex_stylesheet"]
+        self.rlabcoverS = self.configL["layout"]["latex_cover"]
+        self.rlabcoverS = self.configL["layout"]["text_width"]
+
+    def attachpdfx(self):
+        """attach pdf or insert pdf as download file"""
+
+        msgS = "attachment"
+        return msgS

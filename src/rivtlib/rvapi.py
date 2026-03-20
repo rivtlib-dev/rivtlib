@@ -355,7 +355,7 @@ def V(rS):
 
 
 def T(rS):
-    """Python and Markup Tools
+    """Python and markup tools
     Args:
         rS (str): rivt string
     """
@@ -394,16 +394,13 @@ def T(rS):
 
 
 def D(rS):
-    """Publish Doc files
-
-    Writes docs as .txt, .pdf (reportLab or tex) and .html
-
+    """Publish doc files as .txt, .pdf  and .html
     Args:
         rS (str): rivt string
     """
     global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
     cmdL = ["PUBLISH", "ATTACHPDF"]
-    tagbL = ["_[[LAYOUT", "_[[METADATA", "_[[END"]
+    tagbL = ["_[[METADATA", "_[[END"]
     tagL = []
     tagL = tagL + tagbL
     dutfS += "\nend of doc\n"
@@ -412,13 +409,13 @@ def D(rS):
     wrtdoc = rvdoc.Cmdp(
         rS, foldD, lablD, cmdL, tagL, dutfS, drs2S, drstS, rivtD
     )
-    mssgS = wrtdoc.cmdx()
-    print(f"{mssgS}")
+    msgS = wrtdoc.cmdx()
+    print(f"{msgS}")
     sys.exit()
 
 
 def S(rS):
-    """skip rivt string processing
+    """Skip rivt string processing
     Args:
         rS (str): rivt string
     """
