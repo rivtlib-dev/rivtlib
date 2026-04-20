@@ -1,6 +1,6 @@
 {
     "window.title": "${dirty}${activeEditorLong}${separator}${separator} profile: ${profileName}${separator} repo: ${activeRepositoryName}",
-    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.colorTheme": "Dark Modern",
     "workbench.iconTheme": "vscode-icons",
     "workbench.editor.empty.hint": "hidden",
     "workbench.sideBar.location": "right",

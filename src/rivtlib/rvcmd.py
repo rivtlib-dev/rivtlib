@@ -565,7 +565,7 @@ class Cmd:
         self.lablD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         self.tabuS = "\nTable " + str(tnumI) + ": " + lineS
-        self.tabr2s = "\n**Table " + fillS + "**: " + lineS
+        self.tabr2s = "\n<b>Table " + fillS + "</b>: " + lineS
         self.tabrs = "\n**Table " + fillS + "**: " + lineS
         # endregion
 
@@ -577,7 +577,7 @@ class Cmd:
         self.lablD["equI"] = enumI + 1
         fillS = "\n" + "Eq. " + str(enumI)
         self.uS = fillS + " - " + lineS
-        fillS = "**Eq " + str(enumI) + "**"
+        fillS = "<b>Eq " + str(enumI) + "</b>"
         self.equS = lineS + " - " + fillS + "\n"
         self.eqr2s = lineS + " - " + fillS + "\n"
         self.eqrs = lineS + " - " + fillS + "\n"
@@ -597,7 +597,7 @@ class Cmd:
         if figS == "num":
             numS = str(self.lablD["figI"])
             self.lablD["fnum"] = int(numS) + 1
-            lablS = "Fig. " + numS + " "
+            lablS = "<b>Fig. " + numS + "</b> "
         else:
             lablS = ""
         if capS == "-":
@@ -622,10 +622,11 @@ class Cmd:
             + "\n"
             + "   :align: center"
             + "\n\n\n"
-            + ".. class:: align-center \n\n"
+            + ".. raw:: html \n\n"
             + "   "
-            + capS
-            + "\n\n"
+            + '<p align="center">'
+            + lablS
+            + "\n"
         )
         self.rs = (
             "\n\n.. image:: "
@@ -633,15 +634,17 @@ class Cmd:
             + "\n"
             + "   :width: "
             + scS
-            + " %"
+            + "%"
             + "\n"
             + "   :align: center"
             + "\n\n\n"
-            + ".. class:: align-center \n\n"
+            + ".. raw:: html \n\n"
             + "   "
-            + capS
+            + '<p align="center">'
+            + lablS
             + "\n"
         )
+
         # endregion
 
     def IMAGE2(self):

@@ -13,12 +13,10 @@ API functions:
     rv.D(rS) - (Docs) Publish formatted doc file
     rv.S(rS) - (Skip) Skip processing of section
     rv.X(rS) - (Exit) Exit processing of rivt file
-
 where the argument rS is a triple quoted rivt string (utf-8)
 
-Doc comment settings:
-    # rc singledoc: True; False  (default is False)
-
+Comment settings:
+    # rc public=True; False  (default is False)
 
 Globals:
     utfS (str): utf doc string
@@ -28,7 +26,7 @@ Globals:
     foldD (dict): folder and file paths
     rivtD (dict): calculated values
 
-Last letter of var name indicates type:
+Typing: Last letter of var name indicates type:
     A => array
     B => boolean
     C => class instance

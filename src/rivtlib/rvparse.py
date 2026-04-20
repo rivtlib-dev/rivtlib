@@ -55,6 +55,8 @@ class Rs:
         srsrS = ""  # rst2pdf doc
         srstS = ""  # rest doc
         spL = []  # preprocessed lines
+
+        # preprocess rivt string
         # section header
         hL = rsL[0].split("|")
         lablD["docS"] = hL[0].strip()  # section title
@@ -105,7 +107,8 @@ class Rs:
         self.srsrS = srsrS  # rst2pdf doc
         self.srstS = srstS  # rest doc
         self.logging.info("SECTION " + str(lablD["secnumI"]) + " - type " + stS)
-        spL = []  # strip leading spaces and comments from section content
+        # strip leading spaces and comments from section content
+        spL = []
         for slS in rsL[1:]:
             if len(slS) < 5:  # blank line to new line
                 slS = "\n"
@@ -119,6 +122,7 @@ class Rs:
         self.spL = spL  # preprocessed list
         # endregion
 
+    # main API parsing loop
     def content(self, tS, tagL, cmdL):
         """parse content substring
         Args:
@@ -142,7 +146,6 @@ class Rs:
         blockS = """"""
         tagS = ""
         uS = rS = xS = """"""  # returned doc line
-
         sutfS = self.sutfS
         srsrS = self.srsrS
         srstS = self.srstS
@@ -150,7 +153,8 @@ class Rs:
         lablD = self.lablD
         rivD = self.rivtD
 
-        for slS in self.spL:  # loop over content substring
+        # --------------------------------------- loop over content substring
+        for slS in self.spL:
             # print(f"{slS=}")
             if self.stS == "I":
                 txt2L = []
@@ -166,7 +170,7 @@ class Rs:
                         t2S = "*" + tS + "*"
                         slS = slS.replace(t2S, tS)
                 # print(f"{txt1L=}")
-            if len(tabL) > 0 and len(slS.strip()) == 0:  # values block
+            if len(tabL) > 0 and len(slS.strip()) == 0:  # ---- block define val
                 tblfmt = "rst"
                 hdrvL = ["variable", "value", "[value]", "description"]
                 alignL = ["left", "right", "right", "left"]
@@ -201,7 +205,7 @@ class Rs:
                 srstS += " \n"
                 print(" ")  # STDOUT- blank line
                 continue
-            if blockB:  # block accumulate
+            if blockB:  # ----------------------------------- block accumulate
                 # print(f"{blockS}")
                 if blockB and ("_[[END]]" in slS):  # end of block
                     blockB = False
@@ -216,7 +220,7 @@ class Rs:
                     continue
                 blockS += slS + "\n"
                 continue
-            if slS[0:1] == "|":  # commands
+            if slS[0:1] == "|":  # ---------------------------------- commands
                 parL = slS[1:].split("|")
                 cmdS = parL[0].strip()
                 self.logging.info(f"command : {cmdS}")
@@ -229,7 +233,7 @@ class Rs:
                     srstS += xS + "\n"
                     print(uS)  # STDOUT- command
                     continue
-            if tS == "V":  # compare
+            if tS == "V":  # -------------------------------- command operators
                 if " ==: " in slS:
                     if " ==: " in cmdL:
                         lineS = slS.strip()
@@ -281,7 +285,7 @@ class Rs:
                         print(stdS)  # STDOUT - compare table
                         continue
                 continue
-            if "_[" in slS:  # tags
+            if "_[" in slS:  # ----------------------------------------  tags
                 slL = slS.split("_[")
                 lineS = slL[0].strip()
                 tagS = slL[1].strip()
