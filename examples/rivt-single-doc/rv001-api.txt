@@ -1,6 +1,0 @@
-API log: rv001-single-doc.py
----------------------------------------
-Load Combinations 
-Loads and Geometry 
-Beam Stress
-Publish Doc 
