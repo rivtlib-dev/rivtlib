@@ -37,7 +37,6 @@ class Cmdp:
         self.pthS = ""
         self.parS = ""
         self.sL = sS.split("\n")
-        self.rvlocalB = foldD["rvsingleB"]
         self.rivtP = foldD["rivtP"]
         errlogT = foldD["errlogT"]
         self.confg = []
@@ -140,12 +139,8 @@ class Cmdp:
         """
         rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".html"
-        if self.rvlocalB:
-            rvfileT = str(Path(self.foldD["rstdocs_P"], rvfileS))
-            rvdocT = str(Path(self.foldD["htmldocs_P"], rvdocS))
-        else:
-            rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
+        rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
+        rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
@@ -182,12 +177,8 @@ class Cmdp:
         # region
         rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".pdf"
-        if self.rvlocalB:
-            rvfileT = str(Path(self.foldD["rstdocs_P"], rvfileS))
-            rvdocT = str(Path(self.foldD["pdfdocs_P"], rvdocS))
-        else:
-            rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
-            rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
+        rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
+        rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
@@ -219,12 +210,8 @@ class Cmdp:
         # versionS = "v-0"
         # rvfileS = self.foldD["rbaseS"] + ".rst2"
         # rvdocS = self.foldD["rbaseS"] + ".pdf"
-        # if self.rvlocalB:
-        #     rvfileT = str(Path(self.foldD["rivtpub_P"], rvfileS))
-        #     rvdocT = str(Path(self.foldD["rivtpub_P"], rvdocS))
-        # else:
-        #     rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
-        #     rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+        # rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
+        # rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
         # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         # doctitleS = "**" + self.docnameS + "**"
         # versionS = "v-" + self.versionS.strip()
@@ -289,11 +276,7 @@ class Cmdp:
             msgS (str): completion message
         """
         rvdocS = self.foldD["rbaseS"] + ".txt"
-        if self.rvlocalB:
-            rvdocT = str(Path(self.foldD["textdocs_P"], rvdocS))
-        else:
-            rvdocT = str(Path(self.foldD["rivtpubP"], "text", rvdocS))
-
+        rvdocT = str(Path(self.foldD["rivtpubP"], "text", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.docnameS
         versionS = "v-" + self.versionS.strip()

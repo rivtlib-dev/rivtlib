@@ -52,7 +52,7 @@ from pathlib import Path
 import __main__
 from rivtlib import rvdoc, rvparse
 
-# region - rivt file name and paths
+# region - top level rivt files
 rivtP = Path(os.getcwd())
 reptP = Path(os.path.dirname(rivtP))
 try:
@@ -78,41 +78,34 @@ rivtpN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
 bakN = rbaseS + ".bak"
 errlogN = docnumS + "log.txt"
-publicP = Path(rivtP, "public")
-srcP = Path(rivtP, "src")
-storeP = Path(rivtP, "store")
-pubP = Path(rivtP, "publish")
+rootP = rivtP.parent
+publicP = Path(rootP, "rivt-public_")
+storeP = Path(rivtP, "stored_")
+pubP = Path(rivtP, "published_")
+rstdocsP = Path(rivtP, "_rstdocs")
+srcP = Path(rivtP, "_src")
 logsP = Path(storeP, "logs")
+errlogT = Path(logsP, errlogN)
+bakT = Path(logsP, bakN)
+rivtT = Path(rivtP, rivtN)
 # endregion
 
-# region - rivt file flags
+# region - logs and comment variables
 prflagB = False
-rvsingleB = False
+rvpublicB = False
 with open(rivtT, "r") as f1:  # noqa: F405
     rivtL = f1.readlines()
 for lnS in rivtL:
     if lnS[0:4] == "# rv":
-        if "singledoc" and "True" in lnS:
-            rvsingleB = True
-
-# print(f"={rvsingleB}")
-
-if rvsingleB:
-    errlogT = Path(rivtP, errlogN)
-    bakT = Path(rivtP, bakN)
-    rivtT = Path(rivtP, rivtN)
-else:
-    errlogT = Path(logsP, errlogN)
-    bakT = Path(logsP, bakN)
-    rivtT = Path(rivtP, rivtN)
+        if "setpublic" and "True" in lnS:
+            rvpublicB = True
+# print(f"={rvpublicB}")
 try:
     package_version = version("rivtlib")
     verS = f"rivtlib version: {package_version}"
 except Exception:
     verS = f"rivtlib version not available: {e}"
-# endregion
 
-# region - logs
 warnings.filterwarnings("ignore")
 try:
     logging.basicConfig(
@@ -153,7 +146,7 @@ metaD = {}  # metadata
 foldD = {  # folders
     "errlogT": errlogT,
     "bakT": bakT,
-    "rvsingleB": rvsingleB,
+    "rvpublicB": rvpublicB,
     "pthS": " ",
     "srcnS": " ",
     "rivtN": rivtN,  # file name
@@ -173,16 +166,6 @@ foldD = {  # folders
     "toolP": Path(srcP, "tools"),
     "styleP": Path(srcP, "styles"),
     "tempP": Path(srcP, "temp"),
-    "public_T": Path(rivtP, rivtpN),
-    "textdocs_P": Path(rivtP, "textdocs"),
-    "pdfdocs_P": Path(rivtP, "pdfdocs"),
-    "htmldocs_P": Path(rivtP, "htmldocs"),
-    "latexdocs_P": Path(rivtP, "latexdocs"),
-    "rstdocs_P": Path(rivtP, "rstdocs"),
-    "val_P": rivtP,
-    "style_P": rivtP,
-    "tool_P": rivtP,
-    "temp_P": rivtP,
 }
 lablD = {  # dictionary of labels
     "rvtypeS": "",  # section type r,i,v,t,d
@@ -310,6 +293,7 @@ def I(rS):  # noqa: E743
         "[INDENT]]",  # indent
         "[ITALIC]]",  # indent and italicize
         "[ENDNOTES]]",  # note description
+        "[TABLE]]",  # note description
         "[TEXT]]",  # format text
         "[TOPIC]]",  # topic
         "[END]]",  # end
