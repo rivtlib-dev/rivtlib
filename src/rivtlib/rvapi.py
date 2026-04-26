@@ -224,7 +224,7 @@ def cmdhelp():
 
 
 def doc_parse(rS, tS, tagL, cmdL):
-    """section string to doc string
+    """convert section string to doc string
     Args:
         sS (str): rivt section
         tS (str): section type (R,I,V,T,W,S)
@@ -254,9 +254,9 @@ def R(rS):
     cmdL = ["SHELL"]  # commands from file
     tagL = []
     tagbL = [
-        "[SHELL]]",  # run commands
-        "[END]]",  # end
-        "[NEWPAGE]]",  # new page
+        "SHELL",  # run commands
+        "END",  # end
+        "NEWPAGE",  # new page
     ]
     tagL = tagbL + tagL
     dutfS, drs2S, drstS = doc_parse(rS, "R", tagL, cmdL)
@@ -275,29 +275,29 @@ def I(rS):  # noqa: E743
         "TEXT",  # insert text from filoe
     ]
     tagL = [
-        "C]",  # center text
-        "R]",  # right justify text
-        "M]",  # math
-        "L]",  # LaTeX math
-        "#]",  # footnote
-        "G]",  # glossary
-        "S]",  # section link
-        "D]",  # doc link
-        "U]",  # url link
-        "V]",  # var value
-        "E]",  # equation label
-        "T]",  # table label
-        "F]",  # figure label
+        "C",  # center text
+        "R",  # right justify text
+        "M",  # math
+        "L",  # LaTeX math
+        "#",  # footnote
+        "G",  # glossary
+        "S",  # section link
+        "D",  # doc link
+        "U",  # url link
+        "V",  # var value
+        "E",  # equation label
+        "T",  # table label
+        "F",  # figure label
     ]
     tagbL = [
-        "[INDENT]]",  # indent
-        "[ITALIC]]",  # indent and italicize
-        "[ENDNOTES]]",  # note description
-        "[TABLE]]",  # note description
-        "[TEXT]]",  # format text
-        "[TOPIC]]",  # topic
-        "[END]]",  # end
-        "[NEWPAGE]]",  # new page
+        "INDENT",  # indent
+        "ITALIC",  # indent and italicize
+        "ENDNOTES",  # note description
+        "TABLE",  # note description
+        "TEXT",  # format text
+        "TOPIC",  # topic
+        "END",  # end
+        "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
     dutfS, drs2S, drstS = doc_parse(rS, "I", tagL, cmdL)
@@ -322,15 +322,15 @@ def V(rS):
         compL,  # comparisons
     ]
     tagL = [
-        "V]",  # var value
-        "E]",  # equation label
-        "T]",  # table label
-        "F]",  # figure label
+        "V",  # var value
+        "E",  # equation label
+        "T",  # table label
+        "F",  # figure label
     ]
     tagbL = [
-        "[PYTHON]]",  # execute Python script
-        "[END]]",  # end
-        "[NEWPAGE]]",  # new page
+        "PYTHON",  # execute Python script
+        "END",  # end
+        "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
     dutfS, drs2S, drstS = doc_parse(rS, "V", tagL, cmdL)
@@ -348,10 +348,10 @@ def T(rS):
     ]
     tagL = []
     tagbL = [
-        "[PYTHON]]",  # execute Python script
-        "[MARKUP]]",  # execute script
-        "[END]]",  # end
-        "[NEWPAGE]]",  # new page
+        "PYTHON",  # execute Python script
+        "MARKUP",  # execute script
+        "END",  # end
+        "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
 

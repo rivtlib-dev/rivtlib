@@ -25,11 +25,11 @@ class Tag:
             lablD (dict): label dictionary
             rivD (dict): values dictionary
             rivL (list): values list for export
-            strLS (str): string to format
+            strLS (str): line or block string to format
         Vars:
             uS (str): utf string
-            rS (str): rst2pdf string
-            xS (str): reST string
+            rS (str): rst string
+
         """
         store_attr()
         sp.init_printing()
@@ -50,9 +50,9 @@ class Tag:
          I, V      text _[G] term link    | text  link term to glossary (all)
          I, V      text _[S] section link | text  link to section in report (all)
          I, V      text _[U] external url | text  external url link (all)
-         I, V     label _[E]                      equation number and label (all)
-         I, V     label _[I]                      image number and label (all)
-         I, V     title _[T]                      table number and title (all)
+         I, V, T  label _[E]                      equation number and label (all)
+         I, V, T  label _[I]                      image number and label (all)
+         I, V, T  title _[T]                      table number and title (all)
          all      text  _[P]                      new page (rlabpdf, texpdf)
 
          Args:
@@ -148,6 +148,39 @@ class Tag:
             self.r2S = lineS.replace("*]", "[" + str(ftnumI) + "]")
             self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
 
+        elif cmdS == "lP":
+            "new page"
+            # region
+            pgnS = str(self.lablD["pageI"])
+            self.uS = (
+                "\n"
+                + "=" * (int(self.lablD["widthI"]) - 10)
+                + " Page "
+                + pgnS
+                + "\n"
+            )
+            # self.uS = self.lablD["headuS"].replace("p##", pagenoS)
+            self.lablD["pageI"] = int(pgnS) + 1
+            self.r2S = (
+                "\n"
+                + "_" * self.lablD["widthI"]
+                + "\n"
+                + self.uS
+                + "\n"
+                + "_" * self.lablD["widthI"]
+                + "\n"
+            )
+            self.rS = (
+                "\n"
+                + "_" * self.lablD["widthI"]
+                + "\n"
+                + self.uS
+                + "\n"
+                + "_" * self.lablD["widthI"]
+                + "\n"
+            )
+            # endregion
+
         else:
             pass
 
@@ -184,17 +217,13 @@ class Tag:
             uS, r2S, rS, foldD, lablD, rivD, rivL
         """
         # region
-        lineS = self.strLS
-        self.blockL = (self.strLS).split("\n")
-        cmdS = "b" + tagS[1:4]
+        blockS = self.strLS
+        blockL = (self.strLS).split("\n")
+        cmdS = "b" + tagS[0:3]
         wI = int(self.lablD["widthI"])
 
-        if cmdS == "END":
-            """end block"""
-            pass
-
-        elif cmdS == "lT":
-            """number table"""
+        if cmdS == "bSHE":
+            """shell command"""
 
             tnumI = int(self.lablD["tableI"])
             self.lablD["tableI"] = tnumI + 1
@@ -203,92 +232,54 @@ class Tag:
             self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
             self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
 
-    def bC(self):
-        """code-literal block"""
-        # region
-        blockL = self.strLS
-        iS = ""
-        for s in blockL:
-            s = "    " + s + "\n"
-            iS += s
+        elif cmdS == "bTEX":
+            """code-literal block"""
+            # region
+            blockL = self.strLS
+            iS = ""
+            for s in blockL:
+                s = "    " + s + "\n"
+                iS += s
 
-        uS = r2S = rS = iS
-        # endregion
+            uS = r2S = rS = iS
+            # endregion
 
-    def bL(self):
-        """literal block"""
-        # region
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        luS = "Table " + str(tnumI) + " - " + blockS
-        lrS = "\n" + "Table " + fillS + ": " + blockS
-        # endregion
+        elif cmdS == "bITA":
+            """italic-indent block"""
+            # region
+            print("IIII")
+            # endregion
 
-    def bI(self):
-        """italic-indent block"""
-        # region
-        print("IIII")
-        # endregion
+        elif cmdS == "bIND":
+            """indent block"""
+            # region
+            tnumI = int(self.lablD["tableI"])
+            self.lablD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "Table " + fillS + ": " + blockS
+            # endregion
 
-    def bS(self):
-        """indent block"""
-        # region
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        luS = "Table " + str(tnumI) + " - " + blockS
-        lrS = "\n" + "Table " + fillS + ": " + blockS
-        # endregion
+        elif cmdS == "bTAB":
+            """table block"""
+            # region
+            blkL = (self.strLS).split("\n", 1)
+            titleS = blkL[0].strip()
+            tnumI = int(self.lablD["tableI"])
+            self.lablD["tableI"] = tnumI + 1
+            fillS = str(tnumI)
+            self.uS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
+            self.r2S = "\n" + "Table " + fillS + ": " + blkL[0] + "\n" + blkL[1]
+            self.rS = "\n" + "Table " + fillS + ": " + blkL[0] + "\n" + blkL[1]
+            # endregion
 
-    def bT(self):
-        """table block"""
-        # region
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        luS = "Table " + str(tnumI) + " - " + blockS
-        lrS = "\n" + "Table " + fillS + ": " + blockS
-        # endregion
-
-    def bP(self):
-        "new page"
-        # region
-        pgnS = str(self.lablD["pageI"])
-        self.uS = (
-            "\n"
-            + "=" * (int(self.lablD["widthI"]) - 10)
-            + " Page "
-            + pgnS
-            + "\n"
-        )
-        # self.uS = self.lablD["headuS"].replace("p##", pagenoS)
-        self.lablD["pageI"] = int(pgnS) + 1
-        self.r2S = (
-            "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
-            + self.uS
-            + "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
-        )
-        self.rS = (
-            "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
-            + self.uS
-            + "\n"
-            + "_" * self.lablD["widthI"]
-            + "\n"
-        )
-        # endregion
-
-    def bX(self):
-        """latex block"""
-        # region
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        luS = "Table " + str(tnumI) + " - " + blockS
-        lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
-        # endregion
+        elif cmdS == "bLAT":
+            """latex block"""
+            # region
+            tnumI = int(self.lablD["tableI"])
+            self.lablD["tableI"] = tnumI + 1
+            luS = "Table " + str(tnumI) + " - " + blockS
+            lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
+            # endregion
 
         return (
             self.uS,

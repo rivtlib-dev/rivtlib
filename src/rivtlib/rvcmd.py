@@ -768,28 +768,26 @@ class Cmd:
     def VALTABLE(self):
         """read file and insert values
 
-        | VALTABLE | relative path | title (_[T])
+        | VALTABLE | relative path | title, rows
         """
         # region
         parL = self.parS.split(",")
         titleS = parL[0].strip()
         fiS = " [file: " + self.fileS + "]" + "\n\n"
-        if parL[2].strip() == "num":
-            tnumI = int(self.lablD["tableI"])
-            self.lablD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
+        tnumI = int(self.lablD["tableI"])
+        self.lablD["tableI"] = tnumI + 1
+        fillS = str(tnumI)
+        if titleS[0:1] == "--":
+            titleS = fiS
+            utlS = "\n" + fiS
+            rtlS = "\n" + fiS
+            xtlS = "\n" + fiS
+        else:
             titleS = titleS + fiS
             utlS = "\nTable " + fillS + ": " + titleS
             rtlS = "\n**Table " + fillS + "**: " + titleS
             xtlS = "\n**Table " + fillS + "**: " + titleS
-        else:
-            sliceS = parL[1].strip()
-            if titleS[0:1] == "--":
-                titleS = fiS
-            utlS = "\n" + fiS
-            rtlS = "\n" + fiS
-            xtlS = "\n" + fiS
-
+        sliceS = parL[1].strip()
         with open(self.insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         # extract rows

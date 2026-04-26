@@ -57,7 +57,7 @@ class Rs:
         spL = []  # preprocessed lines
 
         # preprocess rivt string
-        # section header
+        # ----------------------------------------------   section header
         hL = rsL[0].split("|")
         lablD["docS"] = hL[0].strip()  # section title
         if hL[0].strip()[0:2] == "--":
@@ -80,7 +80,7 @@ class Rs:
             file_path = str(foldD["rivtT"])
             for linenumI, lineS in enumerate(rivtL):
                 if rsL[0] in lineS:
-                    print(f"{file_path}:{linenumI + 1}\n")
+                    print(f"[link] {file_path}:{linenumI + 1}\n")
                     break
         try:
             paraL = hL[1].strip().split("|")
@@ -122,7 +122,7 @@ class Rs:
         self.spL = spL  # preprocessed list
         # endregion
 
-    # main API parsing loop
+    # ----------------------------------------------------   API parsing loop
     def content(self, tS, tagL, cmdL):
         """parse content substring
         Args:
@@ -152,11 +152,10 @@ class Rs:
         foldD = self.foldD
         lablD = self.lablD
         rivD = self.rivtD
-
         # --------------------------------------- loop over content substring
         for slS in self.spL:
             # print(f"{slS=}")
-            if self.stS == "I":
+            if self.stS == "I":  # strip inline marks
                 txt2L = []
                 # print(f"{slS=}")
                 txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # strip bold
@@ -170,7 +169,7 @@ class Rs:
                         t2S = "*" + tS + "*"
                         slS = slS.replace(t2S, tS)
                 # print(f"{txt1L=}")
-            if len(tabL) > 0 and len(slS.strip()) == 0:  # ---- block define val
+            if len(tabL) > 0 and len(slS.strip()) == 0:  # val blk at blank line
                 tblfmt = "rst"
                 hdrvL = ["variable", "value", "[value]", "description"]
                 alignL = ["left", "right", "right", "left"]
@@ -210,30 +209,18 @@ class Rs:
                 if blockB and ("_[[END]]" in slS):  # end of block
                     blockB = False
                     tC = rvtag.Tag(foldD, lablD, rivD, rivL, blockS)
+                    # print("****", tagS, blockS)
                     uS, rS, xS, foldD, lablD, rivD, rivL = tC.tagbx(tagS)
-                    print(uS)  # STDOUT - block
                     sutfS += uS + "\n"
                     srsrS += rS + "\n"
                     srstS += xS + "\n"
+                    print(uS)  # STDOUT - block
                     tagS = ""
                     blockS = """"""
                     continue
                 blockS += slS + "\n"
                 continue
-            if slS[0:1] == "|":  # ---------------------------------- commands
-                parL = slS[1:].split("|")
-                cmdS = parL[0].strip()
-                self.logging.info(f"command : {cmdS}")
-                # print(cmdS, pthS, parS)
-                if cmdS in cmdL:  # verify scope
-                    cmC = rvcmd.Cmd(self.stS, foldD, lablD, rivD, rivL, parL)
-                    uS, rS, xS, foldD, lablD, rivD, rivL = cmC.cmdx(cmdS)
-                    sutfS += uS + "\n"
-                    srsrS += rS + "\n"
-                    srstS += xS + "\n"
-                    print(uS)  # STDOUT- command
-                    continue
-            if tS == "V":  # -------------------------------- command operators
+            if tS == "V":  # ----------------------------- command operators
                 if " ==: " in slS:
                     if " ==: " in cmdL:
                         lineS = slS.strip()
@@ -269,9 +256,9 @@ class Rs:
                         srstS += xS + "\n"
                         print(uS)  # STDOUT - equation table
                         continue
-                for subS in cmdL[8]:
-                    if subS in slS:
-                        matchS = subS
+                for compS in cmdL[8]:
+                    if compS in slS:
+                        matchS = compS
                         lineS = slS.strip()
                         tC = rvcmd.Cmd(
                             self.stS, foldD, lablD, rivD, rivL, lineS
@@ -284,28 +271,51 @@ class Rs:
                         srstS += xS + "\n"
                         print(stdS)  # STDOUT - compare table
                         continue
-                continue
-            if "_[" in slS:  # ----------------------------------------  tags
-                slL = slS.split("_[")
-                lineS = slL[0].strip()
-                tagS = slL[1].strip()
-                self.logging.info(f"tag : _[{tagS}")
-                if tagS in tagL:  # check list
-                    # print(f"{tagS=}")
-                    tC = rvtag.Tag(foldD, lablD, rivD, rivL, lineS)
-                    if len(tagS) < 3:  # line tag
-                        uS, rS, xS, foldD, lablD, rivD, rivL = tC.taglx(tagS)
-                        sutfS += uS + "\n"
-                        srsrS += rS + "\n"
-                        srstS += xS + "\n"
-                        print(uS)  # STDOUT- tagged line
-                        continue
-                    else:  # block tag - start
+            if slS[0:1] == "|":  # ----------------------------- commands
+                parL = slS[1:].split("|")
+                cmdS = parL[0].strip()
+                self.logging.info(f"command : {cmdS}")
+                # print(cmdS, pthS, parS)
+                if cmdS in cmdL:  # verify scope
+                    cmC = rvcmd.Cmd(self.stS, foldD, lablD, rivD, rivL, parL)
+                    uS, rS, xS, foldD, lablD, rivD, rivL = cmC.cmdx(cmdS)
+                    sutfS += uS + "\n"
+                    srsrS += rS + "\n"
+                    srstS += xS + "\n"
+                    print(uS)  # STDOUT- command
+                    continue
+            if "_[" in slS:  # ------------------------------ tags / blocks
+                if "_[[" in slS:
+                    slL = slS.split("_[[")
+                    lineL = slL[1].split("]]")
+                    lineS = slL[0] + lineL[1]
+                    tagS = lineL[0]
+                    if tagS in tagL:
+                        # print(f"{tagS=}")
+                        self.logging.info(f"tag : _[[{tagS}]]")
                         blockS = ""
                         blockB = True
                         blockS += lineS + "\n"
+                else:
+                    slL = slS.split("_[")
+                    lineL = slL[1].split("]")
+                    lineS = slL[0] + lineL[1]
+                    tagS = lineL[0]
+                    if tagS in tagL:  # check list
+                        # print(f"{tagS=}")
+                        self.logging.info(f"tag : _[{tagS}]")
+                        tC = rvtag.Tag(foldD, lablD, rivD, rivL, lineS)
+                        if tagS[0] != "[":  # line tag
+                            uS, rS, xS, foldD, lablD, rivD, rivL = tC.taglx(
+                                tagS
+                            )
+                            sutfS += uS + "\n"
+                            srsrS += rS + "\n"
+                            srstS += xS + "\n"
+                            print(uS)  # STDOUT- tagged line
+                            continue
             else:  # everything else
-                print(slS)  # STDOUT - raw line
+                print(slS, flush=True)  # STDOUT - raw line
                 sutfS += slS + "\n"
                 srsrS += slS + "\n"
                 srstS += slS + "\n"
