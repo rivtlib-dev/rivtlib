@@ -323,10 +323,7 @@ class Rs:
         # export values file
         if self.stS == "V" and len(rivL) > 0:
             fileS = lablD["valprfx"] + str(lablD["secnumI"]) + ".csv"
-            if foldD["rvsingleB"]:
-                fileP = Path(foldD["val_P"], fileS)
-            else:
-                fileP = Path(foldD["val_P"], fileS)
+            fileP = Path(foldD["storeP"], fileS)
             with open(fileP, "w") as file1:
                 file1.write("\n".join(rivL))
 

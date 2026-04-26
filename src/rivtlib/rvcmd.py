@@ -96,10 +96,77 @@ class Cmd:
             self.rivL,
         )
 
-    def vassign(self, aeqS):
-        """format equation and assign value
+    def vdefine(self, valS):
+        """define value ==:
 
-            equation tag  <=:
+            a ==: .5 * 2*IN | unit1, unit2, decimal | ref
+
+            collects successive rows until hitting a blank
+
+        Returns:
+            uS, r2S, rS, foldD, lablD, rivD, rivL, tbL
+
+        """
+
+        # region
+        tbL = []
+        vaL = valS.split("|")
+        # print(f"{valS=}")
+        # print(f"{vaL=}")
+        eqS = vaL[0].strip()
+        eqS = eqS.replace(" ==: ", " = ")
+        varS = eqS.split("=")[0].strip()
+        valS = eqS.split("=")[1].strip()
+        unitL = vaL[1].split(",")
+        unit1S, unit2S, dec1S = (
+            unitL[0].strip(),
+            unitL[1].strip(),
+            unitL[2].strip(),
+        )
+        descripS = vaL[2].strip()
+        # rivL append
+        exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
+        self.rivL.append(exvS)
+        # rivD append
+        try:
+            exec(eqS, globals(), self.rivD)
+        except ValueError as ve:
+            print(f"A ValueError occurred: {ve}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+        # format
+        decS = "%." + dec1S + "f"
+        Unum.set_format(value_format=decS, auto_norm=False, unitless="")
+        valU = eval(varS, {}, self.rivD)
+        if type(valU) is Unum:
+            val2S = str(valU.cast_unit(eval(unit2S)))
+            val1U = valU.cast_unit(eval(unit1S))
+            if val1U.number() == 1.0:
+                val1S = str((1 + 10**-10) * val1U)
+            else:
+                val1S = str(valU.cast_unit(eval(unit1S)))
+        else:
+            val1S = str(valU)
+            val2S = str(valU)
+        # print(f"{self.rivtvD=}")
+        self.rivD[varS] = valU  # rivt dictionary
+        tbL = [varS, val1S, val2S, descripS]  # append row
+
+        return (
+            self.uS,
+            self.r2s,
+            self.rs,
+            self.foldD,
+            self.lablD,
+            self.rivD,
+            self.rivL,
+            tbL,
+        )
+        # endregion
+
+    def vassign(self, aeqS):
+        """assign value <=:
+
             a <=: b + 2 | unit1, unit2, decimal | ref
 
         Returns:
@@ -122,31 +189,6 @@ class Cmd:
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        if "_[E]" in refS:
-            wI = self.lablD["widthI"]
-            refS = refS.replace("_[E]", "")
-            enumI = int(self.lablD["equI"])
-            self.lablD["equI"] = enumI + 1
-            equS = (refS + " [Eq " + str(enumI) + "]").rjust(wI)
-            equS += "\n"
-            fillS = " **[Eq " + str(enumI) + "]**"
-            refS = refS + fillS
-            eqr2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
-            eqrS = (
-                ".. raw:: html\n\n"
-                + '   <p align="right">'
-                + refS
-                + "</p> \n\n"
-            )
-        else:
-            refS = refS.rjust(self.lablD["widthI"])
-            eqr2S = refS + "\n"
-            eqrS = (
-                ".. raw:: html\n\n"
-                + '   <p align="right">'
-                + refS
-                + "</p> +\n\n"
-            )
 
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
@@ -154,26 +196,23 @@ class Cmd:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivD)
 
-        uS = "\n" + equS + "\n" + eq1S + "\n\n"
-        r2S = "\n\n" + eqr2S + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
-        rS = "\n\n" + eqrS + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
-
         # rivD append
         valU = eval(spL[0], globals(), self.rivD)
         self.rivD[spL[0]] = valU
-
         # result table
         hdr1L = []
         tbl1L = []
         hdr1L.append(spL[0])
         hdr1L.append("[" + spL[0] + "]")
-        alignL = ["center", "center"]
+        hdr1L.append("reference")
+        alignL = ["center", "center", "center"]
         tblfmt = "rst"
         tblL = [tbl1L]
         val1U = valU.cast_unit(eval(unit1S))
         val2U = valU.cast_unit(eval(unit2S))
         tbl1L.append(str(val1U))
         tbl1L.append(str(val2U))
+        tbl1L.append(refS)
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -186,9 +225,9 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        uS += output.getvalue()
-        r2S += output.getvalue() + "\n"
-        rS += output.getvalue() + "\n"
+        uS = output.getvalue()
+        r2S = output.getvalue() + "\n"
+        rS = output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
 
@@ -270,51 +309,22 @@ class Cmd:
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        if "_[E]" in refS:
-            wI = self.lablD["widthI"]
-            refS = refS.replace("_[E]", "")
-            enumI = int(self.lablD["equI"])
-            self.lablD["equI"] = enumI + 1
-            equS = (refS + " [Eq " + str(enumI) + "]").rjust(wI)
-            equS += "\n"
-            fillS = " **[Eq " + str(enumI) + "]**"
-            refS = refS + fillS
-            eqr2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
-            eqrS = (
-                ".. raw:: html\n\n"
-                + '   <p align="right">'
-                + refS
-                + "</p> \n\n"
-            )
-        else:
-            refS = refS.rjust(self.lablD["widthI"])
-            eqr2S = refS + "\n"
-            eqrS = (
-                ".. raw:: html\n\n"
-                + '   <p align="right">'
-                + refS
-                + "</p> +\n\n"
-            )
-
+        refS = refS.rjust(self.lablD["widthI"])
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivD)
 
-        uS = "\n" + equS + "\n" + eq1S + "\n\n"
-        r2S = "\n\n" + eqr2S + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
-        rS = "\n\n" + eqrS + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
-
         # rivD append
         valU = eval(spL[0], globals(), self.rivD)
         self.rivD[spL[0]] = valU
-
         # result table
         hdr1L = []
         tbl1L = []
         hdr1L.append(spL[0])
         hdr1L.append("[" + spL[0] + "]")
+        hdr1L.append("reference")
         alignL = ["center", "center"]
         tblfmt = "rst"
         tblL = [tbl1L]
@@ -334,9 +344,9 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        uS += output.getvalue()
-        r2S += output.getvalue() + "\n"
-        rS += output.getvalue() + "\n"
+        uS = output.getvalue()
+        r2S = output.getvalue() + "\n"
+        rS = output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
 
@@ -356,72 +366,6 @@ class Cmd:
         )
 
     # endregion
-
-    def vdefine(self, valS):
-        """define value ==:
-
-            a ==: .5 * 2*IN | unit1, unit2, decimal | ref
-
-        Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL, tbL
-
-        """
-
-        # region
-        tbL = []
-        vaL = valS.split("|")
-        # print(f"{valS=}")
-        # print(f"{vaL=}")
-        eqS = vaL[0].strip()
-        eqS = eqS.replace(" ==: ", " = ")
-        varS = eqS.split("=")[0].strip()
-        valS = eqS.split("=")[1].strip()
-        unitL = vaL[1].split(",")
-        unit1S, unit2S, dec1S = (
-            unitL[0].strip(),
-            unitL[1].strip(),
-            unitL[2].strip(),
-        )
-        descripS = vaL[2].strip()
-        # rivL append
-        exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
-        self.rivL.append(exvS)
-        # rivD append
-        try:
-            exec(eqS, globals(), self.rivD)
-        except ValueError as ve:
-            print(f"A ValueError occurred: {ve}")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-        # format
-        decS = "%." + dec1S + "f"
-        Unum.set_format(value_format=decS, auto_norm=False, unitless="")
-        valU = eval(varS, {}, self.rivD)
-        if type(valU) is Unum:
-            val2S = str(valU.cast_unit(eval(unit2S)))
-            val1U = valU.cast_unit(eval(unit1S))
-            if val1U.number() == 1.0:
-                val1S = str((1 + 10**-10) * val1U)
-            else:
-                val1S = str(valU.cast_unit(eval(unit1S)))
-        else:
-            val1S = str(valU)
-            val2S = str(valU)
-        # print(f"{self.rivtvD=}")
-        self.rivD[varS] = valU  # rivt dictionary
-        tbL = [varS, val1S, val2S, descripS]  # append row
-
-        return (
-            self.uS,
-            self.r2s,
-            self.rs,
-            self.foldD,
-            self.lablD,
-            self.rivD,
-            self.rivL,
-            tbL,
-        )
-        # endregion
 
     def vcompare(self, compS, opS):
         """compare values
@@ -452,34 +396,11 @@ class Cmd:
         spS = eqS
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        if " _[E]" in refS:
-            wI = self.lablD["widthI"]
-            refS = refS.replace("_[E]", "")
-            enumI = int(self.lablD["equI"])
-            self.lablD["equI"] = enumI + 1
-            equS = (refS + " [Eq " + str(enumI) + "]").rjust(wI)
-            equS += "\n"
-            fillS = " **[Eq " + str(enumI) + "]**"
-            refS = refS + fillS
-            eqr2S = "\n.. class:: align-right\n\n   " + refS + "\n\n\n"
-            eqrS = (
-                ".. raw:: html\n\n"
-                + '   <p align="right">'
-                + refS
-                + "</p> \n\n"
-            )
-        else:
-            refS = refS.rjust(self.lablD["widthI"])
-            eqr2S = refS + "\n"
-            eqrS = (
-                ".. raw:: html\n\n"
-                + '   <p align="right">'
-                + refS
-                + "</p> +\n\n"
-            )
-        uS = "\n" + equS + "\n" + eq1S + "\n\n"
-        r2S = "\n\n" + eqr2S + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
-        rS = "\n\n" + eqrS + "\n" + ".. code:: \n\n" + eq1S + "\n\n"
+        refS = refS.rjust(self.lablD["widthI"])
+        eqr2S = refS + "\n"
+        eqrS = (
+            ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> +\n\n"
+        )
         # values table
         tblfmt = "rst"
         alignL = ["center", "center", "center"]
@@ -505,10 +426,10 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        stdS = equS + "\n" + output.getvalue()
-        uS += "\n" + output.getvalue()
-        r2S += "\n" + output.getvalue() + "\n"
-        rS += "\n" + output.getvalue() + "\n"
+        stdS = "\n" + output.getvalue()
+        uS = "\n" + output.getvalue()
+        r2S = "\n" + output.getvalue() + "\n"
+        rS = "\n" + output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
         # compare

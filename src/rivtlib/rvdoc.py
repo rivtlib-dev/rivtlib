@@ -177,8 +177,8 @@ class Cmdp:
         # region
         rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".pdf"
-        rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
-        rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
+        rvfileT = str(Path(self.foldD["rstdocsP"], rvfileS))
+        rvdocT = str(Path(self.foldD["rivtpubP"], "pdfdocs", rvdocS))
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
@@ -296,6 +296,36 @@ class Cmdp:
             f"text doc written: {str(rvdocT)} \n"
             + "readme file written: README.txt"
         )
+
+    def metadatax(self):
+        """read meta block as config file
+
+        Returns:
+            msgS (str): metadata read
+        """
+
+        self.configL = configparser.ConfigParser()
+        self.configL.read_string(self.blockS)
+        self.authorS = self.configL["doc"]["authors"]
+        self.verS = self.configL["doc"]["version"]
+        self.repoS = self.configL["doc"]["repo"]
+        self.liceS = self.configL["doc"]["license"]
+        self.f1_authorS = self.configL["doc"]["fork1_authors"]
+        self.f1_verS = self.configL["doc"]["fork1_version"]
+        self.f1_repoS = self.configL["doc"]["fork1_repo"]
+        self.f1_liceS = self.configL["doc"]["fork1_license"]
+        self.logopathS = self.configL["layout"]["logoname"]
+        self.footerS = self.configL["layout"]["pdf_footer"]
+        self.pagesizeS = self.configL["layout"]["pdf_pagesize"]
+        self.marginS = self.configL["layout"]["pdf_margins"]
+        self.rlabheaderS = self.configL["layout"]["pdf_header"]
+        self.rlabcoverS = self.configL["layout"]["text_width"]
+
+    def attachpdfx(self):
+        """attach pdf or insert pdf as download file"""
+
+        msgS = "attachment"
+        return msgS
 
     def latexx(self):
         """Modify TeX file to avoid problems with escapes:
@@ -617,35 +647,3 @@ class Cmdp:
             + "\n"
             + "readme written: README.txt"
         )
-
-    def metadatax(self):
-        """read meta block as config file
-
-        Returns:
-            msgS (str): metadata read
-        """
-
-        self.configL = configparser.ConfigParser()
-        self.configL.read_string(self.blockS)
-        self.authorS = self.configL["doc"]["authors"]
-        self.verS = self.configL["doc"]["version"]
-        self.repoS = self.configL["doc"]["repo"]
-        self.liceS = self.configL["doc"]["license"]
-        self.f1_authorS = self.configL["doc"]["fork1_authors"]
-        self.f1_verS = self.configL["doc"]["fork1_version"]
-        self.f1_repoS = self.configL["doc"]["fork1_repo"]
-        self.f1_liceS = self.configL["doc"]["fork1_license"]
-        self.logopathS = self.configL["layout"]["logoname"]
-        self.footerS = self.configL["layout"]["pdf_footer"]
-        self.pagesizeS = self.configL["layout"]["pdf_pagesize"]
-        self.marginS = self.configL["layout"]["pdf_margins"]
-        self.rlabheaderS = self.configL["layout"]["pdf_header"]
-        self.rlabstyleS = self.configL["layout"]["latex_stylesheet"]
-        self.rlabcoverS = self.configL["layout"]["latex_cover"]
-        self.rlabcoverS = self.configL["layout"]["text_width"]
-
-    def attachpdfx(self):
-        """attach pdf or insert pdf as download file"""
-
-        msgS = "attachment"
-        return msgS

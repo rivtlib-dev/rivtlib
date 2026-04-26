@@ -82,7 +82,7 @@ rootP = rivtP.parent
 publicP = Path(rootP, "rivt-public_")
 storeP = Path(rivtP, "stored_")
 pubP = Path(rivtP, "published_")
-rstdocsP = Path(rivtP, "_rstdocs")
+rstdocsP = Path(rivtP, "rstdocs_")
 srcP = Path(rivtP, "_src")
 logsP = Path(storeP, "logs")
 errlogT = Path(logsP, errlogN)
@@ -157,10 +157,10 @@ foldD = {  # folders
     "docP": Path(rivtP, "rivDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
-    "rivtpubP": Path(rivtP, "publish"),
+    "rstdocsP": rstdocsP,
+    "rivtpubP": pubP,
     "publicT": Path(rivtP, "public", rivtpN),
     "srcP": srcP,
-    "src_P": Path(rivtP),
     "storeP": storeP,
     "valP": Path(srcP, "values"),
     "toolP": Path(srcP, "tools"),
