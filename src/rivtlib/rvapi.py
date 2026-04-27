@@ -159,6 +159,8 @@ foldD = {  # folders
     "readmeT": Path(rivtP, "README.txt"),
     "rstdocsP": rstdocsP,
     "rivtpubP": pubP,
+    "pdfpubP": Path(pubP, "pdfdocs"),
+    "htmlpubP": Path(pubP, "docs"),
     "publicT": Path(rivtP, "public", rivtpN),
     "srcP": srcP,
     "storeP": storeP,

@@ -137,19 +137,20 @@ class Cmdp:
             msgS (str): completion message
 
         """
+        rvbaseS = self.foldD["rbaseS"]
         rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".html"
-        rvfileT = str(Path(self.foldD["rivtpubP"], "html", rvfileS))
-        rvdocT = str(Path(self.foldD["rivtpubP"], "html", rvdocS))
+        rvfileT = str(Path(self.foldD["rstdocsP"], rvfileS))
+        rvdocT = str(Path(self.foldD["rivtpubP"], "docs", rvdocS))
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-        htmlcmdS = f"sphinx-build -E -D root_doc={self.foldD['rbaseS']} rstdocs htmldocs \n"
+        htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.foldD['rstdocsP'])} {self.foldD['htmlpubP']} \n"
         try:
             result = subprocess.run(htmlcmdS, shell=True, check=True)
             if not result.returncode:
-                print("\nhtml script executed successfully.")
+                print("\nhtml script executed")
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
@@ -175,6 +176,7 @@ class Cmdp:
             msgS (str): completion message
         """
         # region
+        rvbaseS = self.foldD["rbaseS"]
         rvfileS = self.foldD["rbaseS"] + ".rst"
         rvdocS = self.foldD["rbaseS"] + ".pdf"
         rvfileT = str(Path(self.foldD["rstdocsP"], rvfileS))
@@ -183,9 +185,9 @@ class Cmdp:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-        htmlcmdS = f"sphinx-build -E -b pdf -D root_doc={self.foldD['rbaseS']} rstdocs pdfdocs \n"
+        pdfcmdS = f"sphinx-build -E -b pdf -D root_doc={rvbaseS} {str(self.foldD['rstdocsP'])} {self.foldD['pdfpubP']} \n"
         try:
-            result = subprocess.run(htmlcmdS, shell=True, check=True)
+            result = subprocess.run(pdfcmdS, shell=True, check=True)
             if not result.returncode:
                 print("\npdf script executed successfully.")
         except subprocess.CalledProcessError as e:

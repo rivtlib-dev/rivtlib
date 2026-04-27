@@ -268,8 +268,12 @@ class Tag:
             self.lablD["tableI"] = tnumI + 1
             fillS = str(tnumI)
             self.uS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
-            self.r2S = "\n" + "Table " + fillS + ": " + blkL[0] + "\n" + blkL[1]
-            self.rS = "\n" + "Table " + fillS + ": " + blkL[0] + "\n" + blkL[1]
+            self.r2S = (
+                "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
+            )
+            self.rS = (
+                "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
+            )
             # endregion
 
         elif cmdS == "bLAT":
