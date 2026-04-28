@@ -1,6 +1,6 @@
 """Unit definitions
 
-create rv-custom-units.py file in doc or report folder to add units
+create rv-custom-units.py file in doc or report fDer to add units
 """
 
 import importlib.util

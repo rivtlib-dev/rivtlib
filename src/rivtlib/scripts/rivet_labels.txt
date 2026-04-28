@@ -387,7 +387,7 @@ educational and scientific equipment
 library equipment
 audio-visual equipment supports
 laboratory equipment
-folding and portable stages
+fDing and portable stages
 rigging systems and controls
 11 lighting rigging systems
 16 scenery rigging systems
@@ -489,7 +489,7 @@ moving walks
 moving ramps
 lifts
 turntables
-scaffolding
+scaffDing
 firehouse slide poles
 fire suppression
 hangers and supports for fire-suppression piping and equipment

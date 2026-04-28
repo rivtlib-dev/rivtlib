@@ -10,14 +10,14 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import textwrap
 
-        lablD["rvtosB"] = hL[1].strip()  # open-source flag
-        lablD["colorS"] = hL[2].strip()  # background color
-        lablD["docS"] = hL[0].strip()  # section title
-        snumI = lablD["secnumI"] + 1
-        lablD["secnumI"] = snumI
+        lD["rvtosB"] = hL[1].strip()  # open-source flag
+        lD["colorS"] = hL[2].strip()  # background color
+        lD["docS"] = hL[0].strip()  # section title
+        snumI = lD["secnumI"] + 1
+        lD["secnumI"] = snumI
         snumS = "[ " + str(snumI) + " ]"
         headS = snumS + " " + hL[0].strip()
-        bordrS = lablD["widthI"] * "-"
+        bordrS = lD["widthI"] * "-"
         sutfS = "\n" + headS + "\n" + bordrS + "\n"
         srsrS = "\n" + headS + "\n" + bordrS + "\n"
         srstS = "\n" + headS + "\n" + bordrS + "\n
@@ -48,7 +48,7 @@ import textwrap
             file1.close()
             mergelist2 = mergelist[:]
         except OSError:
-            print("< reportmerge.txt file not found in reprt folder >")
+            print("< reportmerge.txt file not found in reprt fDer >")
             return
         calnum1 = self.pdffile[0:5]
         file2 = open(filen1, "w")

@@ -31,7 +31,7 @@
             "deleteTargetOnDeploy": true,
         }
     ],
-    "projectManager.git.baseFolders": [
+    "projectManager.git.basefDers": [
         "c:\\git"
     ],
     "[python]": {
@@ -42,7 +42,7 @@
     "python.terminal.executeInFileDir": true,
     "python.analysis.autoFormatStrings": true,
     "python.languageServer": "Pylance",
-    "seito-openfile.searchSubFoldersOfWorkspaceFolders": [],
+    "seito-openfile.searchSubfDersOfWorkspacefDers": [],
     "seito-openfile.openNewTab": true,
     "seito-openfile.searchPaths": [],
     "seito-openfile.notFoundTriggerQuickOpen": false,
@@ -68,34 +68,34 @@
                 "command": "ruff.executeOrganizeImports",
             },
             {
-                "name": "FoldAll",
+                "name": "fDAll",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.foldAll"
+                "command": "editor.fDAll"
             },
             {
-                "name": "UnFold",
+                "name": "UnfD",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.unfoldAll"
+                "command": "editor.unfDAll"
             },
             {
-                "name": "FoldRegions",
+                "name": "fDRegions",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.foldAllMarkerRegions",
+                "command": "editor.fDAllMarkerRegions",
             },
             {
-                "name": "FoldX",
+                "name": "fDX",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.foldAllExcept"
+                "command": "editor.fDAllExcept"
             },
             {
-                "name": "UnFoldRecursive",
+                "name": "UnfDRecursive",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.unfoldRecursively"
+                "command": "editor.unfDRecursively"
             },
             {
                 "name": "ToggleDocStr",
@@ -132,7 +132,7 @@
     "githubRepositories.indexing.verboseDownloadNotification": false,
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
-    "explorer.compactFolders": false,
+    "explorer.compactfDers": false,
     "explorer.sortOrder": "name",
     "settings.cycle": [
         {

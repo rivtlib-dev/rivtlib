@@ -16,9 +16,9 @@
       }
     },
     {
-      "label": "echo workspace folder",
+      "label": "echo workspace fDer",
       "type": "shell",
-      "command": "echo The workspace folder is: ${workspaceFolder}"
+      "command": "echo The workspace fDer is: ${workspacefDer}"
     }
   ],
   "inputs": [

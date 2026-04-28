@@ -24,41 +24,42 @@ tabulate.PRESERVE_WHITESPACE = True
 class Cmd:
     """reads, writes and formats files
 
-        Methods:
+    Methods:
 
-     API        Command                                                RW   File Types
+     API        Command                                                  RW     File Types
     ---------  ------------------------------------------------------- ----- ----------------------
     rv.R        | SHELL | relative path | *wait;nowait*                   R     *.sh*
-    rv.I,V      | IMAGE | relative path |  scale, caption, fignum         R     *.png, .jpg*
-    rv.I,V      | IMAGE2 | relative path | s1, s2, c1, c2, f1, f2         R     *.png, jpg*
-    rv.I,V      | TABLE | relative path | width, l;c;r, title             R     *csv, txt, xlsx*
-    rv.I,V      | TEXT | relative path |  *normal;literal* ;code          R     *txt, code*
-    rv.V        | VALUES | relative path | label (_[T])                   R     *csv*
-    rv.V        | VALTABLE | relative path | width, l;c;r, title          R     *csv, txt, xlsx*
-    rv.V        a :=: 1*IN  | unit1, unit2, decimal | descrip (_[E])[1]   W     define a value
-    rv.V        b <=: a + 3*FT | unit1, unit2, decimal | descrip (_[E])   W     assign a value
-    rv.V        c <=: func1(x,y) | unit1, unit2, decimal | descrip (_[E]) W     assign a value
-    rv.V        b < a | true text, false text, decimal | descrip (_[E])   W     assign a value
-    rv.V,T      | PYTHON | relative path | *rv-space*; userspace          R     *py*
+    rv.V,I      | IMAGE | relative path |  scale, caption, num;nonum      R     *.png, .jpg*
+    rv.V,I      | IMAGE2 | relative path | s1, s2, c1, c2, n1, n2         R     *.png, jpg*
+    rv.V,I      | TABLE | relative path | width, l;c;r, title, num;nonum  R     *csv, txt, xlsx*
+    rv.V,I      | TEXT | relative path |  *text;literal*; code            R     *txt, code*
+    rv.V,T      | PYTHON | relative path | *rivt*; nmspace                R     *py*
     rv.T        | MARKUP | relative path | label                          R     *html*   *tex*
+    rv.V        | VALTABLE | relative path | width, title, num;nonum      R     *csv, txt, xlsx*
+    rv.V        a ==: 1*IN  | unit1, unit2, decimal | ref                 W     define value
+    rv.V        b <=: a + 3*FT | unit1, unit2, decimal | ref              W     assign value
+    rv.V        c :=: func1(x,y) | unit1, unit2, decimal | ref            W     function value
+    rv.V        b < a | true text, false text, decimal | ref              W     compare value
     """
 
-    def __init__(self, stS, foldD, lablD, rivD, rivL, parL):
+    def __init__(self, stS, fD, lD, rivD, rivL, parL):
         """command object
 
         Args:
-            foldD (dict): folders
-            lablD (dict): labels
+            fD (dict): folders
+            lD (dict): labels
             rivD (dict): values
             rivL (list): values for export
+            parL ( list): parameter list
 
         Vars:
             uS (str): utf string
-            r2S (str): rst2pdf string
-            rS (str): reST string
+            rS (str): rst string
+            tS (str): text string
         """
         # region
         store_attr()
+        # unicode switch
         if stS == "V":
             sp.init_printing(use_unicode=False)
         else:
@@ -69,34 +70,27 @@ class Cmd:
         self.uS = ""
         self.r2s = ""
         self.rs = ""
-        self.insP = Path(foldD["rivtP"], self.fileS)
+        self.insP = Path(fD["rivtP"], "_src/", self.fileS)
         self.inspS = str(self.insP.as_posix())
         rvunitD = vars(rvunit)
         self.rivD = rivD | rvunitD
         # endregion
 
     def cmdx(self, cmdS):
-        """parse section
+        """call command
 
         Args:
             cmdS (str): command keyword
+
         Returns:
-            uS, rS, xS, foldD, lablD, rivD, rivL
+            uS, rS, tS, lS, fD, lD, rivD, rivL
         """
         method = getattr(self, cmdS)
         method()
 
-        return (
-            self.uS,
-            self.r2s,
-            self.rs,
-            self.foldD,
-            self.lablD,
-            self.rivD,
-            self.rivL,
-        )
+        return self.mD
 
-    def vdefine(self, valS):
+    def vdefine(self, deqS):
         """define value ==:
 
             a ==: .5 * 2*IN | unit1, unit2, decimal | ref
@@ -104,19 +98,15 @@ class Cmd:
             collects successive rows until hitting a blank
 
         Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL, tbL
+            self.mD, tbL
 
         """
-
         # region
         tbL = []
-        vaL = valS.split("|")
-        # print(f"{valS=}")
-        # print(f"{vaL=}")
+        vaL = deqS.split("|")
         eqS = vaL[0].strip()
         eqS = eqS.replace(" ==: ", " = ")
         varS = eqS.split("=")[0].strip()
-        valS = eqS.split("=")[1].strip()
         unitL = vaL[1].split(",")
         unit1S, unit2S, dec1S = (
             unitL[0].strip(),
@@ -124,17 +114,14 @@ class Cmd:
             unitL[2].strip(),
         )
         descripS = vaL[2].strip()
-        # rivL append
         exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
         self.rivL.append(exvS)
-        # rivD append
         try:
             exec(eqS, globals(), self.rivD)
         except ValueError as ve:
             print(f"A ValueError occurred: {ve}")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
-        # format
         decS = "%." + dec1S + "f"
         Unum.set_format(value_format=decS, auto_norm=False, unitless="")
         valU = eval(varS, {}, self.rivD)
@@ -148,20 +135,22 @@ class Cmd:
         else:
             val1S = str(valU)
             val2S = str(valU)
-        # print(f"{self.rivtvD=}")
         self.rivD[varS] = valU  # rivt dictionary
         tbL = [varS, val1S, val2S, descripS]  # append row
 
-        return (
-            self.uS,
-            self.r2s,
-            self.rs,
-            self.foldD,
-            self.lablD,
-            self.rivD,
-            self.rivL,
-            tbL,
-        )
+        self.mD = {
+            "uS": self.uS,
+            "rS": self.rS,
+            "tS": self.tS,
+            "lS": self.lS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivD": self.rivD,
+            "rivL": self.rivL,
+        }
+
+        return self.mD, tbL
+
         # endregion
 
     def vassign(self, aeqS):
@@ -170,7 +159,7 @@ class Cmd:
             a <=: b + 2 | unit1, unit2, decimal | ref
 
         Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL
+            uS, r2S, rS, fD, lD, rivD, rivL
         """
         # region
         lpL = aeqS.split("|")
@@ -182,24 +171,22 @@ class Cmd:
         decS = "%." + dec1S + "f"
         Unum.set_format(value_format=decS, auto_norm=True, unitless="")
         # print(dir(Unum.set_format))
-        # wI = self.lablD["widthI"]
+        # wI = self.lD["widthI"]
 
-        # symbolic equation
+        # symbolic equation eval
         spL = eqS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivD)
-
-        # rivD append
         valU = eval(spL[0], globals(), self.rivD)
         self.rivD[spL[0]] = valU
-        # result table
+
+        # result tables
         hdr1L = []
         tbl1L = []
         hdr1L.append(spL[0])
@@ -230,7 +217,6 @@ class Cmd:
         rS = output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
-
         # values table
         tbl2L = []
         hdr2L = []
@@ -261,39 +247,41 @@ class Cmd:
             )
         )
         uS += "\n" + output.getvalue()
-        r2S += "\n" + output.getvalue()
         rS += "\n" + output.getvalue()
+        tS += "\n" + output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
 
-        # rivL append
+        # rivL append - for export
         ex2S = spL[0].strip() + " = " + str(val1U)
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
         self.rivL.append(exvS)
+        self.mD = {
+            "uS": self.uS,
+            "rS": self.rS,
+            "tS": self.tS,
+            "lS": self.lS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivD": self.rivD,
+            "rivL": self.rivL,
+        }
 
-        return (
-            uS,
-            r2S,
-            rS,
-            self.foldD,
-            self.lablD,
-            self.rivD,
-            self.rivL,
-        )
+        return self.mD
 
-    # endregion
+        # endregion
 
-    def vfunc(self, aeqS):
+    def vfunc(self, feqS):
         """format function and assign value
 
             equation tag  <=:
             a :=: b + 2 | unit1, unit2, decimal | ref
 
         Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL
+            uS, r2S, rS, fD, lD, rivD, rivL
         """
         # region
-        lpL = aeqS.split("|")
+        lpL = feqS.split("|")
         eqS = lpL[0]
         eqS = eqS.replace(" :=: ", " = ").strip()
         unit1S, unit2S, dec1S = lpL[1].split(",")
@@ -302,14 +290,14 @@ class Cmd:
         decS = "%." + dec1S + "f"
         Unum.set_format(value_format=decS, auto_norm=True, unitless="")
         # print(dir(Unum.set_format))
-        # wI = self.lablD["widthI"]
+        # wI = self.lD["widthI"]
 
         # symbolic equation
         spL = eqS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        refS = refS.rjust(self.lablD["widthI"])
+        refS = refS.rjust(self.lD["widthI"])
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
@@ -355,15 +343,18 @@ class Cmd:
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
         self.rivL.append(exvS)
 
-        return (
-            uS,
-            r2S,
-            rS,
-            self.foldD,
-            self.lablD,
-            self.rivD,
-            self.rivL,
-        )
+        self.mD = {
+            "uS": self.uS,
+            "rS": self.rS,
+            "tS": self.tS,
+            "lS": self.lS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivD": self.rivD,
+            "rivL": self.rivL,
+        }
+
+        return self.mD
 
     # endregion
 
@@ -376,7 +367,7 @@ class Cmd:
             a < b  | unit, dec, true text, false text | ref
 
         Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL
+            uS, r2S, rS, fD, lD, rivD, rivL
         """
         # region
         lpL = compS.split("|")
@@ -396,7 +387,7 @@ class Cmd:
         spS = eqS
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        refS = refS.rjust(self.lablD["widthI"])
+        refS = refS.rjust(self.lD["widthI"])
         eqr2S = refS + "\n"
         eqrS = (
             ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> +\n\n"
@@ -443,8 +434,8 @@ class Cmd:
             chkS = "\033[91m" + falseS + "\033[00m"
             chktxtS = falseS
             chkrS = ":compred:`" + falseS + "`"
-        stdS += "\n" + chkS.rjust(self.lablD["widthI"]) + "\n"
-        uS += "\n" + chktxtS.rjust(self.lablD["widthI"]) + "\n"
+        stdS += "\n" + chkS.rjust(self.lD["widthI"]) + "\n"
+        uS += "\n" + chktxtS.rjust(self.lD["widthI"]) + "\n"
         r2S += "\n.. role:: compred\n\n.. role:: compgreen\n\n"
         r2S += "\n.. class:: align-right\n\n   " + chkrS + "\n"
         rS += (
@@ -454,77 +445,41 @@ class Cmd:
             + chkS
             + "</p> \n\n"
         )
-        return (
-            stdS,
-            uS,
-            r2S,
-            rS,
-            self.foldD,
-            self.lablD,
-            self.rivD,
-            self.rivL,
-        )
 
-    # endregion
+        self.mD = {
+            "uS": self.uS,
+            "rS": self.rS,
+            "tS": self.tS,
+            "lS": self.lS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivD": self.rivD,
+            "rivL": self.rivL,
+        }
 
-    def cF(self):
-        """number figure"""
-        # region
-        lineS = self.strpS
-        fnumI = int(self.lablD["figI"])
-        self.lablD["figI"] = fnumI + 1
-        self.capuS = "Fig. " + str(fnumI) + " -" + lineS
-        self.capr2s = "**Fig. " + str(fnumI) + " -** " + lineS
-        self.caprS = "**Fig. " + str(fnumI) + " -** " + lineS
-        # endregion
+        return self.mD, stdS
 
-    def cT(self):
-        """number table"""
-        # region
-        lineS = self.strpS
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
-        self.tabuS = "\nTable " + str(tnumI) + ": " + lineS
-        self.tabr2s = "\n<b>Table " + fillS + "</b>: " + lineS
-        self.tabrs = "\n**Table " + fillS + "**: " + lineS
-        # endregion
-
-    def cE(self):
-        """number equation"""
-        # region
-        lineS = self.strpS
-        enumI = int(self.lablD["equI"])
-        self.lablD["equI"] = enumI + 1
-        fillS = "\n" + "Eq. " + str(enumI)
-        self.uS = fillS + " - " + lineS
-        fillS = "<b>Eq " + str(enumI) + "</b>"
-        self.equS = lineS + " - " + fillS + "\n"
-        self.eqr2s = lineS + " - " + fillS + "\n"
-        self.eqrs = lineS + " - " + fillS + "\n"
         # endregion
 
     def IMAGE(self):
         """insert image
 
-        | IMAGE | rel. path file | caption, scale, fignum
+        | IMAGE | rel. path file | caption, scale, num;nonum
         """
         # region
         parL = self.parS.split(",")
         capS = parL[0].strip()
         scS = parL[1].strip()
         figS = parL[2].strip()
-
         if figS == "num":
-            numS = str(self.lablD["figI"])
-            self.lablD["fnum"] = int(numS) + 1
-            lablS = "<b>Fig. " + numS + "</b> "
+            numS = str(self.lD["tableI"])
+            self.lD["tableI"] = int(numS) + 1
+            lablS = "<b>Table " + numS + "</b> "
         else:
             lablS = ""
         if capS == "-":
             capS = ""
         lablS = lablS + capS + " "
-
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
@@ -533,7 +488,8 @@ class Cmd:
             self.uS = lablS
 
         self.uS = "\n" + self.uS + " [file: " + self.fileS + " ] \n"
-        self.r2s = (
+        self.tS = "\n Image: " + self.uS + "\n"
+        self.rS = (
             "\n\n.. image:: "
             + self.inspS
             + "\n"
@@ -549,7 +505,7 @@ class Cmd:
             + lablS
             + "\n"
         )
-        self.rs = (
+        self.lS = (
             "\n\n.. image:: "
             + self.inspS
             + "\n"
@@ -585,8 +541,8 @@ class Cmd:
         scale2S = parL[3].strip()
         figS = "Fig. "
         if parL[2] == "_[F]":
-            numS = str(self.lablD["fnum"])
-            self.lablD["fnum"] = int(numS) + 1
+            numS = str(self.lD["fnum"])
+            self.lD["fnum"] = int(numS) + 1
             figS = figS + numS + cap1S
 
         self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
@@ -611,12 +567,30 @@ class Cmd:
         # region
         # print(f"{pthS=}")
 
+        lineS = self.strpS
+        tnumI = int(self.lD["tableI"])
+        self.lD["tableI"] = tnumI + 1
+        fillS = str(tnumI)
+        self.tabuS = "\nTable " + str(tnumI) + ": " + lineS
+        self.tabr2s = "\n<b>Table " + fillS + "</b>: " + lineS
+        self.tabrs = "\n**Table " + fillS + "**: " + lineS
+
         parL = self.parS.split(",")
         titleS = " "
-        if "_[T]" in parL[2] or titleS[0:1] != "--":
-            titleS = parL[2].replace("_[T]", " ")
-        elif titleS[0:1] != "--":
-            titleS = " "
+        parL = self.parS.split(",")
+        capS = parL[0].strip()
+        scS = parL[1].strip()
+        tabS = parL[2].strip()
+        if tabS == "num":
+            numS = str(self.lD["figI"])
+            self.lD["fnum"] = int(numS) + 1
+            lablS = "<b>Fig. " + numS + "</b> "
+        else:
+            lablS = ""
+        if capS == "-":
+            capS = ""
+        lablS = lablS + capS + " "
+
         self.strpS = titleS.strip()
         self.cT()
         fiS = " [file: " + self.fileS + "]" + "\n\n"
@@ -678,7 +652,7 @@ class Cmd:
         |TEXT| rel. pth |  plain; rivt
         """
         # region
-        insP = Path(self.foldD["srcP"], self.pthS)
+        insP = Path(self.fD["srcP"], self.pthS)
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         self.uS = fileS
@@ -695,8 +669,8 @@ class Cmd:
         parL = self.parS.split(",")
         titleS = parL[0].strip()
         fiS = " [file: " + self.fileS + "]" + "\n\n"
-        tnumI = int(self.lablD["tableI"])
-        self.lablD["tableI"] = tnumI + 1
+        tnumI = int(self.lD["tableI"])
+        self.lD["tableI"] = tnumI + 1
         fillS = str(tnumI)
         if titleS[0:1] == "--":
             titleS = fiS
@@ -733,7 +707,7 @@ class Cmd:
             decS = "%." + dec1S + "f"
             Unum.set_format(value_format=decS, auto_norm=True, unitless="")
             # print(dir(Unum.set_format))
-            # wI = self.lablD["widthI"]
+            # wI = self.lD["widthI"]
             if unit1S != "-":
                 if isinstance(eval(valS), list):
                     val1U = np.array(eval(valS)) * eval(unit1S)
@@ -790,7 +764,7 @@ class Cmd:
         # print(f"{readL=}")
         namespaceS = "rivtO"
 
-        fileP = Path(self.foldD["rivtP"], self.fileS)
+        fileP = Path(self.fD["rivtP"], self.fileS)
         with open(fileP, "r") as f10:
             pyscriptS = f10.read()
         if namespaceS == "rivtO":
@@ -821,7 +795,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.foldD["reptfoldP"])
+        insP = Path(self.fD["reptfDP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -842,7 +816,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.foldD["reptfoldP"])
+        insP = Path(self.fD["reptfDP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"
@@ -863,7 +837,7 @@ class Cmd:
         """
         # region
         # print(f"{pthS=}")
-        insP = Path(self.foldD["reptfoldP"])
+        insP = Path(self.fD["reptfDP"])
         insP = Path(Path(insP) / "source" / self.pthS)
         insS = str(insP.as_posix())
         pS = " [file: " + self.pthS + "]" + "\n\n"

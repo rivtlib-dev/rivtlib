@@ -22,8 +22,8 @@ Globals:
     utfS (str): utf doc string
     rs2S (str): rstpdf doc string
     rstS (str): texpdf doc string
-    lablD (dict): formatting parameters
-    foldD (dict): folder and file paths
+    lD (dict): formatting parameters
+    fD (dict): fDer and file paths
     rivtD (dict): calculated values
 
 Typing: Last letter of var name indicates type:
@@ -91,15 +91,14 @@ rivtT = Path(rivtP, rivtN)
 # endregion
 
 # region - logs and comment variables
-prflagB = False
-rvpublicB = False
+rvpubB = False
 with open(rivtT, "r") as f1:  # noqa: F405
     rivtL = f1.readlines()
 for lnS in rivtL:
     if lnS[0:4] == "# rv":
         if "setpublic" and "True" in lnS:
-            rvpublicB = True
-# print(f"={rvpublicB}")
+            rvpubB = True
+# print(f"={rvpubB}")
 try:
     package_version = version("rivtlib")
     verS = f"rivtlib version: {package_version}"
@@ -143,17 +142,17 @@ rivtD = {
     },
 }
 metaD = {}  # metadata
-foldD = {  # folders
+fD = {  # folders
     "errlogT": errlogT,
     "bakT": bakT,
-    "rvpublicB": rvpublicB,
+    "rvpubB": rvpubB,
     "pthS": " ",
     "srcnS": " ",
     "rivtN": rivtN,  # file name
     "rivtT": rivtT,  # full path name
     "rivtP": Path(os.getcwd()),
     "rbaseS": rbaseS,  # file base name
-    "reptfoldN": os.path.dirname(rivtP),
+    "reptfDN": os.path.dirname(rivtP),
     "docP": Path(rivtP, "rivDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
@@ -169,7 +168,7 @@ foldD = {  # folders
     "styleP": Path(srcP, "styles"),
     "tempP": Path(srcP, "temp"),
 }
-lablD = {  # dictionary of labels
+lD = {  # labels
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
     "divS": rbaseS[2:3],  # div number
@@ -188,7 +187,7 @@ lablD = {  # dictionary of labels
     "deciI": 2,  # decimals
     "headrS": "",  # header string
     "footrS": "",  # footer string
-    "aliaS": "rvsource",  # folder alias
+    "aliaS": "rvsource",  # fDer alias
     "unitS": "M,M",  # units
     "valexpS": "",  # list of values for export
     "publicB": False,  # public section
@@ -205,9 +204,9 @@ lablD = {  # dictionary of labels
 
 # initialize doc strings
 dutfS = ""
-drs2S = ""
 drstS = ""
-dhtmS = ""
+dtxtS = ""
+dlatS = ""
 dcmdS = ""
 
 
@@ -225,26 +224,27 @@ def cmdhelp():
     sys.exit()
 
 
-def doc_parse(rS, tS, tagL, cmdL):
+def doc_parse(rS, tyS, tagL, cmdL):
     """convert section string to doc string
     Args:
-        sS (str): rivt section
-        tS (str): section type (R,I,V,T,W,S)
+        sS (str): section string
+        tyS (str): section type (R,I,V,T,W,S)
     Calls:
-        Section (class), section (method)
+        Rs (class), content (method)
     Returns:
         sutfS (str): utf output
-        srsrS (str): rst2pdf output
-        srstS (str): reSt output
+        srstS (str): rest output
+        stxtS (str): text output
     """
-    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    global dutfS, drstS, drstS, dtxtS, fD, lD, rivtD
     rsL = rS.split("\n")
-    conC = rvparse.Rs(tS, rsL, foldD, lablD, rivtD, prflagB, rivtL)
-    sutfS, srs2S, srstS, foldD, lablD, rivtD = conC.content(tS, tagL, cmdL)
+    conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL)
+    sutfS, srstS, stxtS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
     dutfS += sutfS
-    drs2S += srs2S
     drstS += srstS
-    return dutfS, drs2S, drstS
+    dtxtS += stxtS
+
+    return dutfS, drstS, dtxtS
 
 
 def R(rS):
@@ -252,7 +252,7 @@ def R(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD
     cmdL = ["SHELL"]  # commands from file
     tagL = []
     tagbL = [
@@ -261,7 +261,7 @@ def R(rS):
         "NEWPAGE",  # new page
     ]
     tagL = tagbL + tagL
-    dutfS, drs2S, drstS = doc_parse(rS, "R", tagL, cmdL)
+    dutfS, drstS, dtxtS = doc_parse(rS, "R", tagL, cmdL)
 
 
 def I(rS):  # noqa: E743
@@ -269,7 +269,7 @@ def I(rS):  # noqa: E743
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD
     cmdL = [
         "IMAGE",  # insert image from file
         "IMAGE2",  # insert adjacent images from file
@@ -302,7 +302,7 @@ def I(rS):  # noqa: E743
         "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
-    dutfS, drs2S, drstS = doc_parse(rS, "I", tagL, cmdL)
+    dutfS, drstS, dtxtS = doc_parse(rS, "I", tagL, cmdL)
 
 
 def V(rS):
@@ -310,7 +310,7 @@ def V(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD
     compL = [" < ", " > ", " != ", " == ", " <= ", " >= "]
     cmdL = [
         "IMAGE",  # image from file
@@ -335,7 +335,7 @@ def V(rS):
         "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
-    dutfS, drs2S, drstS = doc_parse(rS, "V", tagL, cmdL)
+    dutfS, drstS, dtxtS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
@@ -343,7 +343,7 @@ def T(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD
     cmdL = [
         "PYTHON",  # execute Python file
         "MARKUP",  # execute script file
@@ -382,7 +382,7 @@ def D(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, dhtmS, foldD, lablD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD
     cmdL = ["PUBLISH", "ATTACHPDF"]
     tagbL = ["_[[METADATA", "_[[END"]
     tagL = []
@@ -390,9 +390,7 @@ def D(rS):
     dutfS += "\nend of doc\n"
     drs2S += "\nend of doc\n"
     drstS += "\nend of doc\n"
-    wrtdoc = rvdoc.Cmdp(
-        rS, foldD, lablD, cmdL, tagL, dutfS, drs2S, drstS, rivtD
-    )
+    wrtdoc = rvdoc.Cmdp(rS, fD, lD, cmdL, tagL, dutfS, drstS, dtxtS, rivtD)
     msgS = wrtdoc.cmdx()
     print(f"{msgS}")
     sys.exit()
@@ -403,7 +401,7 @@ def S(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drs2S, drstS, dhtmS
+    global dutfS, drstS, dtxtS
 
     shL = rS.split("\n")
     sutfS = srsrS = srstS = (
@@ -411,8 +409,8 @@ def S(rS):
     )
     print(sutfS)
     dutfS += sutfS
-    drs2S += srsrS
     drstS += srstS
+    dtxtS += stxtS
 
 
 def X(rS):

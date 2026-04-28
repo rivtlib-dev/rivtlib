@@ -17,8 +17,8 @@ class Cmdp:
 
     Args:
         Args:
-            foldD (dict): folders
-            lablD (dict): labels
+            fD (dict): fDers
+            lD (dict): labels
             rivD (dict): values
             rivL (list): values for export
 
@@ -29,16 +29,14 @@ class Cmdp:
             rS (str): reST doc string
     """
 
-    def __init__(
-        self, sS, foldD, lablD, cmdL, tagL, dutfS, drs2S, drstS, rivtD
-    ):
+    def __init__(self, sS, fD, lD, cmdL, tagL, dutfS, drs2S, drstS, rivtD):
         # region
         store_attr()
         self.pthS = ""
         self.parS = ""
         self.sL = sS.split("\n")
-        self.rivtP = foldD["rivtP"]
-        errlogT = foldD["errlogT"]
+        self.rivtP = fD["rivtP"]
+        errlogT = fD["errlogT"]
         self.confg = []
 
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
@@ -93,7 +91,7 @@ class Cmdp:
                     typeS = str(pL[2].strip())
                     self.docnameS = str(pL[1].strip()).strip()
                     if self.docnameS == "-":
-                        self.docnameS = self.foldD["docnameS"]
+                        self.docnameS = self.fD["docnameS"]
                     dtypeS = typeS + ("x")
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
@@ -137,16 +135,16 @@ class Cmdp:
             msgS (str): completion message
 
         """
-        rvbaseS = self.foldD["rbaseS"]
-        rvfileS = self.foldD["rbaseS"] + ".rst"
-        rvdocS = self.foldD["rbaseS"] + ".html"
-        rvfileT = str(Path(self.foldD["rstdocsP"], rvfileS))
-        rvdocT = str(Path(self.foldD["rivtpubP"], "docs", rvdocS))
+        rvbaseS = self.fD["rbaseS"]
+        rvfileS = self.fD["rbaseS"] + ".rst"
+        rvdocS = self.fD["rbaseS"] + ".html"
+        rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
+        rvdocT = str(Path(self.fD["rivtpubP"], "docs", rvdocS))
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-        htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.foldD['rstdocsP'])} {self.foldD['htmlpubP']} \n"
+        htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['htmlpubP']} \n"
         try:
             result = subprocess.run(htmlcmdS, shell=True, check=True)
             if not result.returncode:
@@ -161,7 +159,7 @@ class Cmdp:
 
         # add layout info
         # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        # doctitleS = self.foldD["rbaseS"]
+        # doctitleS = self.fD["rbaseS"]
         # authorS = self.rivD["metaD"]["authors"]
         # verS = "  v" + self.rivD["metaD"]["version"]
         # spaceS = "  |  "
@@ -176,16 +174,16 @@ class Cmdp:
             msgS (str): completion message
         """
         # region
-        rvbaseS = self.foldD["rbaseS"]
-        rvfileS = self.foldD["rbaseS"] + ".rst"
-        rvdocS = self.foldD["rbaseS"] + ".pdf"
-        rvfileT = str(Path(self.foldD["rstdocsP"], rvfileS))
-        rvdocT = str(Path(self.foldD["rivtpubP"], "pdfdocs", rvdocS))
+        rvbaseS = self.fD["rbaseS"]
+        rvfileS = self.fD["rbaseS"] + ".rst"
+        rvdocS = self.fD["rbaseS"] + ".pdf"
+        rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
+        rvdocT = str(Path(self.fD["rivtpubP"], "pdfdocs", rvdocS))
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-        pdfcmdS = f"sphinx-build -E -b pdf -D root_doc={rvbaseS} {str(self.foldD['rstdocsP'])} {self.foldD['pdfpubP']} \n"
+        pdfcmdS = f"sphinx-build -E -b pdf -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
         try:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
             if not result.returncode:
@@ -201,7 +199,7 @@ class Cmdp:
 
         # # add layout info
         # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        # doctitleS = self.foldD["rbaseS"]
+        # doctitleS = self.fD["rbaseS"]
         # authorS = self.rivD["metaD"]["authors"]
         # verS = "  v" + self.rivD["metaD"]["version"]
         # spaceS = "  |  "
@@ -210,10 +208,10 @@ class Cmdp:
         # self.drstS = headerS + self.drstS + "\n"
 
         # versionS = "v-0"
-        # rvfileS = self.foldD["rbaseS"] + ".rst2"
-        # rvdocS = self.foldD["rbaseS"] + ".pdf"
-        # rvfileT = str(Path(self.foldD["rivtpubP"], rvfileS))
-        # rvdocT = str(Path(self.foldD["rivtpubP"], rvdocS))
+        # rvfileS = self.fD["rbaseS"] + ".rst2"
+        # rvdocS = self.fD["rbaseS"] + ".pdf"
+        # rvfileT = str(Path(self.fD["rivtpubP"], rvfileS))
+        # rvdocT = str(Path(self.fD["rivtpubP"], rvdocS))
         # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         # doctitleS = "**" + self.docnameS + "**"
         # versionS = "v-" + self.versionS.strip()
@@ -277,11 +275,11 @@ class Cmdp:
         Returns:
             msgS (str): completion message
         """
-        rvdocS = self.foldD["rbaseS"] + ".txt"
-        rvdocT = str(Path(self.foldD["rivtpubP"], "text", rvdocS))
+        rvdocS = self.fD["rbaseS"] + ".txt"
+        rvdocT = str(Path(self.fD["rivtpubP"], "txtdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.docnameS
-        versionS = "v-" + self.versionS.strip()
+        versionS = "v-" + self.verS.strip()
         authorS = self.authorS.strip()
 
         borderS = "=" * 80
@@ -337,7 +335,7 @@ class Cmdp:
         - Delete inputenc package
         - Modify section title and add table of contents
 
-         write calc rSt file to d00_docs folder
+         write calc rSt file to d00_docs fDer
 
         Args:
             cmdS (str): [description]
@@ -367,12 +365,12 @@ class Cmdp:
             "rivtlib",
             "styles",
         )
-        rvfileS = self.foldD["rbaseS"] + ".rst"
-        rvdocS = self.foldD["rbaseS"] + ".html"
+        rvfileS = self.fD["rbaseS"] + ".rst"
+        rvdocS = self.fD["rbaseS"] + ".html"
 
         #  # region
-        #     startS = str(lablD["pageI"])
-        #     doctitleS = str(lablD["doctitleS"])
+        #     startS = str(lD["pageI"])
+        #     doctitleS = str(lD["doctitleS"])
 
         #     with open(tfileP, "r", encoding="md-8", errors="ignore") as f2:
         #         texf = f2.read()
@@ -408,7 +406,7 @@ class Cmdp:
         #         """fancyhead[L]{\leftmark}""",
         #         """fancyhead[L]{\\normalsize\\bfseries  """ + doctitleS + "}",
         #     )
-        #     texf = texf.replace("x*x*x", "[" + lablD["docnumS"] + "]")
+        #     texf = texf.replace("x*x*x", "[" + lD["docnumS"] + "]")
         #     texf = texf.replace("""\\begin{tabular}""", "%% ")
         #     texf = texf.replace("""\\end{tabular}""", "%% ")
         #     texf = texf.replace(
@@ -532,9 +530,9 @@ class Cmdp:
         #     dstS = str(Path(reportP, srcS))
         #     shutil.copy(srcS, dstS)
 
-        #     global foldD
+        #     global fD
 
-        #     style_path = foldD["styleP"]
+        #     style_path = fD["styleP"]
         #     # print(f"{style_path=}")
         #     # f2 = open(style_path)
         #     # f2.close
@@ -578,10 +576,10 @@ class Cmdp:
         #         logging.error(str(e))
         #         sys.exit("tex file write failed")
 
-        #     """write pdf calc to reports folder and open
+        #     """write pdf calc to reports fDer and open
 
         #     Args:
-        #         texfileP (path): doc config folder
+        #         texfileP (path): doc config fDer
         #     """
 
         #     global rstcalcS, _rstflagB
@@ -603,10 +601,10 @@ class Cmdp:
         #     dnameS = _cnameS.replace("c", "d", 1)
         #     docpdfP = Path(_dpathP / ".".join([dnameS, "pdf"]))
         #     doclocalP = Path(_dpathP0 / ".".join([_cnameS, "pdf"]))
-        #     time.sleep(2)  # move pdf to doc folder
+        #     time.sleep(2)  # move pdf to doc fDer
         #     shutil.move(doclocalP, docpdfP)
         #     os.chdir(_dpathPcurP)
-        #     print("INFO: pdf file moved to docs folder", flush=True)
+        #     print("INFO: pdf file moved to docs fDer", flush=True)
         #     print("INFO: program complete")
 
         #     cfgP = Path(_dpathP0 / "rv_cfg.txt")  # read pdf display program

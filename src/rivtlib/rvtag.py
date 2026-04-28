@@ -17,12 +17,12 @@ class Tag:
         tagbx(tagS): formats block
     """
 
-    def __init__(self, foldD, lablD, rivD, rivL, strLS):
+    def __init__(self, fD, lD, rivD, rivL, strLS):
         """tags object
 
         Args:
-            foldD (dict): folder dictionary
-            lablD (dict): label dictionary
+            fD (dict): fDer dictionary
+            lD (dict): label dictionary
             rivD (dict): values dictionary
             rivL (list): values list for export
             strLS (str): line or block string to format
@@ -58,10 +58,10 @@ class Tag:
          Args:
              tagS (str):  last two characers of tag symbol
          Returns:
-             uS, r2S, rS, foldD, lablD, rivD, rivL
+             uS, r2S, rS, fD, lD, rivD, rivL
         """
         cmdS = "l" + tagS[0]
-        wI = int(self.lablD["widthI"])
+        wI = int(self.lD["widthI"])
         lineS = self.strLS
         # region
         if cmdS == "lP":
@@ -71,8 +71,8 @@ class Tag:
         elif cmdS == "lT":
             """number table"""
 
-            tnumI = int(self.lablD["tableI"])
-            self.lablD["tableI"] = tnumI + 1
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
             self.uS = "\nTable " + str(tnumI) + ": " + lineS
             self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
@@ -81,8 +81,8 @@ class Tag:
         elif cmdS == "lI":
             """number image"""
 
-            tnumI = int(self.lablD["tableI"])
-            self.lablD["tableI"] = tnumI + 1
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
             self.uS = "\nTable " + str(tnumI) + ": " + lineS
             self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
@@ -91,12 +91,12 @@ class Tag:
         elif cmdS == "lE":
             """number equation"""
 
-            enumI = int(self.lablD["equI"])
-            self.lablD["equI"] = enumI + 1
+            enumI = int(self.lD["equI"])
+            self.lD["equI"] = enumI + 1
             fillS = " [Eq " + str(enumI) + "]"
             refS = lineS + fillS
             self.uS = (lineS + " [Eq " + str(enumI) + "]").rjust(
-                self.lablD["widthI"]
+                self.lD["widthI"]
             )
             fillS = " **[Eq " + str(enumI) + "]**"
             refS = lineS + fillS
@@ -141,9 +141,9 @@ class Tag:
 
         elif cmdS == "l#":
             """number footnoate"""
-            ftnumI = self.lablD["footL"].pop(0)
-            self.lablD["noteL"].append(ftnumI + 1)
-            self.lablD["footL"].append(ftnumI + 1)
+            ftnumI = self.lD["footL"].pop(0)
+            self.lD["noteL"].append(ftnumI + 1)
+            self.lD["footL"].append(ftnumI + 1)
             self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
             self.r2S = lineS.replace("*]", "[" + str(ftnumI) + "]")
             self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
@@ -151,32 +151,32 @@ class Tag:
         elif cmdS == "lP":
             "new page"
             # region
-            pgnS = str(self.lablD["pageI"])
+            pgnS = str(self.lD["pageI"])
             self.uS = (
                 "\n"
-                + "=" * (int(self.lablD["widthI"]) - 10)
+                + "=" * (int(self.lD["widthI"]) - 10)
                 + " Page "
                 + pgnS
                 + "\n"
             )
-            # self.uS = self.lablD["headuS"].replace("p##", pagenoS)
-            self.lablD["pageI"] = int(pgnS) + 1
+            # self.uS = self.lD["headuS"].replace("p##", pagenoS)
+            self.lD["pageI"] = int(pgnS) + 1
             self.r2S = (
                 "\n"
-                + "_" * self.lablD["widthI"]
+                + "_" * self.lD["widthI"]
                 + "\n"
                 + self.uS
                 + "\n"
-                + "_" * self.lablD["widthI"]
+                + "_" * self.lD["widthI"]
                 + "\n"
             )
             self.rS = (
                 "\n"
-                + "_" * self.lablD["widthI"]
+                + "_" * self.lD["widthI"]
                 + "\n"
                 + self.uS
                 + "\n"
-                + "_" * self.lablD["widthI"]
+                + "_" * self.lD["widthI"]
                 + "\n"
             )
             # endregion
@@ -188,8 +188,8 @@ class Tag:
             self.uS,
             self.r2S,
             self.rS,
-            self.foldD,
-            self.lablD,
+            self.fD,
+            self.lD,
             self.rivD,
             self.rivL,
         )
@@ -214,19 +214,19 @@ class Tag:
         Args:
             tagS (str): characters of tag symbol with leading "_[" stripped
         Returns:
-            uS, r2S, rS, foldD, lablD, rivD, rivL
+            uS, r2S, rS, fD, lD, rivD, rivL
         """
         # region
         blockS = self.strLS
         blockL = (self.strLS).split("\n")
         cmdS = "b" + tagS[0:3]
-        wI = int(self.lablD["widthI"])
+        wI = int(self.lD["widthI"])
 
         if cmdS == "bSHE":
             """shell command"""
 
-            tnumI = int(self.lablD["tableI"])
-            self.lablD["tableI"] = tnumI + 1
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
             self.uS = "\nTable " + str(tnumI) + ": " + lineS
             self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
@@ -253,8 +253,8 @@ class Tag:
         elif cmdS == "bIND":
             """indent block"""
             # region
-            tnumI = int(self.lablD["tableI"])
-            self.lablD["tableI"] = tnumI + 1
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
             luS = "Table " + str(tnumI) + " - " + blockS
             lrS = "\n" + "Table " + fillS + ": " + blockS
             # endregion
@@ -264,8 +264,8 @@ class Tag:
             # region
             blkL = (self.strLS).split("\n", 1)
             titleS = blkL[0].strip()
-            tnumI = int(self.lablD["tableI"])
-            self.lablD["tableI"] = tnumI + 1
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
             self.uS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
             self.r2S = (
@@ -279,8 +279,8 @@ class Tag:
         elif cmdS == "bLAT":
             """latex block"""
             # region
-            tnumI = int(self.lablD["tableI"])
-            self.lablD["tableI"] = tnumI + 1
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
             luS = "Table " + str(tnumI) + " - " + blockS
             lrS = "\n" + "**" + "Table " + fillS + ": " + blockS
             # endregion
@@ -289,8 +289,8 @@ class Tag:
             self.uS,
             self.r2S,
             self.rS,
-            self.foldD,
-            self.lablD,
+            self.fD,
+            self.lD,
             self.rivD,
             self.rivL,
         )
