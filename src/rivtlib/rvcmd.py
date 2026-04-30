@@ -26,20 +26,21 @@ class Cmd:
 
     Methods:
 
-     API        Command                                                  RW     File Types
-    ---------  ------------------------------------------------------- ----- ----------------------
-    rv.R        | SHELL | relative path | *wait;nowait*                   R     *.sh*
-    rv.V,I      | IMAGE | relative path |  scale, caption, num;nonum      R     *.png, .jpg*
-    rv.V,I      | IMAGE2 | relative path | s1, s2, c1, c2, n1, n2         R     *.png, jpg*
-    rv.V,I      | TABLE | relative path | width, l;c;r, title, num;nonum  R     *csv, txt, xlsx*
-    rv.V,I      | TEXT | relative path |  *text;literal*; code            R     *txt, code*
-    rv.V,T      | PYTHON | relative path | *rivt*; nmspace                R     *py*
-    rv.T        | MARKUP | relative path | label                          R     *html*   *tex*
-    rv.V        | VALTABLE | relative path | width, title, num;nonum      R     *csv, txt, xlsx*
-    rv.V        a ==: 1*IN  | unit1, unit2, decimal | ref                 W     define value
-    rv.V        b <=: a + 3*FT | unit1, unit2, decimal | ref              W     assign value
-    rv.V        c :=: func1(x,y) | unit1, unit2, decimal | ref            W     function value
-    rv.V        b < a | true text, false text, decimal | ref              W     compare value
+     API        Command                                                  File Types
+    ---------  ------------------------------------------------------- ---------------------
+    rv.R        | SHELL | relative path | os, *wait;nowait*               *.sh*
+    rv.V,I      | IMAGE | relative path |  scale, caption, num;non        *.png, .jpg*
+    rv.V,I      | IMAGE2 | relative path | s1, s2, c1, c2, n1, n2         *.png, jpg*
+    rv.V,I      | TABLE | relative path | width, l;c;r, title, num;non    *csv, txt, xlsx*
+    rv.V        | PYTHON | relative path | *rivt*; nmspace                *py*
+    rv.V        | VALTABLE | relative path | width, title, num;non        *csv, txt, xlsx*
+    rv.V        a ==: 1*IN  | unit1, unit2, decimal | ref                 define value
+    rv.V        b <=: a + 3*FT | unit1, unit2, decimal | ref              assign value
+    rv.V        c :=: func1(x,y) | unit1, unit2, decimal | ref            function value
+    rv.V        b < a | unit, decimal, true text, false text | ref        compare value
+    rv.T        | MARKUP | relative path | type
+    rv.D        | ATTACHPDF
+    rv.D        | PUBLISH
     """
 
     def __init__(self, stS, fD, lD, rivD, rivL, parL):
@@ -68,11 +69,14 @@ class Cmd:
         self.fileS = parL[1].strip()
         self.parS = parL[2].strip()
         self.uS = ""
-        self.r2s = ""
-        self.rs = ""
+        self.rS = ""
+        self.tS = ""
+        self.lS = ""
+        self.lD = lD
         self.insP = Path(fD["rivtP"], "_src/", self.fileS)
         self.inspS = str(self.insP.as_posix())
         rvunitD = vars(rvunit)
+        self.rivL = rivL
         self.rivD = rivD | rvunitD
         # endregion
 
@@ -113,6 +117,7 @@ class Cmd:
             unitL[1].strip(),
             unitL[2].strip(),
         )
+        # rivt store
         descripS = vaL[2].strip()
         exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
         self.rivL.append(exvS)
@@ -138,18 +143,7 @@ class Cmd:
         self.rivD[varS] = valU  # rivt dictionary
         tbL = [varS, val1S, val2S, descripS]  # append row
 
-        self.mD = {
-            "uS": self.uS,
-            "rS": self.rS,
-            "tS": self.tS,
-            "lS": self.lS,
-            "lD": self.lD,
-            "fD": self.fD,
-            "rivD": self.rivD,
-            "rivL": self.rivL,
-        }
-
-        return self.mD, tbL
+        return tbL, self.rivD, self.rivL
 
         # endregion
 
@@ -159,8 +153,9 @@ class Cmd:
             a <=: b + 2 | unit1, unit2, decimal | ref
 
         Returns:
-            uS, r2S, rS, fD, lD, rivD, rivL
+            uS, rS, tS, fD, lD, rivD, rivL
         """
+
         # region
         lpL = aeqS.split("|")
         eqS = lpL[0]
@@ -171,13 +166,13 @@ class Cmd:
         decS = "%." + dec1S + "f"
         Unum.set_format(value_format=decS, auto_norm=True, unitless="")
         # print(dir(Unum.set_format))
-        # wI = self.lD["widthI"]
 
         # symbolic equation eval
         spL = eqS.split("=")
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
+        print("dddxxx", eqS)
         if unit1S != "-":
             exec(eqS, globals(), self.rivD)
         else:
@@ -213,8 +208,8 @@ class Cmd:
             )
         )
         uS = output.getvalue()
-        r2S = output.getvalue() + "\n"
         rS = output.getvalue() + "\n"
+        tS = output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
         # values table
@@ -268,7 +263,6 @@ class Cmd:
         }
 
         return self.mD
-
         # endregion
 
     def vfunc(self, feqS):
@@ -436,8 +430,8 @@ class Cmd:
             chkrS = ":compred:`" + falseS + "`"
         stdS += "\n" + chkS.rjust(self.lD["widthI"]) + "\n"
         uS += "\n" + chktxtS.rjust(self.lD["widthI"]) + "\n"
-        r2S += "\n.. role:: compred\n\n.. role:: compgreen\n\n"
-        r2S += "\n.. class:: align-right\n\n   " + chkrS + "\n"
+        rS += "\n.. role:: compred\n\n.. role:: compgreen\n\n"
+        rS += "\n.. class:: align-right\n\n   " + chkrS + "\n"
         rS += (
             "\n"
             + ".. raw:: html\n\n"
@@ -464,63 +458,70 @@ class Cmd:
     def IMAGE(self):
         """insert image
 
-        | IMAGE | rel. path file | caption, scale, num;nonum
+        | IMAGE | rel. path file | caption, scale, num;non
         """
         # region
+        lablS = ""
         parL = self.parS.split(",")
         capS = parL[0].strip()
         scS = parL[1].strip()
         figS = parL[2].strip()
         if figS == "num":
-            numS = str(self.lD["tableI"])
-            self.lD["tableI"] = int(numS) + 1
-            lablS = "<b>Table " + numS + "</b> "
-        else:
-            lablS = ""
+            numS = str(self.lD["figI"])
+            self.lD["figI"] = int(numS) + 1
+            lablS = "Fig. " + numS + " - "
         if capS == "-":
             capS = ""
         lablS = lablS + capS + " "
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
-            self.uS = lablS
         except Exception:
-            self.uS = lablS
+            pass
+        uS = "\n" + lablS + " [file: " + self.fileS + " ] \n"
+        tS = "\n Image: " + lablS + "\n"
+        rS = (
+            "\n\n.. image:: "
+            + self.inspS
+            + "\n"
+            + "   :width: "
+            + scS
+            + "%"
+            + "\n"
+            + "   :align: center"
+            + "\n\n\n"
+            + ".. raw:: html \n\n"
+            + "   "
+            + '<p align="center">'
+            + lablS
+            + "\n"
+        )
+        lS = (
+            "\n\n.. image:: "
+            + self.inspS
+            + "\n"
+            + "   :width: "
+            + scS
+            + "%"
+            + "\n"
+            + "   :align: center"
+            + "\n\n\n"
+            + ".. raw:: html \n\n"
+            + "   "
+            + '<p align="center">'
+            + lablS
+            + "\n"
+        )
 
-        self.uS = "\n" + self.uS + " [file: " + self.fileS + " ] \n"
-        self.tS = "\n Image: " + self.uS + "\n"
-        self.rS = (
-            "\n\n.. image:: "
-            + self.inspS
-            + "\n"
-            + "   :width: "
-            + scS
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n\n"
-            + ".. raw:: html \n\n"
-            + "   "
-            + '<p align="center">'
-            + lablS
-            + "\n"
-        )
-        self.lS = (
-            "\n\n.. image:: "
-            + self.inspS
-            + "\n"
-            + "   :width: "
-            + scS
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n\n"
-            + ".. raw:: html \n\n"
-            + "   "
-            + '<p align="center">'
-            + lablS
-            + "\n"
-        )
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivD": self.rivD,
+        }
 
         # endregion
 
@@ -562,7 +563,7 @@ class Cmd:
     def TABLE(self):
         """insert table
 
-        | TABLE | rel. path | col width, l;c;r, title (_[T])
+        | TABLE | rel. path | title,width,r1:r2,l;c;r,num;non
         """
         # region
         # print(f"{pthS=}")
@@ -663,7 +664,7 @@ class Cmd:
     def VALTABLE(self):
         """read file and insert values
 
-        | VALTABLE | relative path | title, rows
+        | VALTABLE | relative path | title, rows, num;non
         """
         # region
         parL = self.parS.split(",")
@@ -750,9 +751,23 @@ class Cmd:
         sys.stdout = old_stdout
         sys.stdout.flush()
         # pthxS = str(Path(*Path(pthS).parts[-3:]))
-        self.uS = utlS + outS + "\n"
-        self.r2s = rtlS + outS + "\n"
-        self.rs = xtlS + outS + "\n"
+        uS = utlS + outS + "\n"
+        rS = rtlS + outS + "\n"
+        tS = xtlS + outS + "\n"
+        lS = ""
+
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivD": self.rivD,
+        }
+
+        return self.mD
+
         # endregion
 
     def PYTHON(self):

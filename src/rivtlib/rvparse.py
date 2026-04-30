@@ -107,18 +107,22 @@ class Rs:
         self.srstS = srstS  # rst2pdf doc
         self.stxtS = stxtS  # rest doc
         self.logging.info("SECTION " + str(lD["secnumI"]) + " - type " + tyS)
-        # strip leading spaces and comments from section content
+
+        # preprocess  section
         self.spL = []
         for slS in rsL[1:]:
             if len(slS) < 5:  # blank line to new line
-                slS = "\n"
-                spL.append(slS)
+                slS = "     \n"
+                self.spL.append(slS[4:])
                 continue
-            if "##" in slS[:6]:  # skip comment line
+            elif "##" in slS[:6]:  # skip comment line
                 continue
-            if "." * 5 in slS[:6]:  # page break to tag
+            elif "." * 5 in slS[:6]:  # page break to tag
                 slS = "    _[P]"
-            self.spL.append(slS[4:])  # preprocessed list
+                self.spL.append(slS[4:])
+                continue
+            else:
+                self.spL.append(slS[4:])  # preprocessed list
         # endregion
 
     # ----------------------------------------------------   API parsing loop
@@ -155,7 +159,7 @@ class Rs:
         rivD = self.rivtD
         # --------------------------------------- loop over content substring
         for slS in self.spL:
-            # print(f"{slS=}")
+            # print("**", f"{slS=}")
             if tyS == "I":  # strip inline marks
                 txt2L = []
                 # print(f"{slS=}")
@@ -170,95 +174,83 @@ class Rs:
                         t2S = "*" + tS + "*"
                         slS = slS.replace(t2S, tS)
                 # print(f"{txt1L=}")
-            if len(tabL) > 0 and len(slS.strip()) == 0:  # print inline valtable
-                tabL = []
+            if len(slS.strip()) == 0 and len(tabL) > 0:  # print inline valtable
                 outS = self.prt_tabl(tabL)
                 sutfS += outS + " \n"
                 srstS += outS + " \n"
                 stxtS += outS + " \n"
                 print(outS, "\n")  # STDOUT - values block
+                tabL = []
                 continue
-            if len(slS.strip()) == 0 and not blockB:  # print blank line
+            elif len(slS.strip()) == 0 and not blockB:  # print blank line
                 sutfS += " \n"
                 srstS += " \n"
                 stxtS += " \n"
                 print(" ")  # STDOUT- blank line
                 continue
+            else:
+                pass
             if blockB:  # ----------------------------------- block accumulate
                 # print(f"{blockS}")
                 if blockB and ("_[[END]]" in slS):  # end of block
                     blockB = False
                     tC = rvtag.Tag(fD, lD, rivD, rivL, blockS)
                     # print("****", tagS, blockS)
-                    mD = tC.tagbx(tagS)
-                    sutfS += mD.uS + " \n"
-                    srstS += mD.rS + " \n"
-                    stxtS += mD.tS + " \n"
-                    print(mD.uS)  # STDOUT - block
+                    mD, lD = tC.tagbx(tagS)
+                    sutfS += mD["uS"] + "\n"
+                    srstS += mD["rS"] + "\n"
+                    sutfS += mD["tS"] + "\n"
+                    print(mD["uS"])  # STDOUT - block
                     tagS = ""
                     blockS = """"""
                     continue
-                blockS += slS + " \n"
-                continue
-            if tyS == "V":  # ----------------------------- value operators
-                if " ==: " in slS:  # define
-                    if " ==: " in cmdL:
-                        lineS = slS.strip()
-                        tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
-                        mD, tbL = tC.vdefine(lineS)
-                        tabL.append(tbL)
-                        sutfS += mD.uS + "\n"
-                        srstS += mD.rS + "\n"
-                        stxtS += mD.tS + "\n"
-                        continue
-                if " <=: " in slS:  # assign
-                    if " <=: " in cmdL:
-                        lineS = slS.strip()
-                        tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
-                        mD = tC.vassign(lineS)
-                        sutfS += mD.uS + "\n"
-                        srstS += mD.rS + "\n"
-                        sutfS += mD.tS + "\n"
-                        print(mD.uS)  # STDOUT - equation table
-                        continue
-                if " :=: " in slS:  # function
-                    if " :=: " in cmdL:
-                        lineS = slS.strip()
-                        tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
-                        mD = tC.vfunc(lineS)
-                        sutfS += mD.uS + "\n"
-                        srstS += mD.rS + "\n"
-                        stxtS += mD.tS + "\n"
-                        print(mD.uS)  # STDOUT - equation table
-                        continue
+                else:
+                    blockS += slS + " \n"
+                    continue
+            if " ==: " in slS:  # define ------------------- operators
+                if " ==: " in cmdL:
+                    lineS = slS.strip()
+                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
+                    tbL, rivD, rivL = tC.vdefine(lineS)
+                    tabL.append(tbL)
+                    continue
+            if " <=: " in slS:  # assign
+                if " <=: " in cmdL:
+                    lineS = slS.strip()
+                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
+                    mD = tC.vassign(lineS)
+                    rivD, rivL, lD = (mD["lD"], mD["rivL"], mD["rivD"])
+                    sutfS += mD["uS"] + "\n"
+                    srstS += mD["rS"] + "\n"
+                    sutfS += mD["tS"] + "\n"
+                    print(mD["uS"])  # STDOUT - equation table
+                    continue
+            if " :=: " in slS:  # function
+                if " :=: " in cmdL:
+                    lineS = slS.strip()
+                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
+                    mD = tC.vfunc(lineS)
+                    sutfS += mD["uS"] + "\n"
+                    srstS += mD["rS"] + "\n"
+                    sutfS += mD["tS"] + "\n"
+                    print(mD.uS)  # STDOUT - equation table
+                    continue
+            if tyS == "V":
                 for compS in cmdL[8]:
                     if compS in slS:
                         lineS = slS.strip()
                         tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
                         mD, stdS = tC.vcompare(lineS, compS)
-                        sutfS += mD.uS + "\n"
-                        srstS += mD.rS + "\n"
-                        stxtS += mD.tS + "\n"
+                        sutfS += mD["uS"] + "\n"
+                        srstS += mD["rS"] + "\n"
+                        sutfS += mD["tS"] + "\n"
                         print(stdS)  # STDOUT - compare table
                         continue
-            if slS[0:1] == "|":  # ----------------------------- commands
-                parL = slS[1:].split("|")
-                cmdS = parL[0].strip()
-                self.logging.info(f"command : {cmdS}")
-                # print(cmdS, pthS, parS)
-                if cmdS in cmdL:  # verify scope
-                    cmC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, parL)
-                    mD = cmC.cmdx(cmdS)
-                    sutfS += mD.uS + "\n"
-                    srstS += mD.rS + "\n"
-                    sutfS += mD.tS + "\n"
-                    print(mD.uS)  # STDOUT- command
-                    continue
             if "_[" in slS:  # ------------------------------ tags / blocks
                 if "_[[" in slS:
                     slL = slS.split("_[[")
                     lineL = slL[1].split("]]")
-                    lineS = slL[0] + lineL[1]
+                    lineS = lineL[1]
                     tagS = lineL[0]
                     if tagS in tagL:
                         # print(f"{tagS=}")
@@ -266,6 +258,7 @@ class Rs:
                         blockS = ""
                         blockB = True
                         blockS += lineS + "\n"
+                    continue
                 else:
                     slL = slS.split("_[")
                     lineL = slL[1].split("]")
@@ -276,12 +269,26 @@ class Rs:
                         self.logging.info(f"tag : _[{tagS}]")
                         tC = rvtag.Tag(fD, lD, rivD, rivL, lineS)
                         if tagS[0] != "[":  # line tag
-                            mD = tC.taglx(tagS)
-                            sutfS += mD.uS + "\n"
-                            srstS += mD.rS + "\n"
-                            sutfS += mD.tS + "\n"
-                            print(mD.uS)  # STDOUT- tagged line
+                            mD, lD = tC.taglx(tagS)
+                            sutfS += mD["uS"] + "\n"
+                            srstS += mD["rS"] + "\n"
+                            sutfS += mD["tS"] + "\n"
+                            print(mD["uS"])  # STDOUT- tagged line
                             continue
+            if slS[0:1] == "|":  # ----------------------------- commands
+                parL = slS[1:].split("|")
+                cmdS = parL[0].strip()
+                self.logging.info(f"command : {cmdS}")
+                # print(cmdS, pthS, parS)
+                if cmdS in cmdL:  # verify scope
+                    cmC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, parL)
+                    mD = cmC.cmdx(cmdS)
+                    lD, rivL, rivD = (mD["lD"], mD["rivL"], mD["rivD"])
+                    sutfS += mD["uS"] + "\n"
+                    srstS += mD["rS"] + "\n"
+                    sutfS += mD["tS"] + "\n"
+                    print(mD["uS"])  # STDOUT- command
+                    continue
             else:  # everything else
                 print(slS, flush=True)  # STDOUT - raw line
                 sutfS += slS + "\n"
