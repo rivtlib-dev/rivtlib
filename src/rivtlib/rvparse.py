@@ -138,7 +138,7 @@ class Rs:
             stxtS (str): text doc string
             fD (dict): folder paths
             lD (dict): labels
-            rivD (dict): calculated values
+            rivtD (dict): calculated values
             rivL (list): export values
         """
         # region
@@ -156,7 +156,7 @@ class Rs:
         stxtS = self.stxtS
         fD = self.fD
         lD = self.lD
-        rivD = self.rivtD
+        rivtD = self.rivtD
         # --------------------------------------- loop over content substring
         for slS in self.spL:
             # print("**", f"{slS=}")
@@ -194,7 +194,7 @@ class Rs:
                 # print(f"{blockS}")
                 if blockB and ("_[[END]]" in slS):  # end of block
                     blockB = False
-                    tC = rvtag.Tag(fD, lD, rivD, rivL, blockS)
+                    tC = rvtag.Tag(fD, lD, rivtD, rivL, blockS)
                     # print("****", tagS, blockS)
                     mD, lD = tC.tagbx(tagS)
                     sutfS += mD["uS"] + "\n"
@@ -210,16 +210,16 @@ class Rs:
             if " ==: " in slS:  # define ------------------- operators
                 if " ==: " in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
-                    tbL, rivD, rivL = tC.vdefine(lineS)
+                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
+                    tbL, rivtD, rivL = tC.vdefine(lineS)
                     tabL.append(tbL)
                     continue
             if " <=: " in slS:  # assign
                 if " <=: " in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
+                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
                     mD = tC.vassign(lineS)
-                    rivD, rivL, lD = (mD["lD"], mD["rivL"], mD["rivD"])
+                    lD, rivL, rivtD = (mD["lD"], mD["rivL"], mD["rivtD"])
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
                     sutfS += mD["tS"] + "\n"
@@ -228,18 +228,18 @@ class Rs:
             if " :=: " in slS:  # function
                 if " :=: " in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
+                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
                     mD = tC.vfunc(lineS)
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
                     sutfS += mD["tS"] + "\n"
-                    print(mD.uS)  # STDOUT - equation table
+                    print(mD["uS"])  # STDOUT - equation table
                     continue
             if tyS == "V":
                 for compS in cmdL[8]:
                     if compS in slS:
                         lineS = slS.strip()
-                        tC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, lineS)
+                        tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
                         mD, stdS = tC.vcompare(lineS, compS)
                         sutfS += mD["uS"] + "\n"
                         srstS += mD["rS"] + "\n"
@@ -267,7 +267,7 @@ class Rs:
                     if tagS in tagL:  # check list
                         # print(f"{tagS=}")
                         self.logging.info(f"tag : _[{tagS}]")
-                        tC = rvtag.Tag(fD, lD, rivD, rivL, lineS)
+                        tC = rvtag.Tag(fD, lD, rivtD, rivL, lineS)
                         if tagS[0] != "[":  # line tag
                             mD, lD = tC.taglx(tagS)
                             sutfS += mD["uS"] + "\n"
@@ -281,9 +281,9 @@ class Rs:
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # verify scope
-                    cmC = rvcmd.Cmd(self.tyS, fD, lD, rivD, rivL, parL)
+                    cmC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, parL)
                     mD = cmC.cmdx(cmdS)
-                    lD, rivL, rivD = (mD["lD"], mD["rivL"], mD["rivD"])
+                    lD, rivL, rivtD = (mD["lD"], mD["rivL"], mD["rivtD"])
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
                     sutfS += mD["tS"] + "\n"
@@ -298,11 +298,11 @@ class Rs:
         # export values file
         if self.tyS == "V" and len(rivL) > 0:
             fileS = lD["valprfx"] + str(lD["secnumI"]) + ".csv"
-            fileP = Path(fD["storeP"], "vals", fileS)
+            fileP = Path(fD["storeP"], fileS)
             with open(fileP, "w") as file1:
                 file1.write("\n".join(rivL))
 
-        return sutfS, srstS, stxtS, fD, lD, rivD
+        return sutfS, srstS, stxtS, fD, lD, rivtD
         # endregion
 
     def prt_tabl(self, tabL):

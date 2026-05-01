@@ -44,18 +44,18 @@ class Tag:
 
          API         Syntax                         Description (output types)
         ------- --------------------------------- -----------------------------------
-         I,V      math  _[M]                        format ASCII math (all)
          I,V      text  _[C]                        center text (all)
          I,V      text  _[R]                        right justify text (all)
-         I,V      math  _[L]                        format LaTeX math (all)
-         I,V      label _[E]                        equation number and label (all)
+         I,V      text  _[U]                        underline text (all)
+         I,V      math  _[M]                        format ASCII math (all)
+         I,V      math  _[X]                        format LaTeX math (all)
          I,V      label _[F]                        figure number and label (all)
          I,V      title _[T]                        table number and title (all)
+         I,V      text  _[V] var_name | text        equation number and label (all)
          I,V      text  _[#] text                   number endnote (all)
          I,V      text  _[G] term link    | text    link term to glossary (all)
          I,V      text  _[S] section link | text    link to section in report (all)
-         I,V      text  _[U] external url | text    external url link (all)
-         I,V      text  _[V] var_name | text        equation number and label (all)
+         I,V      text  _[L] external link | text   external url link (all)
          all           ## text                      non printing comment
 
          Args:
@@ -68,7 +68,41 @@ class Tag:
         lineS = self.strLS
         # region
 
-        if cmdS == "lT":
+        if cmdS == "lC":
+            """center text"""
+
+            uS = tS = lineS.center(wI) + "\n"
+            rS = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
+            lS = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
+
+        elif cmdS == "lR":
+            """right justify text"""
+
+            uS = tS = lineS.center(wI) + "\n"
+            rS = "\n::\n\n" + lineS.center(wI) + "\n"
+            lS = "\n::\n\n" + lineS.center(wI) + "\n"
+
+        elif cmdS == "lU":
+            """format url link"""
+
+            lineL = lineS.split(",")
+            uS = tS = lineL[0] + ": " + lineL[1]
+            rS = ".. _" + lineL[0] + ": " + lineL[1]
+            lS = ".. _" + lineL[0] + ": " + lineL[1]
+
+        elif cmdS == "lM":
+            """format sympy"""
+
+            spS = lineS.strip()
+            spL = spS.split("=")
+            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+            indlineS = textwrap.indent(lineS, "     ")
+            uS = tS = indlineS + "\n"
+            rS = "\n.. code:: \n\n" + indlineS + "\n\n"
+            lS = "\n.. code:: \n\n" + indlineS + "\n\n"
+
+        elif cmdS == "lT":
             """number table"""
 
             tnumI = int(self.lD["tableI"])
@@ -88,43 +122,6 @@ class Tag:
             rS = "\n**Table " + fillS + "**: " + lineS + "\n"
             lS = "\n**Table " + fillS + "**: " + lineS + "\n"
 
-        elif cmdS == "lE":
-            """number equation"""
-
-            enumI = int(self.lD["equI"])
-            wI = self.lD["widthI"]
-            uS = tS = (lineS + " [Eq " + str(enumI) + "]").rjust(wI)
-            eqS = (lineS + " **[Eq " + str(enumI) + "]**").rjust(wI)
-            rS = "\n.. rst-class:: align-right\n\n" + eqS + "\n\n"
-            lS = "\n.. rst-class:: align-right\n\n" + eqS + "\n\n"
-            # self.rS = (".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> \n\n")
-
-        elif cmdS == "lC":
-            """center text"""
-
-            uS = tS = lineS.center(wI) + "\n"
-            rS = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
-            lS = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
-
-        elif cmdS == "lR":
-            """right justify text"""
-
-            uS = tS = lineS.center(wI) + "\n"
-            rS = "\n::\n\n" + lineS.center(wI) + "\n"
-            lS = "\n::\n\n" + lineS.center(wI) + "\n"
-
-        elif cmdS == "lM":
-            """format sympy"""
-
-            spS = lineS.strip()
-            spL = spS.split("=")
-            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-            indlineS = textwrap.indent(lineS, "     ")
-            uS = tS = indlineS + "\n"
-            rS = "\n.. code:: \n\n" + indlineS + "\n\n"
-            lS = "\n.. code:: \n\n" + indlineS + "\n\n"
-
         elif cmdS == "lL":
             """format sympy"""
 
@@ -137,15 +134,7 @@ class Tag:
             rS = "\n.. code:: \n\n" + indlineS + "\n\n"
             lS = "\n.. code:: \n\n" + indlineS + "\n\n"
 
-        elif cmdS == "lU":
-            """format url link"""
-
-            lineL = lineS.split(",")
-            uS = tS = lineL[0] + ": " + lineL[1]
-            rS = ".. _" + lineL[0] + ": " + lineL[1]
-            lS = ".. _" + lineL[0] + ": " + lineL[1]
-
-        elif cmdS == "lU":
+        elif cmdS == "lG":
             """format url link"""
 
             lineL = lineS.split(",")
@@ -161,7 +150,7 @@ class Tag:
             rS = ".. _" + lineL[0] + ": " + lineL[1]
             lS = ".. _" + lineL[0] + ": " + lineL[1]
 
-        elif cmdS == "lG":
+        elif cmdS == "lL":
             """format url link"""
 
             lineL = lineS.split(",")
@@ -202,7 +191,6 @@ class Tag:
         I          _[[BOX]] optional label                 box (all)
         V          _[[TABLE]] title                        format table, store csv (all)
         T          _[[MARKUP]] type                        markup (all)
-        D          _[[NOTES]] optional label               endnote descriptions (all)
         D          _[[METADATA]] label                     meta and layout data (all)
         all        _[[END]]                                end block (all)
 
@@ -218,17 +206,6 @@ class Tag:
         if cmdS == "bSHE":
             """shell blocki"""
 
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            self.uS = "\nTable " + str(tnumI) + ": " + lineS
-            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
-            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
-
-        elif cmdS == "bNOT":
-            """endnotes block"""
-
-            blkL = (self.strLS).split("\n")
             tnumI = int(self.lD["tableI"])
             self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)

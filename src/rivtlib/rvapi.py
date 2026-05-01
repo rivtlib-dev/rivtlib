@@ -50,6 +50,7 @@ from importlib.metadata import version
 from pathlib import Path
 
 import __main__
+import rivtlib.rvunits as rvunit
 from rivtlib import rvdoc, rvparse
 
 # region - top level rivt files
@@ -130,17 +131,9 @@ except Exception:
 # end region
 
 # region - dictionaries
-rivtD = {
-    "metaD": {
-        "authors": " - ",
-        "version": " - ",
-        "email": " - ",
-        "repo": " - ",
-        "license": " - ",
-        "fork1": [" - "],
-        "fork2": [" - "],
-    },
-}
+rivtD = {}
+rvunitD = vars(rvunit)
+rivtD = rivtD | rvunitD
 metaD = {}  # metadata
 fD = {  # folders
     "errlogT": errlogT,
@@ -153,7 +146,7 @@ fD = {  # folders
     "rivtP": Path(os.getcwd()),
     "rbaseS": rbaseS,  # file base name
     "reptfDN": os.path.dirname(rivtP),
-    "docP": Path(rivtP, "rivDocs"),
+    "docP": Path(rivtP, "rivtDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
     "rstdocsP": rstdocsP,
@@ -236,7 +229,7 @@ def doc_parse(rS, tyS, tagL, cmdL):
         srstS (str): rest output
         stxtS (str): text output
     """
-    global dutfS, drstS, drstS, dtxtS, fD, lD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD
     rsL = rS.split("\n")
     conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL)
     sutfS, srstS, stxtS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
@@ -388,7 +381,7 @@ def D(rS):
     tagL = []
     tagL = tagL + tagbL
     dutfS += "\nend of doc\n"
-    drs2S += "\nend of doc\n"
+    dtxtS += "\nend of doc\n"
     drstS += "\nend of doc\n"
     wrtdoc = rvdoc.Cmdp(rS, fD, lD, cmdL, tagL, dutfS, drstS, dtxtS, rivtD)
     msgS = wrtdoc.cmdx()
@@ -404,13 +397,10 @@ def S(rS):
     global dutfS, drstS, dtxtS
 
     shL = rS.split("\n")
-    sutfS = srsrS = srstS = (
+    sutfS = stxtS = srstS = (
         "\n[" + shL[0].strip() + "] : section skipped " + "\n"
     )
     print(sutfS)
-    dutfS += sutfS
-    drstS += srstS
-    dtxtS += stxtS
 
 
 def X(rS):

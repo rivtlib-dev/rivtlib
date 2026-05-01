@@ -29,7 +29,7 @@ class Cmdp:
             rS (str): reST doc string
     """
 
-    def __init__(self, sS, fD, lD, cmdL, tagL, dutfS, drs2S, drstS, rivtD):
+    def __init__(self, sS, fD, lD, cmdL, tagL, dutfS, drstS, dtxtS, rivtD):
         # region
         store_attr()
         self.pthS = ""

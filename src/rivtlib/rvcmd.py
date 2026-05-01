@@ -14,7 +14,6 @@ from IPython.display import display as _display
 from PIL import Image
 from sympy.abc import _clash2
 
-import rivtlib.rvunits as rvunit
 from rivtlib.rvunits import *  # noqa: F403
 from rivtlib.unum.core import Unum
 
@@ -43,13 +42,13 @@ class Cmd:
     rv.D        | PUBLISH
     """
 
-    def __init__(self, stS, fD, lD, rivD, rivL, parL):
+    def __init__(self, stS, fD, lD, rivtD, rivL, parL):
         """command object
 
         Args:
             fD (dict): folders
             lD (dict): labels
-            rivD (dict): values
+            rivtD (dict): values
             rivL (list): values for export
             parL ( list): parameter list
 
@@ -75,9 +74,13 @@ class Cmd:
         self.lD = lD
         self.insP = Path(fD["rivtP"], "_src/", self.fileS)
         self.inspS = str(self.insP.as_posix())
-        rvunitD = vars(rvunit)
         self.rivL = rivL
-        self.rivD = rivD | rvunitD
+        self.rivtD = rivtD
+
+        self.enumI = int(lD["equI"])
+        self.enumI += 1
+        self.lD["equI"] = self.enumI
+        self.wI = self.lD["widthI"]
         # endregion
 
     def cmdx(self, cmdS):
@@ -87,7 +90,7 @@ class Cmd:
             cmdS (str): command keyword
 
         Returns:
-            uS, rS, tS, lS, fD, lD, rivD, rivL
+            uS, rS, tS, lS, fD, lD, rivtD, rivL
         """
         method = getattr(self, cmdS)
         method()
@@ -122,14 +125,14 @@ class Cmd:
         exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
         self.rivL.append(exvS)
         try:
-            exec(eqS, globals(), self.rivD)
+            exec(eqS, globals(), self.rivtD)
         except ValueError as ve:
             print(f"A ValueError occurred: {ve}")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
         decS = "%." + dec1S + "f"
         Unum.set_format(value_format=decS, auto_norm=False, unitless="")
-        valU = eval(varS, {}, self.rivD)
+        valU = eval(varS, {}, self.rivtD)
         if type(valU) is Unum:
             val2S = str(valU.cast_unit(eval(unit2S)))
             val1U = valU.cast_unit(eval(unit1S))
@@ -140,10 +143,10 @@ class Cmd:
         else:
             val1S = str(valU)
             val2S = str(valU)
-        self.rivD[varS] = valU  # rivt dictionary
+        self.rivtD[varS] = valU  # rivt dictionary
         tbL = [varS, val1S, val2S, descripS]  # append row
 
-        return tbL, self.rivD, self.rivL
+        return tbL, self.rivtD, self.rivL
 
         # endregion
 
@@ -153,7 +156,7 @@ class Cmd:
             a <=: b + 2 | unit1, unit2, decimal | ref
 
         Returns:
-            uS, rS, tS, fD, lD, rivD, rivL
+            uS, rS, tS, fD, lD, rivtD, rivL
         """
 
         # region
@@ -166,23 +169,26 @@ class Cmd:
         decS = "%." + dec1S + "f"
         Unum.set_format(value_format=decS, auto_norm=True, unitless="")
         # print(dir(Unum.set_format))
-
-        # symbolic equation eval
-        spL = eqS.split("=")
+        spL = eqS.split("=")  # ============== symbolic equation
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        eq1S = textwrap.indent(eq1S, "    ")
-        print("dddxxx", eqS)
+        # text
+        eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
+        toptS = chr(9484) + "  Eq-" + str(self.enumI) + "\n"
+        eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
+        # rest
+        eq1S = textwrap.indent(eq1S, "           ")
+        erS = "   Eq." + str(self.enumI) + "\n"
+        eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+
         if unit1S != "-":
-            exec(eqS, globals(), self.rivD)
+            exec(eqS, globals(), self.rivtD)
         else:
             cmdS = spL[0] + " = " + spL[1]
-            exec(cmdS, globals(), self.rivD)
-        valU = eval(spL[0], globals(), self.rivD)
-        self.rivD[spL[0]] = valU
-
-        # result tables
-        hdr1L = []
+            exec(cmdS, globals(), self.rivtD)
+        valU = eval(spL[0], globals(), self.rivtD)
+        self.rivtD[spL[0]] = valU
+        hdr1L = []  # =================== result tables
         tbl1L = []
         hdr1L.append(spL[0])
         hdr1L.append("[" + spL[0] + "]")
@@ -207,13 +213,12 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        uS = output.getvalue()
-        rS = output.getvalue() + "\n"
-        tS = output.getvalue() + "\n"
+        uS = eqtS + "\n" + output.getvalue() + "\n"
+        tS = eqtS + "\n" + output.getvalue() + "\n"
+        rS = eqrS + "\n" + output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
-        # values table
-        tbl2L = []
+        tbl2L = []  # ============ values table
         hdr2L = []
         alignL = []
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
@@ -222,7 +227,7 @@ class Cmd:
         for vS in symaO:
             hdr2L.append(str(vS))
         for aO in symaO:
-            a1U = eval(str(aO), globals(), self.rivD)
+            a1U = eval(str(aO), globals(), self.rivtD)
             tbl2L.append(str(a1U))
         alignL = []
         tbl2L = [tbl2L]
@@ -244,24 +249,23 @@ class Cmd:
         uS += "\n" + output.getvalue()
         rS += "\n" + output.getvalue()
         tS += "\n" + output.getvalue()
+        lS = ""
         sys.stdout = old_stdout
         sys.stdout.flush()
-
         # rivL append - for export
         ex2S = spL[0].strip() + " = " + str(val1U)
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
         self.rivL.append(exvS)
         self.mD = {
-            "uS": self.uS,
-            "rS": self.rS,
-            "tS": self.tS,
-            "lS": self.lS,
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
             "lD": self.lD,
             "fD": self.fD,
-            "rivD": self.rivD,
+            "rivtD": self.rivtD,
             "rivL": self.rivL,
         }
-
         return self.mD
         # endregion
 
@@ -272,7 +276,7 @@ class Cmd:
             a :=: b + 2 | unit1, unit2, decimal | ref
 
         Returns:
-            uS, r2S, rS, fD, lD, rivD, rivL
+            uS, r2S, rS, fD, lD, rivtD, rivL
         """
         # region
         lpL = feqS.split("|")
@@ -293,14 +297,14 @@ class Cmd:
         eq1S = textwrap.indent(eq1S, "    ")
         refS = refS.rjust(self.lD["widthI"])
         if unit1S != "-":
-            exec(eqS, globals(), self.rivD)
+            exec(eqS, globals(), self.rivtD)
         else:
             cmdS = spL[0] + " = " + spL[1]
-            exec(cmdS, globals(), self.rivD)
+            exec(cmdS, globals(), self.rivtD)
 
-        # rivD append
-        valU = eval(spL[0], globals(), self.rivD)
-        self.rivD[spL[0]] = valU
+        # rivtD append
+        valU = eval(spL[0], globals(), self.rivtD)
+        self.rivtD[spL[0]] = valU
         # result table
         hdr1L = []
         tbl1L = []
@@ -326,25 +330,25 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        uS = output.getvalue()
-        r2S = output.getvalue() + "\n"
-        rS = output.getvalue() + "\n"
+        uS = eq1S + "\n\n" + output.getvalue() + "\n"
+        rS = eq1S + "\n\n" + output.getvalue() + "\n"
+        tS = eq1S + "\n\n" + output.getvalue() + "\n"
+        lS = ""
         sys.stdout = old_stdout
         sys.stdout.flush()
-
         # rivL append
         ex2S = spL[0].strip() + " = " + str(val1U)
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
         self.rivL.append(exvS)
 
         self.mD = {
-            "uS": self.uS,
-            "rS": self.rS,
-            "tS": self.tS,
-            "lS": self.lS,
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
             "lD": self.lD,
             "fD": self.fD,
-            "rivD": self.rivD,
+            "rivtD": self.rivtD,
             "rivL": self.rivL,
         }
 
@@ -361,7 +365,7 @@ class Cmd:
             a < b  | unit, dec, true text, false text | ref
 
         Returns:
-            uS, r2S, rS, fD, lD, rivD, rivL
+            uS, r2S, rS, fD, lD, rivtD, rivL
         """
         # region
         lpL = compS.split("|")
@@ -382,18 +386,18 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
         refS = refS.rjust(self.lD["widthI"])
-        eqr2S = refS + "\n"
-        eqrS = (
-            ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> +\n\n"
-        )
+        # eqr2S = refS + "\n"
+        # eqrS = (
+        #    ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> +\n\n"
+        # )
         # values table
         tblfmt = "rst"
         alignL = ["center", "center", "center"]
         hdrL = [spL[0], opS, spL[1]]
-        valU = eval(spL[0], globals(), self.rivD)
-        # print(self.rivD)
+        valU = eval(spL[0], globals(), self.rivtD)
+        # print(self.rivtD)
         val1U = valU.cast_unit(eval(unitS))
-        valU = eval(spL[1], globals(), self.rivD)
+        valU = eval(spL[1], globals(), self.rivtD)
         val2U = valU.cast_unit(eval(unitS))
         val1L = [val1U, opS, val2U]
         val2L = [val1U / val2U, "ratio", val2U / val1U]
@@ -413,12 +417,12 @@ class Cmd:
         )
         stdS = "\n" + output.getvalue()
         uS = "\n" + output.getvalue()
-        r2S = "\n" + output.getvalue() + "\n"
         rS = "\n" + output.getvalue() + "\n"
+        tS = "\n" + output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
         # compare
-        resultB = eval(eqS, {}, self.rivD)
+        resultB = eval(eqS, {}, self.rivtD)
         chkS = ""
         if resultB:
             chkS = "\033[92m" + trueS + "\033[00m"
@@ -447,7 +451,7 @@ class Cmd:
             "lS": self.lS,
             "lD": self.lD,
             "fD": self.fD,
-            "rivD": self.rivD,
+            "rivtD": self.rivtD,
             "rivL": self.rivL,
         }
 
@@ -520,7 +524,7 @@ class Cmd:
             "lS": lS,
             "lD": self.lD,
             "rivL": self.rivL,
-            "rivD": self.rivD,
+            "rivtD": self.rivtD,
         }
 
         # endregion
@@ -716,17 +720,17 @@ class Cmd:
                 else:
                     eqS = varS + " = " + valS
                     try:
-                        exec(eqS, globals(), self.rivD)
+                        exec(eqS, globals(), self.rivtD)
                     except ValueError as ve:
                         print(f"A ValueError occurred: {ve}")
                     except Exception as e:
                         print(f"An unexpected error occurred: {e}")
-                    valU = eval(varS, globals(), self.rivD)
+                    valU = eval(varS, globals(), self.rivtD)
                     val1U = str(valU.cast_unit(eval(unit1S)))
                     val2U = str(valU.cast_unit(eval(unit2S)))
             else:
                 eqS = varS + " = " + valS
-                exec(eqS, globals(), self.rivD)
+                exec(eqS, globals(), self.rivtD)
                 valU = eval(varS)
                 val1U = str(valU)
                 val2U = str(valU)
@@ -763,7 +767,7 @@ class Cmd:
             "lS": lS,
             "lD": self.lD,
             "rivL": self.rivL,
-            "rivD": self.rivD,
+            "rivtD": self.rivtD,
         }
 
         return self.mD
@@ -783,16 +787,26 @@ class Cmd:
         with open(fileP, "r") as f10:
             pyscriptS = f10.read()
         if namespaceS == "rivtO":
-            exec(pyscriptS, globals(), self.rivD)
+            exec(pyscriptS, globals(), self.rivtD)
         else:
             exec(pyscriptS, globals(), namespaceS)
 
         fiS = "**[ Python file read:** " + self.fileS + " **]**" + "\n\n"
         fiuS = "[ Python file read: " + self.fileS + " ]" + "\n\n"
-        self.uS = fiuS + "\n"
-        self.r2s = fiS + "\n"
-        self.rs = fiS + "\n"
+        uS = fiuS + "\n"
+        rS = fiS + "\n"
+        tS = fiS + "\n"
+        lS = ""
 
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivtD": self.rivtD,
+        }
         # endregion
 
     def LATEX(self):
