@@ -76,10 +76,6 @@ class Cmd:
         self.inspS = str(self.insP.as_posix())
         self.rivL = rivL
         self.rivtD = rivtD
-
-        self.enumI = int(lD["equI"])
-        self.enumI += 1
-        self.lD["equI"] = self.enumI
         self.wI = self.lD["widthI"]
         # endregion
 
@@ -106,7 +102,6 @@ class Cmd:
 
         Returns:
             self.mD, tbL
-
         """
         # region
         tbL = []
@@ -160,6 +155,11 @@ class Cmd:
         """
 
         # region
+        self.enumI = int(self.lD["equI"])
+        self.enumI += 1
+        self.lD["equI"] = self.enumI
+        self.enumS = str(self.enumI)
+
         lpL = aeqS.split("|")
         eqS = lpL[0]
         eqS = eqS.replace(" <=: ", " = ").strip()
@@ -174,14 +174,13 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # text
         eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
-        toptS = chr(9484) + "  Eq-" + str(self.enumI) + "\n"
+        toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "   Eq." + str(self.enumI) + "\n"
+        erS = "   [Eq." + self.enumS + "]\n"
         eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
-
-        if unit1S != "-":
+        if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
             cmdS = spL[0] + " = " + spL[1]
@@ -279,6 +278,11 @@ class Cmd:
             uS, r2S, rS, fD, lD, rivtD, rivL
         """
         # region
+        self.enumI = int(self.lD["equI"])
+        self.enumI += 1
+        self.lD["equI"] = self.enumI
+        self.enumS = str(self.enumI)
+
         lpL = feqS.split("|")
         eqS = lpL[0]
         eqS = eqS.replace(" :=: ", " = ").strip()
@@ -289,20 +293,22 @@ class Cmd:
         Unum.set_format(value_format=decS, auto_norm=True, unitless="")
         # print(dir(Unum.set_format))
         # wI = self.lD["widthI"]
-
-        # symbolic equation
-        spL = eqS.split("=")
+        spL = eqS.split("=")  # ============== symbolic equation
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        eq1S = textwrap.indent(eq1S, "    ")
-        refS = refS.rjust(self.lD["widthI"])
-        if unit1S != "-":
+        # text
+        eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
+        toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
+        eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
+        # rest
+        eq1S = textwrap.indent(eq1S, "           ")
+        erS = "   Eq." + self.enumS + "\n"
+        eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+        if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivtD)
-
-        # rivtD append
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
         # result table
@@ -330,9 +336,9 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        uS = eq1S + "\n\n" + output.getvalue() + "\n"
-        rS = eq1S + "\n\n" + output.getvalue() + "\n"
-        tS = eq1S + "\n\n" + output.getvalue() + "\n"
+        uS = eqtS + "\n\n" + output.getvalue() + "\n"
+        tS = eqtS + "\n\n" + output.getvalue() + "\n"
+        rS = eqrS + "\n\n" + output.getvalue() + "\n"
         lS = ""
         sys.stdout = old_stdout
         sys.stdout.flush()
@@ -365,11 +371,17 @@ class Cmd:
             a < b  | unit, dec, true text, false text | ref
 
         Returns:
-            uS, r2S, rS, fD, lD, rivtD, rivL
+            uS, rS, tS, fD, lD, rivtD, rivL
         """
         # region
+        self.enumI = int(self.lD["equI"])
+        self.enumI += 1
+        self.lD["equI"] = self.enumI
+        self.enumS = str(self.enumI)
+
         lpL = compS.split("|")
         eqS = lpL[0].strip()
+        spL = lpL[0].split(opS)
         unitS, decS, trueS, falseS = lpL[1].split(",")
         unitS, decS, trueS, falseS = (
             unitS.strip(),
@@ -381,27 +393,37 @@ class Cmd:
         decS = "%." + decS + "f"
         Unum.set_format(value_format=decS, auto_norm=True, unitless="")
         # symbolic equation
-        spL = eqS.split(opS)
-        spS = eqS
-        eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+        eq1S = sp.pretty(sp.sympify(eqS, _clash2, evaluate=False))
         eq1S = textwrap.indent(eq1S, "    ")
-        refS = refS.rjust(self.lD["widthI"])
-        # eqr2S = refS + "\n"
-        # eqrS = (
-        #    ".. raw:: html\n\n" + '   <p align="right">' + refS + "</p> +\n\n"
-        # )
-        # values table
-        tblfmt = "rst"
-        alignL = ["center", "center", "center"]
-        hdrL = [spL[0], opS, spL[1]]
+        # text  == symbolic equation
+        eqxS = textwrap.indent(eqS, chr(9474) + "     ")
+        toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
+        eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
+        # rest
+        eq1S = textwrap.indent(eq1S, "           ")
+        erS = "   Eq." + self.enumS + "\n"
+        eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+
         valU = eval(spL[0], globals(), self.rivtD)
+        self.rivtD[spL[0]] = valU
+        tblfmt = "rst"
+        alignL = ["center", "center", "center", "center", "center"]
+        hdrL = [spL[0], spL[1], "ratio", "check", "reference"]
         # print(self.rivtD)
+        # compare
+
+        resultB = eval(eqS, {}, self.rivtD)
+        if resultB:
+            chkS = trueS
+        else:
+            chkS = falseS
+
+        valU = eval(spL[0], globals(), self.rivtD)
         val1U = valU.cast_unit(eval(unitS))
         valU = eval(spL[1], globals(), self.rivtD)
         val2U = valU.cast_unit(eval(unitS))
-        val1L = [val1U, opS, val2U]
-        val2L = [val1U / val2U, "ratio", val2U / val1U]
-        tblL = [val1L, val2L]
+        val1L = [val1U, val2U, val1U / val2U, chkS, refS]
+        tblL = [val1L]
         # tabulate
         sys.stdout.flush()
         old_stdout = sys.stdout
@@ -415,48 +437,25 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        stdS = "\n" + output.getvalue()
-        uS = "\n" + output.getvalue()
-        rS = "\n" + output.getvalue() + "\n"
-        tS = "\n" + output.getvalue() + "\n"
+        uS = eqtS + "\n" + output.getvalue() + "\n"
+        tS = eqtS + "\n" + output.getvalue() + "\n"
+        rS = eqrS + "\n" + output.getvalue() + "\n"
+        lS = ""
         sys.stdout = old_stdout
         sys.stdout.flush()
-        # compare
-        resultB = eval(eqS, {}, self.rivtD)
-        chkS = ""
-        if resultB:
-            chkS = "\033[92m" + trueS + "\033[00m"
-            chktxtS = trueS
-            chkrS = ":compgreen:`" + trueS + "`"
-        else:
-            chkS = "\033[91m" + falseS + "\033[00m"
-            chktxtS = falseS
-            chkrS = ":compred:`" + falseS + "`"
-        stdS += "\n" + chkS.rjust(self.lD["widthI"]) + "\n"
-        uS += "\n" + chktxtS.rjust(self.lD["widthI"]) + "\n"
-        rS += "\n.. role:: compred\n\n.. role:: compgreen\n\n"
-        rS += "\n.. class:: align-right\n\n   " + chkrS + "\n"
-        rS += (
-            "\n"
-            + ".. raw:: html\n\n"
-            + '   <p align="right">'
-            + chkS
-            + "</p> \n\n"
-        )
 
         self.mD = {
-            "uS": self.uS,
-            "rS": self.rS,
-            "tS": self.tS,
-            "lS": self.lS,
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
             "lD": self.lD,
             "fD": self.fD,
             "rivtD": self.rivtD,
             "rivL": self.rivL,
         }
 
-        return self.mD, stdS
-
+        return self.mD
         # endregion
 
     def IMAGE(self):

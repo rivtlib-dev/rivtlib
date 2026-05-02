@@ -54,7 +54,6 @@ class Rs:
         srstS = ""  # rest doc
         stxtS = ""  # text doc
         slatS = ""  # latex doc
-        spL = []  # preprocessed lines
 
         # preprocess rivt string
         # ----------------------------------------------   section header
@@ -107,7 +106,6 @@ class Rs:
         self.srstS = srstS  # rst2pdf doc
         self.stxtS = stxtS  # rest doc
         self.logging.info("SECTION " + str(lD["secnumI"]) + " - type " + tyS)
-
         # preprocess  section
         self.spL = []
         for slS in rsL[1:]:
@@ -214,7 +212,7 @@ class Rs:
                     tbL, rivtD, rivL = tC.vdefine(lineS)
                     tabL.append(tbL)
                     continue
-            if " <=: " in slS:  # assign
+            elif " <=: " in slS:  # assign
                 if " <=: " in cmdL:
                     lineS = slS.strip()
                     tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
@@ -225,7 +223,7 @@ class Rs:
                     sutfS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT - equation table
                     continue
-            if " :=: " in slS:  # function
+            elif " :=: " in slS:  # function
                 if " :=: " in cmdL:
                     lineS = slS.strip()
                     tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
@@ -235,17 +233,20 @@ class Rs:
                     sutfS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT - equation table
                     continue
-            if tyS == "V":
-                for compS in cmdL[8]:
-                    if compS in slS:
+            elif tyS == "V" and any(item in slS for item in cmdL[8]):
+                for opS in cmdL[8]:
+                    if opS in slS:
                         lineS = slS.strip()
                         tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
-                        mD, stdS = tC.vcompare(lineS, compS)
+                        mD = tC.vcompare(lineS, opS)
                         sutfS += mD["uS"] + "\n"
                         srstS += mD["rS"] + "\n"
                         sutfS += mD["tS"] + "\n"
-                        print(stdS)  # STDOUT - compare table
-                        continue
+                        print(mD["uS"])  # STDOUT - compare table
+                        break
+                continue
+            else:
+                pass
             if "_[" in slS:  # ------------------------------ tags / blocks
                 if "_[[" in slS:
                     slL = slS.split("_[[")

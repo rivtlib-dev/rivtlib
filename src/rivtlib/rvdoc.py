@@ -29,7 +29,7 @@ class Cmdp:
             rS (str): reST doc string
     """
 
-    def __init__(self, sS, fD, lD, cmdL, tagL, dutfS, drstS, dtxtS, rivtD):
+    def __init__(self, sS, fD, lD, rivtD, dutfS, drstS, dtxtS):
         # region
         store_attr()
         self.pthS = ""
@@ -84,10 +84,11 @@ class Cmdp:
         blockB = False
         self.blockS = """"""
         self.docnameS = " "
+        uS = rS = tS = lS = ""
         for pS in self.spL:
-            pL = pS[1:].split("|")
-            if len(pL) > 0 and pL[0].strip() in self.cmdL:  #
-                if pL[0].strip() == "PUBLISH":
+            if len(pS) > 0:
+                if pS[0:11] == "| PUBLISH |":
+                    pL = pS[5:].split("|")
                     typeS = str(pL[2].strip())
                     self.docnameS = str(pL[1].strip()).strip()
                     if self.docnameS == "-":
@@ -95,35 +96,45 @@ class Cmdp:
                     dtypeS = typeS + ("x")
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
-                elif pL[0].strip() == "ATTACHPDF":
+                    continue
+                elif pS[0:13] == "| ATTACHPDF |":
                     dtypeS = "attachpdfx"
                     self.pthS = pL[1].strip()
                     self.parS = pL[2].strip()
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
-                else:
+                    continue
+                elif "_[[" in pS and ("_[[END]]" not in pS):  # block start
+                    bsL = pS.split("]]")
+                    tagS = bsL[0][3:].strip()
+                    if tagS == "METADATA":
+                        # print(f"{tagS=}")
+                        self.logging.info(f"block tag : {tagS}]]")
+                        self.blockS = """"""
+                        blockB = True
+                        continue
+                elif blockB and ("_[[END]]" in pS):  # block terminate
+                    if tagS == "METADATA":
+                        obj = getattr(Cmdp, "metadatax")
+                        msgS = obj(self)
+                        self.blockS = """"""
+                        continue
+                elif blockB:
+                    self.blockS += pS + "\n"
+                    continue
+                else:  # everything else
                     pass
-            if "_[[" in pS and ("_[[END]]" not in pS):  # block accumulate
-                bsL = pS.split("]]")
-                tagS = bsL[0].strip()
-                if tagS in self.tagL:  # check list
-                    # print(f"{tagS=}")
-                    self.logging.info(f"block tag : {tagS}]]")
-                    ptempS = tagS = bsL[0].strip()
-                    self.blockS = """"""
-                    blockB = True
-                    continue
-            if blockB and ("_[[END]]" in pS):  # block terminate
-                if "METADATA" in ptempS:
-                    ptempS = ""
-                    obj = getattr(Cmdp, "metadatax")
-                    msgS = obj(self)
-                    self.blockS = """"""
-                    continue
-            if blockB:
-                self.blockS += pS + "\n"
-            else:  # everything else
-                pass
+            uS += pS
+            rS += pS
+            tS += pS
+            lS += pS
+
+        mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+        }
 
         return msgS
         # endregion
@@ -135,6 +146,7 @@ class Cmdp:
             msgS (str): completion message
 
         """
+        self.confpy()  # update conf.py
         rvbaseS = self.fD["rbaseS"]
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvdocS = self.fD["rbaseS"] + ".html"
@@ -157,16 +169,6 @@ class Cmdp:
             + "readme file written: README.txt"
         )
 
-        # add layout info
-        # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        # doctitleS = self.fD["rbaseS"]
-        # authorS = self.rivD["metaD"]["authors"]
-        # verS = "  v" + self.rivD["metaD"]["version"]
-        # spaceS = "  |  "
-        # headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
-        # headerS = f".. header::\n\n   {headS}\n"
-        # self.drstS = headerS + self.drstS + "\n"
-
     def pdfx(self):
         """write readme and sphinx-pdf files
 
@@ -174,6 +176,8 @@ class Cmdp:
             msgS (str): completion message
         """
         # region
+        self.confpy()  # update conf.py
+        self.coverS()  # update cover page
         rvbaseS = self.fD["rbaseS"]
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvdocS = self.fD["rbaseS"] + ".pdf"
@@ -197,84 +201,13 @@ class Cmdp:
         )
         # endregion
 
-        # # add layout info
-        # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        # doctitleS = self.fD["rbaseS"]
-        # authorS = self.rivD["metaD"]["authors"]
-        # verS = "  v" + self.rivD["metaD"]["version"]
-        # spaceS = "  |  "
-        # headS = timeS + spaceS + authorS + spaceS + doctitleS + verS
-        # headerS = f".. header::\n\n   {headS}\n"
-        # self.drstS = headerS + self.drstS + "\n"
-
-        # versionS = "v-0"
-        # rvfileS = self.fD["rbaseS"] + ".rst2"
-        # rvdocS = self.fD["rbaseS"] + ".pdf"
-        # rvfileT = str(Path(self.fD["rivtpubP"], rvfileS))
-        # rvdocT = str(Path(self.fD["rivtpubP"], rvdocS))
-        # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        # doctitleS = "**" + self.docnameS + "**"
-        # versionS = "v-" + self.versionS.strip()
-        # authorS = self.authorS.strip()
-        # footblkS = (
-        #     doctitleS
-        #     + "  **|**  "
-        #     + authorS
-        #     + "  **|**  "
-        #     + timeS
-        #     + "  **|**  "
-        #     + versionS
-        #     + "\n"
-        # )
-        # pageS = "   Page ###Page### of ###Total###"
-        # imglogoS = " " + self.logopathS
-
-        # imgS = (
-        #     ".. |blklogo| image::"
-        #     + imglogoS
-        #     + "\n"
-        #     + "   :width: 175px\n"
-        #     + "   :alt: logo\n\n"
-        # )
-        # headS = ".. header::\n\n" + pageS + "\n\n"
-        # footS = (
-        #     ".. footer:: \n\n"
-        #     + "   .. list-table::\n"
-        #     + "      :class: foottable2\n"
-        #     + "      :align: center\n"
-        #     + "      :widths: 88 12\n"
-        #     + " \n"
-        #     + "      * - "
-        #     + footblkS
-        #     + "        - |blklogo|\n\n"
-        # )
-        # pgtemp = ".. contents:: " + self.docnameS + "\n   :depth: 2 \n\n "
-        # self.drlabS = pgtemp + self.drlabS
-        # self.drlabS = self.drlabS + "\n" + imgS + headS + footS
-        # with open(rvfileT, "w", encoding="utf-8") as f5:
-        #     f5.write(self.drlabS)
-        # with open("README.txt", "w", encoding="utf-8") as f5:
-        #     f5.write(self.dutfS)
-        # iniP = str(Path(rvstyleP, "layout.ini"))
-        # fontP = str(Path(rvstyleP, "fonts"))
-        # yamlS = "rlabpdf.yaml"
-        # cmd1S = "rst2pdf " + rvfileT  # input
-        # cmd2S = " -o " + rvdocT  # output
-        # cmd3S = " --config=" + iniP  # config
-        # cmd4S = " --font-path=" + fontP  # fonts
-        # cmd5S = " --stylesheet-path=" + rvstyleP  # style path
-        # cmd6S = " --stylesheets=" + yamlS  # styles
-        # rlabcmdS = cmd1S + cmd2S + cmd3S + cmd4S + cmd5S + cmd6S
-        # print("rlabcmdS=", rlabcmdS)
-        # sphinx-build -b pdf rstdocs pdfdocs
-        # echo.Build finished. The PDF files are in pdfdocs
-
     def textx(self):
         """write readme and text files
 
         Returns:
             msgS (str): completion message
         """
+        self.confpy()  # update conf.py
         rvdocS = self.fD["rbaseS"] + ".txt"
         rvdocT = str(Path(self.fD["rivtpubP"], "txtdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
@@ -308,24 +241,218 @@ class Cmdp:
         self.configL.read_string(self.blockS)
         self.authorS = self.configL["doc"]["authors"]
         self.verS = self.configL["doc"]["version"]
+        self.copyS = self.configL["doc"]["copyright"]
         self.repoS = self.configL["doc"]["repo"]
         self.liceS = self.configL["doc"]["license"]
         self.f1_authorS = self.configL["doc"]["fork1_authors"]
         self.f1_verS = self.configL["doc"]["fork1_version"]
         self.f1_repoS = self.configL["doc"]["fork1_repo"]
         self.f1_liceS = self.configL["doc"]["fork1_license"]
-        self.logopathS = self.configL["layout"]["logoname"]
-        self.footerS = self.configL["layout"]["pdf_footer"]
-        self.pagesizeS = self.configL["layout"]["pdf_pagesize"]
-        self.marginS = self.configL["layout"]["pdf_margins"]
+        self.coverlogo = self.configL["layout"]["coverlogo"]
+        self.footlogo = self.configL["layout"]["footlogo"]
+        self.rlabfooterS = self.configL["layout"]["pdf_footer"]
+        self.rlabpageS = self.configL["layout"]["pdf_pagesize"]
+        self.rlabmarginS = self.configL["layout"]["pdf_margins"]
         self.rlabheaderS = self.configL["layout"]["pdf_header"]
-        self.rlabcoverS = self.configL["layout"]["text_width"]
+        self.rlabcoverS = self.configL["layout"]["pdf_cover"]
+        self.rlabwidth = self.configL["layout"]["text_width"]
 
     def attachpdfx(self):
         """attach pdf or insert pdf as download file"""
 
         msgS = "attachment"
         return msgS
+
+    def confpy(self):
+        """write config.py"""
+
+        rvbaseS = self.fD["rbaseS"]
+        rvfileT = str(Path(self.fD["rstdocsP"], "conf.py"))
+
+        confpyS = f"""
+import sys
+import os
+from pathlib import Path
+
+sys.path.append(str(Path(".").resolve()))
+
+project = "{self.docnameS}"
+copyright = "{self.copyS}"
+author = "{self.authorS}"
+release = "{self.verS}"
+
+extensions = [
+    "sphinx.ext.githubpages",
+    "sphinx_togglebutton",
+    "sphinxcontrib.jquery",
+    "sphinx_copybutton",
+    "sphinx_favicon",
+    "sphinx.ext.duration",
+    "sphinx.ext.doctest",
+    "sphinx.ext.autodoc",
+    "sphinx_design",
+    "sphinx_new_tab_link",
+    "rst2pdf.pdfbuilder",
+]
+root_doc = "index"
+duration_write_json = ""
+html_show_sourcelink = False
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+source_suffix = [".rst", ".md"]
+templates_path = ["_templates"]
+locale_dirs = ["_locale"]
+html_title = "rivt"
+html_theme = "pydata_sphinx_theme"
+html_context = {{"default_mode": "dark"}}
+html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
+html_static_path = ["_static", "_static/img"]
+html_css_files = ["css/custom.css"]
+html_theme_options = {{
+            "pygments_light_style": "tango",
+    "pygments_dark_style": "github-dark",
+    "navbar_start": ["navbar-logo"],
+    "collapse_navigation": True,
+    "header_links_before_dropdown": 6,
+    "navbar_align": "left",
+    "show_toc_level": 1,
+    "navigation_depth": 1,
+    "footer_start": ["copyright"],
+    "footer_end": [],
+    "logo": {{
+            "text": "rivt",
+        "image_dark": "rivhome11c.png",
+        "image_light": "rivhome11c.png",
+    }},
+}}
+favicons = [
+    {{
+            "rel": "icon",
+        "sizes": "16x16",
+        "href": "favicon-16x16.png",
+    }},
+    {{
+            "rel": "icon",
+        "sizes": "32x32",
+        "href": "favicon-32x32.png",
+    }},
+]
+# -- Options for PDF output -------------------------------------------------
+# source start file, target name, title, author, options
+# options: ('index', 'MyProject', 'My Project', 'Author Name', {{"pdf_compressed": True}})
+# More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
+pdf_documents = [("{rvbaseS}", "{rvbaseS}", "{self.docnameS}", 
+            "{self.authorS}")]
+# Label to use as a prefix for the subtitle on the cover page
+subtitle_prefix = "User Manual"
+# A list of folders to search for stylesheets. Example:
+pdf_style_path = ["./rstdocs_/_static/pdfstyle"]
+# A colon-separated list of folders to search for fonts. Example:
+pdf_font_path = ["./rstdocs_/_staticfonts"]
+# A comma-separated list of custom stylesheets. Example:
+pdf_stylesheets = ["./rstdocs_/_static/pdfstyle/stylepdf1.yaml"]
+# Example: compressed=True
+pdf_compressed = False
+# Language to be used for hyphenation support
+pdf_language = "en_US"
+# literal blocks wider than the frame overflow, shrink or truncate
+pdf_fit_mode = "shrink"
+# 1 means top-level sections start in a new page 0 disabled
+pdf_break_level = 0
+# When a section starts in a new page, force it to be 'even', 'odd', 'any
+pdf_breakside = "any"
+# If false, no coverpage is generated.
+pdf_use_coverpage = True
+# Name of the cover page template to use
+pdf_cover_template = "_templates/pdfcover.rst"
+# Show Table Of Contents at the beginning?
+pdf_use_toc = True
+# How many levels deep should the table of contents be?
+pdf_toc_depth = 9999
+# Insert footnotes where they are defined instead of
+# at the end.
+pdf_inline_footnotes = True
+# If false, no index is generated.
+pdf_use_index = True
+# If false, no modindex is generated.
+pdf_use_modindex = False
+# Add section number to section references
+pdf_use_numbered_links = False
+# Background images fitting mode
+pdf_fit_background_mode = "scale"
+# Repeat table header on tables that cross a page boundary?
+pdf_repeat_table_rows = True
+# Enable smart quotes (1, 2 or 3) or disable by setting to 0
+pdf_smartquotes = 0
+# verbosity level. 0 1 or 2
+# pdf_verbosity = 0
+# Page template name for "regular" pages
+# pdf_page_template = 'cutePage'
+# Documents to append as an appendix to all manuals.
+# pdf_appendices = []
+# Enable experimental feature to split table cells. Use it
+# if you get "DelayedTable too big" errors
+# pdf_splittables = False
+# Set the default DPI for images
+# pdf_default_dpi = 72
+# Enable rst2pdf extension modules
+# pdf_extensions = []
+    """
+        with open(rvfileT, "w", encoding="utf-8") as f5:
+            f5.write(confpyS)
+
+    def coverS(self):
+        """
+        cover page
+
+        """
+
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        rvfileT = str(Path(self.fD["rstdocsP"], "_templates", "pdfcover.rst"))
+        coverpgS = f"""
+.. role:: big-text
+
+|
+|
+        
+.. image:: ../_src/{self.coverlogo}
+   :width: 600px
+   :align: center
+
+|
+|
+|
+
+
+.. class:: center
+
+    :big-text:`{self.docnameS}`
+
+|
+|
+|
+|
+|
+|
+
+.. class:: center
+
+    **{self.authorS}**
+
+|
+
+.. class:: center
+
+    {timeS}
+
+    
+.. raw:: pdf
+
+   PageBreak
+
+"""
+
+        with open(rvfileT, "w", encoding="utf-8") as f5:
+            f5.write(coverpgS)
 
     def latexx(self):
         """Modify TeX file to avoid problems with escapes:
@@ -367,279 +494,6 @@ class Cmdp:
         )
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvdocS = self.fD["rbaseS"] + ".html"
-
-        #  # region
-        #     startS = str(lD["pageI"])
-        #     doctitleS = str(lD["doctitleS"])
-
-        #     with open(tfileP, "r", encoding="md-8", errors="ignore") as f2:
-        #         texf = f2.read()
-
-        #     # modify "at" command
-        #     texf = texf.replace(
-        #         """\\begin{document}""",
-        #         """\\renewcommand{\contentsname}{"""
-        #         + doctitleS
-        #         + "}\n"
-        #         + """\\begin{document}\n"""
-        #         + """\\makeatletter\n"""
-        #         + """\\renewcommand\@dotsep{10000}"""
-        #         + """\\makeatother\n""",
-        #     )
-
-        #     # add table of contents, figures and tables
-        #     # texf = texf.replace("""\\begin{document}""",
-        #     #                     """\\renewcommand{\contentsname}{""" + doctitleS
-        #     #                     + "}\n" +
-        #     #                     """\\begin{document}\n""" +
-        #     #                     """\\makeatletter\n""" +
-        #     #                     """\\renewcommand\@dotsep{10000}""" +
-        #     #                     """\\makeatother\n""" +
-        #     #                     """\\tableofcontents\n""" +
-        #     #                     """\\listoftables\n""" +
-        #     #                     """\\listoffigures\n""")
-
-        #     texf = texf.replace("""inputenc""", """ """)
-        #     texf = texf.replace("aaxbb ", """\\hfill""")
-        #     texf = texf.replace("?x?", """\\""")
-        #     texf = texf.replace(
-        #         """fancyhead[L]{\leftmark}""",
-        #         """fancyhead[L]{\\normalsize\\bfseries  """ + doctitleS + "}",
-        #     )
-        #     texf = texf.replace("x*x*x", "[" + lD["docnumS"] + "]")
-        #     texf = texf.replace("""\\begin{tabular}""", "%% ")
-        #     texf = texf.replace("""\\end{tabular}""", "%% ")
-        #     texf = texf.replace(
-        #         """\\begin{document}""",
-        #         """\\begin{document}\n\\setcounter{page}{""" + startS + "}\n",
-        #     )
-
-        #     with open(tfileP, "w", encoding="md-8") as f2:
-        #         f2.write(texf)
-
-        #         # with open(tfileP, 'w') as texout:
-        #         #    print(texf, file=texout)
-
-        #         pdfD = {
-        #             "xpdfP": Path(tempP, docbaseS + ".pdf"),
-        #             "xhtmlP": Path(tempP, docbaseS + ".html"),
-        #             "xrstP": Path(tempP, docbaseS + ".rst"),
-        #             "xtexP": Path(tempP, docbaseS + ".tex"),
-        #             "xauxP": Path(tempP, docbaseS + ".aux"),
-        #             "xoutP": Path(tempP, docbaseS + ".out"),
-        #             "xflsP": Path(tempP, docbaseS + ".fls"),
-        #             "xtexmakP": Path(tempP, docbaseS + ".fdb_latexmk"),
-        #         }
-
-        #     _mod_tex(texfileP)
-
-        #     pdfS = _gen_pdf(texfileP)
-
-        #     pdfD = {
-        #         "cpdfP": Path(_dpathP0 / ".".join([_cnameS, "pdf"])),
-        #         "chtml": Path(_dpathP0 / ".".join([_cnameS, "html"])),
-        #         "trst": Path(_dpathP0 / ".".join([_cnameS, "rst"])),
-        #         "ttex1": Path(_dpathP0 / ".".join([_cnameS, "tex"])),
-        #         "auxfile": Path(_dpathP0 / ".".join([_cnameS, ".aux"])),
-        #         "omdile": Path(_dpathP0 / ".".join([_cnameS, ".out"])),
-        #         "texmak2": Path(_dpathP0 / ".".join([_cnameS, ".fls"])),
-        #         "texmak3": Path(_dpathP0 / ".".join([_cnameS, ".fdb_latexmk"])),
-        #     }
-        #     if stylefileS == "default":
-        #         stylefileS = "pdf_style.sty"
-        #     else:
-        #         stylefileS == stylefileS.strip()
-        #     style_path = Path(_dpathP0 / stylefileS)
-        #     print("INFO: style sheet " + str(style_path))
-        #     pythoncallS = "python "
-        #     if sys.platform == "linux":
-        #         pythoncallS = "python3 "
-        #     elif sys.platform == "darwin":
-        #         pythoncallS = "python3 "
-
-        #     rst2xeP = Path(rivtpath / "scripts" / "rst2xetex.py")
-        #     texfileP = pdfD["ttex1"]
-        #     tex1S = "".join(
-        #         [
-        #             pythoncallS,
-        #             str(rst2xeP),
-        #             " --embed-stylesheet ",
-        #             " --documentclass=report ",
-        #             " --documentoptions=12pt,notitle,letterpaper ",
-        #             " --stylesheet=",
-        #             str(style_path) + " ",
-        #             str(_rstfileP) + " ",
-        #             str(texfileP),
-        #         ]
-        #     )
-
-        #     os.chdir(_dpathP0)
-        #     os.system(tex1S)
-        #     print("INFO: tex file written " + str(texfileP))
-
-        #     # fix escape sequences
-        #     fnumS = _setsectD["fnumS"]
-        #     with open(texfileP, "r", encoding="md-8", errors="ignore") as texin:
-        #         texf = texin.read()
-        #     texf = texf.replace("?x?", """\\""")
-        #     texf = texf.replace(
-        #         """fancyhead[L]{\leftmark}""",
-        #         """fancyhead[L]{\\normalsize  """ + calctitleS + "}",
-        #     )
-        #     texf = texf.replace("x*x*x", fnumS)
-        #     texf = texf.replace("""\\begin{tabular}""", "%% ")
-        #     texf = texf.replace("""\\end{tabular}""", "%% ")
-        #     texf = texf.replace(
-        #         """\\begin{document}""",
-        #         """\\begin{document}\n\\setcounter{page}{""" + startpageS + "}\n",
-        #     )
-
-        #     # texf = texf.replace(
-        #     #     """\\begin{document}""",
-        #     #     """\\renewcommand{\contentsname}{"""
-        #     #     + self.calctitle
-        #     #     + "}\n"
-        #     #     + """\\begin{document}"""
-        #     #     + "\n"
-        #     #     + """\\makeatletter"""
-        #     #     + """\\renewcommand\@dotsep{10000}"""
-        #     #     + """\\makeatother"""
-        #     #     + """\\tableofcontents"""
-        #     #     + """\\listoftables"""
-        #     #     + """\\listoffigures"""
-        #     # )
-
-        #     time.sleep(1)
-        #     with open(texfileP, "w", encoding="md-8") as texout:
-        #         texout.write(texf)
-        #     print("INFO: tex file updated")
-
-        #     if doctypeS == "pdf":
-        #         gen_pdf(texfileP)
-
-        #     os._exit(1)
-
-        #     # os.system('latex --version')
-        #     os.chdir(tempP)
-        #     texfS = str(pdfD["xtexP"])
-        #     # pdf1 = 'latexmk -xelatex -quiet -f ' + texfS + " > latex-log.txt"
-        #     pdf1 = "xelatex -interaction=batchmode " + texfS
-        #     # print(f"{pdf1=}"")
-        #     os.system(pdf1)
-        #     srcS = ".".join([docbaseS, "pdf"])
-        #     dstS = str(Path(reportP, srcS))
-        #     shutil.copy(srcS, dstS)
-
-        #     global fD
-
-        #     style_path = fD["styleP"]
-        #     # print(f"{style_path=}")
-        #     # f2 = open(style_path)
-        #     # f2.close
-
-        #     pythoncallS = "python "
-        #     if sys.platform == "linux":
-        #         pythoncallS = "python3 "
-        #     elif sys.platform == "darwin":
-        #         pythoncallS = "python3 "
-
-        #     rst2texP = Path(rivtP, "scripts", "rst2latex.py")
-        #     # print(f"{str(rst2texP)=}")
-        #     texfileP = Path(tempP, docbaseS + ".tex")
-        #     rstfileP = Path(tempP, docbaseS + ".rst")
-
-        #     with open(rstfileP, "w", encoding="md-8") as f2:
-        #         f2.write(rstS)
-
-        #     tex1S = "".join(
-        #         [
-        #             pythoncallS,
-        #             str(rst2texP),
-        #             " --embed-stylesheet ",
-        #             " --documentclass=report ",
-        #             " --documentoptions=12pt,notitle,letterpaper ",
-        #             " --stylesheet=",
-        #             str(style_path) + " ",
-        #             str(rstfileP) + " ",
-        #             str(texfileP),
-        #         ]
-        #     )
-        #     logging.info(f"tex call:{tex1S=}")
-        #     os.chdir(tempP)
-        #     try:
-        #         os.system(tex1S)
-        #         time.sleep(1)
-        #         logging.info(f"tex file written: {texfileP=}")
-        #         print(f"tex file written: {texfileP=}")
-        #     except SystemExit as e:
-        #         logging.exception("tex file not written")
-        #         logging.error(str(e))
-        #         sys.exit("tex file write failed")
-
-        #     """write pdf calc to reports fDer and open
-
-        #     Args:
-        #         texfileP (path): doc config fDer
-        #     """
-
-        #     global rstcalcS, _rstflagB
-
-        #     os.chdir()
-        #     time.sleep(1)  # cleanup tex files
-        #     os.system("latexmk -c")
-        #     time.sleep(1)
-
-        #     pdfmkS = (
-        #         "perl.exe c:/texlive/2020/texmf-dist/scripts/latexmk/latexmk.pl "
-        #         + "-pdf -xelatex -quiet -f "
-        #         + str(texfileP)
-        #     )
-
-        #     os.system(pdfmkS)
-        #     print("\nINFO: pdf file written: " + ".".join([_cnameS, "pdf"]))
-
-        #     dnameS = _cnameS.replace("c", "d", 1)
-        #     docpdfP = Path(_dpathP / ".".join([dnameS, "pdf"]))
-        #     doclocalP = Path(_dpathP0 / ".".join([_cnameS, "pdf"]))
-        #     time.sleep(2)  # move pdf to doc fDer
-        #     shutil.move(doclocalP, docpdfP)
-        #     os.chdir(_dpathPcurP)
-        #     print("INFO: pdf file moved to docs fDer", flush=True)
-        #     print("INFO: program complete")
-
-        #     cfgP = Path(_dpathP0 / "rv_cfg.txt")  # read pdf display program
-        #     with open(cfgP) as f2:
-        #         cfgL = f2.readlines()
-        #         cfg1S = cfgL[0].split("|")
-        #         cfg2S = cfg1S[1].strip()
-        #     cmdS = cfg2S + " " + str(Path(_dpathP) / ".".join([dnameS, "pdf"]))
-        #     # print(cmdS)
-        #     subprocess.run(cmdS)
-
-        #     os._exit(1)
-
-        #     # clean temp files
-        #     fileL = [
-        #         Path(fileconfigP, ".".join([calcbaseS, "pdf"])),
-        #         Path(fileconfigP, ".".join([calcbaseS, "html"])),
-        #         Path(fileconfigP, ".".join([calcbaseS, "rst"])),
-        #         Path(fileconfigP, ".".join([calcbaseS, "tex"])),
-        #         Path(fileconfigP, ".".join([calcbaseS, ".aux"])),
-        #         Path(fileconfigP, ".".join([calcbaseS, ".out"])),
-        #         Path(fileconfigP, ".".join([calcbaseS, ".fls"])),
-        #         Path(fileconfigP, ".".join([calcbaseS, ".fdb_latexmk"])),
-        #     ]
-        #     os.chdir(fileconfigP)
-        #     tmpS = os.getcwd()
-        #     if tmpS == str(fileconfigP):
-        #         for f in fileL:
-        #             try:
-        #                 os.remove(f)
-        #             except:
-        #                 pass
-        #         time.sleep(1)
-        #         print("INFO: temporary Tex files deleted \n", flush=True)
-        #    # endregion
 
         return (
             "tex pdf doc written: "

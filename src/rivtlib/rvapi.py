@@ -171,7 +171,7 @@ lD = {  # labels
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "sectS": "",  # section title
     "secnumI": 0,  # section number
-    "equI": 1,  # equation number
+    "equI": 0,  # equation number
     "tableI": 1,  # table number
     "figI": 1,  # figure number
     "pageI": 1,  # starting page number
@@ -376,14 +376,10 @@ def D(rS):
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
-    cmdL = ["PUBLISH", "ATTACHPDF"]
-    tagbL = ["_[[METADATA", "_[[END"]
-    tagL = []
-    tagL = tagL + tagbL
     dutfS += "\nend of doc\n"
     dtxtS += "\nend of doc\n"
     drstS += "\nend of doc\n"
-    wrtdoc = rvdoc.Cmdp(rS, fD, lD, cmdL, tagL, dutfS, drstS, dtxtS, rivtD)
+    wrtdoc = rvdoc.Cmdp(rS, fD, lD, rivtD, dutfS, drstS, dtxtS)
     msgS = wrtdoc.cmdx()
     print(f"{msgS}")
     sys.exit()

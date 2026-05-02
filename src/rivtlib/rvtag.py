@@ -47,6 +47,8 @@ class Tag:
          I,V      text  _[C]                        center text (all)
          I,V      text  _[R]                        right justify text (all)
          I,V      text  _[U]                        underline text (all)
+         I,V      text  _[B]                        bold text (all)
+         I,V      text  _[I]                        italic text (all)
          I,V      math  _[M]                        format ASCII math (all)
          I,V      math  _[X]                        format LaTeX math (all)
          I,V      label _[F]                        figure number and label (all)
@@ -78,12 +80,24 @@ class Tag:
         elif cmdS == "lR":
             """right justify text"""
 
-            uS = tS = lineS.center(wI) + "\n"
-            rS = "\n::\n\n" + lineS.center(wI) + "\n"
-            lS = "\n::\n\n" + lineS.center(wI) + "\n"
+            uS = tS = lineS.rjust(wI) + "\n"
+            rS += "\n.. class:: align-right\n\n   " + lineS + "\n"
+            lS = ""
+
+        if cmdS == "lB":
+            """bold text"""
+
+            uS = tS = lineS + "\n"
+            rS = lS = "**" + lineS + "**" + "\n"
+
+        if cmdS == "lI":
+            """italic text"""
+
+            uS = tS = lineS + "\n"
+            rS = lS = "*" + lineS + "*" + "\n"
 
         elif cmdS == "lU":
-            """format url link"""
+            """underline text"""
 
             lineL = lineS.split(",")
             uS = tS = lineL[0] + ": " + lineL[1]
@@ -93,14 +107,26 @@ class Tag:
         elif cmdS == "lM":
             """format sympy"""
 
+            self.enumI = int(self.lD["equI"])
+            self.enumI += 1
+            self.lD["equI"] = self.enumI
+            self.enumS = str(self.enumI)
+
             spS = lineS.strip()
             spL = spS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-            indlineS = textwrap.indent(lineS, "     ")
-            uS = tS = indlineS + "\n"
-            rS = "\n.. code:: \n\n" + indlineS + "\n\n"
-            lS = "\n.. code:: \n\n" + indlineS + "\n\n"
+            eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+            # text
+            eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
+            toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
+            eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
+            # rest
+            eq1S = textwrap.indent(eq1S, "           ")
+            erS = "   Eq." + self.enumS + "\n"
+            eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+            uS = tS = eqtS + "\n"
+            rS = eqrS + "\n\n"
+            lS = ""
 
         elif cmdS == "lT":
             """number table"""
@@ -258,20 +284,6 @@ class Tag:
             rS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
             tS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
             lS = ""
-
-        elif cmdS == "bMET":
-            """metadata block"""
-            # region
-            blkL = (self.strLS).split("\n", 1)
-            titleS = blkL[0].strip()
-            tnumI = int(self.mD["lD"]["tableI"])
-            self.mD["lD"]["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            uS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
-            rS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
-            tS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
-            lS = ""
-
             # endregion
         else:
             pass
