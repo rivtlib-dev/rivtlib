@@ -178,8 +178,8 @@ class Cmd:
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "   [Eq." + self.enumS + "]\n"
-        eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+        erS = "\n**[Eq." + self.enumS + "]**\n"
+        eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
         if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
@@ -187,36 +187,6 @@ class Cmd:
             exec(cmdS, globals(), self.rivtD)
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
-        hdr1L = []  # =================== result tables
-        tbl1L = []
-        hdr1L.append(spL[0])
-        hdr1L.append("[" + spL[0] + "]")
-        hdr1L.append("reference")
-        alignL = ["center", "center", "center"]
-        tblfmt = "rst"
-        tblL = [tbl1L]
-        val1U = valU.cast_unit(eval(unit1S))
-        val2U = valU.cast_unit(eval(unit2S))
-        tbl1L.append(str(val1U))
-        tbl1L.append(str(val2U))
-        tbl1L.append(refS)
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate.tabulate(
-                tblL,
-                tablefmt=tblfmt,
-                headers=hdr1L,
-                showindex=False,
-                colalign=alignL,
-            )
-        )
-        uS = eqtS + "\n" + output.getvalue() + "\n"
-        tS = eqtS + "\n" + output.getvalue() + "\n"
-        rS = eqrS + "\n" + output.getvalue() + "\n"
-        sys.stdout = old_stdout
-        sys.stdout.flush()
         tbl2L = []  # ============ values table
         hdr2L = []
         alignL = []
@@ -241,6 +211,36 @@ class Cmd:
                 tbl2L,
                 tablefmt=tblfmt,
                 headers=hdr2L,
+                showindex=False,
+                colalign=alignL,
+            )
+        )
+        uS = eqtS + "\n" + output.getvalue() + "\n"
+        tS = eqtS + "\n" + output.getvalue() + "\n"
+        rS = eqrS + "\n" + output.getvalue() + "\n"
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+        hdr1L = []  # =================== result tables
+        tbl1L = []
+        hdr1L.append(spL[0])
+        hdr1L.append("[" + spL[0] + "]")
+        hdr1L.append("reference")
+        alignL = ["center", "center", "center"]
+        tblfmt = "rst"
+        tblL = [tbl1L]
+        val1U = valU.cast_unit(eval(unit1S))
+        val2U = valU.cast_unit(eval(unit2S))
+        tbl1L.append(str(val1U))
+        tbl1L.append(str(val2U))
+        tbl1L.append(refS)
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tblL,
+                tablefmt=tblfmt,
+                headers=hdr1L,
                 showindex=False,
                 colalign=alignL,
             )
@@ -302,8 +302,8 @@ class Cmd:
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "   Eq." + self.enumS + "\n"
-        eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+        erS = "\n**[Eq." + self.enumS + "]**\n"
+        eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
         if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
@@ -401,8 +401,8 @@ class Cmd:
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "   Eq." + self.enumS + "\n"
-        eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+        erS = "\n**[Eq." + self.enumS + "]**\n"
+        eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
 
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
@@ -776,25 +776,69 @@ class Cmd:
     def PYTHON(self):
         """execute Python script
 
-        | PYTHON | rel. path | namespace, docstrings
+        | PYTHON | rel. path | reference
         """
         # region
         # print(f"{readL=}")
-        namespaceS = "rivtO"
-
+        titleS = self.parS.strip()
+        fiS = " [file: " + self.fileS + "]" + "\n\n"
+        tnumI = int(self.lD["tableI"])
+        self.lD["tableI"] = tnumI + 1
+        fillS = str(tnumI)
         fileP = Path(self.fD["rivtP"], self.fileS)
         with open(fileP, "r") as f10:
             pyscriptS = f10.read()
-        if namespaceS == "rivtO":
-            exec(pyscriptS, globals(), self.rivtD)
-        else:
-            exec(pyscriptS, globals(), namespaceS)
+        exec(pyscriptS, globals(), self.rivtD)
+        tbL = []
+        funcL = []
+        docstrL = []
+        docflg = False
+        pyscriptL = pyscriptS.split("\n")
+        for s in pyscriptL:
+            if docflg:
+                s = s.replace('"""', "")
+                docstrL.append(s)
+                docflg = False
+            if s[0:3] == "def":
+                s = s.replace("def", "")
+                s = s[:-1]
+                funcL.append(s)
+                docflg = True
+        tbL = zip(funcL, docstrL)
 
-        fiS = "**[ Python file read:** " + self.fileS + " **]**" + "\n\n"
-        fiuS = "[ Python file read: " + self.fileS + " ]" + "\n\n"
-        uS = fiuS + "\n"
-        rS = fiS + "\n"
-        tS = fiS + "\n"
+        fuS = "    [file: " + self.fileS + " ]" + "\n"
+        frS = "   **[file:** " + self.fileS + " **]**" + "\n"
+
+        if titleS[0:1] == "--":
+            utlS = "\n" + fiS
+            rtlS = "\n" + fiS
+            xtlS = "\n" + fiS
+        else:
+            utlS = "\nFunction Table " + fillS + ": " + titleS + fuS
+            rtlS = "\n**Function Table " + fillS + "**: " + titleS + frS
+            xtlS = "\n**Function Table " + fillS + "**: " + titleS + frS
+        tblfmt = "rst"
+        hdrvL = ["Function", "Docstring"]
+        alignL = ["left", "left"]
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tbL,
+                tablefmt=tblfmt,
+                headers=hdrvL,
+                showindex=False,
+                colalign=alignL,
+            )
+        )
+        outS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+        # pthxS = str(Path(*Path(pthS).parts[-3:]))
+        uS = utlS + "\n" + outS + "\n"
+        rS = rtlS + "\n" + outS + "\n"
+        tS = xtlS + "\n" + outS + "\n"
         lS = ""
 
         self.mD = {
@@ -806,6 +850,7 @@ class Cmd:
             "rivL": self.rivL,
             "rivtD": self.rivtD,
         }
+
         # endregion
 
     def LATEX(self):

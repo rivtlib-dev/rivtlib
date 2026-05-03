@@ -68,28 +68,28 @@
                 "command": "ruff.executeOrganizeImports",
             },
             {
-                "name": "fDAll",
+                "name": "FoldAll",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.fDAll"
+                "command": "editor.foldAll"
             },
             {
-                "name": "UnfD",
+                "name": "UnFoldALL",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.unfDAll"
+                "command": "editor.unfoldAll"
             },
             {
-                "name": "fDRegions",
+                "name": "foldRegions",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.fDAllMarkerRegions",
+                "command": "editor.foldAllMarkerRegions",
             },
             {
-                "name": "fDX",
+                "name": "foldX",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.fDAllExcept"
+                "command": "editor.foldAllExcept"
             },
             {
                 "name": "UnfDRecursive",
@@ -133,7 +133,7 @@
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "explorer.compactfDers": false,
-    "explorer.sortOrder": "name",
+    "explorer.sortOrder": "modified",
     "settings.cycle": [
         {
             "id": "ExplorerSort1", // must be unique

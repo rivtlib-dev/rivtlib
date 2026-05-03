@@ -162,6 +162,7 @@ fD = {  # folders
     "tempP": Path(srcP, "temp"),
 }
 lD = {  # labels
+    "rbaseS": rbaseS,  # section type r,i,v,t,d
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
     "divS": rbaseS[2:3],  # div number
@@ -283,6 +284,8 @@ def I(rS):  # noqa: E743
         "E",  # equation label
         "T",  # table label
         "F",  # figure label
+        "B",  # bold text
+        "I",  # italic text
     ]
     tagbL = [
         "INDENT",  # indent
@@ -321,6 +324,8 @@ def V(rS):
         "E",  # equation label
         "T",  # table label
         "F",  # figure label
+        "B",  # bold text
+        "I",  # italic text
     ]
     tagbL = [
         "PYTHON",  # execute Python script
@@ -376,9 +381,6 @@ def D(rS):
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
-    dutfS += "\nend of doc\n"
-    dtxtS += "\nend of doc\n"
-    drstS += "\nend of doc\n"
     wrtdoc = rvdoc.Cmdp(rS, fD, lD, rivtD, dutfS, drstS, dtxtS)
     msgS = wrtdoc.cmdx()
     print(f"{msgS}")
@@ -393,10 +395,8 @@ def S(rS):
     global dutfS, drstS, dtxtS
 
     shL = rS.split("\n")
-    sutfS = stxtS = srstS = (
-        "\n[" + shL[0].strip() + "] : section skipped " + "\n"
-    )
-    print(sutfS)
+    logging.info("section skipped at: " + shL[0])
+    print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
 
 
 def X(rS):

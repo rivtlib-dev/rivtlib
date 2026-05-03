@@ -4,7 +4,6 @@ parse section string
 
 import logging
 import os
-import re
 import sys
 import warnings
 from io import StringIO
@@ -158,20 +157,6 @@ class Rs:
         # --------------------------------------- loop over content substring
         for slS in self.spL:
             # print("**", f"{slS=}")
-            if tyS == "I":  # strip inline marks
-                txt2L = []
-                # print(f"{slS=}")
-                txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # strip bold
-                if len(txt1L) > 0:
-                    for tS in txt1L:
-                        t1S = "**" + tS + "**"
-                        slS = slS.replace(t1S, tS)
-                txt2L = re.findall(r"\*(.*?)\*", slS)  # strip italic
-                if len(txt2L) > 0:
-                    for tS in txt2L:
-                        t2S = "*" + tS + "*"
-                        slS = slS.replace(t2S, tS)
-                # print(f"{txt1L=}")
             if len(slS.strip()) == 0 and len(tabL) > 0:  # print inline valtable
                 outS = self.prt_tabl(tabL)
                 sutfS += outS + " \n"

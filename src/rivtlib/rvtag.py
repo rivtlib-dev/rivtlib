@@ -46,7 +46,6 @@ class Tag:
         ------- --------------------------------- -----------------------------------
          I,V      text  _[C]                        center text (all)
          I,V      text  _[R]                        right justify text (all)
-         I,V      text  _[U]                        underline text (all)
          I,V      text  _[B]                        bold text (all)
          I,V      text  _[I]                        italic text (all)
          I,V      math  _[M]                        format ASCII math (all)
@@ -57,8 +56,8 @@ class Tag:
          I,V      text  _[#] text                   number endnote (all)
          I,V      text  _[G] term link    | text    link term to glossary (all)
          I,V      text  _[S] section link | text    link to section in report (all)
-         I,V      text  _[L] external link | text   external url link (all)
-         all           ## text                      non printing comment
+         I,V      text  _[U] external link | text   external url link (all)
+         all      ## text                           non-printing comment
 
          Args:
              tagS (str):  last two characers of tag symbol
@@ -67,7 +66,7 @@ class Tag:
         """
         cmdS = "l" + tagS[0]
         wI = int(self.lD["widthI"])
-        lineS = self.strLS
+        lineS = self.strLS.strip()
         # region
 
         if cmdS == "lC":
@@ -96,14 +95,6 @@ class Tag:
             uS = tS = lineS + "\n"
             rS = lS = "*" + lineS + "*" + "\n"
 
-        elif cmdS == "lU":
-            """underline text"""
-
-            lineL = lineS.split(",")
-            uS = tS = lineL[0] + ": " + lineL[1]
-            rS = ".. _" + lineL[0] + ": " + lineL[1]
-            lS = ".. _" + lineL[0] + ": " + lineL[1]
-
         elif cmdS == "lM":
             """format sympy"""
 
@@ -122,8 +113,8 @@ class Tag:
             eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
             # rest
             eq1S = textwrap.indent(eq1S, "           ")
-            erS = "   Eq." + self.enumS + "\n"
-            eqrS = "\n.. code-block:: text \n\n" + erS + eq1S + "\n\n"
+            erS = "\n**[Eq." + self.enumS + "]**\n"
+            eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
             uS = tS = eqtS + "\n"
             rS = eqrS + "\n\n"
             lS = ""
