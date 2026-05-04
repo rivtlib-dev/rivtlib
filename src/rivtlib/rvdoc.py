@@ -159,6 +159,46 @@ class Cmdp:
         rvdocS = self.fD["rbaseS"] + ".html"
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
         rvdocT = str(Path(self.fD["rivtpubP"], "docs", rvdocS))
+        timeS = datetime.now().strftime("%Y-%m-%d")
+
+        rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
+        rvdateT = str(Path(self.fD["rstdocsP"], "_templates", "rv-date.html"))
+        rvtitleT = str(Path(self.fD["rstdocsP"], "_templates", "rv-title.html"))
+
+        rvdateS = f"""
+<!-- _templates/rv-date.html -->
+<div class="footer-item">
+    <p class="rvdate">
+        {timeS}
+    </p>
+</div>
+"""
+        with open(rvdateT, "w", encoding="utf-8") as f2:
+            f2.write(rvdateS)
+
+        rvauthS = f"""
+<!-- _templates/rv-author.html -->
+<div class="footer-item">
+    <p class="rvauthor">
+        {self.authorS}
+    </p>
+</div>
+"""
+        with open(rvauthT, "w", encoding="utf-8") as f2:
+            f2.write(rvauthS)
+
+        rvtitleS = f"""
+<!-- _templates/rv-title.html -->
+<div class="footer-item">
+    <p class="rvtitle">
+        {self.docnameS}  v.{self.verS} 
+    </p>
+</div>
+"""
+        with open(rvtitleT, "w", encoding="utf-8") as f2:
+            f2.write(rvtitleS)
+
+        self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
@@ -193,18 +233,26 @@ class Cmdp:
         rvdocT = str(Path(self.fD["rivtpubP"], "pdfdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d")
 
-        footblkS = f"""{timeS} |s| |s| |s|  {self.authorS} |s| |s| |s| **|** |s| |s| |s| **{self.docnameS}** - v{self.verS} |s| |s| |s| **|** |s| |s| |s| **p.** |s| ###Page### **of** ###Total###"""
+        headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| Sect: **###Section###**"""
+        foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
+        foot2blkS = f"""**{self.runtextS}**"""
 
         imgS = f"""
-.. |blklogo| image:: ../_src/{self.coverlogo}
+.. |blklogo| image:: ../_src/{self.runlogo}
    :width: 175px
    :alt: logo
 
 
 """
-        headS = """
-.. header:: 
-   Section: ###Section###
+        headS = f"""
+.. header::
+    .. list-table::
+        :class: foottable2
+        :align: left
+        :widths: 84 16
+        
+        * - {headblkS}
+          - p. **###Page###** of ###Total### 
 
    
 """
@@ -212,10 +260,11 @@ class Cmdp:
 .. footer:: 
     .. list-table::
         :class: foottable2
-        :align: center
-        :widths: 88 12
+        :align: left
+        :widths: 84 22 16
         
-        * - {footblkS}        
+        * - {foot1blkS}        
+          - {foot2blkS}        
           - |blklogo|
 
         
@@ -284,18 +333,16 @@ class Cmdp:
         self.verS = self.configL["doc"]["version"]
         self.copyS = self.configL["doc"]["copyright"]
         self.repoS = self.configL["doc"]["repo"]
-        self.liceS = self.configL["doc"]["license"]
+        self.licenS = self.configL["doc"]["license"]
         self.f1_authorS = self.configL["doc"]["fork1_authors"]
         self.f1_verS = self.configL["doc"]["fork1_version"]
         self.f1_repoS = self.configL["doc"]["fork1_repo"]
         self.f1_liceS = self.configL["doc"]["fork1_license"]
         self.coverlogo = self.configL["layout"]["coverlogo"]
-        self.footlogo = self.configL["layout"]["footlogo"]
-        self.rlabpageS = self.configL["layout"]["pdf_pagesize"]
-        self.rlabmarginS = self.configL["layout"]["pdf_margins"]
-        self.rlabheaderS = self.configL["layout"]["pdf_header"]
-        self.rlabcoverS = self.configL["layout"]["pdf_cover"]
-        self.rlabwidth = self.configL["layout"]["text_width"]
+        self.runlogo = self.configL["layout"]["runninglogo"]
+        self.runtextS = self.configL["layout"]["runningtext"]
+        self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
+        self.pdfmarginS = self.configL["layout"]["pdf_margins"]
 
     # -------------------------------------------------------------------
     def attachpdfx(self):
@@ -357,14 +404,11 @@ html_theme_options = {{
     "navbar_align": "left",
     "show_toc_level": 1,
     "navigation_depth": 1,
-    "footer_links": [
-        {"text":"{self.docnameS}"},
-        {"text":"{self.authorS}"}"
-    ],
-    "footer_start": [],
-    "footer_end": [],
+    "footer_start": ["rv-author"],
+    "footer_center": ["rv-title"],
+    "footer_end": ["rv-date"],
     "logo": {{
-            "text": "{self.docnameS}",
+            "text": "{self.runtextS}",
         "image_dark": "{self.coverlogo}",
         "image_light": "{self.coverlogo}",
     }},
@@ -461,10 +505,10 @@ fontsAlias:
   fontMonoBold: DejaVuSansMono-Bold
   fontMonoBoldItalic: DejaVuSansMono-BoldOblique
   fontMonoItalic: DejaVuSansMono-Oblique
-  fontSans: OpenSans-Regular
-  fontSansBold: OpenSans-Bold
-  fontSansBoldItalic: OpenSans-BoldItalic
-  fontSansItalic: OpenSans-Italic
+  fontSans: DejaVuSans
+  fontSansBold: DejaVuSans-Bold
+  fontSansBoldItalic: DejaVuSans-BoldOblique
+  fontSansItalic: DejaVuSans-Oblique
   size: letter
   margin-bottom: 1cm
   margin-top: 1cm
@@ -503,9 +547,9 @@ styles:
     commands: []
     firstLineIndent: 0
     fontName: fontSans
-    fontSize: 10
+    fontSize: 9
     hyphenation: false
-    leading: 12
+    leading: 11
     leftIndent: 0
     parent: null
     rightIndent: 0
@@ -515,6 +559,13 @@ styles:
     textColor: black
     underline: false
     wordWrap: null
+  link:
+    parent: base
+    underline: true
+    fontSize: 16
+    textColor: blue
+    underlineColor: blue
+    fontName: fontSansBold
   big-text:
     fontSize: 150%
     parent: base
@@ -694,7 +745,7 @@ styles:
         - 0
       - - -1
         - -1
-      - TOP
+      - MIDDLE
     - - BOTTOMPADDING
       - - 0
         - 0
@@ -706,7 +757,7 @@ styles:
         - 0
       - - -1
         - -1
-      - -10
+      - 0
   table:
     spaceBefore: 6
     spaceAfter: 6

@@ -4,6 +4,7 @@ parse section string
 
 import logging
 import os
+import re
 import sys
 import warnings
 from io import StringIO
@@ -157,6 +158,20 @@ class Rs:
         # --------------------------------------- loop over content substring
         for slS in self.spL:
             # print("**", f"{slS=}")
+            if tyS == "I":  # strip inline marks
+                txt2L = []
+                # print(f"{slS=}")
+                txt1L = re.findall(r"\*\*(.*?)\*\*", slS)  # strip bold
+                if len(txt1L) > 0:
+                    for tS in txt1L:
+                        t1S = "**" + tS + "**"
+                        slS = slS.replace(t1S, tS)
+                txt2L = re.findall(r"\*(.*?)\*", slS)  # strip italic
+                if len(txt2L) > 0:
+                    for tS in txt2L:
+                        t2S = "*" + tS + "*"
+                        slS = slS.replace(t2S, tS)
+                # print(f"{txt1L=}")
             if len(slS.strip()) == 0 and len(tabL) > 0:  # print inline valtable
                 outS = self.prt_tabl(tabL)
                 sutfS += outS + " \n"
@@ -246,14 +261,15 @@ class Rs:
                         blockS += lineS + "\n"
                     continue
                 else:
-                    slL = slS.split("_[")
-                    lineL = slL[1].split("]")
-                    lineS = slL[0] + lineL[1]
-                    tagS = lineL[0]
+                    s1L = slS.split("_[")
+                    s2L = s1L[1].split("]")
+                    lineL = [s1L[0]] + s2L[1:]
+                    tagS = s2L[0]
+                    print("xxx", lineL)
                     if tagS in tagL:  # check list
                         # print(f"{tagS=}")
                         self.logging.info(f"tag : _[{tagS}]")
-                        tC = rvtag.Tag(fD, lD, rivtD, rivL, lineS)
+                        tC = rvtag.Tag(fD, lD, rivtD, rivL, lineL)
                         if tagS[0] != "[":  # line tag
                             mD, lD = tC.taglx(tagS)
                             sutfS += mD["uS"] + "\n"

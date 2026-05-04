@@ -17,7 +17,7 @@ class Tag:
         tagbx(tagS): formats block
     """
 
-    def __init__(self, fD, lD, rivD, rivL, strLS):
+    def __init__(self, fD, lD, rivD, rivL, strL):
         """tags object
 
         Args:
@@ -33,7 +33,7 @@ class Tag:
         """
         store_attr()
         sp.init_printing()
-        self.strLS = strLS
+        self.strL = strL
         self.fD = fD
         self.lD = lD
         self.rivD = rivD
@@ -52,11 +52,12 @@ class Tag:
          I,V      math  _[X]                        format LaTeX math (all)
          I,V      label _[F]                        figure number and label (all)
          I,V      title _[T]                        table number and title (all)
-         I,V      text  _[V] var_name | text        equation number and label (all)
+         I,V      text  _[P]                        new page (pdf)
          I,V      text  _[#] text                   number endnote (all)
-         I,V      text  _[G] term link    | text    link term to glossary (all)
-         I,V      text  _[S] section link | text    link to section in report (all)
-         I,V      text  _[U] external link | text   external url link (all)
+         I,V      text  _[V] var_name ] text        variable substitution (all)
+         I,V      text  _[G] term link ] text       link term to glossary (all)
+         I,V      text  _[S] section link ] text    link to section in report (all)
+         I,V      text  _[U] external link ] text   external url link (all)
          all      ## text                           non-printing comment
 
          Args:
@@ -66,10 +67,18 @@ class Tag:
         """
         cmdS = "l" + tagS[0]
         wI = int(self.lD["widthI"])
-        lineS = self.strLS.strip()
+        lineS = self.strL[0].strip()
+        lineL = self.strL
         # region
 
-        if cmdS == "lC":
+        if cmdS == "lP":
+            """new page"""
+
+            uS = tS = lineS + "\n"
+            rS = "\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
+            lS = "\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
+
+        elif cmdS == "lC":
             """center text"""
 
             uS = tS = lineS.center(wI) + "\n"
@@ -140,7 +149,7 @@ class Tag:
             lS = "\n**Table " + fillS + "**: " + lineS + "\n"
 
         elif cmdS == "lL":
-            """format sympy"""
+            """format latex"""
 
             spS = lineS.strip()
             spL = spS.split("=")
@@ -152,7 +161,7 @@ class Tag:
             lS = "\n.. code:: \n\n" + indlineS + "\n\n"
 
         elif cmdS == "lG":
-            """format url link"""
+            """format glossary term link"""
 
             lineL = lineS.split(",")
             uS = tS = lineL[0] + ": " + lineL[1]
@@ -160,20 +169,20 @@ class Tag:
             lS = ".. _" + lineL[0] + ": " + lineL[1]
 
         elif cmdS == "lS":
-            """format url link"""
+            """format section link"""
 
             lineL = lineS.split(",")
             uS = tS = lineL[0] + ": " + lineL[1]
             rS = ".. _" + lineL[0] + ": " + lineL[1]
             lS = ".. _" + lineL[0] + ": " + lineL[1]
 
-        elif cmdS == "lL":
+        elif cmdS == "lU":
             """format url link"""
 
-            lineL = lineS.split(",")
-            uS = tS = lineL[0] + ": " + lineL[1]
-            rS = ".. _" + lineL[0] + ": " + lineL[1]
-            lS = ".. _" + lineL[0] + ": " + lineL[1]
+            uS = tS = " ".join(lineL[1:])
+            txL = lineL[1].split(",")
+            rS = "`" + txL[0].strip() + " <" + txL[1].strip() + ">`_" + lineL[2]
+            lS = "`" + txL[0].strip() + " <" + txL[1].strip() + ">`_" + lineL[2]
 
         elif cmdS == "l#":
             """number footnote"""
@@ -253,7 +262,7 @@ class Tag:
         elif cmdS == "bTAB":
             """table block"""
             # region
-            blkL = (self.strLS).split("\n", 1)
+            blkL = (self.strL).split("\n", 1)
             titleS = blkL[0].strip()
             tnumI = int(self.lD["tableI"])
             self.lD["tableI"] = tnumI + 1
@@ -266,7 +275,7 @@ class Tag:
         elif cmdS == "bMAR":
             """markup block"""
             # region
-            blkL = (self.strLS).split("\n", 1)
+            blkL = (self.strL).split("\n", 1)
             titleS = blkL[0].strip()
             tnumI = int(self.mD["lD"]["tableI"])
             self.mD["lD"]["tableI"] = tnumI + 1
