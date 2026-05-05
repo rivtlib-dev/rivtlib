@@ -80,11 +80,11 @@ docnumS = rbaseS[0:6]
 bakN = rbaseS + ".bak"
 errlogN = docnumS + "log.txt"
 rootP = rivtP.parent
-publicP = Path(rootP, "rivt-public_")
-storeP = Path(rivtP, "stored_")
-pubP = Path(rivtP, "published_")
-rstdocsP = Path(rivtP, "rstdocs_")
-srcP = Path(rivtP, "_src")
+publicP = Path(rootP, "_rivt-public")
+storeP = Path(rivtP, "_stored")
+pubP = Path(rivtP, "_published")
+rstdocsP = Path(rivtP, "_rstdocs")
+srcP = Path(rivtP, "src")
 logsP = Path(storeP, "logs")
 errlogT = Path(logsP, errlogN)
 bakT = Path(logsP, bakN)
@@ -221,8 +221,10 @@ def cmdhelp():
 def doc_parse(rS, tyS, tagL, cmdL):
     """convert section string to doc string
     Args:
-        sS (str): section string
+        rS (str): section string
         tyS (str): section type (R,I,V,T,W,S)
+        tagL (list): tag list
+        cmdL (list): command list
     Calls:
         Rs (class), content (method)
     Returns:

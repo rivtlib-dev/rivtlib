@@ -72,7 +72,7 @@ class Cmd:
         self.tS = ""
         self.lS = ""
         self.lD = lD
-        self.insP = Path(fD["rivtP"], "_src/", self.fileS)
+        self.insP = Path(fD["rivtP"], "src/", self.fileS)
         self.inspS = str(self.insP.as_posix())
         self.rivL = rivL
         self.rivtD = rivtD
@@ -814,9 +814,9 @@ class Cmd:
             rtlS = "\n" + fiS
             xtlS = "\n" + fiS
         else:
-            utlS = "\nFunction Table " + fillS + ": " + titleS + fuS
-            rtlS = "\n**Function Table " + fillS + "**: " + titleS + frS
-            xtlS = "\n**Function Table " + fillS + "**: " + titleS + frS
+            utlS = "\nTable " + fillS + ": " + titleS + fuS
+            rtlS = "\n**Table " + fillS + "**: " + titleS + frS
+            xtlS = "\n**Table " + fillS + "**: " + titleS + frS
         tblfmt = "rst"
         hdrvL = ["Function", "Docstring"]
         alignL = ["left", "left"]

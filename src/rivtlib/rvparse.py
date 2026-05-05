@@ -36,8 +36,6 @@ class Rs:
         store_attr()
         # region - write header to errlog
         errlogT = fD["errlogT"]
-        with open(errlogT, "a") as f4:
-            f4.write(rsL[0] + "\n")
         warnings.filterwarnings("ignore")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
@@ -47,9 +45,10 @@ class Rs:
             ),
             datefmt="%m-%d %H:%M",
             filename=errlogT,
-            filemode="w",
+            filemode="a",
         )
         self.logging = logging
+        logging.info(rsL[0])  # log header
         sutfS = ""  # utf doc
         srstS = ""  # rest doc
         stxtS = ""  # text doc
@@ -110,10 +109,10 @@ class Rs:
         self.spL = []
         for slS in rsL[1:]:
             if len(slS) < 5:  # blank line to new line
-                slS = "     \n"
-                self.spL.append(slS[4:])
+                slS = " \n"
+                self.spL.append(slS)
                 continue
-            elif "##" in slS[:6]:  # skip comment line
+            elif "##" in slS[:7]:  # skip comment line
                 continue
             elif "." * 5 in slS[:6]:  # page break to tag
                 slS = "    _[P]"
@@ -265,7 +264,6 @@ class Rs:
                     s2L = s1L[1].split("]")
                     lineL = [s1L[0]] + s2L[1:]
                     tagS = s2L[0]
-                    print("xxx", lineL)
                     if tagS in tagL:  # check list
                         # print(f"{tagS=}")
                         self.logging.info(f"tag : _[{tagS}]")

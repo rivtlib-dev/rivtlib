@@ -44,10 +44,12 @@ class Tag:
 
          API         Syntax                         Description (output types)
         ------- --------------------------------- -----------------------------------
+         I          **text text**                   bold words
+         I           *text text*                    italic words
          I,V      text  _[C]                        center text (all)
          I,V      text  _[R]                        right justify text (all)
          I,V      text  _[B]                        bold text (all)
-         I,V      text  _[I]                        italic text (all)
+         I,V      text  _[I]                        italic line (all)
          I,V      math  _[M]                        format ASCII math (all)
          I,V      math  _[X]                        format LaTeX math (all)
          I,V      label _[F]                        figure number and label (all)

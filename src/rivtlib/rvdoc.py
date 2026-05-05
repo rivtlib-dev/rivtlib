@@ -151,8 +151,8 @@ class Cmdp:
         self.coverS()  # update cover page
         self.rivtstyS()  # update yaml file
         baseP = self.fD["rivtP"]
-        srcS = f"{baseP}/_src/{self.coverlogo}"
-        destS = f"{baseP}/rstdocs_/_static/img/{self.coverlogo}"
+        srcS = f"{baseP}/src/{self.coverlogo}"
+        destS = f"{baseP}/_rstdocs/_static/img/{self.coverlogo}"
         shutil.copy(srcS, destS)
         rvbaseS = self.fD["rbaseS"]
         rvfileS = self.fD["rbaseS"] + ".rst"
@@ -238,8 +238,8 @@ class Cmdp:
         foot2blkS = f"""**{self.runtextS}**"""
 
         imgS = f"""
-.. |blklogo| image:: ../_src/{self.runlogo}
-   :width: 175px
+.. |blklogo| image:: ../src/{self.runlogo}
+   :height: 100px
    :alt: logo
 
 
@@ -269,6 +269,7 @@ class Cmdp:
 
         
 """
+
         self.drstS = (
             ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + self.drstS
         )
@@ -277,7 +278,7 @@ class Cmdp:
             f5.write(self.drstS)
         with open("README.txt", "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-        pdfcmdS = f"sphinx-build -E -b pdf -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
+        pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
         try:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
             if not result.returncode:
@@ -343,6 +344,7 @@ class Cmdp:
         self.runtextS = self.configL["layout"]["runningtext"]
         self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
+        self.linkB = self.configL["layout"]["pdf_link_underline"]
 
     # -------------------------------------------------------------------
     def attachpdfx(self):
@@ -393,7 +395,7 @@ html_title = " "
 html_theme = "pydata_sphinx_theme"
 html_context = {{"default_mode": "dark"}}
 html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
-html_static_path = ["_static", "_static/img"]
+html_static_path = ["_static", "_static/img", "../src"]
 html_css_files = ["css/custom.css"]
 html_theme_options = {{
     "pygments_light_style": "tango",
@@ -409,8 +411,8 @@ html_theme_options = {{
     "footer_end": ["rv-date"],
     "logo": {{
             "text": "{self.runtextS}",
-        "image_dark": "{self.coverlogo}",
-        "image_light": "{self.coverlogo}",
+        "image_dark": "{self.runlogo}",
+        "image_light": "{self.runlogo}",
     }},
 }}
 favicons = [
@@ -434,11 +436,9 @@ pdf_documents = [("{rvbaseS}", "{rvbaseS}", "{self.docnameS}",
 # Label to use as a prefix for the subtitle on the cover page
 subtitle_prefix = "User Manual"
 # A list of folders to search for stylesheets.
-pdf_style_path = ["./rstdocs_/_static/pdfstyle"]
+pdf_style_path = ["./_rstdocs/_static/pdfstyle"]
 # A colon-separated list of folders to search for fonts.
-pdf_font_path = ["./rstdocs_/_static/fonts"]
-# A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["./rstdocs_/_static/pdfstyle/rivtstyle.yaml"]
+pdf_font_path = ["./_rstdocs/_static/fonts"]
 # Example: compressed=True
 pdf_compressed = False
 # Language to be used for hyphenation support
@@ -484,6 +484,8 @@ pdf_page_template = 'mainPage'
 # pdf_default_dpi = 72
 # Enable rst2pdf extension modules
 # pdf_extensions = []
+# A comma-separated list of custom stylesheets.
+pdf_stylesheets = ["./_rstdocs/_static/pdfstyle/rivtstyle.yaml"]
     """
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(confpyS)
@@ -495,7 +497,7 @@ pdf_page_template = 'mainPage'
             Path(self.fD["rstdocsP"], "_static", "pdfstyle", "rivtstyle.yaml")
         )
 
-        rivstyS = """
+        rivstyS = f"""
 fontsAlias:
   fontSerif: DejaVuSans
   fontSerifBold: DejaVuSans-Bold
@@ -528,6 +530,7 @@ pageTemplates:
   coverPage:
     showFooter: False
     showHeader: False
+    underline: false
   mainPage:
     showFooter: True
     showHeader: True
@@ -549,7 +552,7 @@ styles:
     fontName: fontSans
     fontSize: 9
     hyphenation: false
-    leading: 11
+    leading: 12
     leftIndent: 0
     parent: null
     rightIndent: 0
@@ -557,15 +560,9 @@ styles:
     spaceBefore: 6
     strike: false
     textColor: black
-    underline: false
     wordWrap: null
-  link:
-    parent: base
-    underline: true
-    fontSize: 16
-    textColor: blue
-    underlineColor: blue
-    fontName: fontSansBold
+    linkUnderline: {self.linkB}
+    linkColor: blue
   big-text:
     fontSize: 150%
     parent: base
@@ -578,12 +575,6 @@ styles:
     hyphenation: true
     parent: normal
     spaceBefore: 6
-  bottom:
-    alignment: TA_CENTER
-    fontSize: 110%
-    keepWithNext: false
-    parent: heading
-    fontName: fontSansBold
   align-center:
     alignment: TA_CENTER
     parent: bodytext
@@ -909,7 +900,7 @@ styles:
 |
 |
         
-.. image:: ../_src/{self.coverlogo}
+.. image:: ../src/{self.coverlogo}
    :width: 600px
    :align: center
 
@@ -942,7 +933,7 @@ styles:
     
 .. raw:: pdf
 
-   PageBreak
+   PageBreak mainPage
 
 """
 
