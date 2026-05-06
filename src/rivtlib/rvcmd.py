@@ -222,18 +222,14 @@ class Cmd:
         rS = eqrS + "\n" + output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
-        hdr1L = []  # =================== result tables
-        tbl1L = []
-        hdr1L.append(spL[0])
-        hdr1L.append("[" + spL[0] + "]")
-        hdr1L.append("reference")
+        tbl1L = []  # =================== result tables
         alignL = ["center", "center", "center"]
         tblfmt = "rst"
         tblL = [tbl1L]
         val1U = valU.cast_unit(eval(unit1S))
         val2U = valU.cast_unit(eval(unit2S))
-        tbl1L.append(str(val1U))
-        tbl1L.append(str(val2U))
+        tbl1L.append("**" + spL[0] + " = " + str(val1U) + "**")
+        tbl1L.append("[" + spL[0] + "]" + " = " + str(val2U))
         tbl1L.append(refS)
         sys.stdout.flush()
         old_stdout = sys.stdout
@@ -242,7 +238,6 @@ class Cmd:
             tabulate.tabulate(
                 tblL,
                 tablefmt=tblfmt,
-                headers=hdr1L,
                 showindex=False,
                 colalign=alignL,
             )
@@ -350,18 +345,14 @@ class Cmd:
         rS = eqrS + "\n" + output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
-        hdr1L = []  # ==================== result table
-        tbl1L = []
-        hdr1L.append(spL[0])
-        hdr1L.append("[" + spL[0] + "]")
-        hdr1L.append("reference")
+        tbl1L = []  # =================== result tables
         alignL = ["center", "center", "center"]
         tblfmt = "rst"
         tblL = [tbl1L]
         val1U = valU.cast_unit(eval(unit1S))
         val2U = valU.cast_unit(eval(unit2S))
-        tbl1L.append(str(val1U))
-        tbl1L.append(str(val2U))
+        tbl1L.append("**" + spL[0] + " = " + str(val1U) + "**")
+        tbl1L.append("[" + spL[0] + "]" + " = " + str(val2U))
         tbl1L.append(refS)
         sys.stdout.flush()
         old_stdout = sys.stdout
@@ -370,7 +361,6 @@ class Cmd:
             tabulate.tabulate(
                 tblL,
                 tablefmt=tblfmt,
-                headers=hdr1L,
                 showindex=False,
                 colalign=alignL,
             )

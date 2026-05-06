@@ -200,7 +200,7 @@ class Cmdp:
         self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
-        with open("README.txt", "w", encoding="utf-8") as f5:
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
         htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['htmlpubP']} \n"
         try:
@@ -248,12 +248,12 @@ class Cmdp:
     .. list-table::
         :class: foottable2
         :align: left
-        :widths: 84 16
+        :widths: 90 10
         
         * - {headblkS}
-          - p. **###Page###** of ###Total### 
+          - p. **###Page###**   
 
-   
+          
 """
         footS = f"""
 .. footer:: 
@@ -266,7 +266,7 @@ class Cmdp:
           - {foot2blkS}        
           - |blklogo|
 
-        
+                  
 """
 
         self.drstS = (
@@ -275,7 +275,7 @@ class Cmdp:
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
-        with open("README.txt", "w", encoding="utf-8") as f5:
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
         pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
         try:
@@ -312,7 +312,7 @@ class Cmdp:
 
         with open(rvdocT, "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
-        with open("README.txt", "w", encoding="utf-8") as f5:
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
 
         return (
@@ -342,6 +342,8 @@ class Cmdp:
         self.runlogo = self.configL["layout"]["runninglogo"]
         self.runtextS = self.configL["layout"]["runningtext"]
         self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
+        self.projnumS = self.configL["layout"]["projectnum"]
+        self.clientS = self.configL["layout"]["client"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
 
@@ -454,6 +456,8 @@ pdf_use_coverpage = True
 pdf_cover_template = "_templates/pdfcover.rst"
 # Show Table Of Contents at the beginning?
 pdf_use_toc = True
+# Page template name for "regular" pages
+pdf_page_template = 'mainPage'
 # How many levels deep should the table of contents be?
 pdf_toc_depth = 9999
 # Insert footnotes where they are defined 
@@ -470,8 +474,6 @@ pdf_fit_background_mode = "scale"
 pdf_repeat_table_rows = True
 # Enable smart quotes (1, 2 or 3) or disable by setting to 0
 pdf_smartquotes = 0
-# Page template name for "regular" pages
-pdf_page_template = 'mainPage'
 # verbosity level. 0 1 or 2
 # pdf_verbosity = 0
 # Documents to append as an appendix to all manuals.
@@ -486,6 +488,7 @@ pdf_page_template = 'mainPage'
 # A comma-separated list of custom stylesheets.
 pdf_stylesheets = ["./_rstdocs/_static/pdfstyle/rivtstyle.yaml"]
     """
+
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(confpyS)
 
@@ -510,33 +513,32 @@ fontsAlias:
   fontSansBold: DejaVuSans-Bold
   fontSansBoldItalic: DejaVuSans-BoldOblique
   fontSansItalic: DejaVuSans-Oblique
-  size: letter
-  margin-bottom: 1cm
-  margin-top: 1cm
 pageSetup:
   firstTemplate: coverPage
   height: null
-  margin-bottom: 1.0cm
-  margin-gutter: 0cm
+  margin-bottom: 4mm
+  margin-gutter: 1mm
   margin-left: 1.5cm
   margin-right: 1.5cm
-  margin-top: 1.0cm
+  margin-top: 4mm
   size: letter
   spacing-footer: 10mm
   spacing-header: 10mm
   width: null
 pageTemplates:
   coverPage:
-    showFooter: False
-    showHeader: False
+    showFooter: true
+    showHeader: false
+    underline: false
+  noHead:
+    frames: [[0%,0%,100%,100%]]
+    showFooter: true
+    showHeader: false
     underline: false
   mainPage:
+    frames: [[0%,0%,100%,110%]]
     showFooter: True
     showHeader: True
-  noHeaderTemplate:
-      frames: [["0%", "0%", "100%", "100%"]]
-      showHeader: false
-      showFooter: true
 styles:
   base:
     alignment: TA_LEFT
@@ -559,8 +561,8 @@ styles:
     leftIndent: 0
     parent: null
     rightIndent: 0
-    spaceAfter: 6
-    spaceBefore: 6
+    spaceAfter: 1
+    spaceBefore: 1
     strike: false
     textColor: black
     wordWrap: null
@@ -636,12 +638,12 @@ styles:
     fontName: fontSans
   header:
     alignment: TA_RIGHT
-    fontName: fontSansBold
+    fontName: fontSans
   heading:
     keepWithNext: true
     parent: normal
-    spaceAfter: 6
-    spaceBefore: 20
+    spaceAfter: 1
+    spaceBefore: 10
     fontName: fontSerif
     textColor: "#222222"
   heading1:
@@ -734,26 +736,6 @@ styles:
     fontSize: 85%
     parent: title
     spaceBefore: 12
-  foottable2:
-    commands:
-    - - VALIGN
-      - - 0
-        - 0
-      - - -1
-        - -1
-      - MIDDLE
-    - - BOTTOMPADDING
-      - - 0
-        - 0
-      - - -1
-        - -1
-      - 0
-    - - TOPPADDING
-      - - 0
-        - 0
-      - - -1
-        - -1
-      - 0
   table:
     spaceBefore: 6
     spaceAfter: 6
@@ -816,6 +798,26 @@ styles:
     keepWithNext: false
     parent: heading4
     borderPadding: 5
+  foottable2:
+    commands:
+    - - VALIGN
+      - - 0
+        - 0
+      - - -1
+        - -1
+      - MIDDLE
+    - - BOTTOMPADDING
+      - - 0
+        - 0
+      - - -1
+        - -1
+      - 0
+    - - TOPPADDING
+      - - 0
+        - 0
+      - - -1
+        - -1
+      - 0
   tip:
     parent: admonition
   tip-heading:
@@ -895,7 +897,7 @@ styles:
 
         """
 
-        timeS = datetime.now().strftime("%Y-%m-%d")
+        # timeS = datetime.now().strftime("%Y-%m-%d")
         rvfileT = str(Path(self.fD["rstdocsP"], "_templates", "pdfcover.rst"))
         coverpgS = f"""
 .. role:: big-text
@@ -925,22 +927,29 @@ styles:
 
 .. class:: center
 
-    **{self.authorS}**
+   Attn: **{self.clientS}**
 
 |
 
 .. class:: center
 
-    {timeS}
+   project: **{self.projnumS}**
 
+   
+   
 .. raw:: pdf
 
-   PageBreak noHeaderTemplate    
-    
+   PageBreak noHead
+     
+
+
 .. raw:: pdf
 
    PageBreak mainPage
 
+   
+
+      
 """
 
         with open(rvfileT, "w", encoding="utf-8") as f5:

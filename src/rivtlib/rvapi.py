@@ -187,9 +187,6 @@ lD = {  # labels
     "publicB": False,  # public section
     "showB": True,  # print section to doc
     "mergeB": False,
-    "apiB": True,
-    "tocB": False,  # table of contents
-    "subB": False,  # sub values in equations
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "none",  # topic background color
     "widthI": 80,  # print width

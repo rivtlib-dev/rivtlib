@@ -113,11 +113,11 @@ class Rs:
                 slS = " \n"
                 self.spL.append(slS)
                 continue
-            elif "##" in slS[:7]:  # skip comment line
+            elif "##" in slS[:8]:  # skip comment line
                 continue
-            elif "." * 5 in slS[:6]:  # page break to tag
-                slS = "    _[P]"
-                self.spL.append(slS[4:])
+            elif "." * 5 in slS[4:]:  # page break to tag
+                slS = "  _[P]"
+                self.spL.append(slS)
                 continue
             else:
                 self.spL.append(slS[4:])  # preprocessed list
@@ -276,8 +276,8 @@ class Rs:
                             stxtS += mD["tS"] + "\n"
                             print(mD["uS"])  # STDOUT- tagged line
                             continue
-            if slS[0:1] == "|":  # ----------------------------- commands
-                parL = slS[1:].split("|")
+            if slS.strip()[0:1] == "|":  # ---------------------- commands
+                parL = slS.strip()[1:].split("|")
                 cmdS = parL[0].strip()
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
