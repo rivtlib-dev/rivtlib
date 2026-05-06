@@ -114,13 +114,13 @@ class Tag:
             self.lD["equI"] = self.enumI
             self.enumS = str(self.enumI)
 
-            spS = lineS.strip()
+            spS = lineL[0].strip()
             spL = spS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
             eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
             # text
             eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
-            toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
+            toptS = chr(9484) + "  Eq-" + self.enumS + " | " + lineL[1] + "\n"
             eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
             # rest
             eq1S = textwrap.indent(eq1S, "           ")
@@ -140,8 +140,8 @@ class Tag:
             rS = "\n**Table " + fillS + "**: " + lineS + "\n"
             lS = "\n**Table " + fillS + "**: " + lineS + "\n"
 
-        elif cmdS == "lI":
-            """number image"""
+        elif cmdS == "lF":
+            """number figure"""
 
             tnumI = int(self.lD["tableI"])
             self.lD["tableI"] = tnumI + 1
@@ -181,7 +181,7 @@ class Tag:
         elif cmdS == "lU":
             """format url link"""
 
-            uS = tS = " ".join(lineL[1:])
+            uS = tS = " ".join(lineL[1:]).strip()
             txL = lineL[1].split(",")
             rS = "`" + txL[0].strip() + " <" + txL[1].strip() + ">`_" + lineL[2]
             lS = "`" + txL[0].strip() + " <" + txL[1].strip() + ">`_" + lineL[2]

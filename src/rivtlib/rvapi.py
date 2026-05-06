@@ -103,7 +103,7 @@ for lnS in rivtL:
 try:
     package_version = version("rivtlib")
     verS = f"rivtlib version: {package_version}"
-except Exception:
+except Exception as e:
     verS = f"rivtlib version not available: {e}"
 
 warnings.filterwarnings("ignore")
@@ -275,19 +275,18 @@ def I(rS):  # noqa: E743
     tagL = [
         "C",  # center text
         "R",  # right justify text
+        "B",  # bold text
+        "I",  # italic text
         "M",  # math
         "L",  # LaTeX math
         "#",  # footnote
         "G",  # glossary
         "S",  # section link
-        "D",  # doc link
         "U",  # url link
         "V",  # var value
         "E",  # equation label
         "T",  # table label
         "F",  # figure label
-        "B",  # bold text
-        "I",  # italic text
     ]
     tagbL = [
         "INDENT",  # indent
@@ -297,7 +296,6 @@ def I(rS):  # noqa: E743
         "TEXT",  # format text
         "TOPIC",  # topic
         "END",  # end
-        "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
     dutfS, drstS, dtxtS = doc_parse(rS, "I", tagL, cmdL)
@@ -332,28 +330,24 @@ def V(rS):
     tagbL = [
         "PYTHON",  # execute Python script
         "END",  # end
-        "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
     dutfS, drstS, dtxtS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
-    """Python and markup tools
+    """Markup tools
     Args:
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     cmdL = [
-        "PYTHON",  # execute Python file
         "MARKUP",  # execute script file
     ]
     tagL = []
     tagbL = [
-        "PYTHON",  # execute Python script
         "MARKUP",  # execute script
         "END",  # end
-        "NEWPAGE",  # new page
     ]
     tagL = tagL + tagbL
 

@@ -3,7 +3,6 @@ import logging
 import os
 import shutil
 import subprocess
-import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -534,6 +533,10 @@ pageTemplates:
   mainPage:
     showFooter: True
     showHeader: True
+  noHeaderTemplate:
+      frames: [["0%", "0%", "100%", "100%"]]
+      showHeader: false
+      showFooter: true
 styles:
   base:
     alignment: TA_LEFT
@@ -563,6 +566,8 @@ styles:
     wordWrap: null
     linkUnderline: {self.linkB}
     linkColor: blue
+  tableofcontents:
+    parent: normal
   big-text:
     fontSize: 150%
     parent: base
@@ -811,8 +816,6 @@ styles:
     keepWithNext: false
     parent: heading4
     borderPadding: 5
-  tableofcontents:
-    parent: normal
   tip:
     parent: admonition
   tip-heading:
@@ -930,6 +933,9 @@ styles:
 
     {timeS}
 
+.. raw:: pdf
+
+   PageBreak noHeaderTemplate    
     
 .. raw:: pdf
 
@@ -970,15 +976,7 @@ styles:
         :type pdffileS: _type_
 
         """
-        pypathS = os.path.dirname(sys.executable)
-        rvstyleP = os.path.join(
-            pypathS,
-            "Lib",
-            "site-packages",
-            "rivtlib",
-            "styles",
-        )
-        rvfileS = self.fD["rbaseS"] + ".rst"
+
         rvdocS = self.fD["rbaseS"] + ".html"
 
         return (

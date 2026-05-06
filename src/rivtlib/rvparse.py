@@ -67,11 +67,12 @@ class Rs:
             snumI = lD["secnumI"] + 1
             lD["secnumI"] = snumI
             snumS = "[ " + str(snumI) + tyS.lower() + " ]"
+            snum1S = "**" + str(snumI) + tyS.lower() + ".** "
             headS = snumS + " " + hL[0].strip()
-            headS = snumS + " " + hL[0].strip()
+            head1S = snum1S + " **" + hL[0].strip() + "**"
             bordrS = lD["widthI"] * "-" + "\n"
             sutfS = "\n" + headS + "\n" + bordrS
-            srstS = "\n" + headS + "\n" + bordrS
+            srstS = "\n" + head1S + "\n" + bordrS
             stxtS = "\n" + headS + "\n" + bordrS
             print(sutfS)  # STDOUT section header
         file_path = str(fD["rivtT"])  # insert interactive link
@@ -196,7 +197,7 @@ class Rs:
                     mD, lD = tC.tagbx(tagS)
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
-                    sutfS += mD["tS"] + "\n"
+                    stxtS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT - block
                     tagS = ""
                     blockS = """"""
@@ -219,7 +220,7 @@ class Rs:
                     lD, rivL, rivtD = (mD["lD"], mD["rivL"], mD["rivtD"])
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
-                    sutfS += mD["tS"] + "\n"
+                    stxtS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT - equation table
                     continue
             elif " :=: " in slS:  # function
@@ -229,7 +230,7 @@ class Rs:
                     mD = tC.vfunc(lineS)
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
-                    sutfS += mD["tS"] + "\n"
+                    stxtS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT - equation table
                     continue
             elif tyS == "V" and any(item in slS for item in cmdL[8]):
@@ -240,7 +241,7 @@ class Rs:
                         mD = tC.vcompare(lineS, opS)
                         sutfS += mD["uS"] + "\n"
                         srstS += mD["rS"] + "\n"
-                        sutfS += mD["tS"] + "\n"
+                        stxtS += mD["tS"] + "\n"
                         print(mD["uS"])  # STDOUT - compare table
                         break
                 continue
@@ -264,7 +265,7 @@ class Rs:
                     s2L = s1L[1].split("]")
                     lineL = [s1L[0]] + s2L[1:]
                     tagS = s2L[0]
-                    if tagS in tagL:  # check list
+                    if tagS in tagL:  # check tag list
                         # print(f"{tagS=}")
                         self.logging.info(f"tag : _[{tagS}]")
                         tC = rvtag.Tag(fD, lD, rivtD, rivL, lineL)
@@ -272,7 +273,7 @@ class Rs:
                             mD, lD = tC.taglx(tagS)
                             sutfS += mD["uS"] + "\n"
                             srstS += mD["rS"] + "\n"
-                            sutfS += mD["tS"] + "\n"
+                            stxtS += mD["tS"] + "\n"
                             print(mD["uS"])  # STDOUT- tagged line
                             continue
             if slS[0:1] == "|":  # ----------------------------- commands
@@ -286,14 +287,14 @@ class Rs:
                     lD, rivL, rivtD = (mD["lD"], mD["rivL"], mD["rivtD"])
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
-                    sutfS += mD["tS"] + "\n"
+                    stxtS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT- command
                     continue
             else:  # everything else
                 print(slS, flush=True)  # STDOUT - raw line
                 sutfS += slS + "\n"
                 srstS += slS + "\n"
-                sutfS += slS + "\n"
+                stxtS += slS + "\n"
 
         # export values file
         if self.tyS == "V" and len(rivL) > 0:

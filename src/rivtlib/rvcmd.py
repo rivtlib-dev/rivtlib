@@ -1,5 +1,6 @@
 # python #!
 import csv
+import re
 import sys
 import textwrap
 from io import StringIO
@@ -174,11 +175,11 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # text
         eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
-        toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
+        toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "\n**[Eq." + self.enumS + "]**\n"
+        erS = "\n**Eq. " + self.enumS + " |**  " + refS + "\n"
         eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
         if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
@@ -190,6 +191,7 @@ class Cmd:
         tbl2L = []  # ============ values table
         hdr2L = []
         alignL = []
+        print("spL", spL)
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
         symaO = symeqO.atoms(sp.Symbol)
         numvarI = len(symaO)
@@ -298,11 +300,11 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # text
         eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
-        toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
+        toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "\n**[Eq." + self.enumS + "]**\n"
+        erS = "\n**Eq. " + self.enumS + " |**  " + refS + "\n"
         eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
         if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
@@ -311,19 +313,56 @@ class Cmd:
             exec(cmdS, globals(), self.rivtD)
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
-        # result table
-        hdr1L = []
+        tbl2L = []  # ============ argument table
+        hdr2L = []
+        alignL = []
+        funcS = spL[1].strip()
+        matchO = re.search(r"\(.*\)", funcS)
+        matchS = matchO.group()
+        syO = sp.sympify(matchS)
+        symeqO = sp.sympify(syO, _clash2, evaluate=False)
+        symaO = symeqO.atoms(sp.Symbol)
+        numvarI = len(symaO)
+        for vS in symaO:
+            hdr2L.append(str(vS))
+        for aO in symaO:
+            a1U = eval(str(aO), globals(), self.rivtD)
+            tbl2L.append(str(a1U))
+        alignL = []
+        tbl2L = [tbl2L]
+        tblfmt = "rst"
+        for nI in range(numvarI):
+            alignL.append("center")
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tbl2L,
+                tablefmt=tblfmt,
+                headers=hdr2L,
+                showindex=False,
+                colalign=alignL,
+            )
+        )
+        uS = eqtS + "\n" + output.getvalue() + "\n"
+        tS = eqtS + "\n" + output.getvalue() + "\n"
+        rS = eqrS + "\n" + output.getvalue() + "\n"
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+        hdr1L = []  # ==================== result table
         tbl1L = []
         hdr1L.append(spL[0])
         hdr1L.append("[" + spL[0] + "]")
         hdr1L.append("reference")
-        alignL = ["center", "center"]
+        alignL = ["center", "center", "center"]
         tblfmt = "rst"
         tblL = [tbl1L]
         val1U = valU.cast_unit(eval(unit1S))
         val2U = valU.cast_unit(eval(unit2S))
         tbl1L.append(str(val1U))
         tbl1L.append(str(val2U))
+        tbl1L.append(refS)
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -336,10 +375,10 @@ class Cmd:
                 colalign=alignL,
             )
         )
-        uS = eqtS + "\n\n" + output.getvalue() + "\n"
-        tS = eqtS + "\n\n" + output.getvalue() + "\n"
-        rS = eqrS + "\n\n" + output.getvalue() + "\n"
-        lS = ""
+        uS += "\n" + output.getvalue() + "\n"
+        tS += "\n" + output.getvalue() + "\n"
+        rS += "\n" + output.getvalue() + "\n"
+        lS = " "
         sys.stdout = old_stdout
         sys.stdout.flush()
         # rivL append
@@ -397,11 +436,11 @@ class Cmd:
         eq1S = textwrap.indent(eq1S, "    ")
         # text  == symbolic equation
         eqxS = textwrap.indent(eqS, chr(9474) + "     ")
-        toptS = chr(9484) + "  Eq-" + self.enumS + "\n"
+        toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "\n**[Eq." + self.enumS + "]**\n"
+        erS = "\n**Eq." + self.enumS + " |** " + refS + "\n"
         eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
 
         valU = eval(spL[0], globals(), self.rivtD)
