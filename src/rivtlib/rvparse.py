@@ -309,7 +309,7 @@ class Rs:
     def prt_tabl(self, tabL):
         tblfmt = "rst"
         hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
+        alignL = ["left", "left", "left", "left"]
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -319,7 +319,8 @@ class Rs:
                 tablefmt=tblfmt,
                 headers=hdrvL,
                 showindex=False,
-                colalign=alignL,
+                colglobalalign=alignL,
+                headersalign=alignL,
             )
         )
         outS = output.getvalue()

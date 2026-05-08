@@ -541,6 +541,8 @@ pageTemplates:
     showHeader: True
 styles:
   base:
+    allowWidows: 2
+    allowOrphans: 2 
     alignment: TA_LEFT
     allowOrphans: false
     allowWidows: false
@@ -633,12 +635,28 @@ styles:
     parent: bodytext
   figure-legend:
     parent: bodytext
-  footer:
+  footer-box:
     alignment: TA_CENTER
     fontName: fontSans
-  header:
+    commands:
+      - - BOX
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 0.25
+        - white
+  header-box:
     alignment: TA_RIGHT
     fontName: fontSans
+    commands:
+      - - BOX
+        - - 0
+          - 0
+        - - -1
+          - -1
+        - 0.25
+        - white
   heading:
     keepWithNext: true
     parent: normal
@@ -737,29 +755,17 @@ styles:
     parent: title
     spaceBefore: 12
   table:
-    spaceBefore: 6
-    spaceAfter: 6
-    parent: normal
-    alignment: TA_CENTER
+    alignment: TA_LEFT
+    spaceBefore: 3
+    spaceAfter: 3
     borderPadding: 5
     leftPadding: 6
     rightPadding: 6
     topPadding: 5
     bottomPadding: 5
+    background-color: white
+    alternate-row-background-color: lightgray
     commands:
-      - - VALIGN
-        - - 0
-          - 0
-        - - -1
-          - -1
-        - BOTTOM
-      - - INNERGRID
-        - - 0
-          - 0
-        - - -1
-          - -1
-        - 0.25
-        - black
       - - ROWBACKGROUNDS
         - - 0
           - 0
@@ -774,51 +780,9 @@ styles:
           - -1
         - 0.25
         - black
-      - - BOTTOMPADDING
-        - - 0
-          - 0
-        - - -1
-          - -1
-        - 5
-      - - TOPPADDING
-        - - 0
-          - 0
-        - - -1
-          - -1
-        - 5
-  table-body:
-    parent: normal
   table-heading:
-    alignment: TA_CENTER
-    borderPadding: 5
-    fontName: fontSansBold
-    valign: BOTTOM
-  table-title:
-    alignment: TA_CENTER
-    keepWithNext: false
-    parent: heading4
-    borderPadding: 5
-  foottable2:
-    commands:
-    - - VALIGN
-      - - 0
-        - 0
-      - - -1
-        - -1
-      - MIDDLE
-    - - BOTTOMPADDING
-      - - 0
-        - 0
-      - - -1
-        - -1
-      - 0
-    - - TOPPADDING
-      - - 0
-        - 0
-      - - -1
-        - -1
-      - 0
-  tip:
+    alignment: TA_LEFT
+    tip:
     parent: admonition
   tip-heading:
     parent: admonition-heading

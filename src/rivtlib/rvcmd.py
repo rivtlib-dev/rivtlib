@@ -67,14 +67,15 @@ class Cmd:
             sp.init_printing(use_unicode=True)
 
         self.fileS = parL[1].strip()
+        self.file2L = parL[1].split(",")
         self.parS = parL[2].strip()
+        self.insP = Path(fD["rivtP"], self.fileS)
+        self.inspS = str(self.insP.as_posix())
         self.uS = ""
         self.rS = ""
         self.tS = ""
         self.lS = ""
         self.lD = lD
-        self.insP = Path(fD["rivtP"], "src/", self.fileS)
-        self.inspS = str(self.insP.as_posix())
         self.rivL = rivL
         self.rivtD = rivtD
         self.wI = self.lD["widthI"]
@@ -99,7 +100,8 @@ class Cmd:
 
             a ==: .5 * 2*IN | unit1, unit2, decimal | ref
 
-            collects successive rows until hitting a blank
+            collects successive rows until hitting a blank;
+            table is written in rvparse module
 
         Returns:
             self.mD, tbL
@@ -179,8 +181,8 @@ class Cmd:
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "\n**Eq. " + self.enumS + " |**  " + refS + "\n"
-        eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
+        erS = "\n**Eq. " + self.enumS + ":**  " + refS + "\n"
+        eqrS = "\n|\n" + erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
         if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
@@ -188,6 +190,31 @@ class Cmd:
             exec(cmdS, globals(), self.rivtD)
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
+        tbl1L = []  # =================== result tables
+        alignL = ["center", "center", "center"]
+        tblfmt = "rst"
+        tblL = [tbl1L]
+        val1U = valU.cast_unit(eval(unit1S))
+        val2U = valU.cast_unit(eval(unit2S))
+        tbl1L.append("**" + spL[0] + " = " + str(val1U) + "**")
+        tbl1L.append("[" + spL[0] + "]" + " = " + str(val2U))
+        tbl1L.append("**" + refS.strip() + "**")
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tblL,
+                tablefmt=tblfmt,
+                showindex=False,
+                colalign=alignL,
+            )
+        )
+        uS = eqtS + "\n" + output.getvalue() + "\n"
+        tS = eqtS + "\n" + output.getvalue() + "\n"
+        rS = eqrS + "\n" + output.getvalue() + "\n"
+        sys.stdout = old_stdout
+        sys.stdout.flush()
         tbl2L = []  # ============ values table
         hdr2L = []
         alignL = []
@@ -213,31 +240,6 @@ class Cmd:
                 tbl2L,
                 tablefmt=tblfmt,
                 headers=hdr2L,
-                showindex=False,
-                colalign=alignL,
-            )
-        )
-        uS = eqtS + "\n" + output.getvalue() + "\n"
-        tS = eqtS + "\n" + output.getvalue() + "\n"
-        rS = eqrS + "\n" + output.getvalue() + "\n"
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-        tbl1L = []  # =================== result tables
-        alignL = ["center", "center", "center"]
-        tblfmt = "rst"
-        tblL = [tbl1L]
-        val1U = valU.cast_unit(eval(unit1S))
-        val2U = valU.cast_unit(eval(unit2S))
-        tbl1L.append("**" + spL[0] + " = " + str(val1U) + "**")
-        tbl1L.append("[" + spL[0] + "]" + " = " + str(val2U))
-        tbl1L.append(refS)
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate.tabulate(
-                tblL,
-                tablefmt=tblfmt,
                 showindex=False,
                 colalign=alignL,
             )
@@ -295,11 +297,11 @@ class Cmd:
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         # text
         eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
-        toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
-        eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
+        toptS = chr(9484) + " Eq-" + self.enumS + ": " + refS + "\n"
+        eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "\n**Eq. " + self.enumS + " |**  " + refS + "\n"
+        erS = "\n**Eq. " + self.enumS + ":**  " + refS + "\n"
         eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
         if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
@@ -498,63 +500,38 @@ class Cmd:
         capS = parL[0].strip()
         scS = parL[1].strip()
         figS = parL[2].strip()
-        if figS == "num":
-            numS = str(self.lD["figI"])
-            self.lD["figI"] = int(numS) + 1
-            lablS = "Fig. " + numS + " - "
-        if capS == "-":
-            capS = ""
-        lablS = lablS + capS + " "
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
         except Exception:
             pass
+        if capS == "--":
+            capS = ""
+        if figS == "num":
+            numS = str(self.lD["figI"])
+            self.lD["figI"] = int(numS) + 1
+            lablS = "Fig. " + numS + " - "
+        else:
+            lablS = ""
+        lablS = lablS + capS + " "
         uS = "\n" + lablS + " [file: " + self.fileS + " ] \n"
-        tS = "\n Image: " + lablS + "\n"
-        rS = (
-            "\n\n.. image:: "
-            + self.inspS
-            + "\n"
-            + "   :width: "
-            + scS
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n\n"
-            + ".. raw:: html \n\n"
-            + "   "
-            + '<p align="center">'
-            + lablS
-            + "\n"
-        )
-        lS = (
-            "\n\n.. image:: "
-            + self.inspS
-            + "\n"
-            + "   :width: "
-            + scS
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n\n"
-            + ".. raw:: html \n\n"
-            + "   "
-            + '<p align="center">'
-            + lablS
-            + "\n"
-        )
+        tS = "\n" + lablS + "\n"
+        rS = f"""
+.. figure:: {self.inspS}
+    :width: {scS}%
+    :align: center
 
+    {lablS}
+    
+"""
         self.mD = {
             "uS": uS,
             "rS": rS,
             "tS": tS,
-            "lS": lS,
             "lD": self.lD,
             "rivL": self.rivL,
             "rivtD": self.rivtD,
         }
-
         # endregion
 
     def IMAGE2(self):
@@ -564,32 +541,75 @@ class Cmd:
         """
         # region
         # print(f"{parS=}")
+
+        file1S = self.file2L[0].strip()
+        file2S = self.file2L[1].strip()
+        ins1P = Path(self.fD["rivtP"], file1S)
+        ins2P = Path(self.fD["rivtP"], file2S)
+        insp1S = str(ins1P.as_posix())
+        insp2S = str(ins2P.as_posix())
+
         parL = self.parS.split(",")
-        fileL = self.pthS.split(",")
-        file1P = Path(fileL[0])
-        file2P = Path(fileL[1])
         cap1S = parL[0].strip()
         cap2S = parL[1].strip()
         scale1S = parL[2].strip()
         scale2S = parL[3].strip()
-        figS = "Fig. "
-        if parL[2] == "_[F]":
-            numS = str(self.lD["fnum"])
-            self.lD["fnum"] = int(numS) + 1
-            figS = figS + numS + cap1S
+        fig1S = parL[4].strip()
+        fig2S = parL[5].strip()
 
-        self.uS = "<" + cap1S + " : " + str(file1P) + "> \n"
-        self.r2s = (
-            "\n.. image:: "
-            + self.pthS
-            + "\n"
-            + "   :scale: "
-            + scale1S
-            + "%"
-            + "\n"
-            + "   :align: center"
-            + "\n\n"
-        )
+        try:
+            img1 = Image.open(self.inspS)
+            _display(img1)
+        except Exception:
+            pass
+        if cap1S == "--":
+            cap1S = ""
+        if cap2S == "--":
+            cap2S = ""
+        if fig1S == "num":
+            num1S = str(self.lD["figI"])
+            self.lD["figI"] = int(num1S) + 1
+            labl1S = "Fig. " + num1S + " - "
+        else:
+            labl1S = ""
+        if fig2S == "num":
+            num2S = str(self.lD["figI"])
+            self.lD["figI"] = int(num2S) + 1
+            labl2S = "Fig. " + num2S + " - "
+        else:
+            labl2S = ""
+
+        labl1S = labl1S + cap1S + " "
+        labl2S = labl2S + cap2S + " "
+
+        uS = f"{labl1S} | {labl2S} files: {self.fileS}\n"
+        tS = f"{labl1S} | {labl2S}\n"
+
+        rS = f"""
+.. list-table::
+    :widths: {scale1S} {scale2S}
+    :header-rows: 0
+
+    * - .. figure:: {insp1S}
+            :width: 100%
+
+            {cap1S}
+     
+      - .. figure:: {insp2S}
+            :width: 100%
+            
+            {cap2S}
+                     
+"""
+
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivtD": self.rivtD,
+        }
         # endregion
 
     def TABLE(self):
@@ -699,22 +719,20 @@ class Cmd:
         | VALTABLE | relative path | title, rows, num;non
         """
         # region
+        fuS = self.fileS
         parL = self.parS.split(",")
         titleS = parL[0].strip()
-        fiS = " [file: " + self.fileS + "]" + "\n\n"
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
         fillS = str(tnumI)
-        if titleS[0:1] == "--":
-            titleS = fiS
-            utlS = "\n" + fiS
-            rtlS = "\n" + fiS
-            xtlS = "\n" + fiS
+        titleS = parL[0].strip() + " from file: " + fuS + "\n"
+        titlerS = parL[0].strip() + " from file: **" + fuS + "**\n\n"
+        if titleS[0:2] == "--":
+            utlS = xtlS = "from file: " + fuS + "\n"
+            rtlS = "from file: **" + fuS + "**\n\n"
         else:
-            titleS = titleS + fiS
-            utlS = "\nTable " + fillS + ": " + titleS
-            rtlS = "\n**Table " + fillS + "**: " + titleS
-            xtlS = "\n**Table " + fillS + "**: " + titleS
+            utlS = xtlS = "\nTable " + fillS + ": " + titleS
+            rtlS = "\n**Table " + fillS + "**: " + titlerS
         sliceS = parL[1].strip()
         with open(self.insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
@@ -766,7 +784,7 @@ class Cmd:
         # print("tbl", tbL)
         tblfmt = "rst"
         hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "right", "right", "left"]
+        alignL = ["left", "left", "left", "left"]
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -776,7 +794,8 @@ class Cmd:
                 tablefmt=tblfmt,
                 headers=hdrvL,
                 showindex=False,
-                colalign=alignL,
+                colglobalalign=alignL,
+                headersalign=alignL,
             )
         )
         outS = output.getvalue()
@@ -809,8 +828,7 @@ class Cmd:
         """
         # region
         # print(f"{readL=}")
-        titleS = self.parS.strip()
-        fiS = " [file: " + self.fileS + "]" + "\n\n"
+        fuS = self.fileS
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
         fillS = str(tnumI)
@@ -834,18 +852,14 @@ class Cmd:
                 funcL.append(s)
                 docflg = True
         tbL = zip(funcL, docstrL)
-
-        fuS = "    [file: " + self.fileS + " ]" + "\n"
-        frS = "   **[file:** " + self.fileS + " **]**" + "\n"
-
-        if titleS[0:1] == "--":
-            utlS = "\n" + fiS
-            rtlS = "\n" + fiS
-            xtlS = "\n" + fiS
+        titleS = self.parS.strip() + " from file: " + fuS + "\n"
+        titlerS = self.parS.strip() + " from file: **" + fuS + "**\n\n"
+        if titleS[0:2] == "--":
+            utlS = xtlS = "from file: " + fuS + "\n"
+            rtlS = "from file: **" + fuS + "**\n\n"
         else:
-            utlS = "\nTable " + fillS + ": " + titleS + fuS
-            rtlS = "\n**Table " + fillS + "**: " + titleS + frS
-            xtlS = "\n**Table " + fillS + "**: " + titleS + frS
+            utlS = xtlS = "\nTable " + fillS + ": " + titleS
+            rtlS = "\n**Table " + fillS + "**: " + titlerS
         tblfmt = "rst"
         hdrvL = ["Function", "Docstring"]
         alignL = ["left", "left"]

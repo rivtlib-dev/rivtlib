@@ -1,3 +1,33 @@
+    spaceBefore: 6
+    spaceAfter: 6
+    parent: normal
+    alignment: TA_CENTER
+    borderPadding: 5
+    leftPadding: 6
+    rightPadding: 6
+    topPadding: 5
+    bottomPadding: 5
+    background-color: white
+    alternate-row-background-color: lightgray
+    borderWidth: 0.5
+    borderColor: black
+    borderLeftWidth: 0
+    borderRightWidth: 0
+    borderRightColor: white
+    borderLeftColor: white
+    innerVerticalBorderWidth: 0        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         rS += "\n.. class:: align-right\n\n   " + chkrS + "\n"
         rS += (
             "\n"
