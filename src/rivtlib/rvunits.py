@@ -121,7 +121,7 @@ in3 = new_unit("in3", inch**3, "cubic inches")
 in4 = new_unit("in4", inch**4, "inches to fourth power")
 # pressure
 psf = new_unit("psf", lbf / ft**2, "pounds per square foot")
-lb_in2 = new_unit("lb_in2", lbf / inch**2, "pounds per square inch")
+psqin = lb_in2 = new_unit("lb_in2", lbf / inch**2, "pounds per square inch")
 ksf = new_unit("ksf", kips / ft**2, "kips per square foot")
 ksi = new_unit("ksi", kips / inch**2, "kips per square inch")
 # density

@@ -246,7 +246,7 @@ class Cmdp:
         headS = f"""
 .. header::
     .. list-table::
-        :class: foottable2
+        :class: header-box
         :align: left
         :widths: 90 10
         
@@ -258,7 +258,7 @@ class Cmdp:
         footS = f"""
 .. footer:: 
     .. list-table::
-        :class: foottable2
+        :class: footer-box
         :align: left
         :widths: 84 22 16
         
@@ -541,8 +541,8 @@ pageTemplates:
     showHeader: True
 styles:
   base:
-    allowWidows: 2
-    allowOrphans: 2 
+    allowWidows: 1
+    allowOrphans: 1 
     alignment: TA_LEFT
     allowOrphans: false
     allowWidows: false
@@ -592,13 +592,14 @@ styles:
     parent: bodytext
   code:
     spaceBefore: 6
-    spaceAfter: 12
-    backColor: "#e0ebeb"
+    spaceAfter: 6
+    backColor: "#d1dede"
     borderColor: darkgray
     borderPadding: 6
     borderWidth: 0.5
     leftIndent: 0
     parent: literal
+    fontName: fontMonoBold
   compgreen:
     textColor: green
     alignment: TA_RIGHT
@@ -668,9 +669,16 @@ styles:
     fontSize: 110%
     parent: heading
     fontName: fontSansBold
+    underlineColor: black
+    underlineWidth: 1
+    underlineOffset: 5
   heading2:
     fontSize: 105%
     parent: heading
+    fontName: fontSansBold
+    underlineColor: black
+    underlineWidth: 1
+    underlineOffset: 5
   heading3:
     fontSize: 100%
     parent: heading
@@ -779,11 +787,17 @@ styles:
         - - -1
           - -1
         - 0.25
-        - black
+        - black        
+  admonition:
+    borderWidth: 0
+    borderPadding: 0
   table-heading:
     alignment: TA_LEFT
-    tip:
-    parent: admonition
+    borderWidth: 0
+    borderPadding: 0
+    backColor: "#c5d1c5"
+    borderColor: darkgray
+    fontName: fontMonoBold
   tip-heading:
     parent: admonition-heading
   title:
@@ -850,6 +864,9 @@ styles:
     parent: admonition
   warning-heading:
     parent: admonition-heading
+classes:
+  table-no-split:
+    keep-with-next: true
 """
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(rivstyS)

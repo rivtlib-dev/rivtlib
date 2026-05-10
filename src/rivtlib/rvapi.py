@@ -89,6 +89,7 @@ logsP = Path(storeP, "logs")
 errlogT = Path(logsP, errlogN)
 bakT = Path(logsP, bakN)
 rivtT = Path(rivtP, rivtN)
+rivt_storedP = storeP
 # endregion
 
 # region - logs and comment variables
@@ -131,6 +132,7 @@ except Exception:
 # end region
 
 # region - dictionaries
+vdescD = {}
 rivtD = {}
 rvunitD = vars(rvunit)
 rivtD = rivtD | rvunitD
@@ -190,6 +192,7 @@ lD = {  # labels
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "none",  # topic background color
     "widthI": 80,  # print width
+    "cntflgI": 0,
 }
 # endregion
 
@@ -231,7 +234,7 @@ def doc_parse(rS, tyS, tagL, cmdL):
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     rsL = rS.split("\n")
-    conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL)
+    conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL, vdescD)
     sutfS, srstS, stxtS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
     dutfS += sutfS
     drstS += srstS
@@ -263,6 +266,7 @@ def I(rS):  # noqa: E743
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
+
     cmdL = [
         "IMAGE",  # insert image from file
         "IMAGE2",  # insert adjacent images from file
@@ -303,7 +307,8 @@ def V(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drstS, dtxtS, fD, lD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD, vdescD
+
     compL = [" < ", " > ", " != ", " == ", " <= ", " >= "]
     cmdL = [
         "IMAGE",  # image from file
@@ -317,6 +322,7 @@ def V(rS):
         compL,  # comparisons
     ]
     tagL = [
+        "M",  # math format
         "V",  # var value
         "E",  # equation label
         "T",  # table label

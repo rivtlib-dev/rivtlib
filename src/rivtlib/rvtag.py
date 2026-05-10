@@ -1,5 +1,9 @@
+import csv
 import textwrap
+from pathlib import Path
 
+import docutils.parsers.rst.tableparser
+import docutils.statemachine
 import sympy as sp
 import tabulate
 from fastcore.utils import store_attr
@@ -32,7 +36,8 @@ class Tag:
 
         """
         store_attr()
-        sp.init_printing()
+        sp.init_printing(use_unicode=True)
+        # sp.init_printing()
         self.strL = strL
         self.fD = fD
         self.lD = lD
@@ -113,7 +118,6 @@ class Tag:
             self.enumI += 1
             self.lD["equI"] = self.enumI
             self.enumS = str(self.enumI)
-
             spS = lineL[0].strip()
             spL = spS.split("=")
             spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
@@ -123,9 +127,10 @@ class Tag:
             toptS = chr(9484) + "  Eq-" + self.enumS + " | " + lineL[1] + "\n"
             eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
             # rest
+            spS = "\n|\n\n"
             eq1S = textwrap.indent(eq1S, "           ")
-            erS = "\n**[Eq." + self.enumS + "]**\n"
-            eqrS = erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
+            erS = "\n**Eq." + self.enumS + "**\n"
+            eqrS = spS + erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
             uS = tS = eqtS + "\n"
             rS = eqrS + "\n\n"
             lS = ""
@@ -241,38 +246,26 @@ class Tag:
             self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
             self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
 
-        elif cmdS == "bTOP":
-            """topics block"""
-
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            self.uS = "\nTable " + str(tnumI) + ": " + lineS
-            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
-            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
-
-        elif cmdS == "bBOX":
-            """topics block"""
-
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            self.uS = "\nTable " + str(tnumI) + ": " + lineS
-            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
-            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
-
         elif cmdS == "bTAB":
             """table block"""
             # region
             blkL = (self.strL).split("\n", 1)
             titleS = blkL[0].strip()
             tnumI = int(self.lD["tableI"])
+            fileS = "t" + self.lD["docnumS"][2:] + str(tnumI) + ".csv"
             self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
-            uS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
-            tS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
-            rS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
+            spS = "\n|\n\n"
+            uS = tS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
+            rS = f"""{spS}**Table {str(tnumI)}**: {titleS} \n\n{blkL[1]}"""
             lS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
+
+            hdatS, bdatS = self.parse_simple_rst_table(blkL[1])
+            rstL = hdatS + bdatS
+            pathP = Path(self.fD["storeP"], fileS)
+            with open(str(pathP), mode="w", newline="") as f1:
+                wfile = csv.writer(f1)
+                wfile.writerows(rstL)
 
         elif cmdS == "bMAR":
             """markup block"""
@@ -287,6 +280,37 @@ class Tag:
             tS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
             lS = ""
             # endregion
+
+        elif cmdS == "bPYT":
+            """Python block"""
+
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
+            fillS = str(tnumI)
+            self.uS = "\nTable " + str(tnumI) + ": " + lineS
+            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
+            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
+
+        elif cmdS == "bTOP":
+            """topics block"""
+
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
+            fillS = str(tnumI)
+            self.uS = "\nTable " + str(tnumI) + ": " + lineS
+            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
+            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
+
+        elif cmdS == "bBOX":
+            """box block"""
+
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
+            fillS = str(tnumI)
+            self.uS = "\nTable " + str(tnumI) + ": " + lineS
+            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
+            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
+
         else:
             pass
 
@@ -298,3 +322,27 @@ class Tag:
         }
 
         return mD, self.lD
+
+    def parse_simple_rst_table(self, table_text):
+        # Prepare the input for docutils
+        lines = docutils.statemachine.StringList(
+            table_text.strip().splitlines()
+        )
+
+        # Initialize the parser
+        parser = docutils.parsers.rst.tableparser.SimpleTableParser()
+
+        # Parse into a tuple: (column_widths, header_rows, body_rows)
+        # The header and body rows are lists of cells (each cell is a list of lines)
+        col_widths, headers, body = parser.parse(lines)
+
+        # helper to clean up cell content
+        clean = lambda cell: " ".join(line.strip() for line in cell[3]).strip()
+
+        # Process headers
+        header_data = [[clean(cell) for cell in row] for row in headers]
+
+        # Process body
+        body_data = [[clean(cell) for cell in row] for row in body]
+
+        return header_data, body_data

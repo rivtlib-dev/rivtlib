@@ -21,7 +21,7 @@ from . import rvcmd, rvtag
 class Rs:
     """convert rivt string to formatted text and reST strings"""
 
-    def __init__(self, tyS, rsL, fD, lD, rivtD, rivtL):
+    def __init__(self, tyS, rsL, fD, lD, rivtD, rivtL, vdescD):
         """setup logs, header and preprocess content substring
 
         Args:
@@ -53,9 +53,14 @@ class Rs:
         srstS = ""  # rest doc
         stxtS = ""  # text doc
         slatS = ""  # latex doc
-
-        # preprocess rivt string
+        self.vardescD = vdescD
         # ----------------------------------------------   section header
+        if lD["cntflgI"] == 0:
+            transS = "\n"
+            lD["cntflgI"] += 1
+        else:
+            transS = "\n\n------------\n\n"
+            lD["cntflgI"] += 1
         hL = rsL[0].split("|")
         lD["docS"] = hL[0].strip()  # section title
         if hL[0].strip()[0:2] == "--":
@@ -67,8 +72,8 @@ class Rs:
             snumI = lD["secnumI"] + 1
             lD["secnumI"] = snumI
             snumS = "[ " + str(snumI) + tyS.lower() + " ]"
-            snum1S = "**" + str(snumI) + tyS.lower() + ".** "
             headS = snumS + " " + hL[0].strip()
+            snum1S = transS + "**" + str(snumI) + tyS.lower() + ".**"
             head1S = snum1S + " **" + hL[0].strip() + "**"
             bordrS = lD["widthI"] * "-" + "\n"
             sutfS = "\n" + headS + "\n" + bordrS
@@ -142,6 +147,7 @@ class Rs:
         # region
         # print(f"{cmdL=}")
         # print(f"{tagL=}")
+        vardescD = self.vardescD
         rivL = []
         tabL = []
         mD = {}
@@ -208,15 +214,19 @@ class Rs:
             if " ==: " in slS:  # define ------------------- operators
                 if " ==: " in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
-                    tbL, rivtD, rivL = tC.vdefine(lineS)
+                    tC = rvcmd.Cmd(
+                        self.tyS, fD, lD, rivtD, rivL, lineS, vardescD
+                    )
+                    tbL, rivtD, rivL, vardescD = tC.vdefine(lineS)
                     tabL.append(tbL)
                     continue
             elif " <=: " in slS:  # assign
                 if " <=: " in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
-                    mD = tC.vassign(lineS)
+                    tC = rvcmd.Cmd(
+                        self.tyS, fD, lD, rivtD, rivL, lineS, vardescD
+                    )
+                    mD, vardescD = tC.vassign(lineS)
                     lD, rivL, rivtD = (mD["lD"], mD["rivL"], mD["rivtD"])
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
@@ -226,8 +236,10 @@ class Rs:
             elif " :=: " in slS:  # function
                 if " :=: " in cmdL:
                     lineS = slS.strip()
-                    tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
-                    mD = tC.vfunc(lineS)
+                    tC = rvcmd.Cmd(
+                        self.tyS, fD, lD, rivtD, rivL, lineS, vardescD
+                    )
+                    mD, vardescD = tC.vfunc(lineS)
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
                     stxtS += mD["tS"] + "\n"
@@ -237,7 +249,9 @@ class Rs:
                 for opS in cmdL[8]:
                     if opS in slS:
                         lineS = slS.strip()
-                        tC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, lineS)
+                        tC = rvcmd.Cmd(
+                            self.tyS, fD, lD, rivtD, rivL, lineS, vardescD
+                        )
                         mD = tC.vcompare(lineS, opS)
                         sutfS += mD["uS"] + "\n"
                         srstS += mD["rS"] + "\n"
@@ -282,7 +296,9 @@ class Rs:
                 self.logging.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # verify scope
-                    cmC = rvcmd.Cmd(self.tyS, fD, lD, rivtD, rivL, parL)
+                    cmC = rvcmd.Cmd(
+                        self.tyS, fD, lD, rivtD, rivL, parL, vardescD
+                    )
                     mD = cmC.cmdx(cmdS)
                     lD, rivL, rivtD = (mD["lD"], mD["rivL"], mD["rivtD"])
                     sutfS += mD["uS"] + "\n"
@@ -327,4 +343,4 @@ class Rs:
         sys.stdout = old_stdout
         sys.stdout.flush()
 
-        return outS
+        return outS + "\n"
