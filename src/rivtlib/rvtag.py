@@ -51,10 +51,9 @@ class Tag:
         ------- --------------------------------- -----------------------------------
          I          **text text**                   bold words
          I           *text text*                    italic words
-         I,V      text  _[C]                        center text (all)
+         I,V      text  _[C]                        bold center text (all)
          I,V      text  _[R]                        right justify text (all)
          I,V      text  _[B]                        bold text (all)
-         I,V      text  _[I]                        italic line (all)
          I,V      math  _[M]                        format ASCII math (all)
          I,V      math  _[X]                        format LaTeX math (all)
          I,V      label _[F]                        figure number and label (all)
@@ -89,14 +88,14 @@ class Tag:
             """center text"""
 
             uS = tS = lineS.center(wI) + "\n"
-            rS = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
-            lS = "\n.. class:: align-center\n\n   " + lineS + "\n\n"
+            rS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n\n"
+            lS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n\n"
 
         elif cmdS == "lR":
             """right justify text"""
 
             uS = tS = lineS.rjust(wI) + "\n"
-            rS += "\n.. class:: align-right\n\n   " + lineS + "\n"
+            rS += "\n.. rst-class:: align-right\n\n   " + lineS + "\n"
             lS = ""
 
         if cmdS == "lB":

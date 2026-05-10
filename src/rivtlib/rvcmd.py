@@ -154,13 +154,11 @@ class Cmd:
         Returns:
             uS, rS, tS, fD, lD, rivtD, rivL
         """
-
         # region
         self.enumI = int(self.lD["equI"])
         self.enumI += 1
         self.lD["equI"] = self.enumI
         self.enumS = str(self.enumI)
-
         lpL = aeqS.split("|")
         eqS = lpL[0]
         eqS = eqS.replace(" <=: ", " = ").strip()
@@ -174,14 +172,13 @@ class Cmd:
         spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
         eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
         self.vardescD[spL[0].strip()] = refS
-        print("rrrrryyy", spL[0].strip(), self.vardescD)
         # text
         eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
         toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
         eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
-        erS = "|\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
+        erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
         if unit1S != "-":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
@@ -189,18 +186,9 @@ class Cmd:
             exec(cmdS, globals(), self.rivtD)
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
-        print("spL", spL)
         val1U = valU.cast_unit(eval(unit1S))
         val2U = valU.cast_unit(eval(unit2S))
         eq2S = sp.pretty(sp.sympify(spL[0], _clash2, evaluate=False))  # results
-        eqrS = (
-            "\n|\n"
-            + erS
-            + "\n.. code-block:: text \n\n"
-            + eq1S
-            + "\n\n           "
-            + f"{eq2S} = {val1U}     [{eq2S}] = {val2U}    |   {refS.strip()}"
-        )
         tbl1L = []  # ============ values table
         tbl2L = []
         hdr2L = []
@@ -215,7 +203,6 @@ class Cmd:
             a1U = eval(str(aO), globals(), self.rivtD)
             tbl2L.append(str(a1U))
         for aO in symaO:
-            print("*****", str(aO), self.vardescD)
             tbl1L.append(self.vardescD[str(aO)])
         alignL = []
         tbl2L = [tbl2L]
@@ -236,11 +223,23 @@ class Cmd:
                 colalign=alignL,
             )
         )
+        outputL = output.getvalue().split("\n")[1:]
+        outputS = "\n".join(outputL).replace("=", chr(8212))
+        eqrS = (
+            "\n|\n"
+            + erS
+            + "\n.. code-block:: text \n\n"
+            + eq1S
+            + "\n\n           "
+            + f"{eq2S} = {val1U}     [{eq2S}] = {val2U}   | {refS.strip()}\n\n"
+            + textwrap.indent(outputS, "           ")
+        )
         uS = tS = "\n" + eqtS + output.getvalue()
-        rS = "\n" + eqrS + "\n\n" + output.getvalue()
+        rS = "\n" + eqrS + "\n\n"
         lS = ""
         sys.stdout = old_stdout
         sys.stdout.flush()
+
         # rivL append - for export
         ex2S = spL[0].strip() + " = " + str(val1U)
         exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
@@ -361,7 +360,7 @@ class Cmd:
         )
         uS += "\n" + output.getvalue() + "\n"
         tS += "\n" + output.getvalue() + "\n"
-        rS += "\n.. class:: table-no-split\n" + "\n" + output.getvalue() + "\n"
+        rS += "\n" + output.getvalue() + "\n"
         lS = " "
         sys.stdout = old_stdout
         sys.stdout.flush()

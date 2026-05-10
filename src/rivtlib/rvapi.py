@@ -328,7 +328,7 @@ def V(rS):
         "T",  # table label
         "F",  # figure label
         "B",  # bold text
-        "I",  # italic text
+        "C",  # center text
     ]
     tagbL = [
         "PYTHON",  # execute Python script

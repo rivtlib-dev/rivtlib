@@ -864,9 +864,7 @@ styles:
     parent: admonition
   warning-heading:
     parent: admonition-heading
-classes:
-  table-no-split:
-    keep-with-next: true
+
 """
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(rivstyS)
