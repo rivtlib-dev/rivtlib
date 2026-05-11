@@ -68,8 +68,8 @@
         # versionS = "v-0"
         # rvfileS = self.fD["rbaseS"] + ".rst2"
         # rvdocS = self.fD["rbaseS"] + ".pdf"
-        # rvfileT = str(Path(self.fD["rivtpubP"], rvfileS))
-        # rvdocT = str(Path(self.fD["rivtpubP"], rvdocS))
+        # rvfileT = str(Path(self.fD["reptPubP"], rvfileS))
+        # rvdocT = str(Path(self.fD["reptPubP"], rvdocS))
         # timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         # doctitleS = "**" + self.docnameS + "**"
         # versionS = "v-" + self.versionS.strip()
@@ -231,7 +231,7 @@
         #     elif sys.platform == "darwin":
         #         pythoncallS = "python3 "
 
-        #     rst2xeP = Path(rivtpath / "scripts" / "rst2xetex.py")
+        #     rst2xeP = Path(reptPath / "scripts" / "rst2xetex.py")
         #     texfileP = pdfD["ttex1"]
         #     tex1S = "".join(
         #         [
@@ -317,7 +317,7 @@
         #     elif sys.platform == "darwin":
         #         pythoncallS = "python3 "
 
-        #     rst2texP = Path(rivtP, "scripts", "rst2latex.py")
+        #     rst2texP = Path(reptP, "scripts", "rst2latex.py")
         #     # print(f"{str(rst2texP)=}")
         #     texfileP = Path(tempP, docbaseS + ".tex")
         #     rstfileP = Path(tempP, docbaseS + ".rst")

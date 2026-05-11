@@ -2,50 +2,48 @@ rivtlib
 ========
 
 **rivtlib is alpha software. Some features are not complete and the program has
-a number of bugs.**
+bugs.**
 
-rivt is an open source software project that simplifies sharing and reuse of
-engineering documents. This has always been a challenge because engineering
-documents typically include text, images, tables, calculations, models
-and computer code, which adds to complexity when assembling documents and 
-reports.
+*rivt* is an extensible, open source tool for writing and sharing engineering
+documents. This has always been a challenge because engineering documents are
+complex. They may include text, images, tables, calculations, models and
+computer code. 
 
-The primary use case for rivt is producing engineering documents that lie
-somewhere between back of envelope notes and calculations, and formal journal
-publications. In other words, it produces formatted, organized documents that
-are easy to edit.
+A *rivt file* is a Python file (.py) that imports the *rivtlib* Python package
+and includes *rivt markup*. *Markup* publishes the file as a 
+**text, PDF or HTML doc** that can be assembled and 
+linked, with other *docs*, into a *rivt report*.
 
-The second use case is when flexibilty is needed to produce documents in a
-variety of formats including text, PDF or HTML. A *rivt file* publishes a
-*rivt doc* as a text, PDF or HTML file. A *rivt file* is a Python file
-(.py) that imports the *rivtlib* Python package and includes rivt markup. A
-collection of *rivt docs* may be linked and collated as a *rivt report*. The
-*rivt user manual* is `here <https://rivt.info>`__.
+The primary use case for *rivt* is producing clear, acurate engineering
+documents that are: 
+
+#. Easier to write and format than LaTeX, Excel, Word or other general purpose word processors.
+
+#. Do not need to be formatted to the precise standards of a formal journal publication.
+
+A second use case is when documents may need to be produced in a variety of
+formats from the same input file. For futher details please refer to the 
+`rivt user manual <https://rivt.info>`__.
 
 Use Cases
 -----------
 
-*rivt files* can function as a front and back end for:
-
-#. software control
-#. visualization
-#. instrumentation
-
-*rivt docs* can be used for:
+In addition to publishing engineering documents for:
 
 #. internal communication
 #. research documentation
 #. government permits
 #. technical reports
 #. funding applications
-
-*rivt* is compatible with collaborative tools and may be used for:
-
 #. teaching
 #. presentations
-#. real time collaboration
 
-The table below summarizes and compares limitations between different software
+*rivt* can: 
+
+#. function as a front and back end for external software 
+#. be used for real time collaboration
+
+The table below compares limitations between different software
 programs. *rivt* is designed to address these limitations and serve as a
 complement or replacement to existing software.
 

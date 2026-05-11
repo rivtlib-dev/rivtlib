@@ -54,16 +54,16 @@ import rivtlib.rvunits as rvunit
 from rivtlib import rvdoc, rvparse
 
 # region - top level rivt files
-rivtP = Path(os.getcwd())
-reptP = Path(os.path.dirname(rivtP))
+reptP = Path(os.getcwd())
+rivtP = Path(os.path.dirname(reptP))
 try:
     rivtN = os.path.basename(__main__.__file__)
 except Exception:
     rivtN = os.path.basename(__main__.__name__)
-rivtT = Path(rivtP, rivtN)
+rivtT = Path(reptP, rivtN)
 print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
-rivtpkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
+reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 
 if fnmatch.fnmatch(rivtN, "rv[A-Z0-9][0-9][0-9]-*.py"):
     pass
@@ -75,20 +75,20 @@ else:
     sys.exit()
 
 rbaseS = rivtN.split(".")[0]
-rivtpN = rivtN.replace("rv", "rv-")
+reptPN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
 bakN = rbaseS + ".bak"
 errlogN = docnumS + "log.txt"
-rootP = rivtP.parent
+rootP = reptP.parent
 publicP = Path(rootP, "_rivt-public")
-storeP = Path(rivtP, "_stored")
-pubP = Path(rivtP, "_published")
-rstdocsP = Path(rivtP, "_rstdocs")
-srcP = Path(rivtP, "src")
+storeP = Path(reptP, "_stored")
+pubP = Path(reptP, "_published")
+rstdocsP = Path(reptP, "_rstdocs")
+srcP = Path(reptP, "src")
 logsP = Path(storeP, "logs")
 errlogT = Path(logsP, errlogN)
 bakT = Path(logsP, bakN)
-rivtT = Path(rivtP, rivtN)
+rivtT = Path(reptP, rivtN)
 rivt_storedP = storeP
 # endregion
 
@@ -136,17 +136,17 @@ fD = {  # folders
     "srcnS": " ",
     "rivtN": rivtN,  # file name
     "rivtT": rivtT,  # full path name
-    "rivtP": Path(os.getcwd()),
+    "reptP": Path(os.getcwd()),
     "rbaseS": rbaseS,  # file base name
-    "reptfDN": os.path.dirname(rivtP),
-    "docP": Path(rivtP, "rivtDocs"),
+    "reptfDN": os.path.dirname(reptP),
+    "docP": Path(reptP, "rivtDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
     "rstdocsP": rstdocsP,
-    "rivtpubP": pubP,
+    "reptPubP": pubP,
     "pdfpubP": Path(pubP, "pdfdocs"),
     "htmlpubP": Path(pubP, "docs"),
-    "publicT": Path(rivtP, "public", rivtpN),
+    "publicT": Path(reptP, "public", reptPN),
     "srcP": srcP,
     "storeP": storeP,
     "valP": Path(srcP, "values"),
@@ -161,7 +161,7 @@ lD = {  # labels
     "divS": rbaseS[2:3],  # div number
     "sdivS": rbaseS[3:5],  # subdiv
     "docnameS": rbaseS[6:].replace("-", " "),  # document name
-    "replablS": reptP.name[5:],
+    "replablS": rivtP.name[5:],
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "sectS": "",  # section title
     "secnumI": 0,  # section number

@@ -69,7 +69,7 @@ class Cmd:
         self.fileS = parL[1].strip()
         self.file2L = parL[1].split(",")
         self.parS = parL[2].strip()
-        self.insP = Path(fD["rivtP"], self.fileS)
+        self.insP = Path(fD["reptP"], self.fileS)
         self.inspS = str(self.insP.as_posix())
         self.uS = ""
         self.rS = ""
@@ -542,8 +542,8 @@ class Cmd:
 
         file1S = self.file2L[0].strip()
         file2S = self.file2L[1].strip()
-        ins1P = Path(self.fD["rivtP"], file1S)
-        ins2P = Path(self.fD["rivtP"], file2S)
+        ins1P = Path(self.fD["reptP"], file1S)
+        ins2P = Path(self.fD["reptP"], file2S)
         insp1S = str(ins1P.as_posix())
         insp2S = str(ins2P.as_posix())
 
@@ -821,7 +821,7 @@ class Cmd:
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
         fillS = str(tnumI)
-        fileP = Path(self.fD["rivtP"], self.fileS)
+        fileP = Path(self.fD["reptP"], self.fileS)
         with open(fileP, "r") as f10:
             pyscriptS = f10.read()
         exec(pyscriptS, globals(), self.rivtD)
@@ -954,7 +954,7 @@ class Cmd:
         self.rs = fileS
         # endregion
 
-    def wrap_pad(self, sentences, width=25):
+    def wrap_pad(self, sentences, width=30):
         # Step 1: Wrap all sentences into lists of lines
         wrapped_data = [textwrap.wrap(s, width=width) for s in sentences]
 

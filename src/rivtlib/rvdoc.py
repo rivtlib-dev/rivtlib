@@ -35,7 +35,7 @@ class Cmdp:
         self.pthS = ""
         self.parS = ""
         self.sL = sS.split("\n")
-        self.rivtP = fD["rivtP"]
+        self.reptP = fD["reptP"]
         errlogT = fD["errlogT"]
         self.confg = []
 
@@ -149,7 +149,7 @@ class Cmdp:
         self.confpy()  # update conf.py
         self.coverS()  # update cover page
         self.rivtstyS()  # update yaml file
-        baseP = self.fD["rivtP"]
+        baseP = self.fD["reptP"]
         srcS = f"{baseP}/src/{self.coverlogo}"
         destS = f"{baseP}/_rstdocs/_static/img/{self.coverlogo}"
         shutil.copy(srcS, destS)
@@ -157,7 +157,7 @@ class Cmdp:
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvdocS = self.fD["rbaseS"] + ".html"
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        rvdocT = str(Path(self.fD["rivtpubP"], "docs", rvdocS))
+        rvdocT = str(Path(self.fD["reptPubP"], "docs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d")
 
         rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
@@ -229,7 +229,7 @@ class Cmdp:
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvdocS = self.fD["rbaseS"] + ".pdf"
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        rvdocT = str(Path(self.fD["rivtpubP"], "pdfdocs", rvdocS))
+        rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d")
 
         headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| Sect: **###Section###**"""
@@ -299,7 +299,7 @@ class Cmdp:
         """
         self.confpy()  # update conf.py
         rvdocS = self.fD["rbaseS"] + ".txt"
-        rvdocT = str(Path(self.fD["rivtpubP"], "txtdocs", rvdocS))
+        rvdocT = str(Path(self.fD["reptPubP"], "txtdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.docnameS
         versionS = "v-" + self.verS.strip()
