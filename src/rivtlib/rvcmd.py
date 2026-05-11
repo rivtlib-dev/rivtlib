@@ -1,6 +1,5 @@
 # python #!
 import csv
-import re
 import sys
 import textwrap
 from io import StringIO
@@ -192,25 +191,25 @@ class Cmd:
         tbl1L = []  # ============ values table
         tbl2L = []
         hdr2L = []
-        alignL = []
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
         symaO = symeqO.atoms(sp.Symbol)
-        numvarI = len(symaO)
         for vS in symaO:
             vS = sp.pretty(sp.sympify(vS, _clash2, evaluate=False))
             hdr2L.append(str(vS))
         for aO in symaO:
             a1U = eval(str(aO), globals(), self.rivtD)
             tbl2L.append(str(a1U))
+        dL = []
         for aO in symaO:
-            tbl1L.append(self.vardescD[str(aO)])
-        alignL = []
+            dL.append(self.vardescD[str(aO)])
+        tblL = self.wrap_pad(dL)
+        tbl1L = list(zip(*tblL))
+        lnS = chr(8212) * 5
+        lnL = (lnS,) * len(tbl1L[0])
+        tbl1L.insert(0, lnL)
         tbl2L = [tbl2L]
-        tbl1L = [tbl1L]
         tbl3L = tbl2L + tbl1L
         tblfmt = "rst"
-        for nI in range(numvarI):
-            alignL.append("left")
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -220,7 +219,121 @@ class Cmd:
                 tablefmt=tblfmt,
                 headers=hdr2L,
                 showindex=False,
-                colalign=alignL,
+                colglobalalign="left",
+            )
+        )
+        outputL = output.getvalue().split("\n")[1:]
+        outputS = "\n".join(outputL).replace("=", chr(8212))
+        eqrS = (
+            "\n|\n"
+            + erS
+            + "\n.. code-block:: text \n\n"
+            + eq1S
+            + "\n\n           "
+            + f"{eq2S} = {val1U}     [{eq2S}] = {val2U}   | {refS.strip()}\n\n"
+            + textwrap.indent(outputS, "           ")
+        )
+        uS = tS = "\n" + eqtS + output.getvalue()
+        rS = "\n" + eqrS + "\n\n"
+        lS = ""
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+        # rivL append - for export
+        ex2S = spL[0].strip() + " = " + str(val1U)
+        exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
+        self.rivL.append(exvS)
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivtD": self.rivtD,
+            "rivL": self.rivL,
+        }
+        return self.mD, self.vardescD
+        # endregion
+
+    def vfunc(self, feqS):
+        """format function and assign value
+
+            equation tag  <=:
+            a :=: b + 2 | unit1, unit2, decimal | ref
+
+        Returns:
+            uS, r2S, rS, fD, lD, rivtD, rivL
+        """
+        # region
+        self.enumI = int(self.lD["equI"])
+        self.enumI += 1
+        self.lD["equI"] = self.enumI
+        self.enumS = str(self.enumI)
+        lpL = feqS.split("|")
+        eqS = lpL[0]
+        eqS = eqS.replace(" :=: ", " = ").strip()
+        unit1S, unit2S, dec1S = lpL[1].split(",")
+        unit1S, unit2S, dec1S = unit1S.strip(), unit2S.strip(), dec1S.strip()
+        refS = lpL[2].strip()
+        decS = "%." + dec1S + "f"
+        Unum.set_format(value_format=decS, auto_norm=True, unitless="")
+        # print(dir(Unum.set_format))
+        spL = eqS.split("=")  # ============== symbolic equation
+        spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+        eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
+        self.vardescD[spL[0].strip()] = refS
+        # text
+        eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
+        toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
+        eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
+        # rest
+        eq1S = textwrap.indent(eq1S, "           ")
+        erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
+        # rst
+        self.vardescD[spL[0].strip()] = refS
+        if unit1S != "-":  # =================== rivtD
+            exec(eqS, globals(), self.rivtD)
+        else:
+            cmdS = spL[0] + " = " + spL[1]
+            exec(cmdS, globals(), self.rivtD)
+        valU = eval(spL[0], globals(), self.rivtD)
+        self.rivtD[spL[0]] = valU
+        val1U = valU.cast_unit(eval(unit1S))
+        val2U = valU.cast_unit(eval(unit2S))
+        eq2S = sp.pretty(sp.sympify(spL[0], _clash2, evaluate=False))  # results
+        tbl1L = []  # ============ values table
+        tbl2L = []
+        hdr2L = []
+        symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
+        symaO = symeqO.atoms(sp.Symbol)
+        numvarI = len(symaO)
+        for vS in symaO:
+            vS = sp.pretty(sp.sympify(vS, _clash2, evaluate=False))
+            hdr2L.append(str(vS))
+        for aO in symaO:
+            a1U = eval(str(aO), globals(), self.rivtD)
+            tbl2L.append(str(a1U))
+        dL = []
+        for aO in symaO:
+            dL.append(self.vardescD[str(aO)])
+        tblL = self.wrap_pad(dL)
+        tbl1L = list(zip(*tblL))
+        lnS = chr(8212) * 5
+        lnL = (lnS,) * len(tbl1L[0])
+        tbl1L.insert(0, lnL)
+        tbl2L = [tbl2L]
+        tbl3L = tbl2L + tbl1L
+        tblfmt = "rst"
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tbl3L,
+                tablefmt=tblfmt,
+                headers=hdr2L,
+                showindex=False,
+                colglobalalign="left",
             )
         )
         outputL = output.getvalue().split("\n")[1:]
@@ -256,130 +369,6 @@ class Cmd:
         }
         return self.mD, self.vardescD
         # endregion
-
-    def vfunc(self, feqS):
-        """format function and assign value
-
-            equation tag  <=:
-            a :=: b + 2 | unit1, unit2, decimal | ref
-
-        Returns:
-            uS, r2S, rS, fD, lD, rivtD, rivL
-        """
-        # region
-        self.enumI = int(self.lD["equI"])
-        self.enumI += 1
-        self.lD["equI"] = self.enumI
-        self.enumS = str(self.enumI)
-
-        lpL = feqS.split("|")
-        eqS = lpL[0]
-        eqS = eqS.replace(" :=: ", " = ").strip()
-        unit1S, unit2S, dec1S = lpL[1].split(",")
-        unit1S, unit2S, dec1S = unit1S.strip(), unit2S.strip(), dec1S.strip()
-        refS = lpL[2].strip()
-        decS = "%." + dec1S + "f"
-        Unum.set_format(value_format=decS, auto_norm=True, unitless="")
-        # print(dir(Unum.set_format))
-        # wI = self.lD["widthI"]
-        spL = eqS.split("=")  # ============== symbolic equation
-        spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-        eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-        # text
-        eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
-        toptS = chr(9484) + " Eq-" + self.enumS + ": " + refS + "\n"
-        eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n\n"
-        # rst
-        self.vardescD[spL[0].strip()] = refS
-        if unit1S != "-":  # =================== rivtD
-            exec(eqS, globals(), self.rivtD)
-        else:
-            cmdS = spL[0] + " = " + spL[1]
-            exec(cmdS, globals(), self.rivtD)
-        valU = eval(spL[0], globals(), self.rivtD)
-        self.rivtD[spL[0]] = valU
-        tbl2L = []  # ============ argument table
-        hdr2L = []
-        alignL = []
-        funcS = spL[1].strip()
-        matchO = re.search(r"\(.*\)", funcS)
-        matchS = matchO.group()
-        syO = sp.sympify(matchS)
-        symeqO = sp.sympify(syO, _clash2, evaluate=False)
-        symaO = symeqO.atoms(sp.Symbol)
-        numvarI = len(symaO)
-        for vS in symaO:
-            hdr2L.append(str(vS))
-        for aO in symaO:
-            a1U = eval(str(aO), globals(), self.rivtD)
-            tbl2L.append(str(a1U))
-        tbl2L = [tbl2L]
-        tblfmt = "rst"
-        for nI in range(numvarI):
-            alignL.append("center")
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate.tabulate(
-                tbl2L,
-                tablefmt=tblfmt,
-                headers=hdr2L,
-                showindex=False,
-                colglobalalign="left",
-            )
-        )
-        eq3S = output.getvalue()
-        uS = tS = eqtS + "\n" + output.getvalue() + "\n"
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-        # rest
-        tblfmt = "rst"  # =================== result
-        val1U = valU.cast_unit(eval(unit1S))
-        val2U = valU.cast_unit(eval(unit2S))
-        eq2S = f"{spL[0]} = {str(val1U)}     [{spL[0]}] = {str(val2U)}   | {refS.strip()}\n\n"
-        uS += "\n" + output.getvalue() + "\n"
-        tS += "\n" + output.getvalue() + "\n"
-        lS = " "
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-        outputL = output.getvalue().split("\n")[1:]
-        outputS = "\n".join(outputL).replace("=", chr(8212))
-        eq3S = textwrap.indent(outputS, "  ")
-        erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
-        eqrS = (
-            "\n|\n"
-            + erS
-            + "\n.. code-block:: text \n\n  "
-            + eq1S
-            + "\n\n  "
-            + eq2S
-            + eq3S
-        )
-        uS = tS = "\n" + eqtS + output.getvalue()
-        rS = "\n" + eqrS + "\n\n"
-        lS = ""
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-        # rivL append
-        ex2S = spL[0].strip() + " = " + str(val1U)
-        exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
-        self.rivL.append(exvS)
-
-        self.mD = {
-            "uS": uS,
-            "rS": rS,
-            "tS": tS,
-            "lS": lS,
-            "lD": self.lD,
-            "fD": self.fD,
-            "rivtD": self.rivtD,
-            "rivL": self.rivL,
-        }
-
-        return self.mD, self.vardescD
-
-    # endregion
 
     def vcompare(self, compS, opS):
         """compare values
@@ -450,37 +439,35 @@ class Cmd:
                 colglobalalign="left",
             )
         )
-        uS = tS = eqtS + "\n" + output.getvalue() + "\n"
+        equS = ""
+        equL = output.getvalue().split("\n")
+        for ln in equL:
+            ln = chr(9646) + " " + ln
+            equS += ln + "\n"
+        uS = tS = eqtS + "\n" + equS + "\n"
         lS = ""
-        sys.stdout = old_stdout
-        sys.stdout.flush()
         eq3S = output.getvalue()
-        uS = tS = eqtS + "\n" + output.getvalue() + "\n"
         sys.stdout = old_stdout
         sys.stdout.flush()
         # rest  == symbolic and table
         erS = "|\n\n**Eq." + self.enumS + ":** " + refS + "\n"
-        uS += "\n" + output.getvalue() + "\n"
-        tS += "\n" + output.getvalue() + "\n"
-        lS = " "
-        sys.stdout = old_stdout
-        sys.stdout.flush()
         outputL = output.getvalue().split("\n")[1:]
         outputS = "\n".join(outputL).replace("=", chr(8212))
         erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
-        eq3L = outputS.split("\n")
         eq3S = ""
+        eq3L = outputS.split("\n")
         for ln in eq3L:
-            ln = "  " + ln + chr(9646).rjust(92 - len(ln))
+            ln = "  " + chr(9646) + " " + ln
             eq3S += ln + "\n"
         rS = (
             "\n|\n"
             + erS
             + "\n.. code-block:: text \n\n  "
+            + chr(9646)
+            + " "
             + eq1S.strip()
-            + chr(9646).rjust(92 - len(eq1S))
             + "\n  "
-            + chr(9646).rjust(92)
+            + chr(9646)
             + "\n"
             + eq3S
         )
@@ -521,11 +508,12 @@ class Cmd:
             numS = str(self.lD["figI"])
             self.lD["figI"] = int(numS) + 1
             lablS = "**Fig. " + numS + "** - "
+            lablxS = "Fig. " + numS + " - "
         else:
             lablS = ""
         lablS = lablS + capS + " "
-        uS = "\n" + lablS + " [file: " + self.fileS + " ] \n"
-        tS = "\n" + lablS + "\n"
+        bordS = " " * 10 + "-" * 40 + "\n"
+        uS = tS = bordS + lablxS + " [file: " + self.fileS + " ] \n" + bordS
         rS = f"""
 .. figure:: {self.inspS}
     :width: {scS}%
@@ -579,21 +567,21 @@ class Cmd:
         if fig1S == "num":
             num1S = str(self.lD["figI"])
             self.lD["figI"] = int(num1S) + 1
-            labl1S = "**Fig. " + num1S + " -** "
+            labl1S = "**Fig. " + num1S + " -** " + cap1S + " "
+            labl1xS = "Fig. " + num1S + " - " + cap1S + " "
         else:
             labl1S = ""
         if fig2S == "num":
             num2S = str(self.lD["figI"])
             self.lD["figI"] = int(num2S) + 1
-            labl2S = "**Fig. " + num2S + " -** "
+            labl2S = "**Fig. " + num2S + " -** " + cap2S + " "
+            labl2xS = "Fig. " + num2S + " - " + cap2S + " "
         else:
             labl2S = ""
 
-        labl1S = labl1S + cap1S + " "
-        labl2S = labl2S + cap2S + " "
-
-        uS = f"{labl1S} | {labl2S} files: {self.fileS}\n"
-        tS = f"{labl1S} | {labl2S}\n"
+        bordS = " " * 10 + "-" * 40 + "\n"
+        uS = bordS + f"{labl1xS} | {labl2xS}  \nfiles: {self.fileS}\n" + bordS
+        tS = bordS + f"{labl1xS} | {labl2xS}  \nfiles: {self.fileS}\n" + bordS
 
         rS = f"""
 .. list-table::
@@ -661,17 +649,9 @@ class Cmd:
         rtlS = xtlS = titleS + fiS
         extS = self.insP.suffix  # file extension
         maxwI = int(parL[0].strip())  # max col. width
-        alnS = parL[1].strip()  # col. alignment
         rowL = eval(parL[3].strip())  # rows
         if len(rowL) == 0:
             pass
-        alignD = {
-            "s": "",
-            "d": "decimal",
-            "c": "center",
-            "r": "right",
-            "l": "left",
-        }
         readL = []
         if extS == "csv":  # read csv file
             with open(self.inspS, "r") as csvfile:
@@ -690,7 +670,6 @@ class Cmd:
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
-        alignS = alignD[alnS]
         output.write(
             tabulate.tabulate(
                 readL,
@@ -698,7 +677,7 @@ class Cmd:
                 headers="firstrow",
                 numalign="decimal",
                 maxcolwidths=maxwI,
-                stralign=alignS,
+                colglobalalign="left",
             )
         )
         uS = rS = output.getvalue()
@@ -796,7 +775,6 @@ class Cmd:
             self.vardescD[symS] = ln[4].strip()
         tblfmt = "rst"
         hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "left", "left", "left"]
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -806,8 +784,7 @@ class Cmd:
                 tablefmt=tblfmt,
                 headers=hdrvL,
                 showindex=False,
-                colglobalalign=alignL,
-                headersalign=alignL,
+                colglobalalign="left",
             )
         )
         outS = output.getvalue()
@@ -864,7 +841,7 @@ class Cmd:
                 funcL.append(s)
                 docflg = True
         tbL = zip(funcL, docstrL)
-        titleS = self.parS.strip() + " from file: " + fuS + "\n"
+        titleS = self.parS.strip() + " from file: " + fuS
         titlerS = self.parS.strip() + " from file: **" + fuS + "**\n\n"
         if titleS[0:2] == "--":
             utlS = xtlS = "from file: " + fuS + "\n"
@@ -874,7 +851,6 @@ class Cmd:
             rtlS = "\n**Table " + fillS + "**: " + titlerS
         tblfmt = "rst"
         hdrvL = ["Function", "Docstring"]
-        alignL = ["left", "left"]
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -884,16 +860,15 @@ class Cmd:
                 tablefmt=tblfmt,
                 headers=hdrvL,
                 showindex=False,
-                colalign=alignL,
+                colglobalalign="left",
             )
         )
         outS = output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
         # pthxS = str(Path(*Path(pthS).parts[-3:]))
-        uS = utlS + "\n" + outS + "\n"
+        uS = tS = utlS + "\n" + outS + "\n"
         rS = rtlS + "\n" + outS + "\n"
-        tS = xtlS + "\n" + outS + "\n"
         lS = ""
 
         self.mD = {
@@ -978,3 +953,19 @@ class Cmd:
         self.r2s = fileS
         self.rs = fileS
         # endregion
+
+    def wrap_pad(self, sentences, width=25):
+        # Step 1: Wrap all sentences into lists of lines
+        wrapped_data = [textwrap.wrap(s, width=width) for s in sentences]
+
+        # Step 2: Identify the maximum number of lines
+        max_height = max(len(lines) for lines in wrapped_data)
+
+        # Step 3: Pad shorter sentences with empty lines to match max_height
+        padded_data = []
+        for lines in wrapped_data:
+            # Create a copy and add empty strings until length matches max_height
+            padded = lines + ["-"] * (max_height - len(lines))
+            padded_data.append(padded)
+
+        return padded_data

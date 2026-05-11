@@ -118,18 +118,23 @@ class Tag:
             self.lD["equI"] = self.enumI
             self.enumS = str(self.enumI)
             spS = lineL[0].strip()
-            spL = spS.split("=")
-            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
+            refS = lineL[1]
+            try:
+                spL = spS.split("=")
+                sp1S = spL[0]
+            except Exception:
+                sp1S = spS
+            spS = "Eq(" + sp1S + ",(" + spL[1] + "))"
             eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
             # text
             eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
             toptS = chr(9484) + "  Eq-" + self.enumS + " | " + lineL[1] + "\n"
             eqtS = toptS + chr(9474) + "\n" + eqxS + "\n" + chr(9492) + "\n"
             # rest
-            spS = "\n|\n\n"
+            spaS = "\n|\n"
             eq1S = textwrap.indent(eq1S, "           ")
-            erS = "\n**Eq." + self.enumS + "**\n"
-            eqrS = spS + erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
+            erS = "\n**Eq." + self.enumS + ":**" + refS + "\n"
+            eqrS = spaS + erS + "\n.. code-block:: text \n\n" + eq1S + "\n\n"
             uS = tS = eqtS + "\n"
             rS = eqrS + "\n\n"
             lS = ""
