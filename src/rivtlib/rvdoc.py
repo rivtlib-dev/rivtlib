@@ -234,7 +234,7 @@ class Cmdp:
 
         headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| Sect: **###Section###**"""
         foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
-        foot2blkS = f"""**{self.runtextS}**"""
+        foot2blkS = f"""**{self.runlabelS}**"""
 
         imgS = f"""
 .. |blklogo| image:: ../src/{self.runlogo}
@@ -340,7 +340,7 @@ class Cmdp:
         self.f1_liceS = self.configL["doc"]["fork1_license"]
         self.coverlogo = self.configL["layout"]["coverlogo"]
         self.runlogo = self.configL["layout"]["runninglogo"]
-        self.runtextS = self.configL["layout"]["runningtext"]
+        self.runlabelS = self.configL["layout"]["runninglabel"]
         self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
         self.projnumS = self.configL["layout"]["projectnum"]
         self.clientS = self.configL["layout"]["client"]
@@ -411,7 +411,7 @@ html_theme_options = {{
     "footer_center": ["rv-title"],
     "footer_end": ["rv-date"],
     "logo": {{
-            "text": "{self.runtextS}",
+            "text": "{self.runlabelS}",
         "image_dark": "{self.runlogo}",
         "image_light": "{self.runlogo}",
     }},
@@ -666,14 +666,14 @@ styles:
     fontName: fontSerif
     textColor: "#222222"
   heading1:
-    fontSize: 110%
+    fontSize: 120%
     parent: heading
     fontName: fontSansBold
     underlineColor: black
     underlineWidth: 1
     underlineOffset: 5
   heading2:
-    fontSize: 105%
+    fontSize: 110%
     parent: heading
     fontName: fontSansBold
     underlineColor: black
@@ -764,8 +764,8 @@ styles:
     spaceBefore: 12
   table:
     alignment: TA_LEFT
-    spaceBefore: 3
-    spaceAfter: 3
+    spaceBefore: 1
+    spaceAfter: 1
     borderPadding: 5
     leftPadding: 6
     rightPadding: 6

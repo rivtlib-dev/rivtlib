@@ -88,8 +88,8 @@ class Tag:
             """center text"""
 
             uS = tS = lineS.center(wI) + "\n"
-            rS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n\n"
-            lS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n\n"
+            rS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n"
+            lS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n"
 
         elif cmdS == "lR":
             """right justify text"""

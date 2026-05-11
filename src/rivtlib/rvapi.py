@@ -92,15 +92,7 @@ rivtT = Path(rivtP, rivtN)
 rivt_storedP = storeP
 # endregion
 
-# region - logs and comment variables
-rvpubB = False
-with open(rivtT, "r") as f1:  # noqa: F405
-    rivtL = f1.readlines()
-for lnS in rivtL:
-    if lnS[0:4] == "# rv":
-        if "setpublic" and "True" in lnS:
-            rvpubB = True
-# print(f"={rvpubB}")
+# region - logs
 try:
     package_version = version("rivtlib")
     verS = f"rivtlib version: {package_version}"
@@ -140,7 +132,6 @@ metaD = {}  # metadata
 fD = {  # folders
     "errlogT": errlogT,
     "bakT": bakT,
-    "rvpubB": rvpubB,
     "pthS": " ",
     "srcnS": " ",
     "rivtN": rivtN,  # file name
@@ -186,15 +177,29 @@ lD = {  # labels
     "aliaS": "rvsource",  # fDer alias
     "unitS": "M,M",  # units
     "valexpS": "",  # list of values for export
-    "publicB": False,  # public section
     "showB": True,  # print section to doc
     "mergeB": False,
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "none",  # topic background color
-    "widthI": 80,  # print width
     "cntflgI": 0,
+    "addtagB": False,  # add API tag
+    "rvpubB,": False,  # public section
+    "widthI": 80,  # print width
 }
 # endregion
+
+# comment settings
+with open(rivtT, "r") as f1:  # noqa: F405
+    rivtL = f1.readlines()
+for lnS in rivtL:
+    if lnS[0:4] == "# rv":
+        if "setpublic" and ("True" in lnS or "true" in lnS):
+            lD["rvpubB"] = True
+        if "setwidth" in lnS:
+            lD["widthI"] = int(lnS.split("=")[1])
+        if "addtag" and ("True" in lnS or "true" in lnS):
+            lD["addtagB"] = True
+
 
 # initialize doc strings
 dutfS = ""
