@@ -159,7 +159,7 @@ lD = {  # labels
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
     "divS": rbaseS[2:3],  # div number
-    "sdivS": rbaseS[3:5],  # subdiv
+    "sdivS": str(int(rbaseS[3:5])),  # subdiv
     "docnameS": rbaseS[6:].replace("-", " "),  # document name
     "replablS": rivtP.name[5:],
     "valprfx": rbaseS[0:6].replace("rv", "v"),
@@ -249,20 +249,41 @@ def doc_parse(rS, tyS, tagL, cmdL):
 
 
 def R(rS):
-    """Run shell command
+    """Run scripts and insert markup
     Args:
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
-    cmdL = ["SHELL"]  # commands from file
+    cmdL = [
+        "MARKUP",  # execute script file
+    ]
     tagL = []
     tagbL = [
-        "SHELL",  # run commands
+        "PYTHON",  # Python script
+        "MARKUP",  # format block
         "END",  # end
-        "NEWPAGE",  # new page
     ]
+
     tagL = tagbL + tagL
-    dutfS, drstS, dtxtS = doc_parse(rS, "R", tagL, cmdL)
+
+    blkB = False
+    blkS = ""
+    lL = rS.split("\n")
+    for lS in lL:
+        if blkB:  # tag flag
+            if "[[END]]" in lS:
+                blkB = False
+                exec(blkS, globals(), rivtD)
+                blkS = ""
+                continue
+            blkS += lS.strip()
+            continue
+        for subS in tagL:  # tags
+            if subS in lS:
+                blkB = True
+                continue
+        for subS in cmdL:
+            pass
 
 
 def I(rS):  # noqa: E743
@@ -270,7 +291,7 @@ def I(rS):  # noqa: E743
     Args:
         rS (str): rivt string
     """
-    global dutfS, drstS, dtxtS, fD, lD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD
 
     cmdL = [
         "IMAGE",  # insert image from file
@@ -279,28 +300,22 @@ def I(rS):  # noqa: E743
         "TEXT",  # insert text from filoe
     ]
     tagL = [
-        "C",  # center text
-        "R",  # right justify text
-        "B",  # bold text
-        "I",  # italic text
-        "M",  # math
+        "C",  # bold center text
+        "M",  # ascii math
         "L",  # LaTeX math
         "#",  # footnote
-        "G",  # glossary
+        "G",  # glossary term
         "S",  # section link
         "U",  # url link
+        "D",  # download link
         "V",  # var value
-        "E",  # equation label
         "T",  # table label
         "F",  # figure label
     ]
     tagbL = [
-        "INDENT",  # indent
-        "ITALIC",  # indent and italicize
-        "ENDNOTES",  # note description
-        "TABLE",  # note description
-        "TEXT",  # format text
+        "TABLE",  # format and write to csv
         "TOPIC",  # topic
+        "BOX",  # draw box
         "END",  # end
     ]
     tagL = tagL + tagbL
@@ -328,36 +343,31 @@ def V(rS):
     ]
     tagL = [
         "M",  # math format
+        "L",  # LaTeX format
         "V",  # var value
-        "E",  # equation label
-        "T",  # table label
         "F",  # figure label
-        "B",  # bold text
-        "C",  # center text
+        "C",  # bold center text
+        "T",  # table label
     ]
-    tagbL = [
-        "PYTHON",  # execute Python script
-        "END",  # end
-    ]
+    tagbL = []
     tagL = tagL + tagbL
     dutfS, drstS, dtxtS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
-    """Markup tools
+    """Execute external programs
     Args:
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
-    cmdL = [
-        "MARKUP",  # execute script file
-    ]
+    cmdL = ["SHELL"]  # commands from file
     tagL = []
     tagbL = [
-        "MARKUP",  # execute script
+        "SHELL",  # run commands
         "END",  # end
     ]
     tagL = tagL + tagbL
+    dutfS, drstS, dtxtS = doc_parse(rS, "T", tagL, cmdL)
 
     blkB = False
     blkS = ""
@@ -385,7 +395,7 @@ def D(rS):
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
-    wrtdoc = rvdoc.Cmdp(rS, fD, lD, rivtD, dutfS, drstS, dtxtS)
+    wrtdoc = rvdoc.Cmdp(rS, fD)
     msgS = wrtdoc.cmdx()
     print(f"{msgS}")
     sys.exit()
@@ -396,8 +406,6 @@ def S(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drstS, dtxtS
-
     shL = rS.split("\n")
     logging.info("section skipped at: " + shL[0])
     print("\n[" + shL[0].strip() + "] : section skipped " + "\n")

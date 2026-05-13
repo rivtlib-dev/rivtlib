@@ -13,7 +13,7 @@ import __main__
 
 
 class Cmdp:
-    """doc publish object
+    """publish doc or report
 
     Args:
         Args:
@@ -29,7 +29,7 @@ class Cmdp:
             rS (str): reST doc string
     """
 
-    def __init__(self, sS, fD, lD, rivtD, dutfS, drstS, dtxtS):
+    def __init__(self, sS, fD):
         # region
         store_attr()
         self.pthS = ""
@@ -79,7 +79,7 @@ class Cmdp:
             msgS (str): completion message
         """
         # region
-        msgS = "\nend of doc\n"
+        msgS = "\nend of rivt file\n"
         blockB = False
         self.blockS = """"""
         self.docnameS = " "
@@ -92,6 +92,8 @@ class Cmdp:
                     self.docnameS = str(pL[1].strip()).strip()
                     if self.docnameS == "-":
                         self.docnameS = self.fD["docnameS"]
+                    elif self.docnameS not in ["text", "html", "pdf"]:
+                        self.genreport()
                     dtypeS = typeS + ("x")
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
@@ -934,6 +936,9 @@ styles:
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(coverpgS)
 
+    def genreport(self):
+        """read report script and"""
+
     def latexx(self):
         """Modify TeX file to avoid problems with escapes:
 
@@ -965,11 +970,4 @@ styles:
 
         """
 
-        rvdocS = self.fD["rbaseS"] + ".html"
-
-        return (
-            "tex pdf doc written: "
-            + rvdocS
-            + "\n"
-            + "readme written: README.txt"
-        )
+        return 1

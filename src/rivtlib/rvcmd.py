@@ -233,7 +233,8 @@ class Cmd:
             + f"{eq2S} = {val1U}     [{eq2S}] = {val2U}   | {refS.strip()}\n\n"
             + textwrap.indent(outputS, "           ")
         )
-        uS = tS = "\n" + eqtS + output.getvalue()
+        ureS = f"{eq2S} = {val1U}    [{eq2S}] = {val2U}  | {refS.strip()}"
+        uS = tS = "\n" + eqtS + "\n" + ureS + "\n\n" + output.getvalue()
         rS = "\n" + eqrS + "\n\n"
         lS = ""
         sys.stdout = old_stdout
@@ -347,7 +348,8 @@ class Cmd:
             + f"{eq2S} = {val1U}     [{eq2S}] = {val2U}   | {refS.strip()}\n\n"
             + textwrap.indent(outputS, "           ")
         )
-        uS = tS = "\n" + eqtS + output.getvalue()
+        ureS = f"{eq2S} = {val1U}   [{eq2S}] = {val2U}  | {refS.strip()}"
+        uS = tS = "\n" + eqtS + "\n" + ureS + "\n\n" + output.getvalue()
         rS = "\n" + eqrS + "\n\n"
         lS = ""
         sys.stdout = old_stdout
@@ -426,7 +428,7 @@ class Cmd:
         term1S = sp.pretty(sp.sympify(spL[0].strip(), _clash2, evaluate=False))
         term2S = sp.pretty(sp.sympify(spL[1].strip(), _clash2, evaluate=False))
         tblfmt = "rst"
-        hdrL = [term1S, term2S, "ratio", "check", "reference"]
+        hdrL = [term1S, term2S, "ratio L/R", "check", "reference"]
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -439,16 +441,15 @@ class Cmd:
                 colglobalalign="left",
             )
         )
-        equS = ""
         equL = output.getvalue().split("\n")
-        for ln in equL:
-            ln = chr(9646) + " " + ln
-            equS += ln + "\n"
-        uS = tS = eqtS + "\n" + equS + "\n"
-        lS = ""
         eq3S = output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
+        equS = ""
+        for ln in equL:
+            ln = chr(9646) + "  " + ln
+            equS += ln + "\n"
+        uS = tS = eqtS + "\n" + equS + "\n"
         # rest  == symbolic and table
         erS = "|\n\n**Eq." + self.enumS + ":** " + refS + "\n"
         outputL = output.getvalue().split("\n")[1:]
@@ -471,6 +472,7 @@ class Cmd:
             + "\n"
             + eq3S
         )
+        lS = " "
 
         self.mD = {
             "uS": uS,
@@ -556,10 +558,13 @@ class Cmd:
         fig2S = parL[5].strip()
 
         try:
-            img1 = Image.open(self.inspS)
+            img1 = Image.open(insp1S)
             _display(img1)
+            img2 = Image.open(insp2S)
+            _display(img2)
         except Exception:
             pass
+
         if cap1S == "--":
             cap1S = ""
         if cap2S == "--":

@@ -51,7 +51,7 @@ class Rs:
         sutfS = ""  # utf doc
         srstS = ""  # rest doc
         stxtS = ""  # text doc
-        slatS = ""  # latex doc
+        sltxS = ""  # latex doc
         self.vardescD = vdescD
         # ----------------------------------------------   section header
         if lD["cntflgI"] == 0:
@@ -74,9 +74,26 @@ class Rs:
         else:
             snumI = lD["secnumI"] + 1
             lD["secnumI"] = snumI
-            snumS = "[ " + str(snumI) + addtgS + " ]"
+            snumS = (
+                lD["divS"]
+                + "."
+                + lD["sdivS"]
+                + " ["
+                + str(snumI)
+                + addtgS
+                + "]"
+            )
             headS = snumS + " " + hL[0].strip()
-            snum1S = transS + "**" + str(snumI) + addtgS + ".**"
+            snum1S = (
+                transS
+                + lD["divS"]
+                + "."
+                + lD["sdivS"]
+                + " **["
+                + str(snumI)
+                + addtgS
+                + "]**"
+            )
             head1S = snum1S + " **" + hL[0].strip() + "**"
             bordrS = lD["widthI"] * "-" + "\n"
             sutfS = "\n" + headS + "\n" + bordrS

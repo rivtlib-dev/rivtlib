@@ -146,8 +146,8 @@ class Tag:
             self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
             uS = tS = "\nTable " + str(tnumI) + ": " + lineS
-            rS = "\n**Table " + fillS + "**: " + lineS + "\n"
-            lS = "\n**Table " + fillS + "**: " + lineS + "\n"
+            rS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
+            lS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
 
         elif cmdS == "lF":
             """number figure"""

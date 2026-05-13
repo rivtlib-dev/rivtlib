@@ -30,18 +30,18 @@ Use Cases
 
 In addition to publishing engineering documents for:
 
-#. internal communication
-#. research documentation
-#. government permits
-#. technical reports
-#. funding applications
-#. teaching
-#. presentations
+#. internal communication.
+#. research documentation.
+#. government permits.
+#. technical reports.
+#. funding applications.
+#. teaching.
+#. presentations.
 
 *rivt* can: 
 
-#. function as a front and back end for external software 
-#. be used for real time collaboration
+#. function as a front and back end for external software. 
+#. be used for real time collaboration.
 
 The table below compares limitations between different software
 programs. *rivt* is designed to address these limitations and serve as a
