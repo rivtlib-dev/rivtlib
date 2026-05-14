@@ -1,4 +1,5 @@
 {
+    "terminal.integrated.environmentChangesRelaunch": true,
     "window.title": "${dirty}${activeEditorLong}${separator}${separator} profile: ${profileName}${separator} repo: ${activeRepositoryName}",
     "workbench.colorTheme": "Dark Modern",
     "workbench.iconTheme": "vscode-icons",
@@ -133,7 +134,7 @@
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "explorer.compactfDers": false,
-    "explorer.sortOrder": "modified",
+    "explorer.sortOrder": "name",
     "settings.cycle": [
         {
             "id": "ExplorerSort1", // must be unique

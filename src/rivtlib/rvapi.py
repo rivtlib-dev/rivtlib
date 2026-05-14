@@ -60,10 +60,9 @@ try:
     rivtN = os.path.basename(__main__.__file__)
 except Exception:
     rivtN = os.path.basename(__main__.__name__)
-rivtT = Path(reptP, rivtN)
-print(rivtN, rivtT)
-pypathS = os.path.dirname(sys.executable)
-reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
+
+if __name__ == "__main__":
+    rivtN = "rv000-test.py"
 
 if fnmatch.fnmatch(rivtN, "rv[A-Z0-9][0-9][0-9]-*.py"):
     pass
@@ -73,6 +72,12 @@ else:
     print("""where D is an alpha-numeric division label""")
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
+
+rivtT = Path(reptP, rivtN)
+print(rivtN, rivtT)
+pypathS = os.path.dirname(sys.executable)
+reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
+
 
 rbaseS = rivtN.split(".")[0]
 reptPN = rivtN.replace("rv", "rv-")
@@ -420,3 +425,4 @@ def X(rS):
     logging.info("exit rivt file at: " + shL[0])
     print("\n[" + shL[0].strip() + "] : rivtlib exit " + "\n")
     sys.exit()
+p
