@@ -54,9 +54,11 @@ def analyze_source(file_path):
 filenmS = sys.argv[1]
 pathS = os.getcwd()
 fileP = Path(pathS, "src", "rivtlib", filenmS)
-print("filepath: ", fileP, "\n")
-print("=====================================================")
-print("Module Name:  " + filenmS)
-print("=====================================================")
+with open(fileP, "r") as file:
+    line_count = str(len(file.readlines()))
+print(" ")
+print("=========================================================")
+print("Module Name: " + filenmS + "   | Total Lines: " + line_count)
+print("=========================================================")
 analyze_source(fileP)
-print("=====================================================")
+print("=========================================================")

@@ -77,9 +77,9 @@ Modules - Summary
 
 ::
 
-    =====================================================
-    Module Name:  rvapi.py
-    =====================================================
+    =========================================================
+    Module Name: rvapi.py   | Total Lines: 428
+    =========================================================       
 
     IMPORTS:
     - import fnmatch
@@ -96,7 +96,6 @@ Modules - Summary
     CLASSES & METHODS:
 
     TOP-LEVEL FUNCTIONS:
-    (204 lines total)
     - cmdhelp() -> 12 lines
     - doc_parse() -> 23 lines
     - R() -> 36 lines
@@ -106,12 +105,12 @@ Modules - Summary
     - D() -> 10 lines
     - S() -> 8 lines
     - X() -> 9 lines
-    =====================================================
+    =========================================================  
 
 
-    =====================================================   
-    Module Name:  rvparse.py
-    =====================================================   
+    =========================================================
+    Module Name: rvparse.py   | Total Lines: 352
+    =========================================================       
 
     IMPORTS:
     - import logging
@@ -132,12 +131,12 @@ Modules - Summary
         └─ Method: prt_tabl() -> 22 lines
 
     TOP-LEVEL FUNCTIONS:
-    =====================================================  
+    =========================================================  
 
 
-    =====================================================   
-    Module Name:  rvtag.py
-    =====================================================   
+    =========================================================
+    Module Name: rvtag.py   | Total Lines: 352
+    =========================================================       
 
     IMPORTS:
     - import csv
@@ -156,15 +155,15 @@ Modules - Summary
         └─ Method: __init__() -> 22 lines
         └─ Method: taglx() -> 173 lines
         └─ Method: tagbx() -> 108 lines
-        └─ Method: parse_simple_rst_table() -> 23 lines     
+        └─ Method: parse_simple_rst_table() -> 23 lines
 
     TOP-LEVEL FUNCTIONS:
-    ===================================================== 
+    =========================================================  
 
 
-    =====================================================   
-    Module Name:  rvcmd.py
-    =====================================================   
+    =========================================================
+    Module Name: rvcmd.py   | Total Lines: 976
+    =========================================================       
 
     IMPORTS:
     - import csv
@@ -177,7 +176,7 @@ Modules - Summary
     - import sympy as sp
     - import tabulate
     - from fastcore.utils import store_attr
-    - from IPython.display import display as _display     
+    - from IPython.display import display as _display
     - from PIL import Image
     - from sympy.abc import _clash2
     - from rivtlib.rvunits import *
@@ -204,12 +203,12 @@ Modules - Summary
         └─ Method: wrap_pad() -> 15 lines
 
     TOP-LEVEL FUNCTIONS:
-    =====================================================
+    =========================================================     
 
 
-    =====================================================   
-    Module Name:  rvdoc.py
-    =====================================================   
+    =========================================================
+    Module Name: rvdoc.py   | Total Lines: 973
+    =========================================================       
 
     IMPORTS:
     - import configparser
@@ -239,23 +238,23 @@ Modules - Summary
         └─ Method: latexx() -> 32 lines
 
     TOP-LEVEL FUNCTIONS:
-    ===================================================== 
+    ========================================================= 
 
 
-    =====================================================   
-    Module Name:  rvunits.py
-    =====================================================   
+    =========================================================
+    Module Name: rvunits.py   | Total Lines: 134
+    =========================================================       
 
     IMPORTS:
     - import importlib.util
     - import sys
     - from pathlib import Path
-    - from rivtlib.unum.core import Unum, new_unit        
+    - from rivtlib.unum.core import Unum, new_unit
 
     CLASSES & METHODS:
 
     TOP-LEVEL FUNCTIONS:
-    ===================================================== 
+    =========================================================  
 
 
 
