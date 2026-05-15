@@ -41,6 +41,7 @@ Typing: Last letter of var name indicates type:
     T => path + file name (path)
 """
 
+import argparse
 import fnmatch
 import logging
 import os
@@ -61,9 +62,6 @@ try:
 except Exception:
     rivtN = os.path.basename(__main__.__name__)
 
-if __name__ == "__main__":
-    rivtN = "rv000-test.py"
-
 if fnmatch.fnmatch(rivtN, "rv[A-Z0-9][0-9][0-9]-*.py"):
     pass
 else:
@@ -73,12 +71,21 @@ else:
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
 
+
+# Initialize and configure the parser
+parser = argparse.ArgumentParser(description="Example script")
+# parser.add_argument("input", help="Input file path")
+parser.add_argument("-t", "--type", help="file type", default="--")
+# parser.add_argument("-v", "--verbose", action="store_true", help="Verbose mode")
+args = parser.parse_args()
+ptypeS = args.type
+# print(f"Input: {args.input}, Verbose: {args.verbose}")
+
+
 rivtT = Path(reptP, rivtN)
 print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
-
-
 rbaseS = rivtN.split(".")[0]
 reptPN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
@@ -132,7 +139,7 @@ except Exception:
 vdescD = {}
 rivtD = {}
 rvunitD = vars(rvunit)
-rivtD = rivtD | rvunitD
+rivtD = rivtD | rvunitD  # add units to dictionary
 metaD = {}  # metadata
 fD = {  # folders
     "errlogT": errlogT,
@@ -160,7 +167,7 @@ fD = {  # folders
     "tempP": Path(srcP, "temp"),
 }
 lD = {  # labels
-    "rbaseS": rbaseS,  # section type r,i,v,t,d
+    "rbaseS": rbaseS,  # rivt file base name
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
     "divS": rbaseS[2:3],  # div number
@@ -190,6 +197,7 @@ lD = {  # labels
     "addtagB": False,  # add API tag
     "rvpubB,": False,  # public section
     "widthI": 80,  # print width
+    "ptypeS": ptypeS,  # pub type override
 }
 # endregion
 
@@ -400,7 +408,7 @@ def D(rS):
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
-    wrtdoc = rvdoc.Cmdp(rS, fD)
+    wrtdoc = rvdoc.Cmdp(rS, fD, lD, dutfS, drstS, dtxtS)
     msgS = wrtdoc.cmdx()
     print(f"{msgS}")
     sys.exit()
@@ -425,4 +433,3 @@ def X(rS):
     logging.info("exit rivt file at: " + shL[0])
     print("\n[" + shL[0].strip() + "] : rivtlib exit " + "\n")
     sys.exit()
-p

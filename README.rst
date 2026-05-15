@@ -17,9 +17,11 @@ linked, with other *docs*, into a *rivt report*.
 The primary use case for *rivt* is producing clear, acurate engineering
 documents that are: 
 
-#. Easier to write and format than LaTeX, Excel, Word or other general purpose word processors.
+#. Easier to write and format than LaTeX, Excel, Word or other general purpose
+   word processors.
 
-#. Do not need to be formatted to the precise standards of a formal journal publication.
+#. Do not need to be formatted to the precise standards of a formal journal
+   publication.
 
 A second use case is when documents may need to be produced in a variety of
 formats from the same input file. For futher details please refer to the 

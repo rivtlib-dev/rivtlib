@@ -29,12 +29,13 @@ class Cmdp:
             rS (str): reST doc string
     """
 
-    def __init__(self, sS, fD):
+    def __init__(self, sS, fD, lD, dutfS, drstS, dtxtS):
         # region
         store_attr()
         self.pthS = ""
         self.parS = ""
         self.sL = sS.split("\n")
+
         self.reptP = fD["reptP"]
         errlogT = fD["errlogT"]
         self.confg = []
@@ -88,12 +89,21 @@ class Cmdp:
             if len(pS) > 0:
                 if pS[0:11] == "| PUBLISH |":
                     pL = pS[5:].split("|")
-                    typeS = str(pL[2].strip())
                     self.docnameS = str(pL[1].strip()).strip()
-                    if self.docnameS == "-":
+                    if self.docnameS == "--":
                         self.docnameS = self.fD["docnameS"]
-                    elif self.docnameS not in ["text", "html", "pdf"]:
-                        self.genreport()
+                    else:
+                        self.docnameS = str(pL[1]).strip()
+                    typeS = str(pL[2].strip())
+                    if typeS not in ["text", "html", "pdf", "none"]:
+                        print(
+                            "Doc type is not known \n"
+                            + "It must be one of 'text', 'html', or 'pdf' \n"
+                            "Set to default type 'text'"
+                        )
+                        typeS = "text"
+                    if self.lD["ptypeS"] != "--":
+                        typeS = self.lD["ptypeS"]
                     dtypeS = typeS + ("x")
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
@@ -130,18 +140,11 @@ class Cmdp:
             tS += pS
             lS += pS
 
-        mD = {
-            "uS": uS,
-            "rS": rS,
-            "tS": tS,
-            "lS": lS,
-        }
-
         return msgS
         # endregion
 
     def htmlx(self):
-        """write readme and sphinx-html files
+        """write readme and html doc
 
         Returns:
             msgS (str): completion message
@@ -150,7 +153,7 @@ class Cmdp:
 
         self.confpy()  # update conf.py
         self.coverS()  # update cover page
-        self.rivtstyS()  # update yaml file
+        self.yamlS()  # update yaml file
         baseP = self.fD["reptP"]
         srcS = f"{baseP}/src/{self.coverlogo}"
         destS = f"{baseP}/_rstdocs/_static/img/{self.coverlogo}"
@@ -161,7 +164,6 @@ class Cmdp:
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
         rvdocT = str(Path(self.fD["reptPubP"], "docs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d")
-
         rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
         rvdateT = str(Path(self.fD["rstdocsP"], "_templates", "rv-date.html"))
         rvtitleT = str(Path(self.fD["rstdocsP"], "_templates", "rv-title.html"))
@@ -218,7 +220,7 @@ class Cmdp:
         )
 
     def pdfx(self):
-        """write readme and sphinx-pdf files
+        """write readme and pdf doc
 
         Returns:
             msgS (str): completion message
@@ -226,15 +228,15 @@ class Cmdp:
         # region
         self.confpy()  # update conf.py
         self.coverS()  # update cover page
-        self.rivtstyS()  # update yaml file
+        self.yamlS()  # update yaml file
+        lD = self.lD
         rvbaseS = self.fD["rbaseS"]
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvdocS = self.fD["rbaseS"] + ".pdf"
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
         rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d")
-
-        headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| Sect: **###Section###**"""
+        headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| Div: **{lD["divS"]}.{lD["sdivS"]}** |s| Sect: **###Section###**"""
         foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
         foot2blkS = f"""**{self.runlabelS}**"""
 
@@ -257,6 +259,7 @@ class Cmdp:
 
           
 """
+
         footS = f"""
 .. footer:: 
     .. list-table::
@@ -271,8 +274,25 @@ class Cmdp:
                   
 """
 
+        tcontentS = f"""
+
+
+
+.. contents:: Contents -  Div: {lD["divS"]}.{lD["sdivS"]}
+   :depth: 4
+
+|
+
+
+"""
+
         self.drstS = (
-            ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + self.drstS
+            ".. |s| unicode:: 0xA0 \n\n\n"
+            + imgS
+            + tcontentS
+            + headS
+            + footS
+            + self.drstS
         )
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
@@ -294,7 +314,7 @@ class Cmdp:
         # endregion
 
     def textx(self):
-        """write readme and text files
+        """write readme and text doc
 
         Returns:
             msgS (str): completion message
@@ -322,6 +342,20 @@ class Cmdp:
             + "readme file written: README.txt"
         )
 
+    def nonex(self):
+        """write readme and rst doc"""
+
+        self.confpy()  # update conf.py
+        rvfileS = self.fD["rbaseS"] + ".rst"
+        rstfileT = str(Path(self.fD["rstdocsP"], rvfileS))
+        self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
+        with open(rstfileT, "w", encoding="utf-8") as f5:
+            f5.write(self.drstS)
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
+
+        return f"rst doc written: {str(rstfileT)} \n" + "README.txt written"
+
     def metadatax(self):
         """read meta block as config file
 
@@ -344,19 +378,80 @@ class Cmdp:
         self.runlogo = self.configL["layout"]["runninglogo"]
         self.runlabelS = self.configL["layout"]["runninglabel"]
         self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
-        self.projnumS = self.configL["layout"]["projectnum"]
+        self.projrefS = self.configL["layout"]["projectref"]
         self.clientS = self.configL["layout"]["client"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
 
-    # -------------------------------------------------------------------
     def attachpdfx(self):
         """attach pdf or insert pdf as download file"""
 
         msgS = "attachment"
         return msgS
 
+    # ---------------------------------------------------------------
+
+    def coverS(self):
+        """
+        cover page
+
+        """
+
+        # timeS = datetime.now().strftime("%Y-%m-%d")
+        rvfileT = str(Path(self.fD["rstdocsP"], "_templates", "pdfcover.rst"))
+        coverpgS = f"""
+.. role:: big-text
+
+|
+|
+        
+.. image:: ../src/{self.coverlogo}
+   :width: 600px
+   :align: center
+
+|
+|
+|
+
+
+.. class:: center
+
+    :big-text:`{self.docnameS}`
+
+|
+|
+|
+|
+|
+|
+
+.. class:: center
+
+   Attn: **{self.clientS}**
+
+|
+
+.. class:: center
+
+   project: **{self.projrefS}**
+
+   
+
+.. raw:: pdf
+
+   PageBreak mainPage
+   SetPageCounter 1
+
+   
+
+      
+"""
+
+        with open(rvfileT, "w", encoding="utf-8") as f5:
+            f5.write(coverpgS)
+
     # -------------------------------------------------------------------
+
     def confpy(self):
         """write config.py"""
 
@@ -457,7 +552,7 @@ pdf_use_coverpage = True
 # Name of the cover page template to use
 pdf_cover_template = "_templates/pdfcover.rst"
 # Show Table Of Contents at the beginning?
-pdf_use_toc = True
+pdf_use_toc = False
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
 # How many levels deep should the table of contents be?
@@ -465,7 +560,7 @@ pdf_toc_depth = 9999
 # Insert footnotes where they are defined 
 pdf_inline_footnotes = False
 # If false, no index is generated.
-pdf_use_index = True
+pdf_use_index = False
 # If false, no modindex is generated.
 pdf_use_modindex = False
 # Add section number to section references
@@ -494,7 +589,7 @@ pdf_stylesheets = ["./_rstdocs/_static/pdfstyle/rivtstyle.yaml"]
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(confpyS)
 
-    def rivtstyS(self):
+    def yamlS(self):
         """write rivt yaml file for pdf"""
 
         rvfileT = str(
@@ -870,104 +965,3 @@ styles:
 """
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(rivstyS)
-
-    # ---------------------------------------------------------------
-    def coverS(self):
-        """
-        cover page
-
-        """
-
-        # timeS = datetime.now().strftime("%Y-%m-%d")
-        rvfileT = str(Path(self.fD["rstdocsP"], "_templates", "pdfcover.rst"))
-        coverpgS = f"""
-.. role:: big-text
-
-|
-|
-        
-.. image:: ../src/{self.coverlogo}
-   :width: 600px
-   :align: center
-
-|
-|
-|
-
-
-.. class:: center
-
-    :big-text:`{self.docnameS}`
-
-|
-|
-|
-|
-|
-|
-
-.. class:: center
-
-   Attn: **{self.clientS}**
-
-|
-
-.. class:: center
-
-   project: **{self.projnumS}**
-
-   
-   
-.. raw:: pdf
-
-   PageBreak noHead
-     
-
-
-.. raw:: pdf
-
-   PageBreak mainPage
-
-   
-
-      
-"""
-
-        with open(rvfileT, "w", encoding="utf-8") as f5:
-            f5.write(coverpgS)
-
-    def genreport(self):
-        """read report script and"""
-
-    def latexx(self):
-        """Modify TeX file to avoid problems with escapes:
-
-        -  Replace marker "aaxbb " inserted by rivt with
-            \\hfill because it is not handled by reST).
-        - Delete inputenc package
-        - Modify section title and add table of contents
-
-         write calc rSt file to d00_docs fDer
-
-        Args:
-            cmdS (str): [description]
-            doctypeS ([type]): [description]
-            stylefileS ([type]): [description]
-            calctitleS ([type]): [description]
-            startpageS ([type]): [description]
-
-        convert reST to tex file
-
-        0. insert [i] data into model (see _genxmodel())
-        1. read the expanded model
-        2. build the operations ordered dictionary
-        3. execute the dictionary and write the md-8 calc and Python file
-        4. if the pdf flag is set re-execute xmodel and write the PDF calc
-        5. write variable summary to stdout
-
-        :param pdffileS: _description_
-        :type pdffileS: _type_
-
-        """
-
-        return 1

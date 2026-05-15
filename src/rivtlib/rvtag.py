@@ -48,23 +48,22 @@ class Tag:
         """formats a line
 
          API         Syntax                         Description (output types)
-        ------- --------------------------------- -----------------------------------
-         I          **text text**                   bold words
-         I           *text text*                    italic words
-         I,V      text  _[C]                        bold center text (all)
-         I,V      text  _[R]                        right justify text (all)
-         I,V      text  _[B]                        bold text (all)
-         I,V      math  _[M]                        format ASCII math (all)
-         I,V      math  _[X]                        format LaTeX math (all)
-         I,V      label _[F]                        figure number and label (all)
-         I,V      title _[T]                        table number and title (all)
-         I,V      text  _[P]                        new page (pdf)
-         I,V      text  _[#] text                   number endnote (all)
-         I,V      text  _[V] var_name ] text        variable substitution (all)
-         I,V      text  _[G] term link ] text       link term to glossary (all)
-         I,V      text  _[S] section link ] text    link to section in report (all)
-         I,V      text  _[U] external link ] text   external url link (all)
-         all      ## text                           non-printing comment
+        ------- ---------------------------------------- --------------------------------
+         I          **text text**                        bold words
+         I           *text text*                         italic words
+         I,V      text  _[C]                             bold center text (all)
+         I,V      math  _[M]                             format ASCII math (all)
+         I,V      math  _[X]                             format LaTeX math (all)
+         I,V      label _[F]                             figure number and label (all)
+         I,V      title _[T]                             table number and title (all)
+         I,V      text  _[P]                             new page (pdf)
+         I,V      text  _[#] text                        number endnote (all)
+         I,V      text  _[V] var_name ] text             variable substitution (all)
+         I,V      text  _[G] term link ] text            link term to glossary (all)
+         I,V      text  _[D] label,filename ] text       variable substitution (all)
+         I,V      text  _[S] label, section link ] text  link to section in report (all)
+         I,V      text  _[U] label, external link ] text external url link (all)
+         all      ## text                                non-printing comment
 
          Args:
              tagS (str):  last two characers of tag symbol
