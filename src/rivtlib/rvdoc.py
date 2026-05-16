@@ -278,7 +278,7 @@ class Cmdp:
         foot2blkS = f"""**{self.runlabelS}**"""
 
         imgS = f"""
-.. |blklogo| image:: ../src/{self.runlogo}
+.. |blklogo| image:: ../{self.runlogo}
    :height: 100px
    :alt: logo
 
@@ -380,11 +380,14 @@ class Cmdp:
         """write readme and rst doc"""
 
         self.confpy()  # update conf.py
+        self.yamlS()  # update yaml file
         rvfileS = self.fD["rbaseS"] + ".rst"
         rstfileT = str(Path(self.fD["rstdocsP"], rvfileS))
         self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
-        with open(rstfileT, "w", encoding="utf-8") as f5:
-            f5.write(self.drstS)
+        with open(rstfileT, "w", encoding="utf-8") as f:
+            f.write(self.drstS)
+            f.flush()  # Forces data out of Python's buffer
+            os.fsync(f.fileno())  # Forces the OS to write to disk
         parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
         return f"file written: {short_p} \n" + "file written: .../README.txt"
@@ -405,7 +408,7 @@ class Cmdp:
 |
 |
         
-.. image:: ../src/{self.coverlogo}
+.. image:: ../{self.coverlogo}
    :width: 600px
    :align: center
 
@@ -491,7 +494,7 @@ html_title = " "
 html_theme = "pydata_sphinx_theme"
 html_context = {{"default_mode": "dark"}}
 html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
-html_static_path = ["_static", "_static/img", "../src"]
+html_static_path = ["_static", "_static/img", "../"]
 html_css_files = ["css/custom.css"]
 html_theme_options = {{
     "pygments_light_style": "tango",

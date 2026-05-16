@@ -54,6 +54,10 @@ repD["pdfpage"] = configL["report"]["pdf_pagesize"]
 repD["pdfmargin"] = configL["report"]["pdf_margins"]
 repD["pdflink"] = configL["report"]["pdf_link"]
 
+reprsN = (repD["repname"].replace(".pdf", ".rst")).strip()
+freprstT = Path(rstdocsP, reprsN)
+repdocT = Path(pdfpubP, repD["repname"])
+
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
     level=logging.DEBUG,
@@ -70,6 +74,7 @@ def get_py():
 
     rst_folderP = reptP
     rivtfL = glob.glob("rv???*.py", root_dir=rst_folderP)
+    rivtfL.sort()
 
     return rivtfL
 
@@ -88,11 +93,12 @@ def get_readme():
 
     rme_folderP = Path(pubP, "readme")
     rdfL = glob.glob("rv???*.txt", root_dir=rme_folderP)
+    rdfL.sort()
 
     return rdfL
 
 
-def htmlx(frstT, pubT, rivtP):
+def htmlx():
     """write readme and html doc
 
     Returns:
@@ -167,18 +173,18 @@ def htmlx(frstT, pubT, rivtP):
     parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
 
-    return f"file written: {short_p} \n"
+    return f"html file written: {short_p} \n"
 
 
-def pdfx(frepT, pubT):
+def pdfx(freprstT):
     """write readme and pdf doc
 
     Returns:
         msgS (str): completion message
     """
-    # region
 
-    with open(frepT, "r", encoding="utf-8") as f1:
+    # region
+    with open(freprstT, "r", encoding="utf-8") as f1:
         read_rstS = f1.read()
 
     confpy()  # update conf.py
@@ -187,17 +193,15 @@ def pdfx(frepT, pubT):
 
     verS = repD["version"]
     authors = repD["authors"]
-    repnameS = repD["repname"]
-    rvfileT = frstT
-    rvdocT = pubT
+    titleS = repD["title"]
     headblkS = (
-        f"""**{repnameS}** - v{verS} |s| |s| |s| |s| Sect: **###Section###**"""
+        f"""**{titleS}** - v{verS} |s| |s| |s| |s| Sect: **###Section###**"""
     )
     foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {authors}"""
     foot2blkS = f"""**{repD["runlabel"]}**"""
 
     imgS = f"""
-.. |blklogo| image:: ../src/{repD["runlogo"]}
+.. |blklogo| image:: ../{repD["runlogo"]}
 :height: 100px
 :alt: logo
 
@@ -234,7 +238,7 @@ def pdfx(frepT, pubT):
 
 
 .. contents:: Table of Contents 
-:depth: 4
+    :depth: 4
 
 |
 
@@ -250,12 +254,10 @@ def pdfx(frepT, pubT):
         + read_rstS
     )
 
-    # print("xxxxxxxxxxxxxx")
-    # print("0000000000", drstS)
-
-    with open(rvfileT, "w", encoding="utf-8") as f5:
-        f5.write(drstS)
-    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={repD['repname']} {rstdocsP} {pdfpubP} \n"
+    repbaseS = repD["repname"].split(".pdf")[0]
+    with open(freprstT, "w", encoding="utf-8") as f1:
+        f1.write(drstS)
+    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={repbaseS} {str(rstdocsP)} {str(pdfpubP)} \n"
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)
         if not result.returncode:
@@ -264,10 +266,10 @@ def pdfx(frepT, pubT):
         print(f"Error executing script: {e}")
         print("Stderr:", e.stderr)
 
-    parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
+    parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
 
-    return f"file written: {short_p} \n"
+    return f"pdf file written: {short_p} \n"
     # endregion
 
 
@@ -310,6 +312,8 @@ def coverS():
     """
 
     # timeS = datetime.now().strftime("%Y-%m-%d")
+    reptitleS = repD["repname"].split(".")[0]
+    reptitleS = reptitleS.replace("-", " ")
     rvfileT = str(Path(rstdocsP, "_templates", "pdfcover.rst"))
     coverpgS = f"""
 .. role:: big-text
@@ -317,8 +321,8 @@ def coverS():
 |
 |
         
-.. image:: ../src/{repD["coverlogo"]}
-   :width: 600px
+.. image:: ../{repD["coverlogo"]}
+   :width: 700px
    :align: center
 
 |
@@ -328,7 +332,7 @@ def coverS():
 
 .. class:: center
 
-    :big-text:`{repD["repname"]}`
+    :big-text:`{reptitleS}`
 
 |
 |
@@ -364,7 +368,7 @@ def coverS():
 def confpy():
     """write config.py"""
 
-    rvbaseS = repD["repname"]
+    rvbaseS = repD["repname"].split(".")[0]
     rvfileT = str(Path(rstdocsP, "conf.py"))
 
     confpyS = f"""
@@ -373,8 +377,8 @@ from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{rvbaseS}"
-copyright = "{repD["copyright"]}
+project = "{repD["repname"]}"
+copyright = "{repD["copyright"]}"
 author = "{repD["authors"]}"
 release = "{repD["version"]}"
 
@@ -402,7 +406,7 @@ html_title = " "
 html_theme = "pydata_sphinx_theme"
 html_context = {{"default_mode": "dark"}}
 html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
-html_static_path = ["_static", "_static/img", "../src"]
+html_static_path = ["_static", "_static/img", "../"]
 html_css_files = ["css/custom.css"]
 html_theme_options = {{
     "pygments_light_style": "tango",
@@ -438,7 +442,7 @@ favicons = [
 # source start file, target name, title, author, options
 # options: ('index', 'MyProject', 'My Project', 'Author Name', {{"pdf_compressed": True}})
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
-pdf_documents = [("{rvbaseS}", "{rvbaseS}", "{repD["repname"]}", 
+pdf_documents = [("{rvbaseS}", "{rvbaseS}", "{rvbaseS}", 
             "{repD["authors"]}")]
 # Label to use as a prefix for the subtitle on the cover page
 subtitle_prefix = "User Manual"
@@ -888,37 +892,31 @@ for frstS in rivtfL:
     short_p = ".../" + "/".join(parts)
     print("\nrun file: ", short_p, "\n")
     subprocess.run(["python", frstT, "-t none"])
-    # log
-    rbaseS = frstS.split(".")[0]
+    rbaseS = frstS.split(".")[0]  # log
     docnumS = rbaseS[0:6]
     errlogN = docnumS + "log.txt"
     errlogT = Path(logsP, errlogN)
-    with open(errlogT, "a") as f1:
-        f1.write("write report: " + repD["title"] + "\n")
-    logging.info("Report : " + repD["title"])
+with open(errlogT, "a") as f1:
+    f1.write("write rst for each rivt file: " + repD["title"] + "\n")
+logging.info("write rst files: " + repD["title"])
 
 # aggregate rst into report rst file
 rstfL = []
 for fS in rivtfL:
     rstfL.append(fS.replace(".py", ".rst"))
-reprst = (repD["repname"].replace(".pdf", ".rst")).strip()
-freptT = Path(rstdocsP, reprst)
 reportS = """\n"""
 for fpubS in rstfL:
     frsT = Path(rstdocsP, fpubS)
     with open(frsT, "r") as f2:
         rstS = f2.read()
     reportS += rstS
-with open(freptT, "w") as f3:
+with open(freprstT, "w") as f3:
     f3.write(reportS)
-# log
-rbaseS = fpubS.split(".")[0]
-docnumS = rbaseS[0:6]
-errlogN = docnumS + "log.txt"
+errlogN = docnumS + "log.txt"  # log
 errlogT = Path(logsP, errlogN)
 with open(errlogT, "a") as f4:
-    f4.write("write report: " + repD["title"] + "\n")
-logging.info("Report : " + repD["title"])
+    f4.write("aggregate rst files: " + repD["title"] + "\n")
+logging.info("aggregate rst files into report: " + repD["title"])
 
 # write readme report
 reptitleS = repD["repname"]
@@ -931,16 +929,16 @@ readmeT = Path(rivtP, "README.txt")
 rtxtS = headS
 rtxtL = get_readme()
 with open(readmeT, "w") as outfile:
+    outfile.write(headS)
     for fname in rtxtL:
         readT = Path(pubP, "readme", fname)
         with open(readT) as infile:
             outfile.write(infile.read())
             outfile.write("\n")
-            outfile.flush()
 # with open(, "w", encoding="utf-8") as f3:
 parts = Path(readmeT).parts[-3:]  # Take last 3 segments
 short_p = ".../" + "/".join(parts)
-print("\nreport written: ", short_p, "\n")
+print("\nREADME report written: ", short_p, "\n")
 logging.info("README report : " + repD["title"])
 
 # set report path
@@ -952,11 +950,10 @@ elif get_typeS == "txt":
 elif get_typeS == "html":
     pubT = Path(pubP, "docs", repD["repname"].strip())
 else:
-    print("File type not recognizedxxxx")
+    print("File type not recognized")
     print("Type must be '.pdf', '.html' or '.txt' ")
     sys.exit()
-# log
-rbaseS = frstS.split(".")[0]
+rbaseS = frstS.split(".")[0]  # log
 docnumS = rbaseS[0:6]
 errlogN = docnumS + "log.txt"
 errlogT = Path(logsP, errlogN)
@@ -974,7 +971,7 @@ elif get_typeS == "pdf":
     """write pdf report"""
 
     print("write pdf report")
-    msgS = pdfx(freptT, pubT)
+    msgS = pdfx(freprstT)
     print(msgS)
 elif get_typeS == "html":
     """write html report"""
