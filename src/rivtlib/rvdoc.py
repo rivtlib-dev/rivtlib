@@ -311,24 +311,8 @@ class Cmdp:
                   
 """
 
-        tcontentS = """
-
-
-
-.. contents:: Table of Contents 
-   :depth: 4
-
-|
-
-"""
-
         self.drstS = (
-            ".. |s| unicode:: 0xA0 \n\n\n"
-            + imgS
-            + tcontentS
-            + headS
-            + footS
-            + self.drstS
+            ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + self.drstS
         )
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
@@ -438,6 +422,11 @@ class Cmdp:
 
    project: **{self.projrefS}**
 
+   
+
+.. raw:: pdf
+
+   PageBreak noHead
    
 
 .. raw:: pdf
@@ -553,7 +542,7 @@ pdf_use_coverpage = True
 # Name of the cover page template to use
 pdf_cover_template = "_templates/pdfcover.rst"
 # Show Table Of Contents at the beginning?
-pdf_use_toc = False
+pdf_use_toc = True
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
 # How many levels deep should the table of contents be?
