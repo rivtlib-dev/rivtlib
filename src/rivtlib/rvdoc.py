@@ -69,7 +69,7 @@ class Cmdp:
     def cmdx(self):
         """parse commands and blocks in Doc API
         Commands:
-            | PUBLISH | doc name; - | text; html; pdf; texpdf
+            | PUBLISH | doc name; -- | text; html; pdf;
             | ATTACHPDF | rel. path | prepend;append
 
         Blocks:
@@ -97,14 +97,21 @@ class Cmdp:
                     typeS = str(pL[2].strip())
                     if typeS not in ["text", "html", "pdf", "none"]:
                         print(
-                            "Doc type is not known \n"
-                            + "It must be one of 'text', 'html', or 'pdf' \n"
+                            "Doc type must be one 'text','html' or 'pdf' \n"
                             "Set to default type 'text'"
                         )
                         typeS = "text"
                     if self.lD["ptypeS"] != "--":
                         typeS = self.lD["ptypeS"]
                     dtypeS = typeS + ("x")
+                    # write README
+                    with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+                        f5.write(self.dutfS)
+                    with open(
+                        self.fD["rvreadmeT"], "w", encoding="utf-8"
+                    ) as f5:
+                        f5.write(self.dutfS)
+                    # call doc functions
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
                     continue
@@ -143,6 +150,41 @@ class Cmdp:
         return msgS
         # endregion
 
+    def metadatax(self):
+        """read meta block as config file
+
+        Returns:
+            msgS (str): metadata read
+        """
+
+        self.configL = configparser.ConfigParser()
+        self.configL.read_string(self.blockS)
+        self.authorS = self.configL["doc"]["authors"]
+        self.verS = self.configL["doc"]["version"]
+        self.copyS = self.configL["doc"]["copyright"]
+        self.repoS = self.configL["doc"]["repo"]
+        self.licenS = self.configL["doc"]["license"]
+        self.f1_authorS = self.configL["doc"]["fork1_authors"]
+        self.f1_verS = self.configL["doc"]["fork1_version"]
+        self.f1_repoS = self.configL["doc"]["fork1_repo"]
+        self.f1_liceS = self.configL["doc"]["fork1_license"]
+        self.coverlogo = self.configL["layout"]["coverlogo"]
+        self.runlogo = self.configL["layout"]["runninglogo"]
+        self.runlabelS = self.configL["layout"]["runninglabel"]
+        self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
+        self.projrefS = self.configL["layout"]["projectref"]
+        self.clientS = self.configL["layout"]["client"]
+        self.pdfmarginS = self.configL["layout"]["pdf_margins"]
+        self.linkB = self.configL["layout"]["pdf_link_underline"]
+
+    def attachpdfx(self):
+        """attach pdf or insert pdf as download file"""
+
+        msgS = "attachment"
+        return msgS
+
+    # ---------------------------------------------------------------
+
     def htmlx(self):
         """write readme and html doc
 
@@ -167,7 +209,6 @@ class Cmdp:
         rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
         rvdateT = str(Path(self.fD["rstdocsP"], "_templates", "rv-date.html"))
         rvtitleT = str(Path(self.fD["rstdocsP"], "_templates", "rv-title.html"))
-
         rvdateS = f"""
 <!-- _templates/rv-date.html -->
 <div class="footer-item">
@@ -204,8 +245,6 @@ class Cmdp:
         self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
-        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
         htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['htmlpubP']} \n"
         try:
             result = subprocess.run(htmlcmdS, shell=True, check=True)
@@ -214,10 +253,9 @@ class Cmdp:
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
-        return (
-            f"html doc written: {str(rvdocT)} \n"
-            + "readme file written: README.txt"
-        )
+        parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
+        short_p = ".../" + "/".join(parts)
+        return f"file written: {short_p} \n" + "file written: .../README.txt"
 
     def pdfx(self):
         """write readme and pdf doc
@@ -229,14 +267,13 @@ class Cmdp:
         self.confpy()  # update conf.py
         self.coverS()  # update cover page
         self.yamlS()  # update yaml file
-        lD = self.lD
         rvbaseS = self.fD["rbaseS"]
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvdocS = self.fD["rbaseS"] + ".pdf"
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
         rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d")
-        headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| Div: **{lD["divS"]}.{lD["sdivS"]}** |s| Sect: **###Section###**"""
+        headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| |s| Sect: **###Section###**"""
         foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
         foot2blkS = f"""**{self.runlabelS}**"""
 
@@ -274,15 +311,14 @@ class Cmdp:
                   
 """
 
-        tcontentS = f"""
+        tcontentS = """
 
 
 
-.. contents:: Contents -  Div: {lD["divS"]}.{lD["sdivS"]}
+.. contents:: Table of Contents 
    :depth: 4
 
 |
-
 
 """
 
@@ -297,8 +333,6 @@ class Cmdp:
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
-        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
         pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
         try:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
@@ -307,10 +341,11 @@ class Cmdp:
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
-        return (
-            f"pdf doc written: {str(rvdocT)} \n"
-            + "readme file written: README.txt"
-        )
+
+        parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
+        short_p = ".../" + "/".join(parts)
+        return f"file written: {short_p} \n" + "file written: .../README.txt"
+
         # endregion
 
     def textx(self):
@@ -337,10 +372,9 @@ class Cmdp:
         with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
 
-        return (
-            f"text doc written: {str(rvdocT)} \n"
-            + "readme file written: README.txt"
-        )
+        parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
+        short_p = ".../" + "/".join(parts)
+        return f"file written: {short_p} \n" + "file written: .../README.txt"
 
     def nonex(self):
         """write readme and rst doc"""
@@ -351,45 +385,11 @@ class Cmdp:
         self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
         with open(rstfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
-        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
+        parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
+        short_p = ".../" + "/".join(parts)
+        return f"file written: {short_p} \n" + "file written: .../README.txt"
 
-        return f"rst doc written: {str(rstfileT)} \n" + "README.txt written"
-
-    def metadatax(self):
-        """read meta block as config file
-
-        Returns:
-            msgS (str): metadata read
-        """
-
-        self.configL = configparser.ConfigParser()
-        self.configL.read_string(self.blockS)
-        self.authorS = self.configL["doc"]["authors"]
-        self.verS = self.configL["doc"]["version"]
-        self.copyS = self.configL["doc"]["copyright"]
-        self.repoS = self.configL["doc"]["repo"]
-        self.licenS = self.configL["doc"]["license"]
-        self.f1_authorS = self.configL["doc"]["fork1_authors"]
-        self.f1_verS = self.configL["doc"]["fork1_version"]
-        self.f1_repoS = self.configL["doc"]["fork1_repo"]
-        self.f1_liceS = self.configL["doc"]["fork1_license"]
-        self.coverlogo = self.configL["layout"]["coverlogo"]
-        self.runlogo = self.configL["layout"]["runninglogo"]
-        self.runlabelS = self.configL["layout"]["runninglabel"]
-        self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
-        self.projrefS = self.configL["layout"]["projectref"]
-        self.clientS = self.configL["layout"]["client"]
-        self.pdfmarginS = self.configL["layout"]["pdf_margins"]
-        self.linkB = self.configL["layout"]["pdf_link_underline"]
-
-    def attachpdfx(self):
-        """attach pdf or insert pdf as download file"""
-
-        msgS = "attachment"
-        return msgS
-
-    # ---------------------------------------------------------------
+    # -------------------------------------------------------------------
 
     def coverS(self):
         """
@@ -449,8 +449,6 @@ class Cmdp:
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(coverpgS)
-
-    # -------------------------------------------------------------------
 
     def confpy(self):
         """write config.py"""

@@ -71,19 +71,17 @@ else:
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
 
-
 # Initialize and configure the parser
 parser = argparse.ArgumentParser(description="Example script")
 # parser.add_argument("input", help="Input file path")
 parser.add_argument("-t", "--type", help="file type", default="--")
 # parser.add_argument("-v", "--verbose", action="store_true", help="Verbose mode")
 args = parser.parse_args()
-ptypeS = args.type
+ptypeS = (args.type).strip()
 # print(f"Input: {args.input}, Verbose: {args.verbose}")
 
-
 rivtT = Path(reptP, rivtN)
-print(rivtN, rivtT)
+# print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 rbaseS = rivtN.split(".")[0]
@@ -96,6 +94,7 @@ publicP = Path(rootP, "_rivt-public")
 storeP = Path(reptP, "_stored")
 pubP = Path(reptP, "_published")
 rstdocsP = Path(reptP, "_rstdocs")
+readmeP = Path(reptP, "_published", "readme")
 srcP = Path(reptP, "src")
 logsP = Path(storeP, "logs")
 errlogT = Path(logsP, errlogN)
@@ -154,6 +153,7 @@ fD = {  # folders
     "docP": Path(reptP, "rivtDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
+    "rvreadmeT": Path(pubP, "readme", docnumS + "readme.txt"),
     "rstdocsP": rstdocsP,
     "reptPubP": pubP,
     "pdfpubP": Path(pubP, "pdfdocs"),
@@ -170,7 +170,7 @@ lD = {  # labels
     "rbaseS": rbaseS,  # rivt file base name
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
-    "divS": rbaseS[2:3],  # div number
+    "divS": rbaseS[2:3],  # div character
     "sdivS": str(int(rbaseS[3:5])),  # subdiv
     "docnameS": rbaseS[6:].replace("-", " "),  # document name
     "replablS": rivtP.name[5:],
@@ -186,7 +186,7 @@ lD = {  # labels
     "deciI": 2,  # decimals
     "headrS": "",  # header string
     "footrS": "",  # footer string
-    "aliaS": "rvsource",  # fDer alias
+    "aliaS": "rvsource",  # folder alias
     "unitS": "M,M",  # units
     "valexpS": "",  # list of values for export
     "showB": True,  # print section to doc
