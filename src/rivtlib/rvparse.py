@@ -77,7 +77,7 @@ class Rs:
             snumS = f"{lD['divS']}-{lD['sdivS']}.{str(snumI)}{addtgS} "
             headS = snumS + " " + hL[0].strip()
             snum1S = (
-                transS + f"**{lD['divS']}-{lD['sdivS']}**.{str(snumI)}{addtgS} "
+                transS + f"**{lD['divS']}-{lD['sdivS']}.{str(snumI)}{addtgS}** "
             )
 
             head1S = snum1S + hL[0].strip()

@@ -12,6 +12,7 @@ import subprocess
 import sys
 import warnings
 from datetime import datetime
+from itertools import groupby
 from pathlib import Path
 
 import __main__
@@ -31,6 +32,10 @@ logsP = Path(storeP, "logs")
 rivt_storedP = storeP
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
+rst_folderP = reptP
+rivtfL = glob.glob("rv???*.py", root_dir=rst_folderP)
+rivtfL.sort()
+rvfirstS = rivtfL[0].replace(".py", ".rst")
 
 inS = __main__.iniS
 repD = {}
@@ -67,35 +72,6 @@ logging.basicConfig(
     filemode="w",
 )
 warnings.filterwarnings("ignore")
-
-
-def get_py():
-    """list of doc reports"""
-
-    rst_folderP = reptP
-    rivtfL = glob.glob("rv???*.py", root_dir=rst_folderP)
-    rivtfL.sort()
-
-    return rivtfL
-
-
-def get_txt():
-    """list of doc reports"""
-
-    txt_folderP = Path(pubP, "_doctext")
-    txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
-
-    return txtfL
-
-
-def get_readme():
-    """list of doc reports"""
-
-    rme_folderP = Path(pubP, "readme")
-    rdfL = glob.glob("rv???*.txt", root_dir=rme_folderP)
-    rdfL.sort()
-
-    return rdfL
 
 
 def htmlx():
@@ -184,7 +160,8 @@ def pdfx(freprstT):
     """
 
     # region
-    with open(freprstT, "r", encoding="utf-8") as f1:
+    fP = Path(rstdocsP, rvfirstS)
+    with open(fP, "r", encoding="utf-8") as f1:
         read_rstS = f1.read()
 
     confpy()  # update conf.py
@@ -201,9 +178,9 @@ def pdfx(freprstT):
     foot2blkS = f"""**{repD["runlabel"]}**"""
 
     imgS = f"""
-.. |blklogo| image:: ../{repD["runlogo"]}
-:height: 100px
-:alt: logo
+.. |blklogo| image:: ./{repD["runlogo"]}
+    :height: 100px
+    :alt: logo
 
 
 """
@@ -243,10 +220,11 @@ def pdfx(freprstT):
         + read_rstS
     )
 
-    repbaseS = repD["repname"].split(".pdf")[0]
-    with open(freprstT, "w", encoding="utf-8") as f1:
+    # repbaseS = repD["repname"].split(".pdf")[0]
+    rvfirbaS = rvfirstS.split(".")[0]
+    with open(fP, "w", encoding="utf-8") as f1:
         f1.write(drstS)
-    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={repbaseS} {str(rstdocsP)} {str(pdfpubP)} \n"
+    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={rvfirbaS} {str(rstdocsP)} {str(pdfpubP)} \n"
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)
         if not result.returncode:
@@ -364,6 +342,7 @@ def confpy():
     """write config.py"""
 
     rvbaseS = repD["repname"].split(".")[0]
+    rvindexS = rivtfL[0]
     rvfileT = str(Path(rstdocsP, "conf.py"))
 
     confpyS = f"""
@@ -437,7 +416,7 @@ favicons = [
 # source start file, target name, title, author, options
 # options: ('index', 'MyProject', 'My Project', 'Author Name', {{"pdf_compressed": True}})
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
-pdf_documents = [("{rvbaseS}", "{rvbaseS}", "{rvbaseS}", 
+pdf_documents = [("{rvindexS}", "{rvbaseS}", "{rvbaseS}", 
             "{repD["authors"]}")]
 # Label to use as a prefix for the subtitle on the cover page
 subtitle_prefix = "User Manual"
@@ -464,7 +443,7 @@ pdf_use_toc = True
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
 # How many levels deep should the table of contents be?
-pdf_toc_depth = 9999
+pdf_toc_depth = 1
 # Insert footnotes where they are defined 
 pdf_inline_footnotes = False
 # If false, no index is generated.
@@ -875,8 +854,27 @@ styles:
         f5.write(rivstyS)
 
 
+def get_txt():
+    """list of doc reports"""
+
+    txt_folderP = Path(pubP, "_doctext")
+    txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
+    txtfL.sort()
+
+    return txtfL
+
+
+def get_readme():
+    """list of doc reports"""
+
+    rme_folderP = Path(pubP, "readme")
+    rdfL = glob.glob("rv???*.txt", root_dir=rme_folderP)
+    rdfL.sort()
+
+    return rdfL
+
+
 # write rst for each rivt file in list
-rivtfL = get_py()
 print("\n\nrivt files included in report\n---------------------------")
 for s in rivtfL:
     print("rivt file:", s)
@@ -895,23 +893,35 @@ with open(errlogT, "a") as f1:
     f1.write("write rst for each rivt file: " + repD["title"] + "\n")
 logging.info("write rst files: " + repD["title"])
 
-# aggregate rst into report rst file
-rstfL = []
+# add tocs to rst
+rstfiL = []
 for fS in rivtfL:
-    rstfL.append(fS.replace(".py", ".rst"))
-reportS = """\n"""
-for fpubS in rstfL:
-    frsT = Path(rstdocsP, fpubS)
-    with open(frsT, "r") as f2:
-        rstS = f2.read()
-    reportS += rstS
-with open(freprstT, "w") as f3:
-    f3.write(reportS)
+    rstfiL.append(fS.replace(".py", ".rst"))
+tocflagB = False
+divchrL = []
+tocS = """
+
+.. toctree::
+    :maxdepth: 
+    :hidden:
+
+xxxx
+  
+  """
+
+grouped = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
+for item in grouped:
+    frspT = Path(rstdocsP, item[0])
+    itemsp = ["    " + i for i in item]
+    tocins = "\n".join(itemsp[1:])
+    tocrS = tocS.replace("xxxx", tocins)
+    with open(frspT, "a") as f2:
+        f2.write(tocrS)
 errlogN = docnumS + "log.txt"  # log
 errlogT = Path(logsP, errlogN)
 with open(errlogT, "a") as f4:
-    f4.write("aggregate rst files: " + repD["title"] + "\n")
-logging.info("aggregate rst files into report: " + repD["title"])
+    f4.write("tocs inserted: " + repD["title"] + "\n")
+logging.info("tocs inserted: " + repD["title"])
 
 # write readme report
 reptitleS = repD["repname"]
@@ -959,18 +969,15 @@ logging.info("Report : " + repD["title"])
 # write report
 if get_typeS == "text":
     """write text report"""
-
     msgS = textx()
     print(msgS)
 elif get_typeS == "pdf":
     """write pdf report"""
-
     print("write pdf report")
-    msgS = pdfx(freprstT)
+    msgS = pdfx(rstfiL[0])
     print(msgS)
 elif get_typeS == "html":
     """write html report"""
-
     msgS = htmlx()
     print(msgS)
 else:
