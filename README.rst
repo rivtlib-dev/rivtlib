@@ -109,10 +109,9 @@ Modules - Summary
     - X() -> 9 lines
     =========================================================  
 
-
     =========================================================
-    Module Name: rvparse.py   | Total Lines: 352
-    =========================================================       
+    Module Name: rvparse.py   | Total Lines: 336    
+    =========================================================
 
     IMPORTS:
     - import logging
@@ -122,19 +121,18 @@ Modules - Summary
     - from io import StringIO
     - from pathlib import Path
     - import tabulate
-    - from fastcore.utils import store_attr
+    - from fastcore.utils import store_attr       
     - import __main__
     - from . import rvcmd, rvtag
 
     CLASSES & METHODS:
-        Class: Rs (333 lines total)
-        └─ Method: __init__() -> 126 lines
+        Class: Rs (317 lines total)
+        └─ Method: __init__() -> 110 lines
         └─ Method: content() -> 177 lines
         └─ Method: prt_tabl() -> 22 lines
 
     TOP-LEVEL FUNCTIONS:
-    =========================================================  
-
+    =========================================================
 
     =========================================================
     Module Name: rvtag.py   | Total Lines: 352
@@ -161,7 +159,6 @@ Modules - Summary
 
     TOP-LEVEL FUNCTIONS:
     =========================================================  
-
 
     =========================================================
     Module Name: rvcmd.py   | Total Lines: 976
@@ -207,7 +204,6 @@ Modules - Summary
     TOP-LEVEL FUNCTIONS:
     =========================================================     
 
-
     =========================================================
     Module Name: rvdoc.py   | Total Lines: 973
     =========================================================       
@@ -241,6 +237,38 @@ Modules - Summary
 
     TOP-LEVEL FUNCTIONS:
     ========================================================= 
+
+    =========================================================
+    Module Name: rvreport.py   | Total Lines: 1076  
+    =========================================================
+
+    IMPORTS:
+    - import configparser
+    - import glob
+    - import logging
+    - import os
+    - import shutil
+    - import subprocess
+    - import sys
+    - import warnings
+    - from datetime import datetime
+    - from itertools import groupby
+    - from pathlib import Path
+    - import __main__
+
+    CLASSES & METHODS:
+
+    TOP-LEVEL FUNCTIONS:
+    - htmlx() -> 71 lines
+    - pdfx() -> 34 lines
+    - textx() -> 27 lines
+    - confpy() -> 138 lines
+    - yamlS() -> 376 lines
+    - pdfcoverS() -> 77 lines
+    - pdfindex() -> 78 lines
+    - htmlindex() -> 95 lines
+    - get_readme() -> 8 lines
+    =========================================================
 
 
     =========================================================

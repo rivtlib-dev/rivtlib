@@ -981,7 +981,7 @@ def htmlindex():
 .. toctree::
     :maxdepth: 2
 
-xxxx
+x-x-x-x
         
     """
 
@@ -990,7 +990,7 @@ xxxx
         tocS = "\n"
         for fS in item[1:]:
             tocS += "    " + fS + "\n"
-        tocrS = toc2S.replace("xxxx", tocS)
+        tocrS = toc2S.replace("x-x-x-x", tocS)
         fpT = Path(rstdocsP, item[0])
         with open(fpT, "a") as f1:
             f1.write(tocrS)
