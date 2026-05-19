@@ -253,11 +253,11 @@ class Tag:
             """table block"""
             # region
             blkL = (self.strL).split("\n", 1)
-            titleS = blkL[0].strip()
             tnumI = int(self.lD["tableI"])
             fileS = "t" + self.lD["docnumS"][2:] + str(tnumI) + ".csv"
             self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
+            titleS = blkL[0].strip() + " (stored: " + fileS + ")"
             spS = "\n|\n\n"
             uS = tS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
             rS = f"""{spS}**Table {str(tnumI)}**: {titleS} \n\n{blkL[1]}"""

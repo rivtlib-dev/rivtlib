@@ -14,6 +14,7 @@ import warnings
 from datetime import datetime
 from itertools import groupby
 from pathlib import Path
+import shutil
 
 import __main__
 
@@ -37,6 +38,8 @@ rivtfL = glob.glob("rv???*.py", root_dir=rst_folderP)
 rivtfL.sort()
 rvfirstS = rivtfL[0].replace(".py", ".rst")
 
+# shutil.rmtree(path)
+
 inS = __main__.iniS
 repD = {}
 configL = configparser.ConfigParser()
@@ -46,6 +49,7 @@ repD["regen"] = configL["report"]["regen"]
 repD["exclude"] = configL["report"]["exclude"]
 repD["cover"] = configL["report"]["cover"]
 repD["coverlogo"] = configL["report"]["coverlogo"]
+repD["logosize"] = configL["report"]["coverlogo_size"]
 repD["title"] = configL["report"]["title"]
 repD["subtitle"] = configL["report"]["subtitle"]
 repD["client"] = configL["report"]["client"]
@@ -53,7 +57,7 @@ repD["authors"] = configL["report"]["authors"]
 repD["version"] = configL["report"]["version"]
 repD["projref"] = configL["report"]["projectref"]
 repD["copyright"] = configL["report"]["copyright"]
-repD["runlogo"] = configL["report"]["copyright"]
+repD["runlogo"] = configL["report"]["running_logo"]
 repD["runlabel"] = configL["report"]["running_label"]
 repD["pdfpage"] = configL["report"]["pdf_pagesize"]
 repD["pdfmargin"] = configL["report"]["pdf_margins"]
@@ -75,20 +79,16 @@ warnings.filterwarnings("ignore")
 
 
 def htmlx():
-    """write readme and html doc
+    """write html report
 
     Returns:
         msgS (str): completion message
 
     """
-
-    confpy()  # update conf.py
-    coverS()  # update cover page
-    yamlS()  # update yaml file
     baseP = self.fD["reptP"]
     srcS = f"{baseP}/src/{self.coverlogo}"
     destS = f"{baseP}/_rstdocs/_static/img/{self.coverlogo}"
-    shutil.copy(srcS, destS)
+    # shutil.copy(srcS, destS)
     rvbaseS = self.fD["rbaseS"]
     rvfileS = self.fD["rbaseS"] + ".rst"
     rvdocS = self.fD["rbaseS"] + ".html"
@@ -98,133 +98,71 @@ def htmlx():
     rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
     rvdateT = str(Path(self.fD["rstdocsP"], "_templates", "rv-date.html"))
     rvtitleT = str(Path(self.fD["rstdocsP"], "_templates", "rv-title.html"))
-
     rvdateS = f"""
 <!-- _templates/rv-date.html -->
 <div class="footer-item">
-<p class="rvdate">
-    {timeS}
-</p>
+    <p class="rvdate">
+        {timeS}
+    </p>
 </div>
 """
     with open(rvdateT, "w", encoding="utf-8") as f2:
-        f2.write(rvdateS)
+            f2.write(rvdateS)
 
     rvauthS = f"""
 <!-- _templates/rv-author.html -->
 <div class="footer-item">
-<p class="rvauthor">
-    {self.authorS}
-</p>
+    <p class="rvauthor">
+        {self.authorS}
+    </p>
 </div>
 """
     with open(rvauthT, "w", encoding="utf-8") as f2:
-        f2.write(rvauthS)
+            f2.write(rvauthS)
 
     rvtitleS = f"""
 <!-- _templates/rv-title.html -->
 <div class="footer-item">
-<p class="rvtitle">
-    {self.docnameS}  v.{self.verS} 
-</p>
+    <p class="rvtitle">
+        {self.docnameS}  v.{self.verS} 
+    </p>
 </div>
 """
-    with open(rvtitleT, "w", encoding="utf-8") as f2:
-        f2.write(rvtitleS)
+        with open(rvtitleT, "w", encoding="utf-8") as f2:
+            f2.write(rvtitleS)
 
-    self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
-    with open(rvfileT, "w", encoding="utf-8") as f5:
-        f5.write(self.drstS)
-    with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
-        f5.write(self.dutfS)
-    htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['htmlpubP']} \n"
-    try:
-        result = subprocess.run(htmlcmdS, shell=True, check=True)
-        if not result.returncode:
-            print("\nhtml script executed")
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing script: {e}")
-        print("Stderr:", e.stderr)
-
-    parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
+        self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
+        with open(rvfileT, "w", encoding="utf-8") as f5:
+            f5.write(self.drstS)
+        htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['htmlpubP']} \n"
+        try:
+            result = subprocess.run(htmlcmdS, shell=True, check=True)
+            if not result.returncode:
+                print("\nhtml script executed")
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing script: {e}")
+            print("Stderr:", e.stderr)
+        parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
+        short_p = ".../" + "/".join(parts)
+        return f"file written: {short_p} \n" + "file written: .../README.txt"
+    parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
 
     return f"html file written: {short_p} \n"
 
 
-def pdfx(freprstT):
-    """write readme and pdf doc
+def pdfx():
+    """write pdf report
 
     Returns:
         msgS (str): completion message
     """
 
     # region
-    fP = Path(rstdocsP, rvfirstS)
-    with open(fP, "r", encoding="utf-8") as f1:
-        read_rstS = f1.read()
 
-    confpy()  # update conf.py
-    coverS()  # update cover page
-    yamlS()  # update yaml file
+    print("run pdf sphinx")
+    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
 
-    verS = repD["version"]
-    authors = repD["authors"]
-    titleS = repD["title"]
-    headblkS = (
-        f"""**{titleS}** - v{verS} |s| |s| |s| |s| Sect: **###Section###**"""
-    )
-    foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {authors}"""
-    foot2blkS = f"""**{repD["runlabel"]}**"""
-
-    imgS = f"""
-.. |blklogo| image:: ./{repD["runlogo"]}
-    :height: 100px
-    :alt: logo
-
-
-"""
-    headS = f"""
-.. header::
-.. list-table::
-    :class: header-box
-    :align: left
-    :widths: 90 10
-    
-    * - {headblkS}
-        - p. **###Page###**   
-
-        
-"""
-
-    footS = f"""
-.. footer:: 
-.. list-table::
-    :class: footer-box
-    :align: left
-    :widths: 84 22 16
-    
-    * - {foot1blkS}        
-        - {foot2blkS}        
-        - |blklogo|
-
-                
-"""
-
-    drstS = (
-        ".. |s| unicode:: 0xA0 \n\n\n"
-        + imgS
-        + headS
-        + footS
-        + "\n\n"
-        + read_rstS
-    )
-
-    # repbaseS = repD["repname"].split(".pdf")[0]
-    rvfirbaS = rvfirstS.split(".")[0]
-    with open(fP, "w", encoding="utf-8") as f1:
-        f1.write(drstS)
-    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={rvfirbaS} {str(rstdocsP)} {str(pdfpubP)} \n"
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)
         if not result.returncode:
@@ -237,11 +175,12 @@ def pdfx(freprstT):
     short_p = ".../" + "/".join(parts)
 
     return f"pdf file written: {short_p} \n"
+
     # endregion
 
 
 def textx():
-    """write readme and text doc
+    """write text report
 
     Returns:
         msgS (str): completion message
@@ -272,78 +211,10 @@ def textx():
 # -------------------------------------------------------------------
 
 
-def coverS():
-    """
-    cover page
-
-    """
-
-    # timeS = datetime.now().strftime("%Y-%m-%d")
-    reptitleS = repD["repname"].split(".")[0]
-    reptitleS = reptitleS.replace("-", " ")
-    rvfileT = str(Path(rstdocsP, "_templates", "pdfcover.rst"))
-    coverpgS = f"""
-.. role:: big-text
-
-|
-|
-        
-.. image:: ../{repD["coverlogo"]}
-   :width: 700px
-   :align: center
-
-|
-|
-|
-
-
-.. class:: center
-
-    :big-text:`{reptitleS}`
-
-|
-|
-|
-|
-|
-|
-
-.. class:: center
-
-   Attn: **{repD["client"]}**
-
-|
-
-.. class:: center
-
-   project: **{repD["projref"]}**
-
-   
-
-
-.. raw:: pdf
-
-   PageBreak noHead
-   
-
-.. raw:: pdf
-
-   PageBreak mainPage
-   SetPageCounter 1
-
-   
-"""
-
-    with open(rvfileT, "w", encoding="utf-8") as f5:
-        f5.write(coverpgS)
-
-
 def confpy():
     """write config.py"""
 
     rvbaseS = repD["repname"].split(".")[0]
-    rvindexS = rivtfL[0]
-    rvfileT = str(Path(rstdocsP, "conf.py"))
 
     confpyS = f"""
 import sys
@@ -412,16 +283,20 @@ favicons = [
         "href": "favicon-32x32.png",
     }},
 ]
+#
 # -- Options for PDF output -------------------------------------------------
+#
 # source start file, target name, title, author, options
 # options: ('index', 'MyProject', 'My Project', 'Author Name', {{"pdf_compressed": True}})
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
-pdf_documents = [("{rvindexS}", "{rvbaseS}", "{rvbaseS}", 
+pdf_documents = [("index", "{rvbaseS}", "{rvbaseS}", 
             "{repD["authors"]}")]
 # Label to use as a prefix for the subtitle on the cover page
-subtitle_prefix = "User Manual"
+subtitle_prefix = ""
 # A list of folders to search for stylesheets.
 pdf_style_path = ["./_rstdocs/_static/pdfstyle"]
+# A comma-separated list of custom stylesheets.
+pdf_stylesheets = ["rivtstyle.yaml"]
 # A colon-separated list of folders to search for fonts.
 pdf_font_path = ["./_rstdocs/_static/fonts"]
 # Example: compressed=True
@@ -431,19 +306,19 @@ pdf_language = "en_US"
 # literal blocks wider than the frame overflow, shrink or truncate
 pdf_fit_mode = "shrink"
 # 1 means top-level sections start in a new page 0 disabled
-pdf_break_level = 0
+pdf_break_level = 1
 # When a section starts in a new page, force it to be 'even', 'odd', 'any
 pdf_breakside = "any"
 # If false, no coverpage is generated.
 pdf_use_coverpage = True
 # Name of the cover page template to use
-pdf_cover_template = "_templates/pdfcover.rst"
+pdf_cover_template = "./_templates/pdfcover.rst"
 # Show Table Of Contents at the beginning?
 pdf_use_toc = True
+# How many levels deep should the table of contents be?
+pdf_toc_depth = 2
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
-# How many levels deep should the table of contents be?
-pdf_toc_depth = 1
 # Insert footnotes where they are defined 
 pdf_inline_footnotes = False
 # If false, no index is generated.
@@ -469,18 +344,15 @@ pdf_smartquotes = 0
 # pdf_default_dpi = 72
 # Enable rst2pdf extension modules
 # pdf_extensions = []
-# A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["./_rstdocs/_static/pdfstyle/rivtstyle.yaml"]
     """
 
+    rvfileT = str(Path(rstdocsP, "conf.py"))
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(confpyS)
 
 
 def yamlS():
     """write rivt yaml file for pdf"""
-
-    rvfileT = str(Path(rstdocsP, "_static", "pdfstyle", "rivtstyle.yaml"))
 
     rivstyS = f"""
 fontsAlias:
@@ -498,23 +370,16 @@ fontsAlias:
   fontSansItalic: DejaVuSans-Oblique
 pageSetup:
   firstTemplate: coverPage
-  height: null
-  margin-bottom: 4mm
-  margin-gutter: 1mm
+  size: letter
+  margin-bottom: .5cm
+  margin-gutter: 0cm 
   margin-left: 1.5cm
   margin-right: 1.5cm
-  margin-top: 4mm
-  size: letter
+  margin-top: .5cm
   spacing-footer: 10mm
   spacing-header: 10mm
-  width: null
 pageTemplates:
   coverPage:
-    showFooter: true
-    showHeader: false
-    underline: false
-  noHead:
-    frames: [[0%,0%,100%,100%]]
     showFooter: true
     showHeader: false
     underline: false
@@ -546,8 +411,8 @@ styles:
     leftIndent: 0
     parent: null
     rightIndent: 0
-    spaceAfter: 1
-    spaceBefore: 1
+    spaceAfter: 5
+    spaceBefore: 5
     strike: false
     textColor: black
     wordWrap: null
@@ -566,7 +431,7 @@ styles:
     alignment: TA_JUSTIFY
     hyphenation: true
     parent: normal
-    spaceBefore: 6
+    spaceBefore: 5
   align-center:
     alignment: TA_CENTER
     parent: bodytext
@@ -574,8 +439,8 @@ styles:
     alignment: TA_RIGHT
     parent: bodytext
   code:
-    spaceBefore: 6
-    spaceAfter: 6
+    spaceBefore: 5
+    spaceAfter: 5
     backColor: "#d1dede"
     borderColor: darkgray
     borderPadding: 6
@@ -629,10 +494,11 @@ styles:
         - - -1
           - -1
         - 0.25
-        - white
+        - transparent
   header-box:
     alignment: TA_RIGHT
     fontName: fontSans
+    spaceAfter: 0 
     commands:
       - - BOX
         - - 0
@@ -640,11 +506,11 @@ styles:
         - - -1
           - -1
         - 0.25
-        - white
+        - transparent
   heading:
     keepWithNext: true
     parent: normal
-    spaceAfter: 1
+    spaceAfter: 6
     spaceBefore: 10
     fontName: fontSerif
     textColor: "#222222"
@@ -689,7 +555,7 @@ styles:
     parent: bodytext
   line:
     parent: lineblock
-    spaceBefore: 0
+    spaceBefore: 2
   lineblock:
     parent: bodytext
   linenumber:
@@ -747,8 +613,8 @@ styles:
     spaceBefore: 12
   table:
     alignment: TA_LEFT
-    spaceBefore: 1
-    spaceAfter: 1
+    spaceBefore: 5
+    spaceAfter: 5
     borderPadding: 5
     leftPadding: 6
     rightPadding: 6
@@ -780,7 +646,7 @@ styles:
     borderPadding: 0
     backColor: "#c5d1c5"
     borderColor: darkgray
-    fontName: fontMonoBold
+    fontName: fontSansBold
   tip-heading:
     parent: admonition-heading
   title:
@@ -789,7 +655,8 @@ styles:
     keepWithNext: false
     parent: heading
     fontName: fontSansBold
-    spaceAfter: 36
+    spaceBefore: 5
+    spaceAfter: 5
   title-reference:
     fontName: fontSansItalic
     parent: normal
@@ -849,19 +716,146 @@ styles:
     parent: admonition-heading
 
 """
-
+    rvfileT = str(Path(rstdocsP, "_static", "pdfstyle", "rivtstyle.yaml"))
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(rivstyS)
 
 
-def get_txt():
-    """list of doc reports"""
+def rvcoverS():
+    """
+    cover page
 
-    txt_folderP = Path(pubP, "_doctext")
-    txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
-    txtfL.sort()
+    """
 
-    return txtfL
+    # timeS = datetime.now().strftime("%Y-%m-%d")
+    reptitleS = repD["repname"].split(".")[0]
+    reptitleS = reptitleS.replace("-", " ")
+
+    coverpgS = f"""
+
+.. role:: big-text
+    
+.. raw:: pdf
+
+   PageBreak coverPage
+    
+
+|
+|
+        
+.. image:: ../{repD["coverlogo"]}
+   :width: {repD["logosize"]}%
+   :align: center
+
+|
+|
+|
+
+
+.. rst-class:: center
+
+    :big-text:`{repD["title"]}`
+    
+    {repD["subtitle"]}
+    
+
+|
+|
+|
+|
+|
+|
+
+.. rst-class:: center
+
+    Attn: **{repD["client"]}**
+
+   
+|
+
+.. rst-class:: center
+
+    project: **{repD["projref"]}**
+
+|    
+
+.. raw:: pdf
+
+    PageBreak mainPage
+    SetPageCounter 1
+
+"""
+
+    drstS = coverpgS + "\n\n"
+
+    rvcoverT = Path(rstdocsP, "_templates", "pdfcover.rst")
+    with open(rvcoverT, "w", encoding="utf-8") as f1:
+        f1.write(drstS)
+
+
+def rvindex():
+    """_summary_"""
+
+    verS = repD["version"]
+    authors = repD["authors"]
+    titleS = repD["title"]
+    subS = ".. |s| unicode:: 0xA0 \n\n\n"
+
+    headblkS = f"""**{titleS}** - v{verS} |s| |s| |s| |s| **###Section###**"""
+
+    foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {authors}"""
+    foot2blkS = f"""**{repD["runlabel"]}**"""
+
+    len2I = len(repD["runlabel"]) + 3
+    len3I = 24 - len2I
+    len1S = str(60 + len3I)
+
+    imgS = f"""
+.. |blklogo| image:: ../{repD["runlogo"]}
+    :height: 100px
+    :align: bottom
+    :alt: logo
+
+
+"""
+
+    headS = f"""
+.. header::
+    
+    .. list-table::
+        :class: header-box
+        :align: left
+        :widths: 90 10
+        
+        * - {headblkS}
+          - p. **###Page###**   
+  
+    """
+
+    footS = f"""
+.. footer:: 
+    
+    .. list-table::
+        :class: footer-box
+        :align: left
+        :widths: {len1S}  {str(len2I)} 16
+        
+        * - {foot1blkS}        
+          - {foot2blkS}        
+          - |blklogo|
+    
+    """
+
+    tochideS = """
+:orphan:
+
+"""
+
+    drstS = tochideS + subS + imgS + headS + footS + "\n\n"
+
+    rvcoverT = Path(rstdocsP, "index.rst")
+    with open(rvcoverT, "w", encoding="utf-8") as f1:
+        f1.write(drstS)
 
 
 def get_readme():
@@ -874,6 +868,15 @@ def get_readme():
     return rdfL
 
 
+rvcoverS()
+print("cover page written")
+rvindex()
+print("index page written")
+yamlS()
+print("yaml file written")
+confpy()
+print("conf file written")
+
 # write rst for each rivt file in list
 print("\n\nrivt files included in report\n---------------------------")
 for s in rivtfL:
@@ -885,45 +888,45 @@ for frstS in rivtfL:
     short_p = ".../" + "/".join(parts)
     print("\nrun file: ", short_p, "\n")
     subprocess.run(["python", frstT, "-t none"])
-    rbaseS = frstS.split(".")[0]  # log
-    docnumS = rbaseS[0:6]
-    errlogN = docnumS + "log.txt"
-    errlogT = Path(logsP, errlogN)
+    errlogT = Path(logsP, frstS[0:7] + "log.txt")
 with open(errlogT, "a") as f1:
     f1.write("write rst for each rivt file: " + repD["title"] + "\n")
 logging.info("write rst files: " + repD["title"])
 
-# add tocs to rst
+# ------------ convert list from .py to .rst
 rstfiL = []
 for fS in rivtfL:
     rstfiL.append(fS.replace(".py", ".rst"))
 tocflagB = False
-divchrL = []
-tocS = """
+# ------------ write tocs to index
+toc1S = """
 
 .. toctree::
-    :maxdepth: 
+    :maxdepth: 3
     :hidden:
+    :caption: ABC
 
 xxxx
-  
-  """
+    
 
-grouped = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
-for item in grouped:
-    frspT = Path(rstdocsP, item[0])
-    itemsp = ["    " + i for i in item]
-    tocins = "\n".join(itemsp[1:])
-    tocrS = tocS.replace("xxxx", tocins)
-    with open(frspT, "a") as f2:
-        f2.write(tocrS)
-errlogN = docnumS + "log.txt"  # log
-errlogT = Path(logsP, errlogN)
-with open(errlogT, "a") as f4:
-    f4.write("tocs inserted: " + repD["title"] + "\n")
+"""
+tocinS = "\n"
+tocrS = "\n"
+groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
+for item in groupL:
+    tocinS = "\n"
+    for fS in item:
+        tocinS = tocinS + "    " + fS + "\n"
+    tocinS = toc1S.replace("xxxx", tocinS)
+    tocrS += tocinS
+fpT = Path(rstdocsP, "index.rst")
+with open(fpT, "a") as f1:
+    f1.write(tocrS)
+errlogT = Path(logsP, frstS[0:7] + "log.txt")
+with open(errlogT, "a") as f2:
+    f2.write("tocs inserted: " + repD["title"] + "\n")
 logging.info("tocs inserted: " + repD["title"])
-
-# write readme report
+# -------------------- write readme report
 reptitleS = repD["repname"]
 versionS = repD["version"]
 authorS = repD["authors"]
@@ -945,39 +948,27 @@ parts = Path(readmeT).parts[-3:]  # Take last 3 segments
 short_p = ".../" + "/".join(parts)
 print("\nREADME report written: ", short_p, "\n")
 logging.info("README report : " + repD["title"])
-
-# set report path
+# ------------------------- write report
 get_typeS = repD["repname"].split(".")[-1].strip()
-if get_typeS == "pdf":
-    pubT = Path(pubP, "pdfdocs", repD["repname"].strip())
-elif get_typeS == "txt":
-    pubT = Path(pubP, "txtdocs", repD["repname"].strip())
-elif get_typeS == "html":
-    pubT = Path(pubP, "docs", repD["repname"].strip())
-else:
-    print("File type not recognized")
-    print("Type must be '.pdf', '.html' or '.txt' ")
-    sys.exit()
-rbaseS = frstS.split(".")[0]  # log
-docnumS = rbaseS[0:6]
-errlogN = docnumS + "log.txt"
-errlogT = Path(logsP, errlogN)
-with open(errlogT, "a") as f1:
-    f1.write("write report: " + repD["title"] + "\n")
-logging.info("Report : " + repD["title"])
-
-# write report
 if get_typeS == "text":
     """write text report"""
+    pubT = Path(pubP, "txtdocs", repD["repname"].strip())
+    txt_folderP = Path(pubP, "_doctext")
+    txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
+    txtfL.sort()
     msgS = textx()
     print(msgS)
 elif get_typeS == "pdf":
     """write pdf report"""
+    pubT = Path(pubP, "pdfdocs", repD["repname"].strip())
     print("write pdf report")
-    msgS = pdfx(rstfiL[0])
+    print("----------------")
+    msgS = pdfx()
     print(msgS)
 elif get_typeS == "html":
     """write html report"""
+    pubT = Path(pubP, "docs", repD["repname"].strip())
+    print("write html report")
     msgS = htmlx()
     print(msgS)
 else:

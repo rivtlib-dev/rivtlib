@@ -31,11 +31,11 @@ class Cmdp:
 
     def __init__(self, sS, fD, lD, dutfS, drstS, dtxtS):
         # region
+        # shutil.rmtree(path)
         store_attr()
         self.pthS = ""
         self.parS = ""
         self.sL = sS.split("\n")
-
         self.reptP = fD["reptP"]
         errlogT = fD["errlogT"]
         self.confg = []
@@ -52,6 +52,7 @@ class Cmdp:
         )
         warnings.filterwarnings("ignore")
         self.logging = logging
+
         # strip leading spaces and comments from section
         sL = sS.split("\n")  # unprocessed lines
         spL = []
@@ -85,32 +86,34 @@ class Cmdp:
         self.blockS = """"""
         self.docnameS = " "
         uS = rS = tS = lS = ""
+
+        # write README
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
+        with open(self.fD["rvreadmeT"], "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
+
+        # parse Doc API
         for pS in self.spL:
             if len(pS) > 0:
                 if pS[0:11] == "| PUBLISH |":
                     pL = pS[5:].split("|")
                     self.docnameS = str(pL[1].strip()).strip()
                     if self.docnameS == "--":
-                        self.docnameS = self.fD["docnameS"]
+                        self.docnameS = " "
                     else:
                         self.docnameS = str(pL[1]).strip()
+                    # set doc type
                     typeS = str(pL[2].strip())
                     if typeS not in ["text", "html", "pdf", "none"]:
                         print(
-                            "Doc type must be one 'text','html' or 'pdf' \n"
-                            "Set to default type 'text'"
+                            "Doc type must be: text, html or pdf \n"
+                            "Type is set to default: text"
                         )
                         typeS = "text"
                     if self.lD["ptypeS"] != "--":
                         typeS = self.lD["ptypeS"]
                     dtypeS = typeS + ("x")
-                    # write README
-                    with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
-                        f5.write(self.dutfS)
-                    with open(
-                        self.fD["rvreadmeT"], "w", encoding="utf-8"
-                    ) as f5:
-                        f5.write(self.dutfS)
                     # call doc functions
                     obj = getattr(Cmdp, dtypeS)
                     msgS = obj(self)
@@ -169,6 +172,7 @@ class Cmdp:
         self.f1_repoS = self.configL["doc"]["fork1_repo"]
         self.f1_liceS = self.configL["doc"]["fork1_license"]
         self.coverlogo = self.configL["layout"]["coverlogo"]
+        self.logosize = self.configL["layout"]["coverlogo_size"]
         self.runlogo = self.configL["layout"]["runninglogo"]
         self.runlabelS = self.configL["layout"]["runninglabel"]
         self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
@@ -176,6 +180,7 @@ class Cmdp:
         self.clientS = self.configL["layout"]["client"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
+        self.clearpub = self.configL["layout"]["clear_published"]
 
     def attachpdfx(self):
         """attach pdf or insert pdf as download file"""
@@ -186,7 +191,7 @@ class Cmdp:
     # ---------------------------------------------------------------
 
     def htmlx(self):
-        """write readme and html doc
+        """write html doc
 
         Returns:
             msgS (str): completion message
@@ -196,19 +201,13 @@ class Cmdp:
         self.confpy()  # update conf.py
         self.coverS()  # update cover page
         self.yamlS()  # update yaml file
-        baseP = self.fD["reptP"]
-        srcS = f"{baseP}/src/{self.coverlogo}"
-        destS = f"{baseP}/_rstdocs/_static/img/{self.coverlogo}"
+        srcS = Path(self.fD["reptP"], f"{self.coverlogo}")
+        destS = Path(self.fD["rstdocsP"], "_static", "img")
         shutil.copy(srcS, destS)
-        rvbaseS = self.fD["rbaseS"]
-        rvfileS = self.fD["rbaseS"] + ".rst"
-        rvdocS = self.fD["rbaseS"] + ".html"
-        rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        rvdocT = str(Path(self.fD["reptPubP"], "docs", rvdocS))
+        srcS = Path(self.fD["reptP"], f"{self.runlogo}")
+        shutil.copy(srcS, destS)
         timeS = datetime.now().strftime("%Y-%m-%d")
-        rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
-        rvdateT = str(Path(self.fD["rstdocsP"], "_templates", "rv-date.html"))
-        rvtitleT = str(Path(self.fD["rstdocsP"], "_templates", "rv-title.html"))
+
         rvdateS = f"""
 <!-- _templates/rv-date.html -->
 <div class="footer-item">
@@ -217,6 +216,7 @@ class Cmdp:
     </p>
 </div>
 """
+        rvdateT = str(Path(self.fD["rstdocsP"], "_templates", "rv-date.html"))
         with open(rvdateT, "w", encoding="utf-8") as f2:
             f2.write(rvdateS)
 
@@ -228,6 +228,7 @@ class Cmdp:
     </p>
 </div>
 """
+        rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
         with open(rvauthT, "w", encoding="utf-8") as f2:
             f2.write(rvauthS)
 
@@ -239,13 +240,27 @@ class Cmdp:
     </p>
 </div>
 """
+        rvtitleT = str(Path(self.fD["rstdocsP"], "_templates", "rv-title.html"))
         with open(rvtitleT, "w", encoding="utf-8") as f2:
             f2.write(rvtitleS)
 
-        self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
+        # write rst file
+        rvfileS = self.fD["rbaseS"] + ".rst"
+        rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
+        self.docnameS = f"**| D.{self.lD['divS']} |** " + self.docnameS
+        self.drstS = f"{self.docnameS}\n" + "=" * 80 + "\n\n" + self.drstS
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
-        htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['htmlpubP']} \n"
+
+        rvdocS = self.fD["rbaseS"] + ".html"
+        htmldocS = self.fD["htmlpubP"]
+        rstdocS = self.fD["rstdocsP"]
+        rvbaseS = self.fD["rbaseS"]
+        rvdocT = str(Path(self.fD["reptPubP"], "docs", rvdocS))
+
+        htmlcmdS = (
+            f"sphinx-build -E -D root_doc={rvbaseS} {rstdocS} {htmldocS} \n"
+        )
         try:
             result = subprocess.run(htmlcmdS, shell=True, check=True)
             if not result.returncode:
@@ -253,12 +268,13 @@ class Cmdp:
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
+
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
         return f"file written: {short_p} \n" + "file written: .../README.txt"
 
     def pdfx(self):
-        """write readme and pdf doc
+        """write pdf doc
 
         Returns:
             msgS (str): completion message
@@ -267,13 +283,11 @@ class Cmdp:
         self.confpy()  # update conf.py
         self.coverS()  # update cover page
         self.yamlS()  # update yaml file
+        # add div number to docname
+        self.docnameS = f"**|D.{self.lD['divS']}|** " + self.docnameS
         rvbaseS = self.fD["rbaseS"]
-        rvfileS = self.fD["rbaseS"] + ".rst"
-        rvdocS = self.fD["rbaseS"] + ".pdf"
-        rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
         timeS = datetime.now().strftime("%Y-%m-%d")
-        headblkS = f"""**{self.docnameS}** - v{self.verS} |s| |s| |s| |s| Sect: **###Section###**"""
+        headblkS = f"""{self.docnameS} - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
         foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
         foot2blkS = f"""**{self.runlabelS}**"""
 
@@ -314,6 +328,11 @@ class Cmdp:
         self.drstS = (
             ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + self.drstS
         )
+
+        rvfileS = self.fD["rbaseS"] + ".rst"
+        rvdocS = self.fD["rbaseS"] + ".pdf"
+        rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
+        rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
 
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
@@ -393,7 +412,7 @@ class Cmdp:
 |
         
 .. image:: ../{self.coverlogo}
-   :width: 600px
+   :width: {self.logosize}%
    :align: center
 
 |
@@ -446,8 +465,6 @@ class Cmdp:
         """write config.py"""
 
         rvbaseS = self.fD["rbaseS"]
-        rvfileT = str(Path(self.fD["rstdocsP"], "conf.py"))
-
         confpyS = f"""
 import sys
 from pathlib import Path
@@ -478,13 +495,13 @@ html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = [".rst", ".md"]
 templates_path = ["_templates"]
+html_static_path = ["_static", "_static/img"]
+html_css_files = ["css/custom.css"]
 locale_dirs = ["_locale"]
 html_title = " "
 html_theme = "pydata_sphinx_theme"
 html_context = {{"default_mode": "dark"}}
 html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
-html_static_path = ["_static", "_static/img", "../"]
-html_css_files = ["css/custom.css"]
 html_theme_options = {{
     "pygments_light_style": "tango",
     "pygments_dark_style": "github-dark",
@@ -576,6 +593,7 @@ pdf_smartquotes = 0
 pdf_stylesheets = ["./_rstdocs/_static/pdfstyle/rivtstyle.yaml"]
     """
 
+        rvfileT = str(Path(self.fD["rstdocsP"], "conf.py"))
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(confpyS)
 

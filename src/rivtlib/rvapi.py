@@ -149,7 +149,7 @@ fD = {  # folders
     "rivtT": rivtT,  # full path name
     "reptP": Path(os.getcwd()),
     "rbaseS": rbaseS,  # file base name
-    "reptfDN": os.path.dirname(reptP),
+    "rivtfldN": os.path.dirname(reptP),
     "docP": Path(reptP, "rivtDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),

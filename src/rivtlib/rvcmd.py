@@ -719,11 +719,11 @@ class Cmd:
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
         fillS = str(tnumI)
-        titleS = parL[0].strip() + " from file: " + fuS + "\n"
-        titlerS = parL[0].strip() + " from file: **" + fuS + "**\n\n"
+        titleS = parL[0].strip() + " (" + fuS + ")\n"
+        titlerS = parL[0].strip() + " (" + fuS + ")\n\n"
         if titleS[0:2] == "--":
-            utlS = xtlS = "from file: " + fuS + "\n"
-            rtlS = "from file: **" + fuS + "**\n\n"
+            utlS = xtlS = " (" + fuS + ")\n"
+            rtlS = " (" + fuS + ")\n\n"
         else:
             utlS = xtlS = "\nTable " + fillS + ": " + titleS
             rtlS = "|\n\n**Table " + fillS + "**: " + titlerS
@@ -846,11 +846,11 @@ class Cmd:
                 funcL.append(s)
                 docflg = True
         tbL = zip(funcL, docstrL)
-        titleS = self.parS.strip() + " from file: " + fuS
-        titlerS = self.parS.strip() + " from file: **" + fuS + "**\n\n"
+        titleS = self.parS.strip() + " (" + fuS + ")\n"
+        titlerS = self.parS.strip() + " (" + fuS + ")\n\n"
         if titleS[0:2] == "--":
-            utlS = xtlS = "from file: " + fuS + "\n"
-            rtlS = "from file: **" + fuS + "**\n\n"
+            utlS = xtlS = " (" + fuS + ")\n"
+            rtlS = " (" + fuS + ")\n\n"
         else:
             utlS = xtlS = "\nTable " + fillS + ": " + titleS
             rtlS = "\n**Table " + fillS + "**: " + titlerS
