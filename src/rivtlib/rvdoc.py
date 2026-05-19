@@ -180,7 +180,9 @@ class Cmdp:
         self.clientS = self.configL["layout"]["client"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
-        self.clearpub = self.configL["layout"]["clear_published"]
+        self.titleS = self.configL["layout"]["title"]
+        self.subtitleS = self.configL["layout"]["subtitle"]
+        self.clearpub = self.configL["layout"]["clean_publish"]
 
     def attachpdfx(self):
         """attach pdf or insert pdf as download file"""
@@ -201,10 +203,10 @@ class Cmdp:
         self.confpy()  # update conf.py
         self.coverS()  # update cover page
         self.yamlS()  # update yaml file
-        srcS = Path(self.fD["reptP"], f"{self.coverlogo}")
+        srcS = Path(self.fD["reptP"], self.coverlogo)
         destS = Path(self.fD["rstdocsP"], "_static", "img")
         shutil.copy(srcS, destS)
-        srcS = Path(self.fD["reptP"], f"{self.runlogo}")
+        srcS = Path(self.fD["reptP"], self.runlogo)
         shutil.copy(srcS, destS)
         timeS = datetime.now().strftime("%Y-%m-%d")
 
@@ -271,7 +273,7 @@ class Cmdp:
 
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
-        return f"file written: {short_p} \n" + "file written: .../README.txt"
+        return f"file written: {short_p} \n"
 
     def pdfx(self):
         """write pdf doc
@@ -347,7 +349,7 @@ class Cmdp:
 
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
-        return f"file written: {short_p} \n" + "file written: .../README.txt"
+        return f"file written: {short_p} \n"
 
         # endregion
 
@@ -386,7 +388,8 @@ class Cmdp:
         self.yamlS()  # update yaml file
         rvfileS = self.fD["rbaseS"] + ".rst"
         rstfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
+        self.docnameS = f"**| D.{self.lD['divS']} |** " + self.docnameS
+        self.drstS = f"{self.docnameS}\n" + "=" * 80 + "\n\n" + self.drstS
         with open(rstfileT, "w", encoding="utf-8") as f:
             f.write(self.drstS)
             f.flush()  # Forces data out of Python's buffer
@@ -406,7 +409,14 @@ class Cmdp:
         # timeS = datetime.now().strftime("%Y-%m-%d")
         rvfileT = str(Path(self.fD["rstdocsP"], "_templates", "pdfcover.rst"))
         coverpgS = f"""
-.. role:: big-text
+.. role:: btext
+   :class: big-text
+
+.. role:: mtext
+    :class: medium-text
+
+.. role:: stext
+    :class: small-text
 
 |
 |
@@ -422,7 +432,9 @@ class Cmdp:
 
 .. class:: center
 
-    :big-text:`{self.docnameS}`
+    :btext:`{self.titleS}`
+
+    :mtext:`{self.subtitleS}`
 
 |
 |
@@ -433,13 +445,13 @@ class Cmdp:
 
 .. class:: center
 
-   Attn: **{self.clientS}**
+   :mtext:`{self.clientS}`
 
 |
 
 .. class:: center
 
-   project: **{self.projrefS}**
+   :stext:`{self.projrefS}`
 
    
 
@@ -678,9 +690,17 @@ styles:
   tableofcontents:
     parent: normal
   big-text:
-    fontSize: 150%
+    fontSize: 175%
     parent: base
-    fontName: fontSansBold
+    fontName: fontSans
+  medium-text:
+    fontSize: 125%
+    parent: base
+    fontName: fontSans
+  small-text:
+    fontSize: 125%
+    parent: base
+    fontName: fontSans 
   blockquote:
     leftIndent: 20
     parent: bodytext

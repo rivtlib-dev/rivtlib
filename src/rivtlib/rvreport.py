@@ -8,13 +8,13 @@ import configparser
 import glob
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import warnings
 from datetime import datetime
 from itertools import groupby
 from pathlib import Path
-import shutil
 
 import __main__
 
@@ -25,18 +25,18 @@ reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 publicP = Path(rivtP, "_rivt-public")
 storeP = Path(reptP, "_stored")
 pubP = Path(reptP, "_published")
+rstdocsP = Path(reptP, "_rstdocs")
 pdfpubP = Path(pubP, "pdfdocs")
 htmlpubP = Path(pubP, "docs")
-rstdocsP = Path(reptP, "_rstdocs")
+
 srcP = Path(reptP, "src")
 logsP = Path(storeP, "logs")
 rivt_storedP = storeP
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
-rst_folderP = reptP
-rivtfL = glob.glob("rv???*.py", root_dir=rst_folderP)
+
+rivtfL = glob.glob("rv???*.py", root_dir=reptP)
 rivtfL.sort()
-rvfirstS = rivtfL[0].replace(".py", ".rst")
 
 # shutil.rmtree(path)
 
@@ -45,12 +45,12 @@ repD = {}
 configL = configparser.ConfigParser()
 configL.read_string(inS)
 repD["repname"] = configL["report"]["repname"]
+repD["title"] = configL["report"]["title"]
 repD["regen"] = configL["report"]["regen"]
 repD["exclude"] = configL["report"]["exclude"]
 repD["cover"] = configL["report"]["cover"]
 repD["coverlogo"] = configL["report"]["coverlogo"]
 repD["logosize"] = configL["report"]["coverlogo_size"]
-repD["title"] = configL["report"]["title"]
 repD["subtitle"] = configL["report"]["subtitle"]
 repD["client"] = configL["report"]["client"]
 repD["authors"] = configL["report"]["authors"]
@@ -62,10 +62,12 @@ repD["runlabel"] = configL["report"]["running_label"]
 repD["pdfpage"] = configL["report"]["pdf_pagesize"]
 repD["pdfmargin"] = configL["report"]["pdf_margins"]
 repD["pdflink"] = configL["report"]["pdf_link"]
+repD["clearpub"] = configL["report"]["clean_publish"]
+
 
 reprsN = (repD["repname"].replace(".pdf", ".rst")).strip()
 freprstT = Path(rstdocsP, reprsN)
-repdocT = Path(pdfpubP, repD["repname"])
+
 
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
@@ -85,70 +87,70 @@ def htmlx():
         msgS (str): completion message
 
     """
-    baseP = self.fD["reptP"]
-    srcS = f"{baseP}/src/{self.coverlogo}"
-    destS = f"{baseP}/_rstdocs/_static/img/{self.coverlogo}"
-    # shutil.copy(srcS, destS)
-    rvbaseS = self.fD["rbaseS"]
-    rvfileS = self.fD["rbaseS"] + ".rst"
-    rvdocS = self.fD["rbaseS"] + ".html"
-    rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-    rvdocT = str(Path(self.fD["reptPubP"], "docs", rvdocS))
+
+    htmlindex()
+    print("html index page written")
+    yamlS()
+    print("yaml written")
+    confpy()
+    print("conf.py file written")
+
+    srcS = Path(reptP, repD["coverlogo"])
+    destS = Path(rstdocsP, "_static", "img")
+    shutil.copy(srcS, destS)
+    srcS = Path(reptP, repD["runlogo"])
+    shutil.copy(srcS, destS)
     timeS = datetime.now().strftime("%Y-%m-%d")
-    rvauthT = str(Path(self.fD["rstdocsP"], "_templates", "rv-author.html"))
-    rvdateT = str(Path(self.fD["rstdocsP"], "_templates", "rv-date.html"))
-    rvtitleT = str(Path(self.fD["rstdocsP"], "_templates", "rv-title.html"))
+
     rvdateS = f"""
 <!-- _templates/rv-date.html -->
 <div class="footer-item">
-    <p class="rvdate">
-        {timeS}
-    </p>
+<p class="rvdate">
+    {timeS}
+</p>
 </div>
 """
+    rvdateT = str(Path(rstdocsP, "_templates", "rv-date.html"))
     with open(rvdateT, "w", encoding="utf-8") as f2:
-            f2.write(rvdateS)
+        f2.write(rvdateS)
 
     rvauthS = f"""
 <!-- _templates/rv-author.html -->
 <div class="footer-item">
-    <p class="rvauthor">
-        {self.authorS}
-    </p>
+<p class="rvauthor">
+    {repD["authors"]}
+</p>
 </div>
 """
+    rvauthT = str(Path(rstdocsP, "_templates", "rv-author.html"))
     with open(rvauthT, "w", encoding="utf-8") as f2:
-            f2.write(rvauthS)
+        f2.write(rvauthS)
 
     rvtitleS = f"""
 <!-- _templates/rv-title.html -->
 <div class="footer-item">
-    <p class="rvtitle">
-        {self.docnameS}  v.{self.verS} 
-    </p>
+<p class="rvtitle">
+    {repD["title"]}  v.{repD["version"]} 
+</p>
 </div>
 """
-        with open(rvtitleT, "w", encoding="utf-8") as f2:
-            f2.write(rvtitleS)
+    rvtitleT = str(Path(rstdocsP, "_templates", "rv-title.html"))
+    with open(rvtitleT, "w", encoding="utf-8") as f2:
+        f2.write(rvtitleS)
 
-        self.drstS = f"{self.docnameS}\n" + "=" * 70 + "\n\n" + self.drstS
-        with open(rvfileT, "w", encoding="utf-8") as f5:
-            f5.write(self.drstS)
-        htmlcmdS = f"sphinx-build -E -D root_doc={rvbaseS} {str(self.fD['rstdocsP'])} {self.fD['htmlpubP']} \n"
-        try:
-            result = subprocess.run(htmlcmdS, shell=True, check=True)
-            if not result.returncode:
-                print("\nhtml script executed")
-        except subprocess.CalledProcessError as e:
-            print(f"Error executing script: {e}")
-            print("Stderr:", e.stderr)
-        parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
-        short_p = ".../" + "/".join(parts)
-        return f"file written: {short_p} \n" + "file written: .../README.txt"
+    htmlcmdS = f"sphinx-build -E -D root_doc=index {rstdocsP} {htmlpubP} \n"
+    try:
+        result = subprocess.run(htmlcmdS, shell=True, check=True)
+        if not result.returncode:
+            print("\nhtml script executed")
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing script: {e}")
+        print("Stderr:", e.stderr)
+
+    repdocT = Path(htmlpubP, repD["repname"])
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
-
-    return f"html file written: {short_p} \n"
+    return f"file written: {short_p} \n"
 
 
 def pdfx():
@@ -160,8 +162,17 @@ def pdfx():
 
     # region
 
+    pdfcoverS()
+    print("cover page written")
+    pdfindex()
+    print("index page written")
+    yamlS()
+    print("yaml file written")
+    confpy()
+    print("conf file written")
+
     print("run pdf sphinx")
-    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
+    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(htmlpubP)} \n"
 
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)
@@ -171,11 +182,11 @@ def pdfx():
         print(f"Error executing script: {e}")
         print("Stderr:", e.stderr)
 
+    repdocT = Path(pdfpubP, repD["repname"])
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
 
     return f"pdf file written: {short_p} \n"
-
     # endregion
 
 
@@ -251,7 +262,7 @@ html_title = " "
 html_theme = "pydata_sphinx_theme"
 html_context = {{"default_mode": "dark"}}
 html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
-html_static_path = ["_static", "_static/img", "../"]
+html_static_path = ["_static", "_static/img"]
 html_css_files = ["css/custom.css"]
 html_theme_options = {{
     "pygments_light_style": "tango",
@@ -421,9 +432,17 @@ styles:
   tableofcontents:
     parent: normal
   big-text:
-    fontSize: 150%
+    fontSize: 175%
     parent: base
-    fontName: fontSansBold
+    fontName: fontSans
+  medium-text:
+    fontSize: 125%
+    parent: base
+    fontName: fontSans
+  small-text:
+    fontSize: 125%
+    parent: base
+    fontName: fontSans 
   blockquote:
     leftIndent: 20
     parent: bodytext
@@ -721,7 +740,7 @@ styles:
         f5.write(rivstyS)
 
 
-def rvcoverS():
+def pdfcoverS():
     """
     cover page
 
@@ -733,7 +752,14 @@ def rvcoverS():
 
     coverpgS = f"""
 
-.. role:: big-text
+.. role:: btext
+   :class: big-text
+
+.. role:: mtext
+    :class: medium-text
+
+.. role:: stext
+    :class: small-text
     
 .. raw:: pdf
 
@@ -754,9 +780,9 @@ def rvcoverS():
 
 .. rst-class:: center
 
-    :big-text:`{repD["title"]}`
+    :btext:`{repD["title"]}`
     
-    {repD["subtitle"]}
+    :mtext:`{repD["subtitle"]}`
     
 
 |
@@ -768,14 +794,14 @@ def rvcoverS():
 
 .. rst-class:: center
 
-    Attn: **{repD["client"]}**
+    :mtext:`{repD["client"]}`
 
    
 |
 
 .. rst-class:: center
 
-    project: **{repD["projref"]}**
+    :stext:`{repD["projref"]}`
 
 |    
 
@@ -793,7 +819,7 @@ def rvcoverS():
         f1.write(drstS)
 
 
-def rvindex():
+def pdfindex():
     """_summary_"""
 
     verS = repD["version"]
@@ -851,11 +877,123 @@ def rvindex():
 
 """
 
-    drstS = tochideS + subS + imgS + headS + footS + "\n\n"
+    toc1S = f"""
+
+    .. toctree::
+        :maxdepth: 3
+        :hidden:
+
+
+{rsttabL}
+        
+"""
+    drstS = tochideS + subS + imgS + headS + footS + toc1S + "\n\n"
 
     rvcoverT = Path(rstdocsP, "index.rst")
     with open(rvcoverT, "w", encoding="utf-8") as f1:
         f1.write(drstS)
+
+    errlogT = Path(logsP, frstS[0:7] + "log.txt")
+    with open(errlogT, "a") as f2:
+        f2.write("tocs inserted: " + repD["title"] + "\n")
+    logging.info("tocs inserted: " + repD["title"])
+
+
+def htmlindex():
+    """_summary_"""
+
+    # -------------- write tocs to subdivisions
+    groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
+    # print("*******", groupL)
+    tocinS = "\n"
+    for item in groupL:
+        tocinS += 4 * " " + item[0] + "\n"
+
+    indexpgS = f"""
+
+.. role:: btext
+   :class: big-text
+
+.. role:: mtext
+    :class: medium-text
+
+.. role:: stext
+    :class: small-text
+
+
+.. raw:: html
+
+    <div style="height: 0; visibility: hidden;">
+
+    Home
+    ========
+
+   </div>
+
+|
+|
+
+.. image:: ../{repD["coverlogo"]}
+    :width: {repD["logosize"]}%
+    :align: center        
+    :alt: rivt logo
+
+.. raw:: html
+
+    <hr>
+ 
+
+.. rst-class:: center
+
+    :btext:`{repD["title"]}`
+    
+    :mtext:`{repD["subtitle"]}`
+    
+|
+    
+.. rst-class:: center
+
+    :mtext:`{repD["client"]}`
+
+   
+|
+|
+
+.. rst-class:: center
+
+    :stext:`{repD["projref"]}`
+
+   
+.. toctree::
+    :maxdepth: 3
+    :hidden:
+
+{tocinS}
+
+    """
+
+    rvindexT = Path(rstdocsP, "index.rst")
+    with open(rvindexT, "w", encoding="utf-8") as f1:
+        f1.write(indexpgS)
+    # -------------- write tocs to subdivisions
+    toc2S = """
+    
+.. toctree::
+    :maxdepth: 2
+
+xxxx
+        
+    """
+
+    groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
+    for item in groupL:
+        tocS = "\n"
+        for fS in item[1:]:
+            tocS += "    " + fS + "\n"
+        tocrS = toc2S.replace("xxxx", tocS)
+        fpT = Path(rstdocsP, item[0])
+        with open(fpT, "a") as f1:
+            f1.write(tocrS)
 
 
 def get_readme():
@@ -868,16 +1006,7 @@ def get_readme():
     return rdfL
 
 
-rvcoverS()
-print("cover page written")
-rvindex()
-print("index page written")
-yamlS()
-print("yaml file written")
-confpy()
-print("conf file written")
-
-# write rst for each rivt file in list
+# generate rst for each rivt file in list
 print("\n\nrivt files included in report\n---------------------------")
 for s in rivtfL:
     print("rivt file:", s)
@@ -892,40 +1021,12 @@ for frstS in rivtfL:
 with open(errlogT, "a") as f1:
     f1.write("write rst for each rivt file: " + repD["title"] + "\n")
 logging.info("write rst files: " + repD["title"])
-
 # ------------ convert list from .py to .rst
 rstfiL = []
 for fS in rivtfL:
     rstfiL.append(fS.replace(".py", ".rst"))
-tocflagB = False
-# ------------ write tocs to index
-toc1S = """
-
-.. toctree::
-    :maxdepth: 3
-    :hidden:
-    :caption: ABC
-
-xxxx
-    
-
-"""
-tocinS = "\n"
-tocrS = "\n"
-groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
-for item in groupL:
-    tocinS = "\n"
-    for fS in item:
-        tocinS = tocinS + "    " + fS + "\n"
-    tocinS = toc1S.replace("xxxx", tocinS)
-    tocrS += tocinS
-fpT = Path(rstdocsP, "index.rst")
-with open(fpT, "a") as f1:
-    f1.write(tocrS)
-errlogT = Path(logsP, frstS[0:7] + "log.txt")
-with open(errlogT, "a") as f2:
-    f2.write("tocs inserted: " + repD["title"] + "\n")
-logging.info("tocs inserted: " + repD["title"])
+rsttabL = ["    " + tS for tS in rstfiL]
+rsttabL = "\n".join(rsttabL)
 # -------------------- write readme report
 reptitleS = repD["repname"]
 versionS = repD["version"]
