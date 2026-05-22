@@ -658,12 +658,12 @@ def pdf_insert(self, fD, lD):
         f5.write(drstS)
 
 
-def html_templ():
+def html_templ(self, fD):
 
-    srcS = Path(fD["reptP"], coverlogo)
+    srcS = Path(fD["reptP"], self.coverlogo)
     destS = Path(fD["rstdocsP"], "_static", "img")
     shutil.copy(srcS, destS)
-    srcS = Path(fD["reptP"], runlogo)
+    srcS = Path(fD["reptP"], self.runlogo)
     shutil.copy(srcS, destS)
     timeS = datetime.now().strftime("%Y-%m-%d")
 
@@ -683,7 +683,7 @@ def html_templ():
 <!-- _templates/rv-author.html -->
 <div class="footer-item">
     <p class="rvauthor">
-        {authorS}
+        {self.authorS}
     </p>
 </div>
 """
@@ -695,10 +695,87 @@ def html_templ():
 <!-- _templates/rv-title.html -->
 <div class="footer-item">
     <p class="rvtitle">
-        {docnameS}  v.{verS} 
+        {self.docnameS}  v.{self.verS} 
     </p>
 </div>
 """
     rvtitleT = str(Path(fD["rstdocsP"], "_templates", "rv-title.html"))
     with open(rvtitleT, "w", encoding="utf-8") as f2:
         f2.write(rvtitleS)
+
+
+def html_confpy(self, fD):
+    """write config.py"""
+
+    confpyS = f"""
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(".").resolve()))
+
+project = "{self.docnameS}"
+copyright = "{self.copyS}"
+author = "self.{self.authorS}"
+release = "{self.verS}"
+
+extensions = [
+    "sphinx.ext.githubpages",
+    "sphinx_togglebutton",
+    "sphinxcontrib.jquery",
+    "sphinx_copybutton",
+    "sphinx_favicon",
+    "sphinx.ext.duration",
+    "sphinx.ext.doctest",
+    "sphinx.ext.autodoc",
+    "sphinx_design",
+    "sphinx_new_tab_link",
+    "rst2pdf.pdfbuilder",
+]
+root_doc = "index"
+duration_write_json = ""
+html_show_sourcelink = False
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+source_suffix = [".rst", ".md"]
+templates_path = ["_templates"]
+html_static_path = ["_static", "_static/img"]
+html_css_files = ["css/custom.css"]
+locale_dirs = ["_locale"]
+html_title = " "
+html_theme = "pydata_sphinx_theme"
+html_context = {{"default_mode": "dark"}}
+html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
+html_theme_options = {{
+    "pygments_light_style": "tango",
+    "pygments_dark_style": "github-dark",
+    "navbar_start": ["navbar-logo"],
+    "collapse_navigation": True,
+    "header_links_before_dropdown": 6,
+    "navbar_align": "left",
+    "show_toc_level": 1,
+    "navigation_depth": 1,
+    "footer_start": ["rv-author"],
+    "footer_center": ["rv-title"],
+    "footer_end": ["rv-date"],
+    "logo": {{
+            "text": "{self.runlabelS}",
+        "image_dark": "{self.runlogo}",
+        "image_light": "{self.runlogo}",
+    }},
+}}
+favicons = [
+    {{
+        "rel": "icon",
+        "sizes": "16x16",
+        "href": "favicon-16x16.png",
+    }},
+    {{
+        "rel": "icon",
+        "sizes": "32x32",
+        "href": "favicon-32x32.png",
+    }},
+]
+"""
+
+    rvfileT = str(Path(fD["rstdocsP"], "conf.py"))
+    with open(rvfileT, "w", encoding="utf-8") as f5:
+        f5.write(confpyS)

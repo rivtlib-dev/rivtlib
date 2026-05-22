@@ -5,6 +5,7 @@ parse section string
 import logging
 import os
 import sys
+import textwrap
 import warnings
 from io import StringIO
 from pathlib import Path
@@ -294,13 +295,13 @@ class Rs:
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
                     stxtS += mD["tS"] + "\n"
-                    print(mD["uS"])  # STDOUT- command
+                    print(mD["uS"])  # STDOUT - command
                     continue
-            else:  # everything else
-                print(slS, flush=True)  # STDOUT - raw line
-                sutfS += slS + "\n"
+            else:  # everything else - STDOUT - raw line
+                print(textwrap.fill(slS, width=40), flush=True)
+                sutfS += textwrap.fill(slS, width=40) + "\n"
                 srstS += slS + "\n"
-                stxtS += slS + "\n"
+                stxtS += textwrap.fill(slS, width=40) + "\n"
 
         # export values file
         if self.tyS == "V" and len(rivL) > 0:

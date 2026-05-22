@@ -164,7 +164,8 @@ fD = {  # folders
     "styleP": Path(srcP, "styles"),
     "tempP": Path(srcP, "temp"),
 }
-lD1 = {  # labels
+
+lD1 = {
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
     "sdivS": rbaseS[3:5],  # subdiv number
@@ -193,8 +194,11 @@ lD2 = {
     "privateB": True,
     "notagB": True,
     "keepfB": True,
-    "upcfgB": True,
+    "autocfgB": True,
 }
+# labels
+lD = lD1 | lD2
+
 # settings from rivt file
 lnL = []
 with open(rivtT, "r") as f1:  # noqa: F405
@@ -203,19 +207,18 @@ for lnS in rivtL[:20]:
     if lnS[0:4] == "# rv":
         lnL = lnS.split(";")
         lnL = lnL[0].split("=")
-        if lnL[0].strip() == "setwidth":
-            lD2["widthI"] = int(lnL[1].strip())
-        elif lnL[0].strip() == "setpublic":
-            lD2["privateB"] = lnL[1].capitalize.strip()
-        elif lnL[0].strip() == "addtag":
-            lD2["notagB"] = lnL[1].capitalize.strip()
-        elif lnL[0].strip() == "makefolders":
-            lD2["keepfB"] = lnL[1].capitalize.strip()
-        elif lnL[0].strip() == "cleanfolders":
-            lD2["upcfgB"] = lnL[1].capitalize.strip()
+        if lnL[0].strip() == "set_width":
+            lD["widthI"] = int(lnL[1].strip())
+        elif lnL[0].strip() == "private_heading":
+            lD["privateB"] = lnL[1].capitalize.strip()
+        elif lnL[0].strip() == "no_tag":
+            lD["notagB"] = lnL[1].capitalize.strip()
+        elif lnL[0].strip() == "keep_files":
+            lD["keepfB"] = lnL[1].capitalize.strip()
+        elif lnL[0].strip() == "auto_cfg":
+            lD["autocfgB"] = lnL[1].capitalize.strip()
         else:
             pass
-lD = lD1 | lD2
 # endregion
 
 # initialize doc strings
