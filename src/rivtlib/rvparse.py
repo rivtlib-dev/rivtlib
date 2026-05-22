@@ -60,7 +60,7 @@ class Rs:
         else:
             transS = "\n\n------------\n\n"
             lD["cntflgI"] += 1
-        if lD["addtagB"]:
+        if not lD["notagB"]:
             addtgS = tyS.lower()
         else:
             addtgS = ""

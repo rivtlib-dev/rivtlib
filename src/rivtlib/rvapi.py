@@ -70,7 +70,6 @@ else:
     print("""where D is an alpha-numeric division label""")
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
-
 # Configure arg parser
 parser = argparse.ArgumentParser(description="Example script")
 # parser.add_argument("input", help="Input file path")
@@ -79,7 +78,6 @@ parser.add_argument("-t", "--type", help="file type", default="--")
 args = parser.parse_args()
 ptypeS = (args.type).strip()
 # print(f"Input: {args.input}, Verbose: {args.verbose}")
-
 rivtT = Path(reptP, rivtN)
 # print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
@@ -91,11 +89,11 @@ bakN = rbaseS + ".bak"
 errlogN = docnumS + "log.txt"
 rootP = reptP.parent
 publicP = Path(rootP, "_rivt-public")
-storeP = Path(reptP, "_stored")
+storeP = Path(reptP, "rv_stor")
 pubP = Path(reptP, "_published")
 rstdocsP = Path(reptP, "_rstdocs")
 readmeP = Path(reptP, "_published", "readme")
-srcP = Path(reptP, "src")
+srcP = Path(reptP, "rvsrc")
 logsP = Path(storeP, "logs")
 errlogT = Path(logsP, errlogN)
 bakT = Path(logsP, bakN)
@@ -169,6 +167,8 @@ fD = {  # folders
 lD1 = {  # labels
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
+    "sdivS": rbaseS[3:5],  # subdiv number
+    "divS": rbaseS[2],  # div character
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "sectS": "",  # section title
     "secnumI": 0,  # section number
@@ -187,42 +187,36 @@ lD1 = {  # labels
     "cntflgI": 0,  # transition line
     "ptypeS": ptypeS,  # pub type override
 }
-# endregion
-
-# initial settings
-lD2 = {"widthI": 80,
-       rvpubB = "private"
-    elif lnL[0].strip() == "setpublic":
-        lD2["rvpubB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "addtag":
-        lD2["addtagB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "makefolders":
-        lD2["makefoldB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "cleanfolders":
-        lD2["cleanfoldB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "updatesettings":
-        lD2["updateset"] = lnL[1].capitalize.strip()}
+# default settings
+lD2 = {
+    "widthI": 80,
+    "privateB": True,
+    "notagB": True,
+    "keepfB": True,
+    "upcfgB": True,
+}
+# settings from rivt file
+lnL = []
 with open(rivtT, "r") as f1:  # noqa: F405
     rivtL = f1.readlines()
-for lnS in rivtL[20]:
+for lnS in rivtL[:20]:
     if lnS[0:4] == "# rv":
         lnL = lnS.split(";")
         lnL = lnL[0].split("=")
-    if lnL[0].strip() == "setwidth":
-        lD2["widthI"] = int(lnL[1].strip())
-    elif lnL[0].strip() == "setpublic":
-        lD2["rvpubB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "addtag":
-        lD2["addtagB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "makefolders":
-        lD2["makefoldB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "cleanfolders":
-        lD2["cleanfoldB"] = lnL[1].capitalize.strip()
-    elif lnL[0].strip() == "updatesettings":
-        lD2["updateset"] = lnL[1].capitalize.strip()
-    else:
-        pass
+        if lnL[0].strip() == "setwidth":
+            lD2["widthI"] = int(lnL[1].strip())
+        elif lnL[0].strip() == "setpublic":
+            lD2["privateB"] = lnL[1].capitalize.strip()
+        elif lnL[0].strip() == "addtag":
+            lD2["notagB"] = lnL[1].capitalize.strip()
+        elif lnL[0].strip() == "makefolders":
+            lD2["keepfB"] = lnL[1].capitalize.strip()
+        elif lnL[0].strip() == "cleanfolders":
+            lD2["upcfgB"] = lnL[1].capitalize.strip()
+        else:
+            pass
 lD = lD1 | lD2
+# endregion
 
 # initialize doc strings
 dutfS = ""
