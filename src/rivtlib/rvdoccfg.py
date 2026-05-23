@@ -613,63 +613,6 @@ def pdf_coverS(self, fD):
         f5.write(coverpgS)
 
 
-def pdf_insert(self, fD, lD):
-    """insert pdf header"""
-
-    # region - insert pdf header
-    doctitleS = f"**|D.{lD['divS']}|** " + self.doctitleS
-    timeS = datetime.now().strftime("%Y-%m-%d")
-    headblkS = (
-        f"""{doctitleS} - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
-    )
-    foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
-    foot2blkS = f"""**{self.runlabelS}**"""
-
-    imgS = f"""
-.. |blklogo| image:: ../{self.runlogo}
-   :height: 100px
-   :alt: logo
-
-
-"""
-    headS = f"""
-.. header::
-    .. list-table::
-        :class: header-box
-        :align: left
-        :widths: 90 10
-        
-        * - {headblkS}
-          - p. **###Page###**   
-
-          
-"""
-
-    footS = f"""
-.. footer:: 
-    .. list-table::
-        :class: footer-box
-        :align: left
-        :widths: 84 22 16
-        
-        * - {foot1blkS}        
-          - {foot2blkS}        
-          - |blklogo|
-
-                  
-"""
-    # endregion
-
-    drstS = ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + self.drstS
-
-    rvfileS = fD["rbaseS"] + ".rst"
-    rvfileT = str(Path(fD["rstdocsP"], rvfileS))
-
-    print("77777777777777777", drstS)
-    with open(rvfileT, "w", encoding="utf-8") as f5:
-        f5.write(drstS)
-
-
 def html_templ(self, fD):
     """write html templates
 

@@ -223,6 +223,57 @@ class Cmdp:
         msgS = "attachment"
         return msgS
 
+    def pdf_insert(self):
+        """insert pdf header"""
+
+        # region - insert pdf header
+        doctitleS = f"**|D.{self.lD['divS']}|** " + self.doctitleS
+        timeS = datetime.now().strftime("%Y-%m-%d")
+        headblkS = (
+            f"""{doctitleS} - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
+        )
+        foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
+        foot2blkS = f"""**{self.runlabelS}**"""
+
+        imgS = f"""
+.. |blklogo| image:: ../{self.runlogo}
+   :height: 100px
+   :alt: logo
+
+
+    """
+        headS = f"""
+.. header::
+    .. list-table::
+        :class: header-box
+        :align: left
+        :widths: 90 10
+        
+        * - {headblkS}
+          - p. **###Page###**   
+
+          
+"""
+
+        footS = f"""
+.. footer:: 
+    .. list-table::
+        :class: footer-box
+        :align: left
+        :widths: 84 22 16
+        
+        * - {foot1blkS}        
+          - {foot2blkS}        
+          - |blklogo|
+
+                  
+"""
+        # endregion
+
+        drstS = ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS
+
+        return drstS
+
     def htmlx(self):
         """write html doc
 
@@ -359,16 +410,14 @@ class Cmdp:
 
         """
         # region - nonex
-        rvd.pdf_insert(self, self.fD, self.lD)  # write templates
+
+        inS = self.pdf_insert()
         rvfileS = self.fD["rbaseS"] + ".rst"
         rstfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        titleS = f"**| D.{self.lD['divS']} |** " + self.doctitleS
-        widthI = self.lD["widthI"]
-        self.drstS = f"{titleS}\n" + "=" * widthI + "\n\n" + self.drstS
+        drstS = inS + self.drstS
         with open(rstfileT, "w", encoding="utf-8") as f:
-            f.write(self.drstS)
-            # f.flush()  # Forces data out of Python's buffer
-            # os.fsync(f.fileno())  # Forces the OS to write to disk
+            f.write(drstS)
+
         parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
