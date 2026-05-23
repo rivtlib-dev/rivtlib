@@ -34,7 +34,8 @@ class Cmdp:
     """
 
     def __init__(self, sS, fD, lD, dutfS, drstS, dtxtS):
-        # region
+
+        # region - init
         # shutil.rmtree(path)
         store_attr()
         self.pthS = ""
@@ -64,6 +65,9 @@ class Cmdp:
         self.linkB = " "
         self.titleS = " "
         self.subtitleS = " "
+        self.privateS = " "
+        self.keepS = " "
+        self.autoS = " "
 
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
@@ -108,7 +112,7 @@ class Cmdp:
         # region
         blockB = False
         self.blockS = """"""
-        self.docnameS = " "
+        self.doctitleS = " "
         uS = rS = tS = lS = ""
 
         # write README
@@ -122,11 +126,11 @@ class Cmdp:
             if len(pS) > 0:
                 if pS[0:11] == "| PUBLISH |":
                     pL = pS[5:].split("|")
-                    self.docnameS = str(pL[1].strip()).strip()
-                    if self.docnameS == "--":
-                        self.docnameS = " "
+                    self.doctitleS = str(pL[1].strip()).strip()
+                    if self.doctitleS == "--":
+                        self.doctitleS = " "
                     else:
-                        self.docnameS = str(pL[1]).strip()
+                        self.doctitleS = str(pL[1]).strip()
                     # set doc type
                     typeS = str(pL[2].strip())
                     if typeS not in ["text", "html", "pdf", "none"]:
@@ -140,7 +144,8 @@ class Cmdp:
                     dtypeS = typeS + ("x")
                     # call doc functions
                     obj = getattr(Cmdp, dtypeS)
-                    obj(self)
+                    msgS = obj(self)
+                    print(msgS)
                     continue
                 elif pS[0:13] == "| ATTACHPDF |":
                     dtypeS = "attachpdfx"
@@ -184,7 +189,7 @@ class Cmdp:
         Returns:
             msgS (str): metadata read
         """
-
+        # region - metadata
         self.configL = configparser.ConfigParser()
         self.configL.read_string(self.blockS)
         self.authorS = self.configL["doc"]["authors"]
@@ -201,12 +206,16 @@ class Cmdp:
         self.runlogo = self.configL["layout"]["runninglogo"]
         self.runlabelS = self.configL["layout"]["runninglabel"]
         self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
-        self.projrefS = self.configL["layout"]["projectref"]
+        self.projrefS = self.configL["layout"]["project_ref"]
         self.clientS = self.configL["layout"]["client"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
         self.titleS = self.configL["layout"]["title"]
         self.subtitleS = self.configL["layout"]["subtitle"]
+        self.privateS = self.configL["process"]["private_heading"]
+        self.keepS = self.configL["process"]["keep_files"]
+        self.autoS = self.configL["process"]["auto_cfg"]
+        # endregion
 
     def attachpdfx(self):
         """attach pdf or insert pdf as download file"""
@@ -221,15 +230,15 @@ class Cmdp:
             msgS (str): completion message
 
         """
+        # region - htmlx
         rvd.html_confpy(self, self.fD)  # write conf.py
-        rvd.html_coverS(self, self.fD)  # write cover page
-        rvd.html_insert(self, self.fD, self.lD)  # write templates
+        rvd.html_templ(self, self.fD)  # write templates
 
         # write rst file
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        self.docnameS = f"**| D.{self.lD['divS']} |** " + self.docnameS
-        self.drstS = f"{self.docnameS}\n" + "=" * 80 + "\n\n" + self.drstS
+        self.doctitleS = f"**| D.{self.lD['divS']} |** " + self.doctitleS
+        self.drstS = f"{self.doctitleS}\n" + "=" * 80 + "\n\n" + self.drstS
         with open(rvfileT, "w", encoding="utf-8") as f5:
             f5.write(self.drstS)
 
@@ -245,14 +254,28 @@ class Cmdp:
         try:
             result = subprocess.run(htmlcmdS, shell=True, check=True)
             if not result.returncode:
-                print("\nhtml script executed")
+                pass
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
 
+        # write README
+        borderS = "=" * self.lD["widthI"]
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        doctitleS = self.doctitleS
+        versionS = "v-" + self.verS.strip()
+        authorS = self.authorS.strip()
+        hdlS = doctitleS + " | " + authorS + " | " + versionS + " | " + timeS
+        headS = "\n" + hdlS + "\n" + borderS + "\n"
+        dutfS = headS + "\n" + self.dutfS
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(dutfS)
+
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
-        return f"file written: {short_p} \n"
+
+        return f"\nThe README doc is in: {self.fD['rivtfldN']}"
+        # endregion
 
     def pdfx(self):
         """write pdf doc
@@ -260,70 +283,94 @@ class Cmdp:
         Returns:
             msgS (str): completion message
         """
-        # region
+        # region - pdfx
         rvd.pdf_confpy(self, self.fD)  # write conf.py
         rvd.pdf_coverS(self, self.fD)  # write cover page
         rvd.pdf_yamlS(self, self.fD)  # write yaml file
         rvd.pdf_insert(self, self.fD, self.lD)  # write templates
 
+        rvdocS = self.fD["rbaseS"] + ".pdf"
+        rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
+        parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
+        short_p = ".../" + "/".join(parts)
+
         pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={self.fD['rbaseS']} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
         try:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
             if not result.returncode:
-                print("\npdf script executed successfully.")
+                print(f"\nPDF doc written to {short_p}")
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
 
-        rvdocS = self.fD["rbaseS"] + ".pdf"
-        rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
-        parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
-        short_p = ".../" + "/".join(parts)
-        return f"file written: {short_p} \n"
+        # write README
+        borderS = "=" * self.lD["widthI"]
+        timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
+        doctitleS = self.doctitleS
+        versionS = "v-" + self.verS.strip()
+        authorS = self.authorS.strip()
+        hdlS = doctitleS + " | " + authorS + " | " + versionS + " | " + timeS
+        headS = "\n" + hdlS + "\n" + borderS + "\n"
+        dutfS = headS + "\n" + self.dutfS
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(dutfS)
 
+        return " "
         # endregion
 
     def textx(self):
-        """write readme and text doc
+        """write text doc and README
 
         Returns:
             msgS (str): completion message
         """
-        self.confpy()  # update conf.py
+
+        # region - textx
         rvdocS = self.fD["rbaseS"] + ".txt"
         rvdocT = str(Path(self.fD["reptPubP"], "txtdocs", rvdocS))
+        borderS = "=" * self.lD["widthI"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        doctitleS = self.docnameS
+        doctitleS = self.doctitleS
         versionS = "v-" + self.verS.strip()
         authorS = self.authorS.strip()
-
-        borderS = "=" * 80
-        hdlS = doctitleS + " | " + authorS + " | " + timeS + " | " + versionS
+        hdlS = doctitleS + " | " + authorS + " | " + versionS + " | " + timeS
         headS = "\n" + hdlS + "\n" + borderS + "\n"
-        self.dutfS = headS + "\n" + self.dutfS
+        dtxtS = headS + "\n" + self.dtxtS
+        dutfS = headS + "\n" + self.dutfS
 
         with open(rvdocT, "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
+            f5.write(dtxtS)
         with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
+            f5.write(dutfS)
 
-        parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
+        parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
-        return f"file written: {short_p} \n" + "file written: .../README.txt"
+        return (
+            f"The text doc is in : {short_p} \n\n"
+            + f"The README doc is in: {self.fD['rivtfldN']}"
+        )
+        # endregion
 
     def nonex(self):
-        """write readme and rst doc"""
+        """write report rst doc
 
-        self.confpy()  # update conf.py
-        self.yamlS()  # update yaml file
+        Returns:
+            msgS (str): completion message
+
+        """
+        # region - nonex
+        rvd.pdf_insert(self, self.fD, self.lD)  # write templates
         rvfileS = self.fD["rbaseS"] + ".rst"
         rstfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        self.docnameS = f"**| D.{self.lD['divS']} |** " + self.docnameS
-        self.drstS = f"{self.docnameS}\n" + "=" * 80 + "\n\n" + self.drstS
+        titleS = f"**| D.{self.lD['divS']} |** " + self.doctitleS
+        widthI = self.lD["widthI"]
+        self.drstS = f"{titleS}\n" + "=" * widthI + "\n\n" + self.drstS
         with open(rstfileT, "w", encoding="utf-8") as f:
             f.write(self.drstS)
-            f.flush()  # Forces data out of Python's buffer
-            os.fsync(f.fileno())  # Forces the OS to write to disk
+            # f.flush()  # Forces data out of Python's buffer
+            # os.fsync(f.fileno())  # Forces the OS to write to disk
         parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
-        return f"file written: {short_p} \n" + "file written: .../README.txt"
+
+        return f"nonex - rst file written: {short_p} \n"
+        # endregion

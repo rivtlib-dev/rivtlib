@@ -1,19 +1,30 @@
-import logging
+"""
+this module includes report configuration strings
+"""
+
+import shutil
+from datetime import datetime
 from pathlib import Path
 
+repD = {}
 
-def confpy():
-    """write config.py"""
 
-    rvbaseS = repD["repname"].split(".")[0]
+def pdf_confpy():
+    """write config.py
 
+    Return:
+      msgS
+
+    """
+
+    # region - pdf confpy
     confpyS = f"""
 import sys
 from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{repD["repname"]}"
+project = "{repD["doctitleS"]}"
 copyright = "{repD["copyright"]}"
 author = "{repD["authors"]}"
 release = "{repD["version"]}"
@@ -35,15 +46,15 @@ root_doc = "index"
 duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-source_suffix = [".rst", ".md"]
+source_suffix = [".rst"]
 templates_path = ["_templates"]
+html_static_path = ["_static", "_static/img"]
+html_css_files = ["css/custom.css"]
 locale_dirs = ["_locale"]
 html_title = " "
 html_theme = "pydata_sphinx_theme"
 html_context = {{"default_mode": "dark"}}
 html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
-html_static_path = ["_static", "_static/img"]
-html_css_files = ["css/custom.css"]
 html_theme_options = {{
     "pygments_light_style": "tango",
     "pygments_dark_style": "github-dark",
@@ -74,22 +85,22 @@ favicons = [
         "href": "favicon-32x32.png",
     }},
 ]
-#
 # -- Options for PDF output -------------------------------------------------
-#
 # source start file, target name, title, author, options
-# options: ('index', 'MyProject', 'My Project', 'Author Name', {{"pdf_compressed": True}})
+# options: ('index', 'MyProject', 'My Project', 'Author Name', 'options...')
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
-pdf_documents = [("index", "{rvbaseS}", "{rvbaseS}", 
-            "{repD["authors"]}")]
+pdf_documents = [("index", "{repD["repfilebase"]}", "{repD["title"]}", "{repD["authors"]}")]
+suppress_warnings = ['toc.excluded']
 # Label to use as a prefix for the subtitle on the cover page
-subtitle_prefix = ""
+subtitle_prefix = "User Manual"
 # A list of folders to search for stylesheets.
-pdf_style_path = ["./_rstdocs/_static/pdfstyle"]
-# A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["rivtstyle.yaml"]
+pdf_style_path = ["./_rstdocs"]
 # A colon-separated list of folders to search for fonts.
 pdf_font_path = ["./_rstdocs/_static/fonts"]
+# A comma-separated list of custom stylesheets.
+pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
+# exclude files
+exclude_patterns = ["pdfcover.rst"]
 # Example: compressed=True
 pdf_compressed = False
 # Language to be used for hyphenation support
@@ -97,19 +108,19 @@ pdf_language = "en_US"
 # literal blocks wider than the frame overflow, shrink or truncate
 pdf_fit_mode = "shrink"
 # 1 means top-level sections start in a new page 0 disabled
-pdf_break_level = 1
+pdf_break_level = 0
 # When a section starts in a new page, force it to be 'even', 'odd', 'any
 pdf_breakside = "any"
 # If false, no coverpage is generated.
 pdf_use_coverpage = True
 # Name of the cover page template to use
-pdf_cover_template = "./_templates/pdfcover.rst"
+pdf_cover_template = "pdfcover.rst"
 # Show Table Of Contents at the beginning?
 pdf_use_toc = True
-# How many levels deep should the table of contents be?
-pdf_toc_depth = 2
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
+# How many levels deep should the table of contents be?
+pdf_toc_depth = 9999
 # Insert footnotes where they are defined 
 pdf_inline_footnotes = False
 # If false, no index is generated.
@@ -135,16 +146,21 @@ pdf_smartquotes = 0
 # pdf_default_dpi = 72
 # Enable rst2pdf extension modules
 # pdf_extensions = []
-    """
 
-    rvfileT = str(Path(rstdocsP, "conf.py"))
+    """
+    # endregion
+
+    rvfileT = str(Path(repD["rstdocsP"], "conf.py"))
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(confpyS)
 
 
-def yamlS():
+def pdf_yamlS():
     """write rivt yaml file for pdf"""
 
+    rvfileT = str(Path(repD["rstdocsP"], "rivtstyle.yaml"))
+
+    # region - pdf yaml
     rivstyS = f"""
 fontsAlias:
   fontSerif: DejaVuSans
@@ -161,16 +177,23 @@ fontsAlias:
   fontSansItalic: DejaVuSans-Oblique
 pageSetup:
   firstTemplate: coverPage
-  size: letter
-  margin-bottom: .5cm
-  margin-gutter: 0cm 
+  height: null
+  margin-bottom: 4mm
+  margin-gutter: 1mm
   margin-left: 1.5cm
   margin-right: 1.5cm
-  margin-top: .5cm
+  margin-top: 4mm
+  size: letter
   spacing-footer: 10mm
   spacing-header: 10mm
+  width: null
 pageTemplates:
   coverPage:
+    showFooter: true
+    showHeader: false
+    underline: false
+  noHead:
+    frames: [[0%,0%,100%,100%]]
     showFooter: true
     showHeader: false
     underline: false
@@ -202,8 +225,8 @@ styles:
     leftIndent: 0
     parent: null
     rightIndent: 0
-    spaceAfter: 5
-    spaceBefore: 5
+    spaceAfter: 1
+    spaceBefore: 1
     strike: false
     textColor: black
     wordWrap: null
@@ -230,7 +253,7 @@ styles:
     alignment: TA_JUSTIFY
     hyphenation: true
     parent: normal
-    spaceBefore: 5
+    spaceBefore: 6
   align-center:
     alignment: TA_CENTER
     parent: bodytext
@@ -238,8 +261,8 @@ styles:
     alignment: TA_RIGHT
     parent: bodytext
   code:
-    spaceBefore: 5
-    spaceAfter: 5
+    spaceBefore: 6
+    spaceAfter: 6
     backColor: "#d1dede"
     borderColor: darkgray
     borderPadding: 6
@@ -293,11 +316,10 @@ styles:
         - - -1
           - -1
         - 0.25
-        - transparent
+        - white
   header-box:
     alignment: TA_RIGHT
     fontName: fontSans
-    spaceAfter: 0 
     commands:
       - - BOX
         - - 0
@@ -305,11 +327,11 @@ styles:
         - - -1
           - -1
         - 0.25
-        - transparent
+        - white
   heading:
     keepWithNext: true
     parent: normal
-    spaceAfter: 6
+    spaceAfter: 1
     spaceBefore: 10
     fontName: fontSerif
     textColor: "#222222"
@@ -354,7 +376,7 @@ styles:
     parent: bodytext
   line:
     parent: lineblock
-    spaceBefore: 2
+    spaceBefore: 0
   lineblock:
     parent: bodytext
   linenumber:
@@ -412,8 +434,8 @@ styles:
     spaceBefore: 12
   table:
     alignment: TA_LEFT
-    spaceBefore: 5
-    spaceAfter: 5
+    spaceBefore: 1
+    spaceAfter: 1
     borderPadding: 5
     leftPadding: 6
     rightPadding: 6
@@ -445,7 +467,7 @@ styles:
     borderPadding: 0
     backColor: "#c5d1c5"
     borderColor: darkgray
-    fontName: fontSansBold
+    fontName: fontMonoBold
   tip-heading:
     parent: admonition-heading
   title:
@@ -454,8 +476,7 @@ styles:
     keepWithNext: false
     parent: heading
     fontName: fontSansBold
-    spaceBefore: 5
-    spaceAfter: 5
+    spaceAfter: 36
   title-reference:
     fontName: fontSansItalic
     parent: normal
@@ -515,7 +536,8 @@ styles:
     parent: admonition-heading
 
 """
-    rvfileT = str(Path(rstdocsP, "_static", "pdfstyle", "rivtstyle.yaml"))
+    # endregion
+
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(rivstyS)
 
@@ -526,10 +548,7 @@ def pdf_coverS():
 
     """
 
-    # timeS = datetime.now().strftime("%Y-%m-%d")
-    reptitleS = repD["repname"].split(".")[0]
-    reptitleS = reptitleS.replace("-", " ")
-
+    # region pdf-cover page
     coverpgS = f"""
 
 .. role:: btext
@@ -540,10 +559,7 @@ def pdf_coverS():
 
 .. role:: stext
     :class: small-text
-    
-.. raw:: pdf
 
-   PageBreak coverPage
     
 
 |
@@ -558,12 +574,11 @@ def pdf_coverS():
 |
 
 
-.. rst-class:: center
+.. class:: center
 
     :btext:`{repD["title"]}`
-    
+
     :mtext:`{repD["subtitle"]}`
-    
 
 |
 |
@@ -572,205 +587,168 @@ def pdf_coverS():
 |
 |
 
-.. rst-class:: center
 
-    :mtext:`{repD["client"]}`
+   :mtext:`{repD["client"]}`
+
+|
+
+
+   :stext:`{repD["projref"]}`
 
    
-|
+.. raw:: pdf
 
-.. rst-class:: center
-
-    :stext:`{repD["projref"]}`
-
-|    
+   PageBreak noHead
+   
 
 .. raw:: pdf
 
-    PageBreak mainPage
-    SetPageCounter 1
+   PageBreak mainPage
+   SetPageCounter 1
 
+
+      
 """
+    # endregion
 
-    drstS = coverpgS + "\n\n"
-
-    rvcoverT = Path(rstdocsP, "_templates", "pdfcover.rst")
-    with open(rvcoverT, "w", encoding="utf-8") as f1:
-        f1.write(drstS)
-
-
-def pdf_rootS():
-    """_summary_"""
-
-    verS = repD["version"]
-    authors = repD["authors"]
-    titleS = repD["title"]
-    subS = ".. |s| unicode:: 0xA0 \n\n\n"
-
-    headblkS = f"""**{titleS}** - v{verS} |s| |s| |s| |s| **###Section###**"""
-
-    foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {authors}"""
-    foot2blkS = f"""**{repD["runlabel"]}**"""
-
-    len2I = len(repD["runlabel"]) + 3
-    len3I = 24 - len2I
-    len1S = str(60 + len3I)
-
-    imgS = f"""
-.. |blklogo| image:: ../{repD["runlogo"]}
-    :height: 100px
-    :align: bottom
-    :alt: logo
+    rvfileT = str(Path(repD["rstdocsP"], "pdfcover.rst"))
+    with open(rvfileT, "w", encoding="utf-8") as f5:
+        f5.write(coverpgS)
 
 
-"""
+def html_templ(self, repD):
+    """write html templates
 
-    headS = f"""
-.. header::
-    
-    .. list-table::
-        :class: header-box
-        :align: left
-        :widths: 90 10
-        
-        * - {headblkS}
-          - p. **###Page###**   
-  
-    """
-
-    footS = f"""
-.. footer:: 
-    
-    .. list-table::
-        :class: footer-box
-        :align: left
-        :widths: {len1S}  {str(len2I)} 16
-        
-        * - {foot1blkS}        
-          - {foot2blkS}        
-          - |blklogo|
-    
-    """
-
-    tochideS = """
-:orphan:
-
-"""
-
-    toc1S = f"""
-
-    .. toctree::
-        :maxdepth: 3
-        :hidden:
-
-
-{rsttabL}
-        
-"""
-    drstS = tochideS + subS + imgS + headS + footS + toc1S + "\n\n"
-
-    rvcoverT = Path(rstdocsP, "index.rst")
-    with open(rvcoverT, "w", encoding="utf-8") as f1:
-        f1.write(drstS)
-
-    errlogT = Path(logsP, frstS[0:7] + "log.txt")
-    with open(errlogT, "a") as f2:
-        f2.write("tocs inserted: " + repD["title"] + "\n")
-    logging.info("tocs inserted: " + repD["title"])
-
-
-def html_rootS():
-    """_summary_"""
-
-    # -------------- write tocs to subdivisions
-    groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
-    # print("*******", groupL)
-    tocinS = "\n"
-    for item in groupL:
-        tocinS += 4 * " " + item[0] + "\n"
-
-    indexpgS = f"""
-
-.. role:: btext
-   :class: big-text
-
-.. role:: mtext
-    :class: medium-text
-
-.. role:: stext
-    :class: small-text
-
-
-.. raw:: html
-
-    <div style="height: 0; visibility: hidden;">
-
-    Home
-    ========
-
-   </div>
-
-|
-|
-
-.. image:: ../{repD["coverlogo"]}
-    :width: {repD["logosize"]}%
-    :align: center        
-    :alt: rivt logo
-
-.. raw:: html
-
-    <hr>
- 
-
-.. rst-class:: center
-
-    :btext:`{repD["title"]}`
-    
-    :mtext:`{repD["subtitle"]}`
-    
-|
-    
-.. rst-class:: center
-
-    :mtext:`{repD["client"]}`
-
-   
-|
-|
-
-.. rst-class:: center
-
-    :stext:`{repD["projref"]}`
-
-   
-.. toctree::
-    :maxdepth: 3
-    :hidden:
-
-{tocinS}
+    Return:
 
     """
 
-    rvindexT = Path(rstdocsP, "index.rst")
-    with open(rvindexT, "w", encoding="utf-8") as f1:
-        f1.write(indexpgS)
-    # -------------- write tocs to subdivisions
-    toc2S = """
-    
-.. toctree::
-    :maxdepth: 2
+    # region - html template
+    srcS = Path(repD["reptP"], self.coverlogo)
+    destS = Path(repD["rstdocsP"], "_static", "img")
+    shutil.copy(srcS, destS)
+    srcS = Path(repD["reptP"], self.runlogo)
+    shutil.copy(srcS, destS)
+    timeS = datetime.now().strftime("%Y-%m-%d")
 
-x-x-x-x
-        
+    rvdateS = f"""
+<!-- _templates/rv-date.html -->
+<div class="footer-item">
+    <p class="rvdate">
+        {timeS}
+    </p>
+</div>
+"""
+    rvdateT = str(Path(repD["rstdocsP"], "_templates", "rv-date.html"))
+    with open(rvdateT, "w", encoding="utf-8") as f2:
+        f2.write(rvdateS)
+
+    rvauthS = f"""
+<!-- _templates/rv-author.html -->
+<div class="footer-item">
+    <p class="rvauthor">
+        {self.authorS}
+    </p>
+</div>
+"""
+    rvauthT = str(Path(repD["rstdocsP"], "_templates", "rv-author.html"))
+    with open(rvauthT, "w", encoding="utf-8") as f2:
+        f2.write(rvauthS)
+
+    rvtitleS = f"""
+<!-- _templates/rv-title.html -->
+<div class="footer-item">
+    <p class="rvtitle">
+        {self.docnameS}  v.{self.verS} 
+    </p>
+</div>
+"""
+    rvtitleT = str(Path(repD["rstdocsP"], "_templates", "rv-title.html"))
+    with open(rvtitleT, "w", encoding="utf-8") as f2:
+        f2.write(rvtitleS)
+    # endregion
+
+
+def html_confpy(self, repD):
+    """write config.py
+
+    Return:
+
     """
 
-    groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
-    for item in groupL:
-        tocS = "\n"
-        for fS in item[1:]:
-            tocS += "    " + fS + "\n"
-        tocrS = toc2S.replace("x-x-x-x", tocS)
-        fpT = Path(rstdocsP, item[0])
-        with open(fpT, "a") as f1:
-            f1.write(tocrS)
+    # region - html confpy
+    confpyS = f"""
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(".").resolve()))
+
+project = "{self.docnameS}"
+copyright = "{self.copyS}"
+author = "self.{self.authorS}"
+release = "{self.verS}"
+
+extensions = [
+    "sphinx.ext.githubpages",
+    "sphinx_togglebutton",
+    "sphinxcontrib.jquery",
+    "sphinx_copybutton",
+    "sphinx_favicon",
+    "sphinx.ext.duration",
+    "sphinx.ext.doctest",
+    "sphinx.ext.autodoc",
+    "sphinx_design",
+    "sphinx_new_tab_link",
+    "rst2pdf.pdfbuilder",
+]
+root_doc = "index"
+duration_write_json = ""
+html_show_sourcelink = False
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+source_suffix = [".rst", ".md"]
+templates_path = ["_templates"]
+html_static_path = ["_static", "_static/img"]
+html_css_files = ["css/custom.css"]
+locale_dirs = ["_locale"]
+html_title = " "
+html_theme = "pydata_sphinx_theme"
+html_context = {{"default_mode": "dark"}}
+html_sidebars = {{"**": ["sidebar-nav-bs.html"]}}
+html_theme_options = {{
+    "pygments_light_style": "tango",
+    "pygments_dark_style": "github-dark",
+    "navbar_start": ["navbar-logo"],
+    "collapse_navigation": True,
+    "header_links_before_dropdown": 6,
+    "navbar_align": "left",
+    "show_toc_level": 1,
+    "navigation_depth": 1,
+    "footer_start": ["rv-author"],
+    "footer_center": ["rv-title"],
+    "footer_end": ["rv-date"],
+    "logo": {{
+            "text": "{self.runlabelS}",
+        "image_dark": "{self.runlogo}",
+        "image_light": "{self.runlogo}",
+    }},
+}}
+favicons = [
+    {{
+        "rel": "icon",
+        "sizes": "16x16",
+        "href": "favicon-16x16.png",
+    }},
+    {{
+        "rel": "icon",
+        "sizes": "32x32",
+        "href": "favicon-32x32.png",
+    }},
+]
+"""
+
+    rvfileT = str(Path(repD["rstdocsP"], "conf.py"))
+    with open(rvfileT, "w", encoding="utf-8") as f5:
+        f5.write(confpyS)
+
+
+# endregion

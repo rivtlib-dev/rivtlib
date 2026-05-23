@@ -1,4 +1,74 @@
 
+def pdf_insert():
+    """insert pdf header"""
+
+    # region - insert pdf header
+    docnameS = f"**|D.{lD['divS']}|** " + self.docnameS
+    rvbaseS = repD["rbaseS"]
+    timeS = datetime.now().strftime("%Y-%m-%d")
+    headblkS = (
+        f"""{docnameS} - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
+    )
+    foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
+    foot2blkS = f"""**{self.runlabelS}**"""
+
+    imgS = f"""
+.. |blklogo| image:: ../{self.runlogo}
+   :height: 100px
+   :alt: logo
+
+
+"""
+    headS = f"""
+.. header::
+    .. list-table::
+        :class: header-box
+        :align: left
+        :widths: 90 10
+        
+        * - {headblkS}
+          - p. **###Page###**   
+
+          
+"""
+
+    footS = f"""
+.. footer:: 
+    .. list-table::
+        :class: footer-box
+        :align: left
+        :widths: 84 22 16
+        
+        * - {foot1blkS}        
+          - {foot2blkS}        
+          - |blklogo|
+
+                  
+"""
+    # endregion
+
+    drstS = ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + self.drstS
+
+    rvfileS = repD["rbaseS"] + ".rst"
+    rvdocS = repD["rbaseS"] + ".pdf"
+    rvfileT = str(Path(repD["rstdocsP"], rvfileS))
+    rvdocT = str(Path(repD["reptPubP"], "pdrepDocs", rvdocS))
+
+    with open(rvfileT, "w", encoding="utf-8") as f5:
+        f5.write(drstS)
+
+
+
+
+
+
+
+
+
+
+
+
+
     frames: [[0%,0%,100%,110%]]
 
 

@@ -1,7 +1,6 @@
-"""generate a rivt report
+"""generate rivt report
 
-This module is called by the rivt-report.py file that contains
-report settings.
+The module is called by the rivt-report.py script file.
 """
 
 import configparser
@@ -13,64 +12,71 @@ import subprocess
 import sys
 import warnings
 from datetime import datetime
+from itertools import groupby
 from pathlib import Path
-
-import rvrepcfg as rvr
 
 import __main__
 
-rvr.pdf_coverS()
+script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, script_dir)
+import rvrepcfg as rvr  # noqa: E402
 
 reptP = os.getcwd()
+rivtfL = glob.glob("rv???*.py", root_dir=reptP)
+rivtfL.sort()
+print("\n\nrivt files included in report\n---------------------------")
+for s in rivtfL:
+    print("rivt file:", s)
+print("---------------------------\n\n")
+
 rivtP = os.path.dirname(reptP)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
+srcP = Path(reptP, "rvsrc")
+storeP = Path(reptP, "rv_stor")
 publicP = Path(rivtP, "_rivt-public")
-storeP = Path(reptP, "_stored")
 pubP = Path(reptP, "_published")
 rstdocsP = Path(reptP, "_rstdocs")
 pdfpubP = Path(pubP, "pdfdocs")
 htmlpubP = Path(pubP, "docs")
-
-srcP = Path(reptP, "src")
 logsP = Path(storeP, "logs")
 rivt_storedP = storeP
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
 
-rivtfL = glob.glob("rv???*.py", root_dir=reptP)
-rivtfL.sort()
 
 # shutil.rmtree(path)
 
-inS = __main__.iniS
+
 repD = {}
+repD["rstdocsP"] = rstdocsP
+
+inS = __main__.iniS
 configL = configparser.ConfigParser()
 configL.read_string(inS)
-repD["repname"] = configL["report"]["repname"]
-repD["title"] = configL["report"]["title"]
+repD["repfile"] = configL["report"]["rept_filename"]
 repD["regen"] = configL["report"]["regen"]
 repD["exclude"] = configL["report"]["exclude"]
-repD["cover"] = configL["report"]["cover"]
+repD["keep"] = configL["report"]["keep_files"]
+repD["auto"] = configL["report"]["auto_cfg"]
+repD["title"] = configL["report"]["title"]
+repD["subtitle"] = configL["report"]["subtitle"]
 repD["coverlogo"] = configL["report"]["coverlogo"]
 repD["logosize"] = configL["report"]["coverlogo_size"]
-repD["subtitle"] = configL["report"]["subtitle"]
 repD["client"] = configL["report"]["client"]
+repD["projref"] = configL["report"]["project_ref"]
 repD["authors"] = configL["report"]["authors"]
 repD["version"] = configL["report"]["version"]
-repD["projref"] = configL["report"]["projectref"]
 repD["copyright"] = configL["report"]["copyright"]
 repD["runlogo"] = configL["report"]["running_logo"]
 repD["runlabel"] = configL["report"]["running_label"]
 repD["pdfpage"] = configL["report"]["pdf_pagesize"]
 repD["pdfmargin"] = configL["report"]["pdf_margins"]
 repD["pdflink"] = configL["report"]["pdf_link"]
-repD["clearpub"] = configL["report"]["clean_publish"]
 
+repD["repfilebase"] = repD["repfile"].split(".")[0]
 
-reprsN = (repD["repname"].replace(".pdf", ".rst")).strip()
-freprstT = Path(rstdocsP, reprsN)
-
+rvr.repD = repD
 
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
@@ -91,6 +97,7 @@ def htmlx():
 
     """
 
+    # region - htmlx
     htmlindex()
     print("html index page written")
     yamlS()
@@ -150,10 +157,12 @@ def htmlx():
         print(f"Error executing script: {e}")
         print("Stderr:", e.stderr)
 
-    repdocT = Path(htmlpubP, repD["repname"])
+    repdocT = Path(htmlpubP, repD["repfile"])
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
+
     return f"file written: {short_p} \n"
+    # endregion
 
 
 def pdfx():
@@ -163,33 +172,76 @@ def pdfx():
         msgS (str): completion message
     """
 
-    # region
+    repdocT = Path(pdfpubP, repD["repfile"])
+    parts = Path(repdocT).parts[-3:]  # Take last 3 segments
+    short_p = ".../" + "/".join(parts)
 
-    pdfcoverS()
+    rvr.pdf_coverS()
     print("cover page written")
-    pdfindex()
-    print("index page written")
-    yamlS()
+    rvr.pdf_yamlS()
     print("yaml file written")
-    confpy()
+    rvr.pdf_confpy()
     print("conf file written")
 
-    print("run pdf sphinx")
-    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(htmlpubP)} \n"
+    # ------------ write tocs to index.rst
+    tocinS = "\n"
+    toc1S = """
+
+.. toctree::
+    :hidden:
+
+    pdfcover.rst    
+
+    
+.. toctree::
+    :maxdepth: 3
+
+[replace]
+    
+"""
+    groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
+    indxtocL = [sublist[0] for sublist in groupL]
+    for item in indxtocL:
+        tocinS = tocinS + "    " + item + "\n"
+    tocrS = toc1S.replace("[replace]", tocinS)
+    print("*****xxx", tocrS)
+
+    rvindxT = str(Path(repD["rstdocsP"], "index.rst"))
+    with open(rvindxT, "w", encoding="utf-8") as f5:
+        f5.write(tocrS)
+
+    # -------------- write tocs to subdivisions
+    toc2S = """
+.. toctree::
+    :maxdepth: 2
+
+[replace]
+    
+"""
+
+    for item in groupL:
+        tocinS = "\n"
+        fL = item[1:]
+        for iS in fL:
+            tocinS += tocinS + "    " + iS + "\n"
+        tocrS = toc2S.replace("[replace]", tocinS)
+        fpT = Path(rstdocsP, item[0])
+        print("*******yyy", tocrS)
+        with open(fpT, "a") as f1:
+            f1.write(tocrS)
+
+    print("run sphinx-pdf")
+    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
 
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)
         if not result.returncode:
-            print("\npdf script executed successfully.")
+            print(f"pdf file written: {short_p} \n")
     except subprocess.CalledProcessError as e:
         print(f"Error executing script: {e}")
         print("Stderr:", e.stderr)
 
-    repdocT = Path(pdfpubP, repD["repname"])
-    parts = Path(repdocT).parts[-3:]  # Take last 3 segments
-    short_p = ".../" + "/".join(parts)
-
-    return f"pdf file written: {short_p} \n"
+    return " "
     # endregion
 
 
@@ -199,6 +251,8 @@ def textx():
     Returns:
         msgS (str): completion message
     """
+
+    # region - testx
     self.confpy()  # update conf.py
     rvdocS = self.fD["rbaseS"] + ".txt"
     rvdocT = str(Path(self.fD["reptPubP"], "txtdocs", rvdocS))
@@ -220,41 +274,55 @@ def textx():
     parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     return f"file written: {short_p} \n"
+    # endregion
 
 
 def get_readme():
     """list of doc reports"""
 
+    # region - readme
     rme_folderP = Path(pubP, "readme")
     rdfL = glob.glob("rv???*.txt", root_dir=rme_folderP)
     rdfL.sort()
 
     return rdfL
+    # endregion
 
 
-# generate rst for each rivt file in list
-print("\n\nrivt files included in report\n---------------------------")
-for s in rivtfL:
-    print("rivt file:", s)
-print("---------------------------\n\n")
+# ------------ generate rst for each rivt file in list from type none
+doctitleS = " "
 for frstS in rivtfL:
     frstT = Path(reptP, frstS)
+    with open(frstT, "r", encoding="utf-8") as f1:
+        fL = f1.readlines()
+        for lS in fL:
+            if len(lS) > 0:
+                if "| PUBLISH |" in lS:
+                    pL = lS[5:].split("|")
+                    doctitleS = str(pL[1].strip()).strip()
+                    if doctitleS == "--":
+                        doctitleS = " "
+                    else:
+                        doctitleS = str(pL[1]).strip()
+    repD["doctitleS"] = doctitleS
+    repD["rvbaseS"] = frstS.split(".py")[0].strip()
     parts = Path(frstT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     print("\nrun file: ", short_p, "\n")
     subprocess.run(["python", frstT, "-t none"])
+
     errlogT = Path(logsP, frstS[0:7] + "log.txt")
 with open(errlogT, "a") as f1:
     f1.write("write rst for each rivt file: " + repD["title"] + "\n")
 logging.info("write rst files: " + repD["title"])
-# ------------ convert list from .py to .rst
+# -------------- convert list from .py to .rst
 rstfiL = []
 for fS in rivtfL:
     rstfiL.append(fS.replace(".py", ".rst"))
 rsttabL = ["    " + tS for tS in rstfiL]
 rsttabL = "\n".join(rsttabL)
-# -------------------- write readme report
-reptitleS = repD["repname"]
+# ------------- write readme report
+reptitleS = repD["repfile"]
 versionS = repD["version"]
 authorS = repD["authors"]
 borderS = "=" * 80
@@ -276,10 +344,10 @@ short_p = ".../" + "/".join(parts)
 print("\nREADME report written: ", short_p, "\n")
 logging.info("README report : " + repD["title"])
 # ------------------------- write report
-get_typeS = repD["repname"].split(".")[-1].strip()
+get_typeS = repD["repfile"].split(".")[-1].strip()
 if get_typeS == "text":
     """write text report"""
-    pubT = Path(pubP, "txtdocs", repD["repname"].strip())
+    pubT = Path(pubP, "txtdocs", repD["repfile"].strip())
     txt_folderP = Path(pubP, "_doctext")
     txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
     txtfL.sort()
@@ -287,14 +355,14 @@ if get_typeS == "text":
     print(msgS)
 elif get_typeS == "pdf":
     """write pdf report"""
-    pubT = Path(pubP, "pdfdocs", repD["repname"].strip())
+    pubT = Path(pubP, "pdfdocs", repD["repfile"].strip())
     print("write pdf report")
     print("----------------")
     msgS = pdfx()
     print(msgS)
 elif get_typeS == "html":
     """write html report"""
-    pubT = Path(pubP, "docs", repD["repname"].strip())
+    pubT = Path(pubP, "docs", repD["repfile"].strip())
     print("write html report")
     msgS = htmlx()
     print(msgS)

@@ -298,10 +298,10 @@ class Rs:
                     print(mD["uS"])  # STDOUT - command
                     continue
             else:  # everything else - STDOUT - raw line
-                print(textwrap.fill(slS, width=40), flush=True)
-                sutfS += textwrap.fill(slS, width=40) + "\n"
+                print(textwrap.fill(slS, width=lD["widthI"]), flush=True)
+                sutfS += textwrap.fill(slS, width=lD["widthI"]) + "\n"
                 srstS += slS + "\n"
-                stxtS += textwrap.fill(slS, width=40) + "\n"
+                stxtS += textwrap.fill(slS, width=lD["widthI"]) + "\n"
 
         # export values file
         if self.tyS == "V" and len(rivL) > 0:

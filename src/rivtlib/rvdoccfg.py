@@ -1,5 +1,6 @@
 """
-write doc config files
+this module includes doc configuration strings
+
 """
 
 import shutil
@@ -8,8 +9,13 @@ from pathlib import Path
 
 
 def pdf_confpy(self, fD):
-    """write config.py"""
+    """write config.py
 
+    Return:
+
+    """
+
+    # region - pdf confpy
     confpyS = f"""
 import sys
 from pathlib import Path
@@ -38,7 +44,7 @@ root_doc = "index"
 duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-source_suffix = [".rst", ".md"]
+source_suffix = [".rst"]
 templates_path = ["_templates"]
 html_static_path = ["_static", "_static/img"]
 html_css_files = ["css/custom.css"]
@@ -86,7 +92,7 @@ pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.docnameS}",
 # Label to use as a prefix for the subtitle on the cover page
 subtitle_prefix = "User Manual"
 # A list of folders to search for stylesheets.
-pdf_style_path = ["./_rstdocs/_static/pdfstyle"]
+pdf_style_path = ["./_rstdocs/"]
 # A colon-separated list of folders to search for fonts.
 pdf_font_path = ["./_rstdocs/_static/fonts"]
 # Example: compressed=True
@@ -102,7 +108,7 @@ pdf_breakside = "any"
 # If false, no coverpage is generated.
 pdf_use_coverpage = True
 # Name of the cover page template to use
-pdf_cover_template = "_templates/pdfcover.rst"
+pdf_cover_template = "pdfcover.rst"
 # Show Table Of Contents at the beginning?
 pdf_use_toc = True
 # Page template name for "regular" pages
@@ -135,8 +141,9 @@ pdf_smartquotes = 0
 # Enable rst2pdf extension modules
 # pdf_extensions = []
 # A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["./_rstdocs/_static/pdfstyle/rivtstyle.yaml"]
+pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
     """
+    # endregion
 
     rvfileT = str(Path(fD["rstdocsP"], "conf.py"))
     with open(rvfileT, "w", encoding="utf-8") as f5:
@@ -146,8 +153,9 @@ pdf_stylesheets = ["./_rstdocs/_static/pdfstyle/rivtstyle.yaml"]
 def pdf_yamlS(self, fD):
     """write rivt yaml file for pdf"""
 
-    rvfileT = str(Path(fD["rstdocsP"], "_static", "pdfstyle", "rivtstyle.yaml"))
+    rvfileT = str(Path(fD["rstdocsP"], "rivtstyle.yaml"))
 
+    # region - pdf yaml
     rivstyS = f"""
 fontsAlias:
   fontSerif: DejaVuSans
@@ -523,6 +531,8 @@ styles:
     parent: admonition-heading
 
 """
+    # endregion
+
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(rivstyS)
 
@@ -534,7 +544,9 @@ def pdf_coverS(self, fD):
     """
 
     # timeS = datetime.now().strftime("%Y-%m-%d")
-    rvfileT = str(Path(fD["rstdocsP"], "_templates", "pdfcover.rst"))
+    rvfileT = str(Path(fD["rstdocsP"], "pdfcover.rst"))
+
+    # region pdf-cover page
     coverpgS = f"""
 .. role:: btext
    :class: big-text
@@ -592,23 +604,23 @@ def pdf_coverS(self, fD):
    PageBreak mainPage
    SetPageCounter 1
 
-   
-
+  
       
 """
+    # endregion
 
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(coverpgS)
 
 
 def pdf_insert(self, fD, lD):
+    """insert pdf header"""
 
-    # add div number to docname
-    docnameS = f"**|D.{lD['divS']}|** " + self.docnameS
-    rvbaseS = fD["rbaseS"]
+    # region - insert pdf header
+    doctitleS = f"**|D.{lD['divS']}|** " + self.doctitleS
     timeS = datetime.now().strftime("%Y-%m-%d")
     headblkS = (
-        f"""{docnameS} - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
+        f"""{doctitleS} - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
     )
     foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
     foot2blkS = f"""**{self.runlabelS}**"""
@@ -646,20 +658,26 @@ def pdf_insert(self, fD, lD):
 
                   
 """
+    # endregion
 
     drstS = ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + self.drstS
 
     rvfileS = fD["rbaseS"] + ".rst"
-    rvdocS = fD["rbaseS"] + ".pdf"
     rvfileT = str(Path(fD["rstdocsP"], rvfileS))
-    rvdocT = str(Path(fD["reptPubP"], "pdfdocs", rvdocS))
 
+    print("77777777777777777", drstS)
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(drstS)
 
 
 def html_templ(self, fD):
+    """write html templates
 
+    Return:
+
+    """
+
+    # region - html template
     srcS = Path(fD["reptP"], self.coverlogo)
     destS = Path(fD["rstdocsP"], "_static", "img")
     shutil.copy(srcS, destS)
@@ -702,11 +720,17 @@ def html_templ(self, fD):
     rvtitleT = str(Path(fD["rstdocsP"], "_templates", "rv-title.html"))
     with open(rvtitleT, "w", encoding="utf-8") as f2:
         f2.write(rvtitleS)
+    # endregion
 
 
 def html_confpy(self, fD):
-    """write config.py"""
+    """write config.py
 
+    Return:
+
+    """
+
+    # region - html confpy
     confpyS = f"""
 import sys
 from pathlib import Path
@@ -779,3 +803,6 @@ favicons = [
     rvfileT = str(Path(fD["rstdocsP"], "conf.py"))
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(confpyS)
+
+
+# endregion

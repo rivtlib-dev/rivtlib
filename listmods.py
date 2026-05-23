@@ -1,4 +1,5 @@
 import ast
+import glob
 import os
 import sys
 from pathlib import Path
@@ -51,14 +52,28 @@ def analyze_source(file_path):
 
 
 # Usage
-filenmS = sys.argv[1]
-pathS = os.getcwd()
-fileP = Path(pathS, "src", "rivtlib", filenmS)
-with open(fileP, "r") as file:
-    line_count = str(len(file.readlines()))
+total_count = 0
+filepthS = sys.argv[1]
+rootS = os.getcwd()
+fileP = Path(rootS, filepthS)
+srchS = str(Path(fileP, "*.py"))
+files = glob.glob(srchS)
+
+for s in files:
+    line_count = 0
+    spth = str(Path(fileP, s))
+    # print("read file:", spth)
+    with open(spth, "r") as file:
+        line_count = str(len(file.readlines()))
+    print(" ")
+    print("=" * 80)
+    print("Module Name: " + s + "   | Total Lines: " + line_count)
+    print("=" * 80)
+    analyze_source(spth)
+    print("=" * 80 + "\n\n\n")
+    total_count += int(line_count)
+
 print(" ")
-print("=========================================================")
-print("Module Name: " + filenmS + "   | Total Lines: " + line_count)
-print("=========================================================")
-analyze_source(fileP)
-print("=========================================================")
+print("=" * 80)
+print("Total Line Count: ", total_count)
+print("=" * 80, "\n\n")

@@ -153,7 +153,7 @@ fD = {  # folders
     "readmeT": Path(rivtP, "README.txt"),
     "rvreadmeT": Path(pubP, "readme", docnumS + "readme.txt"),
     "rstdocsP": rstdocsP,
-    "reptPubP": pubP,
+    "reptpubP": pubP,
     "pdfpubP": Path(pubP, "pdfdocs"),
     "htmlpubP": Path(pubP, "docs"),
     "publicT": Path(reptP, "public", reptPN),
@@ -209,14 +209,8 @@ for lnS in rivtL[:20]:
         lnL = lnL[0].split("=")
         if lnL[0].strip() == "set_width":
             lD["widthI"] = int(lnL[1].strip())
-        elif lnL[0].strip() == "private_heading":
-            lD["privateB"] = lnL[1].capitalize.strip()
         elif lnL[0].strip() == "no_tag":
             lD["notagB"] = lnL[1].capitalize.strip()
-        elif lnL[0].strip() == "keep_files":
-            lD["keepfB"] = lnL[1].capitalize.strip()
-        elif lnL[0].strip() == "auto_cfg":
-            lD["autocfgB"] = lnL[1].capitalize.strip()
         else:
             pass
 # endregion
