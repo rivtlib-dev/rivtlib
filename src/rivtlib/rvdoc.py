@@ -42,6 +42,7 @@ class Cmdp:
         self.parS = ""
         self.sL = sS.split("\n")
         self.reptP = fD["reptP"]
+        self.reptPubP = fD["reptpubP"]
         errlogT = fD["errlogT"]
         self.confg = []
         self.rvbaseS = fD["rbaseS"]
@@ -297,7 +298,7 @@ class Cmdp:
         htmldocS = self.fD["htmlpubP"]
         rstdocS = self.fD["rstdocsP"]
         rvbaseS = self.fD["rbaseS"]
-        rvdocT = str(Path(self.fD["reptPubP"], "docs", rvdocS))
+        rvdocT = str(Path(self.reptPubP, "docs", rvdocS))
 
         htmlcmdS = (
             f"sphinx-build -E -D root_doc={rvbaseS} {rstdocS} {htmldocS} \n"
@@ -311,19 +312,25 @@ class Cmdp:
             print("Stderr:", e.stderr)
 
         # write README
-        borderS = "=" * self.lD["widthI"]
+        rvdocS = self.fD["rbaseS"] + ".txt"
+        rvdocT = str(Path(self.reptPubP, "txtdocs", rvdocS))
+        borderS = "-" * self.lD["widthI"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.doctitleS
         versionS = "v-" + self.verS.strip()
         authorS = self.authorS.strip()
         hdlS = doctitleS + " | " + authorS + " | " + versionS + " | " + timeS
-        headS = "\n" + hdlS + "\n" + borderS + "\n"
+        headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n"
         dutfS = headS + "\n" + self.dutfS
+
         with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(dutfS)
+        with open(self.fD["rvreadmeT"], "w", encoding="utf-8") as f5:
             f5.write(dutfS)
 
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
+        print(f"\nHTML doc written to {short_p}")
 
         return f"\nThe README doc is in: {self.fD['rivtfldN']}"
         # endregion
@@ -338,10 +345,18 @@ class Cmdp:
         rvd.pdf_confpy(self, self.fD)  # write conf.py
         rvd.pdf_coverS(self, self.fD)  # write cover page
         rvd.pdf_yamlS(self, self.fD)  # write yaml file
-        rvd.pdf_insert(self, self.fD, self.lD)  # write templates
 
+        inS = self.pdf_insert()
+        rstdP = Path(self.fD["rstdocP"], self.fD["rbaseS"] + ".rst")
+        with open(rstdP, "r") as f1:
+            contentS = f1.read()
+        with open(rstdP, "w") as f2:
+            f2.write(inS + contentS)
+
+        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(self.dutfS)
         rvdocS = self.fD["rbaseS"] + ".pdf"
-        rvdocT = str(Path(self.fD["reptPubP"], "pdfdocs", rvdocS))
+        rvdocT = str(Path(self.reptPubP, "pdfdocs", rvdocS))
         parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
@@ -355,21 +370,26 @@ class Cmdp:
             print("Stderr:", e.stderr)
 
         # write README
-        borderS = "=" * self.lD["widthI"]
+        rvdocS = self.fD["rbaseS"] + ".txt"
+        rvdocT = str(Path(self.reptPubP, "txtdocs", rvdocS))
+        borderS = "-" * self.lD["widthI"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.doctitleS
         versionS = "v-" + self.verS.strip()
         authorS = self.authorS.strip()
         hdlS = doctitleS + " | " + authorS + " | " + versionS + " | " + timeS
-        headS = "\n" + hdlS + "\n" + borderS + "\n"
+        headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n"
         dutfS = headS + "\n" + self.dutfS
+
         with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(dutfS)
+        with open(self.fD["rvreadmeT"], "w", encoding="utf-8") as f5:
             f5.write(dutfS)
 
         return " "
         # endregion
 
-    def textx(self):
+    def txtx(self):
         """write text doc and README
 
         Returns:
@@ -378,20 +398,22 @@ class Cmdp:
 
         # region - textx
         rvdocS = self.fD["rbaseS"] + ".txt"
-        rvdocT = str(Path(self.fD["reptPubP"], "txtdocs", rvdocS))
-        borderS = "=" * self.lD["widthI"]
+        rvdocT = str(Path(self.reptPubP, "txtdocs", rvdocS))
+        borderS = "-" * self.lD["widthI"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.doctitleS
         versionS = "v-" + self.verS.strip()
         authorS = self.authorS.strip()
         hdlS = doctitleS + " | " + authorS + " | " + versionS + " | " + timeS
-        headS = "\n" + hdlS + "\n" + borderS + "\n"
+        headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n"
         dtxtS = headS + "\n" + self.dtxtS
         dutfS = headS + "\n" + self.dutfS
 
         with open(rvdocT, "w", encoding="utf-8") as f5:
             f5.write(dtxtS)
         with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+            f5.write(dutfS)
+        with open(self.fD["rvreadmeT"], "w", encoding="utf-8") as f5:
             f5.write(dutfS)
 
         parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
@@ -411,12 +433,10 @@ class Cmdp:
         """
         # region - nonex
 
-        inS = self.pdf_insert()
         rvfileS = self.fD["rbaseS"] + ".rst"
         rstfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        drstS = inS + self.drstS
         with open(rstfileT, "w", encoding="utf-8") as f:
-            f.write(drstS)
+            f.write(self.drstS)
 
         parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)

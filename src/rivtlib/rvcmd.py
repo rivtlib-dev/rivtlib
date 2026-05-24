@@ -515,7 +515,8 @@ class Cmd:
             lablS = ""
         lablS = lablS + capS + " "
         bordS = " " * 10 + "-" * 40 + "\n"
-        uS = tS = bordS + lablxS + " [file: " + self.fileS + " ] \n" + bordS
+        uS = bordS + lablxS + capS + " [file: " + self.fileS + " ] \n" + bordS
+        tS = bordS + lablxS + capS + "\n" + bordS
         rS = f"""
 .. figure:: {self.inspS}
     :width: {scS}%

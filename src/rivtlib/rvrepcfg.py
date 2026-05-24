@@ -2,8 +2,6 @@
 this module includes report configuration strings
 """
 
-import shutil
-from datetime import datetime
 from pathlib import Path
 
 repD = {}
@@ -47,9 +45,9 @@ duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = [".rst"]
-templates_path = ["_templates"]
-html_static_path = ["_static", "_static/img"]
-html_css_files = ["css/custom.css"]
+templates_path = ["_static"]
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 locale_dirs = ["_locale"]
 html_title = " "
 html_theme = "pydata_sphinx_theme"
@@ -616,60 +614,7 @@ def pdf_coverS():
         f5.write(coverpgS)
 
 
-def html_templ(self, repD):
-    """write html templates
-
-    Return:
-
-    """
-
-    # region - html template
-    srcS = Path(repD["reptP"], self.coverlogo)
-    destS = Path(repD["rstdocsP"], "_static", "img")
-    shutil.copy(srcS, destS)
-    srcS = Path(repD["reptP"], self.runlogo)
-    shutil.copy(srcS, destS)
-    timeS = datetime.now().strftime("%Y-%m-%d")
-
-    rvdateS = f"""
-<!-- _templates/rv-date.html -->
-<div class="footer-item">
-    <p class="rvdate">
-        {timeS}
-    </p>
-</div>
-"""
-    rvdateT = str(Path(repD["rstdocsP"], "_templates", "rv-date.html"))
-    with open(rvdateT, "w", encoding="utf-8") as f2:
-        f2.write(rvdateS)
-
-    rvauthS = f"""
-<!-- _templates/rv-author.html -->
-<div class="footer-item">
-    <p class="rvauthor">
-        {self.authorS}
-    </p>
-</div>
-"""
-    rvauthT = str(Path(repD["rstdocsP"], "_templates", "rv-author.html"))
-    with open(rvauthT, "w", encoding="utf-8") as f2:
-        f2.write(rvauthS)
-
-    rvtitleS = f"""
-<!-- _templates/rv-title.html -->
-<div class="footer-item">
-    <p class="rvtitle">
-        {self.docnameS}  v.{self.verS} 
-    </p>
-</div>
-"""
-    rvtitleT = str(Path(repD["rstdocsP"], "_templates", "rv-title.html"))
-    with open(rvtitleT, "w", encoding="utf-8") as f2:
-        f2.write(rvtitleS)
-    # endregion
-
-
-def html_confpy(self, repD):
+def html_confpy():
     """write config.py
 
     Return:
@@ -683,10 +628,10 @@ from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{self.docnameS}"
-copyright = "{self.copyS}"
-author = "self.{self.authorS}"
-release = "{self.verS}"
+project = "{repD["doctitleS"]}"
+copyright = "{repD["copyright"]}"
+author = "{repD["authors"]}"
+release = "{repD["version"]}"
 
 extensions = [
     "sphinx.ext.githubpages",
@@ -705,10 +650,10 @@ root_doc = "index"
 duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-source_suffix = [".rst", ".md"]
-templates_path = ["_templates"]
-html_static_path = ["_static", "_static/img"]
-html_css_files = ["css/custom.css"]
+source_suffix = [".rst"]
+templates_path = ["_static"]
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 locale_dirs = ["_locale"]
 html_title = " "
 html_theme = "pydata_sphinx_theme"
@@ -727,9 +672,9 @@ html_theme_options = {{
     "footer_center": ["rv-title"],
     "footer_end": ["rv-date"],
     "logo": {{
-            "text": "{self.runlabelS}",
-        "image_dark": "{self.runlogo}",
-        "image_light": "{self.runlogo}",
+            "text": "{repD["runlabel"]}",
+        "image_dark": "{repD["runlogo"]}",
+        "image_light": "{repD["runlogo"]}",
     }},
 }}
 favicons = [
@@ -752,3 +697,62 @@ favicons = [
 
 
 # endregion
+
+
+def html_index():
+    """write index.rst
+
+    Return:
+
+    """
+
+    indexpgS = f"""
+
+
+.. raw:: html
+
+    <div style="height: 0; visibility: hidden;">
+
+    Home
+    ========
+
+   </div>
+
+|    
+
+.. image:: ../{repD["coverlogo"]}
+    :width: {repD["logosize"]}%
+    :align: center        
+    :alt: rivt logo
+
+    
+.. raw:: html
+
+    <br>
+    <hr style="height: 3px; border-width: 0; color: hwb(200 15% 27%); background-color: hwb(200 15% 27%)">
+    <br> 
+
+    <div style="text-align: center;">
+
+    
+    {repD["subtitle"]}
+    
+    <br><br>
+
+    <p class="big-text">{repD["title"]}</p>
+        
+    <br><br><br>
+    
+    <p class="medium-text">{repD["client"]}</p>
+   
+    <br><br><br>
+
+    {repD["projref"]}
+            
+    
+    </div>
+    """
+
+    rvindexT = Path(repD["rstdocsP"], "index.rst")
+    with open(rvindexT, "w", encoding="utf-8") as f1:
+        f1.write(indexpgS)

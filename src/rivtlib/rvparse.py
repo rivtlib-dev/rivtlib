@@ -58,7 +58,7 @@ class Rs:
         if lD["cntflgI"] == 0:
             transS = "\n"
             lD["cntflgI"] += 1
-        else:
+        else:  # add tags and transition
             transS = "\n\n------------\n\n"
             lD["cntflgI"] += 1
         if not lD["notagB"]:
@@ -75,15 +75,15 @@ class Rs:
         else:
             snumI = lD["secnumI"] + 1
             lD["secnumI"] = snumI
-            snumS = f"{lD['sdivS']}.{str(snumI)}{addtgS} "
+            sdivS = str(lD["sdivI"])
+            snumS = f"{sdivS}.{str(snumI)}{addtgS} "
+            snum1S = transS + f"**{sdivS}.{str(snumI)}{addtgS}** "
             headS = snumS + " " + hL[0].strip()
-            snum1S = transS + f"**{lD['sdivS']}.{str(snumI)}{addtgS}** "
-
             head1S = snum1S + hL[0].strip()
             bordrS = lD["widthI"] * "-" + "\n"
             sutfS = "\n" + headS + "\n" + bordrS
-            srstS = "\n" + head1S + "\n" + bordrS
             stxtS = "\n" + headS + "\n" + bordrS
+            srstS = "\n" + head1S + "\n" + bordrS
             print(sutfS)  # STDOUT section header
         file_path = str(fD["rivtT"])  # insert interactive link
         for linenumI, lineS in enumerate(rivtL):
@@ -115,7 +115,7 @@ class Rs:
         self.sutfS = sutfS  # utf doc
         self.srstS = srstS  # rst2pdf doc
         self.stxtS = stxtS  # rest doc
-        self.logging.info("SECTION " + str(lD["secnumI"]) + " - type " + tyS)
+        self.logging.info("SECTION " + snumS + " - type " + tyS)
         # preprocess  section
         self.spL = []
         for slS in rsL[1:]:

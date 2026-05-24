@@ -168,11 +168,11 @@ fD = {  # folders
 lD1 = {
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
-    "sdivS": rbaseS[3:5],  # subdiv number
+    "sdivI": int(rbaseS[3:5]),  # subdiv number
+    "secnumI": 0,  # section number
     "divS": rbaseS[2],  # div character
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "sectS": "",  # section title
-    "secnumI": 0,  # section number
     "equI": 0,  # equation number
     "tableI": 1,  # table number
     "figI": 1,  # figure number

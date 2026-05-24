@@ -45,9 +45,9 @@ duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = [".rst"]
-templates_path = ["_templates"]
-html_static_path = ["_static", "_static/img"]
-html_css_files = ["css/custom.css"]
+templates_path = ["_static"]
+html_static_path = ["_static"]
+html_css_files = ["_static/custom.css"]
 locale_dirs = ["_locale"]
 html_title = " "
 html_theme = "pydata_sphinx_theme"
@@ -141,7 +141,7 @@ pdf_smartquotes = 0
 # Enable rst2pdf extension modules
 # pdf_extensions = []
 # A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
+pdf_stylesheets = ["./_rstdocs/_static/rivtstyle.yaml"]
     """
     # endregion
 
