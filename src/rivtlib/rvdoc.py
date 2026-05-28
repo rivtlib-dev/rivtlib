@@ -390,7 +390,7 @@ class Cmdp:
         return " "
         # endregion
 
-    def txtx(self):
+    def textx(self):
         """write text doc and README
 
         Returns:

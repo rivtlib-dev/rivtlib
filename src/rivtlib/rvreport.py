@@ -343,13 +343,11 @@ def textx(txtfL):
     for item in dochdrL:
         itm = item[0]
         toctxtS += itm[2] + "." + str(int(itm[3:5])) + "  " + item[1] + "\n"
-
     with open(rvrepT, "w") as f5:
         for fname in txtfL:
             fnameT = Path(txtpubP, fname)
             with open(fnameT) as infile:
                 f5.write(infile.read())
-
     with open(rvrepT, "r") as f1:
         content = f1.read()
     with open(rvrepT, "w") as f2:
@@ -390,7 +388,7 @@ for frstS in rivtfL:
     get_typeS = repD["repfile"].split(".")[-1].strip()
     if get_typeS == "txt":
         print("\ngemerate txt file for report: ", short_p, "\n")
-        subprocess.run(["python", frstT, "-t txt"])
+        subprocess.run(["python", frstT, "-t text"])
         # -------------- write logs
         errlogT = Path(logsP, frstS[0:7] + "log.txt")
         with open(errlogT, "a") as f1:
@@ -450,7 +448,7 @@ if get_typeS == "txt":
     txt_folderP = Path(pubP, "txtdocs")
     txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
     txtfL.sort()
-    msgS = textx(txtfL)
+    msgS = txtx(txtfL)
     print(msgS)
 elif get_typeS == "pdf":
     """write pdf report"""

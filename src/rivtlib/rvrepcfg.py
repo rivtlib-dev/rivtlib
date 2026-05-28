@@ -639,7 +639,7 @@ def html_confpy():
     """
 
     # region - html confpy
-    self.copy_docs()
+    copy_docs()
     confpyS = f"""
 import sys
 from pathlib import Path
