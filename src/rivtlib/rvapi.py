@@ -346,7 +346,7 @@ def V(rS):
     compL = [" < ", " > ", " != ", " == ", " <= ", " >= "]
     cmdL = [
         "IMAGE",  # image from file
-        "IMAGE2",  # adjacent image files
+        "IMAGE2",  # adjacent images frome files
         "TABLE",  # table from file
         "VALTABLE",  # value table from file
         "PYTHON",  # execute Python file

@@ -196,8 +196,6 @@ def htmlx():
     for item in indxtocL:
         tocinS = tocinS + "    " + item + "\n"
     tocrS = toc1S.replace("[replace]", tocinS)
-    print("*****xxx", tocrS)
-
     rvindxT = str(Path(repD["rstdocsP"], "index.rst"))
     with open(rvindxT, "a", encoding="utf-8") as f5:
         f5.write(tocrS)
@@ -217,7 +215,6 @@ def htmlx():
             tocinS += tocinS + "    " + iS + "\n"
         tocrS = toc2S.replace("[replace]", tocinS)
         fpT = Path(rstdocsP, item[0])
-        print("*******yyy", tocrS)
         with open(fpT, "a") as f1:
             f1.write(tocrS)
     # --------------- insert section header
@@ -227,7 +224,6 @@ def htmlx():
         docT = Path(rstdocsP, docS)
         divS = docS[2]
         hdrS = f"D.{divS} {titleS} \n" + "=" * 70 + "\n\n"
-        print("hhhhhhhhhhhhhhhhh", hdrS)
         with open(docT, "r", encoding="utf-8") as f1:
             content = f1.read()
         with open(docT, "w", encoding="utf-8") as f2:
@@ -290,7 +286,6 @@ def pdfx():
     for item in indxtocL:
         tocinS = tocinS + "    " + item + "\n"
     tocrS = toc1S.replace("[replace]", tocinS)
-    print("*****xxx", tocrS)
     rvindxT = str(Path(repD["rstdocsP"], "index.rst"))
     with open(rvindxT, "w", encoding="utf-8") as f5:
         f5.write(tocrS)
@@ -309,7 +304,6 @@ def pdfx():
             tocinS += tocinS + "    " + iS + "\n"
         tocrS = toc2S.replace("[replace]", tocinS)
         fpT = Path(rstdocsP, item[0])
-        print("*******yyy", tocrS)
         with open(fpT, "a") as f1:
             f1.write(tocrS)
     print("run sphinx-pdf")
@@ -348,7 +342,6 @@ def textx(txtfL):
     toctxtS = "Table of Contents\n==================\n"
     for item in dochdrL:
         itm = item[0]
-        print("iiiiiiiiiiiiiii", itm)
         toctxtS += itm[2] + "." + str(int(itm[3:5])) + "  " + item[1] + "\n"
 
     with open(rvrepT, "w") as f5:
@@ -361,9 +354,6 @@ def textx(txtfL):
         content = f1.read()
     with open(rvrepT, "w") as f2:
         f2.write(headS + "\n" + toctxtS + "\n\n" + content)
-
-    print("nnnnnnnnnnnnnn", rvrepT)
-
     parts = Path(rvrepT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     return f"text report written: {short_p} \n"
@@ -436,7 +426,6 @@ rtxtS = headS
 rme_folderP = Path(pubP, "readme")
 rdfL = glob.glob("rv???-*.txt", root_dir=rme_folderP)
 rdfL.sort()
-print("rrrrrrrrrrrrrrrr", rdfL)
 with open(readmeT, "w") as outfile:
     for fname in rdfL:
         readT = Path(pubP, "readme", fname)

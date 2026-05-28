@@ -3,9 +3,25 @@ this module includes doc configuration strings
 
 """
 
+import glob
+import os
 import shutil
 from datetime import datetime
 from pathlib import Path
+
+
+def copy_docs(self):
+    """copy to _rstdocs
+
+    copy page and download folders to _rstdocs
+    """
+    # Source pattern and destination directory
+    rptS = os.getcwd()
+    src_P = str(Path(rptS, "rvsrc", "page", "*.*"))
+    destP = str(Path(rptS, "_rstdocs", "_static"))
+
+    for fileP in glob.glob(src_P):
+        shutil.copy2(fileP, destP)
 
 
 def pdf_confpy(self, fD):
@@ -16,13 +32,14 @@ def pdf_confpy(self, fD):
     """
 
     # region - pdf confpy
+    self.copy_docs()
     confpyS = f"""
 import sys
 from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{self.docnameS}"
+project = "{self.titleS}"
 copyright = "{self.copyS}"
 author = "self.{self.authorS}"
 release = "{self.verS}"
@@ -47,8 +64,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = [".rst"]
 templates_path = ["_static"]
 html_static_path = ["_static"]
-html_css_files = ["_static/custom.css"]
-locale_dirs = ["_locale"]
+html_css_files = ["_custom.css"]
+locale_dirs = ["./_static/_locale"]
 html_title = " "
 html_theme = "pydata_sphinx_theme"
 html_context = {{"default_mode": "dark"}}
@@ -87,7 +104,7 @@ favicons = [
 # source start file, target name, title, author, options
 # options: ('index', 'MyProject', 'My Project', 'Author Name', {{"pdf_compressed": True}})
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
-pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.docnameS}", 
+pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.titleS}", 
             "{self.authorS}")]
 # Label to use as a prefix for the subtitle on the cover page
 subtitle_prefix = "User Manual"
@@ -95,6 +112,16 @@ subtitle_prefix = "User Manual"
 pdf_style_path = ["./_rstdocs/"]
 # A colon-separated list of folders to search for fonts.
 pdf_font_path = ["./_rstdocs/_static/fonts"]
+# A comma-separated list of custom stylesheets.
+pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
+# If false, no coverpage is generated.
+pdf_use_coverpage = True
+# Name of the cover page template to use
+pdf_cover_template = "./_static/pdfcover.rst"
+# Show Table Of Contents at the beginning?
+pdf_use_toc = True
+# Page template name for "regular" pages
+pdf_page_template = 'mainPage'
 # Example: compressed=True
 pdf_compressed = False
 # Language to be used for hyphenation support
@@ -105,14 +132,6 @@ pdf_fit_mode = "shrink"
 pdf_break_level = 0
 # When a section starts in a new page, force it to be 'even', 'odd', 'any
 pdf_breakside = "any"
-# If false, no coverpage is generated.
-pdf_use_coverpage = True
-# Name of the cover page template to use
-pdf_cover_template = "pdfcover.rst"
-# Show Table Of Contents at the beginning?
-pdf_use_toc = True
-# Page template name for "regular" pages
-pdf_page_template = 'mainPage'
 # How many levels deep should the table of contents be?
 pdf_toc_depth = 9999
 # Insert footnotes where they are defined 
@@ -140,8 +159,6 @@ pdf_smartquotes = 0
 # pdf_default_dpi = 72
 # Enable rst2pdf extension modules
 # pdf_extensions = []
-# A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["./_rstdocs/_static/rivtstyle.yaml"]
     """
     # endregion
 
@@ -543,9 +560,6 @@ def pdf_coverS(self, fD):
 
     """
 
-    # timeS = datetime.now().strftime("%Y-%m-%d")
-    rvfileT = str(Path(fD["rstdocsP"], "pdfcover.rst"))
-
     # region pdf-cover page
     coverpgS = f"""
 .. role:: btext
@@ -560,7 +574,7 @@ def pdf_coverS(self, fD):
 |
 |
         
-.. image:: ../{self.coverlogo}
+.. image:: ./_static/{self.coverlogo}
    :width: {self.logosize}%
    :align: center
 
@@ -569,28 +583,28 @@ def pdf_coverS(self, fD):
 |
 
 
-.. class:: center
-
-    :btext:`{self.titleS}`
+.. rst-class:: center
 
     :mtext:`{self.subtitleS}`
 
-|
-|
-|
-|
-|
-|
+    |
 
-.. class:: center
+    :btext:`{self.titleS}`
 
-   :mtext:`{self.clientS}`
+    
+    |
+    |
+    |
+    |
+    |
+    |
 
-|
 
-.. class:: center
+    :mtext:`{self.clientS}`
 
-   :stext:`{self.projrefS}`
+    |
+
+    :stext:`{self.projrefS}`
 
    
 
@@ -604,11 +618,10 @@ def pdf_coverS(self, fD):
    PageBreak mainPage
    SetPageCounter 1
 
-  
-      
 """
     # endregion
 
+    rvfileT = str(Path(fD["rstdocsP"], "_static", "pdfcover.rst"))
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(coverpgS)
 
@@ -622,7 +635,7 @@ def html_templ(self, fD):
 
     # region - html template
     srcS = Path(fD["reptP"], self.coverlogo)
-    destS = Path(fD["rstdocsP"], "_static", "img")
+    destS = Path(fD["rstdocsP"], "_static")
     shutil.copy(srcS, destS)
     srcS = Path(fD["reptP"], self.runlogo)
     shutil.copy(srcS, destS)
@@ -674,13 +687,14 @@ def html_confpy(self, fD):
     """
 
     # region - html confpy
+    copy_docs()
     confpyS = f"""
 import sys
 from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{self.docnameS}"
+project = "{self.titleS}"
 copyright = "{self.copyS}"
 author = "self.{self.authorS}"
 release = "{self.verS}"
@@ -703,9 +717,9 @@ duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = [".rst", ".md"]
-templates_path = ["_templates"]
-html_static_path = ["_static", "_static/img"]
-html_css_files = ["css/custom.css"]
+templates_path = ["_static"]
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 locale_dirs = ["_locale"]
 html_title = " "
 html_theme = "pydata_sphinx_theme"

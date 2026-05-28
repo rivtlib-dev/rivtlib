@@ -2,9 +2,26 @@
 this module includes report configuration strings
 """
 
+import glob
+import os
+import shutil
 from pathlib import Path
 
 repD = {}
+rptS = os.getcwd()
+
+
+def copy_docs(self):
+    """copy to _rstdocs
+
+    copy page and download folders to _rstdocs
+    """
+    # Source pattern and destination directory
+    src_P = str(Path(rptS, "rvsrc", "page", "*.*"))
+    destP = str(Path(rptS, "_rstdocs", "_static"))
+
+    for fileP in glob.glob(src_P):
+        shutil.copy2(fileP, destP)
 
 
 def pdf_confpy():
@@ -622,6 +639,7 @@ def html_confpy():
     """
 
     # region - html confpy
+    self.copy_docs()
     confpyS = f"""
 import sys
 from pathlib import Path

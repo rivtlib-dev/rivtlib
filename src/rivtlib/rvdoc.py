@@ -44,8 +44,9 @@ class Cmdp:
         self.reptP = fD["reptP"]
         self.reptPubP = fD["reptpubP"]
         errlogT = fD["errlogT"]
-        self.confg = []
         self.rvbaseS = fD["rbaseS"]
+        self.rstdocsP = fD["rstdocsP"]
+        self.confg = []
         self.authorS = " "
         self.verS = " "
         self.copyS = " "
@@ -237,7 +238,7 @@ class Cmdp:
         foot2blkS = f"""**{self.runlabelS}**"""
 
         imgS = f"""
-.. |blklogo| image:: ../{self.runlogo}
+.. |blklogo| image:: ./_static/{self.runlogo}
    :height: 100px
    :alt: logo
 
@@ -266,6 +267,7 @@ class Cmdp:
         * - {foot1blkS}        
           - {foot2blkS}        
           - |blklogo|
+
 
                   
 """
@@ -346,12 +348,11 @@ class Cmdp:
         rvd.pdf_coverS(self, self.fD)  # write cover page
         rvd.pdf_yamlS(self, self.fD)  # write yaml file
 
+        # write pdf prefix
         inS = self.pdf_insert()
-        rstdP = Path(self.fD["rstdocP"], self.fD["rbaseS"] + ".rst")
-        with open(rstdP, "r") as f1:
-            contentS = f1.read()
-        with open(rstdP, "w") as f2:
-            f2.write(inS + contentS)
+        rstdP = Path(self.fD["rstdocsP"], self.fD["rbaseS"] + ".rst")
+        with open(rstdP, "w", encoding="utf-8") as f2:
+            f2.write(inS + self.drstS)
 
         with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
             f5.write(self.dutfS)
