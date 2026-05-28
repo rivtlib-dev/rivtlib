@@ -574,7 +574,7 @@ def pdf_coverS(self, fD):
 |
 |
         
-.. image:: ./_static/{self.coverlogo}
+.. image:: _static/{self.coverlogo}
    :width: {self.logosize}%
    :align: center
 

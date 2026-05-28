@@ -102,11 +102,6 @@ def htmlx():
     rvr.html_index()
     print("html_index file written")
 
-    # srcS = Path(reptP, repD["coverlogo"])
-    # destS = Path(rstdocsP, "_static", "img")
-    # shutil.copy(srcS, destS)
-    # srcS = Path(reptP, repD["runlogo"])
-
     timeS = datetime.now().strftime("%Y-%m-%d")
 
     rvdateS = f"""

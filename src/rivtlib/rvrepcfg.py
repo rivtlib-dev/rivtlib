@@ -114,8 +114,12 @@ pdf_style_path = ["./_rstdocs"]
 pdf_font_path = ["./_rstdocs/_static/fonts"]
 # A comma-separated list of custom stylesheets.
 pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
+# If false, no coverpage is generated.
+pdf_use_coverpage = True
+# Name of the cover page template to use
+pdf_cover_template = "pdfcover.rst"
 # exclude files
-exclude_patterns = ["pdfcover.rst"]
+exclude_patterns = []
 # Example: compressed=True
 pdf_compressed = False
 # Language to be used for hyphenation support
@@ -126,10 +130,6 @@ pdf_fit_mode = "shrink"
 pdf_break_level = 0
 # When a section starts in a new page, force it to be 'even', 'odd', 'any
 pdf_breakside = "any"
-# If false, no coverpage is generated.
-pdf_use_coverpage = True
-# Name of the cover page template to use
-pdf_cover_template = "pdfcover.rst"
 # Show Table Of Contents at the beginning?
 pdf_use_toc = True
 # Page template name for "regular" pages
@@ -580,7 +580,7 @@ def pdf_coverS():
 |
 |
         
-.. image:: ../{repD["coverlogo"]}
+.. image:: ./_static/{repD["coverlogo"]}
    :width: {repD["logosize"]}%
    :align: center
 
