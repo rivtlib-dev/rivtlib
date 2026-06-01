@@ -56,7 +56,6 @@ class Tag:
          I,V      math  _[X]                             format LaTeX math (all)
          I,V      label _[F]                             figure number and label (all)
          I,V      title _[T]                             table number and title (all)
-         I,V      text  _[P]                             new page (pdf)
          I,V      text  _[#] text                        number endnote (all)
          I,V      text  _[V] var_name ] text             variable substitution (all)
          I,V      text  _[G] term link ] text            link term to glossary (all)
@@ -76,14 +75,7 @@ class Tag:
         lineL = self.strL
         # region
 
-        if cmdS == "lP":
-            """new page"""
-
-            uS = tS = lineS + "\n"
-            rS = "\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
-            lS = "\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
-
-        elif cmdS == "lC":
+        if cmdS == "lC":
             """center text"""
 
             uS = tS = lineS.center(wI) + "\n"

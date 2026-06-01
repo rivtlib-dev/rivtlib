@@ -71,6 +71,7 @@ class Cmdp:
         self.keepS = " "
         self.autoS = " "
 
+        warnings.filterwarnings("ignore")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
         logging.basicConfig(
             level=logging.DEBUG,
@@ -81,8 +82,15 @@ class Cmdp:
             filename=errlogT,
             filemode="w",
         )
-        warnings.filterwarnings("ignore")
         self.logging = logging
+
+        # clean rst files
+        for file_path in self.rstdocsP.glob("*.rst"):
+            try:
+                file_path.unlink()
+                print(f"Deleted: {file_path}")
+            except OSError as e:
+                print(f"Error deleting {file_path}: {e}")
 
         # strip leading spaces and comments from section
         sL = sS.split("\n")  # unprocessed lines
@@ -204,6 +212,7 @@ class Cmdp:
         self.f1_repoS = self.configL["doc"]["fork1_repo"]
         self.f1_liceS = self.configL["doc"]["fork1_license"]
         self.coverlogo = self.configL["layout"]["coverlogo"]
+        self.coverpageB = self.configL["layout"]["coverpage"]
         self.logosize = self.configL["layout"]["coverlogo_size"]
         self.runlogo = self.configL["layout"]["runninglogo"]
         self.runlabelS = self.configL["layout"]["runninglabel"]
@@ -212,7 +221,6 @@ class Cmdp:
         self.clientS = self.configL["layout"]["client"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
-        self.titleS = self.configL["layout"]["title"]
         self.subtitleS = self.configL["layout"]["subtitle"]
         self.privateS = self.configL["process"]["private_heading"]
         self.keepS = self.configL["process"]["keep_files"]
@@ -229,11 +237,8 @@ class Cmdp:
         """insert pdf header"""
 
         # region - insert pdf header
-        doctitleS = f"**|D.{self.lD['divS']}|** " + self.doctitleS
         timeS = datetime.now().strftime("%Y-%m-%d")
-        headblkS = (
-            f"""{doctitleS} - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
-        )
+        headblkS = f"""**{self.doctitleS}** - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
         foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
         foot2blkS = f"""**{self.runlabelS}**"""
 
@@ -273,9 +278,96 @@ class Cmdp:
 """
         # endregion
 
-        drstS = ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS
+        # region pdf-cover page
+        coverpgS = f"""
+.. role:: btext
+   :class: big-text
 
-        return drstS
+.. role:: mtext
+    :class: medium-text
+
+.. role:: stext
+    :class: small-text
+
+|
+|
+        
+.. image:: _static/{self.coverlogo}
+   :width: {self.logosize}%
+   :align: center
+
+|
+|
+|
+
+.. rst-class:: center
+
+    :mtext:`{self.subtitleS}`
+
+|
+
+.. rst-class:: center
+
+    :btext:`{self.doctitleS}`
+    
+|
+|
+|
+|
+|
+
+
+.. rst-class:: center
+
+    :mtext:`{self.clientS}`
+
+|
+
+.. rst-class:: center
+
+    :stext:`{self.projrefS}`
+
+   """
+
+        instocS = f"""
+.. raw:: pdf
+
+   PageBreak noHead
+      
+**{self.doctitleS}** - v{self.verS}
+
+--------------------
+
+|
+
+.. contents:: Table of Contents
+  :depth: 2
+
+  
+.. raw:: pdf
+ 
+   PageBreak mainPage
+   SetPageCounter 1
+
+"""
+        # endregion
+
+        insrstS = (
+            ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + instocS
+        )
+        if self.coverpageB.capitalize() == "True":
+            insrstS = (
+                ".. |s| unicode:: 0xA0 \n\n\n"
+                + imgS
+                + headS
+                + footS
+                + coverpgS
+                + instocS
+            )
+        else:
+            pass
+
+        return insrstS
 
     def htmlx(self):
         """write html doc
@@ -345,7 +437,6 @@ class Cmdp:
         """
         # region - pdfx
         rvd.pdf_confpy(self, self.fD)  # write conf.py
-        rvd.pdf_coverS(self, self.fD)  # write cover page
         rvd.pdf_yamlS(self, self.fD)  # write yaml file
 
         # write pdf prefix
@@ -354,8 +445,6 @@ class Cmdp:
         with open(rstdP, "w", encoding="utf-8") as f2:
             f2.write(inS + self.drstS)
 
-        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
-            f5.write(self.dutfS)
         rvdocS = self.fD["rbaseS"] + ".pdf"
         rvdocT = str(Path(self.reptPubP, "pdfdocs", rvdocS))
         parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments

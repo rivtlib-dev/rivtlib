@@ -61,7 +61,6 @@ try:
     rivtN = os.path.basename(__main__.__file__)
 except Exception:
     rivtN = os.path.basename(__main__.__name__)
-
 if fnmatch.fnmatch(rivtN, "rv[A-Z0-9][0-9][0-9]-*.py"):
     pass
 else:
@@ -70,20 +69,17 @@ else:
     print("""where D is an alpha-numeric division label""")
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
+# print(rivtN, rivtT)
+rivtT = Path(reptP, rivtN)
 # Configure arg parser
 parser = argparse.ArgumentParser(description="Example script")
-# parser.add_argument("input", help="Input file path")
-parser.add_argument("-t", "--type", help="file type", default="--")
-# parser.add_argument("-v", "--verbose", action="store_true", help="Verbose mode")
+parser.add_argument("-t", "--type", default="--", help="file type")
 args = parser.parse_args()
 ptypeS = (args.type).strip()
-# print(f"Input: {args.input}, Verbose: {args.verbose}")
-rivtT = Path(reptP, rivtN)
-# print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 rbaseS = rivtN.split(".")[0]
-reptPN = rivtN.replace("rv", "rv-")
+reptpubN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
 bakN = rbaseS + ".bak"
 errlogN = docnumS + "log.txt"
@@ -102,35 +98,25 @@ rivt_storedP = storeP
 # endregion
 
 # region - logs
-try:
-    package_version = version("rivtlib")
-    verS = f"rivtlib version: {package_version}"
-except Exception as e:
-    verS = f"rivtlib version not available: {e}"
-
 warnings.filterwarnings("ignore")
-try:
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)-8s  " + rbaseS + "   %(levelname)-8s %(message)s",
-        datefmt="%m-%d %H:%M",
-        filename=errlogT,
-        filemode="w",
-    )
-except Exception:
-    pass
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)-8s  " + rbaseS + "   %(levelname)-8s %(message)s",
+    datefmt="%m-%d %H:%M",
+    filename=errlogT,
+    filemode="w",
+)
+package_version = version("rivtlib")
+verS = f"rivtlib version: {package_version}"
 logging.info("Doc start")
 logging.info(verS)
 # write backup file
 with open(rivtT, "r") as f2:  # noqa: F405
     rivtS = f2.read()
-try:
-    with open(bakT, "w") as f3:  # noqa: F405
-        f3.write(rivtS)
-    logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
-except Exception:
-    pass
-# end region
+with open(bakT, "w") as f3:  # noqa: F405
+    f3.write(rivtS)
+logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
+# endregion
 
 # region - dictionaries
 vdescD = {}
@@ -156,7 +142,7 @@ fD = {  # folders
     "reptpubP": pubP,
     "pdfpubP": Path(pubP, "pdfdocs"),
     "htmlpubP": Path(pubP, "docs"),
-    "publicT": Path(reptP, "public", reptPN),
+    "publicT": Path(reptP, "public", reptpubN),
     "srcP": srcP,
     "storeP": storeP,
     "valP": Path(srcP, "values"),
@@ -164,7 +150,6 @@ fD = {  # folders
     "styleP": Path(srcP, "styles"),
     "tempP": Path(srcP, "temp"),
 }
-
 lD1 = {
     "rvtypeS": "",  # section type r,i,v,t,d
     "docnumS": rbaseS[0:6],  # doc number
@@ -198,7 +183,6 @@ lD2 = {
 }
 # labels
 lD = lD1 | lD2
-
 # settings from rivt file
 lnL = []
 with open(rivtT, "r") as f1:  # noqa: F405
@@ -213,14 +197,13 @@ for lnS in rivtL[:20]:
             lD["notagB"] = lnL[1].capitalize.strip()
         else:
             pass
-# endregion
-
 # initialize doc strings
 dutfS = ""
 drstS = ""
 dtxtS = ""
 dlatS = ""
 dcmdS = ""
+# endregion
 
 
 def cmdhelp():
@@ -311,7 +294,6 @@ def I(rS):  # noqa: E743
         "IMAGE",  # insert image from file
         "IMAGE2",  # insert adjacent images from file
         "TABLE",  # insert table from file
-        "TEXT",  # insert text from filoe
     ]
     tagL = [
         "C",  # bold center text
@@ -324,7 +306,6 @@ def I(rS):  # noqa: E743
         "D",  # download link
         "V",  # var value
         "T",  # table label
-        "F",  # figure label
     ]
     tagbL = [
         "TABLE",  # format and write to csv

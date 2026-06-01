@@ -11,7 +11,7 @@ repD = {}
 rptS = os.getcwd()
 
 
-def copy_docs(self):
+def copy_docs():
     """copy to _rstdocs
 
     copy page and download folders to _rstdocs
@@ -33,6 +33,7 @@ def pdf_confpy():
     """
 
     # region - pdf confpy
+    copy_docs()
     confpyS = f"""
 import sys
 from pathlib import Path
@@ -56,6 +57,7 @@ extensions = [
     "sphinx_design",
     "sphinx_new_tab_link",
     "rst2pdf.pdfbuilder",
+    "sphinxcontrib.mermaid"
 ]
 root_doc = "index"
 duration_write_json = ""
@@ -575,38 +577,40 @@ def pdf_coverS():
 .. role:: stext
     :class: small-text
 
-    
-
 |
 |
         
 .. image:: ./_static/{repD["coverlogo"]}
    :width: {repD["logosize"]}%
    :align: center
-
+   
 |
 |
 |
-
 
 .. class:: center
 
+    :mtext:`{repD["subtitle"]}`
+  
+|
+
+.. class:: center  
+
     :btext:`{repD["title"]}`
 
-    :mtext:`{repD["subtitle"]}`
-
-|
 |
 |
 |
 |
 |
 
+.. class:: center  
 
    :mtext:`{repD["client"]}`
 
 |
 
+.. class:: center  
 
    :stext:`{repD["projref"]}`
 
@@ -626,7 +630,7 @@ def pdf_coverS():
 """
     # endregion
 
-    rvfileT = str(Path(repD["rstdocsP"], "pdfcover.rst"))
+    rvfileT = str(Path(repD["rstdocsP"], "_static", "pdfcover.rst"))
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(coverpgS)
 

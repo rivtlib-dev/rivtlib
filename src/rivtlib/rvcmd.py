@@ -97,8 +97,9 @@ class Cmd:
 
             a ==: .5 * 2*IN | unit1, unit2, decimal | ref
 
-            collects successive rows until hitting a blank;
-            table is written in rvparse module
+            Collects successive rows until hitting a blank line
+
+            Table is written to rv_stor (see rvparse module)
 
         Returns:
             self.mD, tbL
@@ -619,47 +620,35 @@ class Cmd:
     def TABLE(self):
         """insert table
 
-        | TABLE | rel. path | title,width,r1:r2,l;c;r,num;non
+            | TABLE | rel. path | title, width, head;nohead, num;non
+
+        Returns:
+            mD{dict)}
+
         """
         # region
         # print(f"{pthS=}")
 
-        lineS = self.strpS
-        tnumI = int(self.lD["tableI"])
-        self.lD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
-        self.tabuS = "\nTable " + str(tnumI) + ": " + lineS
-        self.tabr2s = "\n<b>Table " + fillS + "</b>: " + lineS
-        self.tabrs = "\n**Table " + fillS + "**: " + lineS
-
         parL = self.parS.split(",")
-        titleS = " "
-        parL = self.parS.split(",")
-        capS = parL[0].strip()
-        scS = parL[1].strip()
-        tabS = parL[2].strip()
-        if tabS == "num":
-            numS = str(self.lD["figI"])
-            self.lD["fnum"] = int(numS) + 1
-            lablS = "<b>Fig. " + numS + "</b> "
-        else:
-            lablS = ""
-        if capS == "-":
-            capS = ""
-        lablS = lablS + capS + " "
-
-        self.strpS = titleS.strip()
-        self.cT()
+        titleS = parL[0].strip()
+        if titleS == "--":
+            titleS = ""
+        maxwI = int(parL[1].strip())  # max col. width
+        numS = parL[3].strip()
         fiS = " [file: " + self.fileS + "]" + "\n\n"
-        utlS = titleS + fiS  # file path text
-        rtlS = xtlS = titleS + fiS
+        if numS == "num":
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
+            utlS = "\nTable " + str(tnumI) + ": " + titleS
+            rtlS = "\n**Table " + str(tnumI) + "**: " + titleS
+            xtlS = utlS + fiS  # file path text
+        else:
+            utlS = "\nTable : " + titleS
+            rtlS = "\n**Table**: " + titleS
+            xtlS = utlS + fiS  # file path - text
         extS = self.insP.suffix  # file extension
-        maxwI = int(parL[0].strip())  # max col. width
-        rowL = eval(parL[3].strip())  # rows
-        if len(rowL) == 0:
-            pass
         readL = []
-        if extS == "csv":  # read csv file
+        if extS == ".csv":  # read csv file
             with open(self.inspS, "r") as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
@@ -673,6 +662,10 @@ class Cmd:
             readL = pDF1.values.tolist()
         else:
             pass
+        if parL[2].strip() == "head":
+            flgS = "firstrow"
+        else:
+            flgS = "None"
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -680,18 +673,30 @@ class Cmd:
             tabulate.tabulate(
                 readL,
                 tablefmt="rst",
-                headers="firstrow",
+                headers=flgS,
                 numalign="decimal",
                 maxcolwidths=maxwI,
                 colglobalalign="left",
             )
         )
-        uS = rS = output.getvalue()
+        uS = output.getvalue()
         sys.stdout = old_stdout
 
-        self.uS = utlS + uS + "\n"
-        self.r2s = rtlS + rS + "\n"
-        self.rs = xtlS + rS + "\n"
+        utS = rtS = ltS = ttS = ""
+        utS = utlS + "\n\n" + uS + "\n"
+        rtS = rtlS + "\n\n" + uS + "\n"
+        ltS = ttS = xtlS + "\n\n" + uS + "\n"
+
+        self.mD = {
+            "uS": utS,
+            "rS": rtS,
+            "tS": ttS,
+            "lS": ltS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivtD": self.rivtD,
+            "rivL": self.rivL,
+        }
         # endregion
 
     def TEXT(self):

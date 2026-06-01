@@ -81,22 +81,28 @@
                 "command": "editor.unfoldAll"
             },
             {
-                "name": "foldRegions",
+                "name": "FoldRegions",
                 "color": "orange",
                 "useVsCodeApi": true,
                 "command": "editor.foldAllMarkerRegions",
             },
             {
-                "name": "foldX",
+                "name": "Foldlevel1",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldLevel1",
+            },
+            {
+                "name": "FoldX",
                 "color": "orange",
                 "useVsCodeApi": true,
                 "command": "editor.foldAllExcept"
             },
             {
-                "name": "UnfDRecursive",
+                "name": "UnFldRecur",
                 "color": "orange",
                 "useVsCodeApi": true,
-                "command": "editor.unfDRecursively"
+                "command": "editor.unfoldRecursively"
             },
             {
                 "name": "ToggleDocStr",
@@ -117,6 +123,7 @@
                 "command": "settings.cycle.ExplorerSort1",
             },
         ]
+        editor.foldlevel2
     },
     "ShortcutMenuBar.beautify": false,
     "ShortcutMenuBar.showCommands": true,

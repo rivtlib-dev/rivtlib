@@ -53,6 +53,7 @@ class Rs:
         srstS = ""  # rest doc
         stxtS = ""  # text doc
         sltxS = ""  # latex doc
+        newpageS = ""
         self.vardescD = vdescD
         # ----------------------------------------------   section header
         if lD["cntflgI"] == 0:
@@ -76,8 +77,9 @@ class Rs:
             snumI = lD["secnumI"] + 1
             lD["secnumI"] = snumI
             sdivS = str(lD["sdivI"])
-            snumS = f"{sdivS}.{str(snumI)}{addtgS} "
-            snum1S = transS + f"**{sdivS}.{str(snumI)}{addtgS}** "
+            divS = str(lD["divS"])
+            snumS = f"{divS}.{sdivS}.{str(snumI)}{addtgS} "
+            snum1S = f"**{divS}.{sdivS}.{str(snumI)}{addtgS}** "
             headS = snumS + " " + hL[0].strip()
             head1S = snum1S + hL[0].strip()
             bordrS = lD["widthI"] * "-" + "\n"
@@ -106,12 +108,21 @@ class Rs:
         if len(paraL) > 0:
             if "hide" in paraL:
                 fD["showB"] = False
-            if "print" in paraL:
+            if "doc" in paraL:
                 fD["showB"] = True
             if "private" in paraL:
                 fD["publicB"] = False
             if "public" in paraL:
                 fD["publicB"] = True
+            if "pdfpage" in paraL:
+                newpageS = (
+                    "\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
+                )  # rst2pdf doc
+            if "nopage" in paraL:
+                pass
+
+        # initialize section content substring
+        srstS = transS + newpageS + srstS
         self.sutfS = sutfS  # utf doc
         self.srstS = srstS  # rst2pdf doc
         self.stxtS = stxtS  # rest doc
@@ -125,15 +136,10 @@ class Rs:
                 continue
             elif "##" in slS[:8]:  # skip comment line
                 continue
-            elif "." * 5 in slS[4:]:  # page break to tag
-                slS = "  _[P]"
-                self.spL.append(slS)
-                continue
             else:
                 self.spL.append(slS[4:])  # preprocessed list
         # endregion
 
-    # ----------------------------------------------------   API parsing loop
     def content(self, tyS, tagL, cmdL):
         """parse content substring
         Args:

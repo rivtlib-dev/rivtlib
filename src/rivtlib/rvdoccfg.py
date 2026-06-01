@@ -10,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 
-def copy_docs(self):
+def copy_docs():
     """copy to _rstdocs
 
     copy page and download folders to _rstdocs
@@ -32,7 +32,7 @@ def pdf_confpy(self, fD):
     """
 
     # region - pdf confpy
-    self.copy_docs()
+    copy_docs()
     confpyS = f"""
 import sys
 from pathlib import Path
@@ -56,6 +56,7 @@ extensions = [
     "sphinx_design",
     "sphinx_new_tab_link",
     "rst2pdf.pdfbuilder",
+    "sphinxcontrib.mermaid"
 ]
 root_doc = "index"
 duration_write_json = ""
@@ -115,11 +116,11 @@ pdf_font_path = ["./_rstdocs/_static/fonts"]
 # A comma-separated list of custom stylesheets.
 pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
 # If false, no coverpage is generated.
-pdf_use_coverpage = True
+pdf_use_coverpage = False
 # Name of the cover page template to use
-pdf_cover_template = "./_static/pdfcover.rst"
+pdf_cover_template = ""
 # Show Table Of Contents at the beginning?
-pdf_use_toc = True
+pdf_use_toc = False
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
 # Example: compressed=True
@@ -188,7 +189,7 @@ fontsAlias:
   fontSansBoldItalic: DejaVuSans-BoldOblique
   fontSansItalic: DejaVuSans-Oblique
 pageSetup:
-  firstTemplate: coverPage
+  firstTemplate: noHead
   height: null
   margin-bottom: 4mm
   margin-gutter: 1mm
@@ -552,78 +553,6 @@ styles:
 
     with open(rvfileT, "w", encoding="utf-8") as f5:
         f5.write(rivstyS)
-
-
-def pdf_coverS(self, fD):
-    """
-    cover page
-
-    """
-
-    # region pdf-cover page
-    coverpgS = f"""
-.. role:: btext
-   :class: big-text
-
-.. role:: mtext
-    :class: medium-text
-
-.. role:: stext
-    :class: small-text
-
-|
-|
-        
-.. image:: _static/{self.coverlogo}
-   :width: {self.logosize}%
-   :align: center
-
-|
-|
-|
-
-
-.. rst-class:: center
-
-    :mtext:`{self.subtitleS}`
-
-    |
-
-    :btext:`{self.titleS}`
-
-    
-    |
-    |
-    |
-    |
-    |
-    |
-
-
-    :mtext:`{self.clientS}`
-
-    |
-
-    :stext:`{self.projrefS}`
-
-   
-
-.. raw:: pdf
-
-   PageBreak noHead
-   
-
-.. raw:: pdf
-
-   PageBreak mainPage
-   SetPageCounter 1
-
-"""
-    # endregion
-
-    rvfileT = str(Path(fD["rstdocsP"], "_static", "pdfcover.rst"))
-    with open(rvfileT, "w", encoding="utf-8") as f5:
-        f5.write(coverpgS)
 
 
 def html_templ(self, fD):

@@ -34,4 +34,27 @@ where *rvddss-* is the doc number and *dd* and *ss* are integers identifying the
 report division and subdivision respectively.
 See the `rivt User Manual <https://rivt.info>`_ for details.
 
+Code variable types are indicated by a capital letter at the end of the variable
+name:
+
+S - string
+I - integer
+F - float
+U - unum
+P - path
+T - total path including file name
+N - file name
+PD - pandas dataframe
+O - object
+D - dictionary
+
+
+
+
+
+
+
+
+
+
 """
