@@ -4,6 +4,7 @@ parse section string
 
 import logging
 import os
+import re
 import sys
 import textwrap
 import warnings
@@ -80,8 +81,8 @@ class Rs:
             divS = str(lD["divS"])
             snumS = f"{divS}.{sdivS}.{str(snumI)}{addtgS} "
             snum1S = f"**{divS}.{sdivS}.{str(snumI)}{addtgS}** "
-            headS = snumS + " " + hL[0].strip()
-            head1S = snum1S + hL[0].strip()
+            headS = snumS + " | " + hL[0].strip()
+            head1S = snum1S + " | " + hL[0].strip()
             bordrS = lD["widthI"] * "-" + "\n"
             sutfS = "\n" + headS + "\n" + bordrS
             stxtS = "\n" + headS + "\n" + bordrS
@@ -140,6 +141,39 @@ class Rs:
                 self.spL.append(slS[4:])  # preprocessed list
         # endregion
 
+    def prt_tabl(self, tabL):
+        tblfmt = "rst"
+        hdrvL = ["variable", "value", "[value]", "description"]
+        alignL = ["left", "left", "left", "left"]
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tabL,
+                tablefmt=tblfmt,
+                headers=hdrvL,
+                showindex=False,
+                colglobalalign=alignL,
+                headersalign=alignL,
+            )
+        )
+        outS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+
+        return outS + "\n"
+
+    def remove_aster(self, text):
+        # Pattern explanation:
+        # (?<!\*)    - Negative lookbehind: ensure the asterisk isn't preceded by another *
+        # \*{1,2}    - Match 1 or 2 asterisks
+        # (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
+        # (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
+        pattern = r"(?<!\*)(?:\*{1,2})(?!\*)(?!\s)"
+
+        return re.sub(pattern, "", text)
+
     def content(self, tyS, tagL, cmdL):
         """parse content substring
         Args:
@@ -167,13 +201,15 @@ class Rs:
         blockS = """"""
         tagS = ""
         sutfS = self.sutfS
-        srstS = self.srstS
         stxtS = self.stxtS
+        srstS = self.srstS
         fD = self.fD
         lD = self.lD
         rivtD = self.rivtD
         # --------------------------------------- loop over content substring
         for slS in self.spL:
+            if tyS == "I":
+                slS = self.remove_aster(slS)
             # print("**", f"{slS=}")
             if len(slS.strip()) == 0 and len(tabL) > 0:  # print inline valtable
                 outS = self.prt_tabl(tabL)
@@ -192,12 +228,12 @@ class Rs:
             else:
                 pass
             if blockB:  # ----------------------------------- block accumulate
-                # print(f"{blockS}")
+                # print(f"**{blockS}")
                 if blockB and ("_[[END]]" in slS):  # end of block
                     blockB = False
                     tC = rvtag.Tag(fD, lD, rivtD, rivL, blockS)
-                    # print("****", tagS, blockS)
-                    mD, lD = tC.tagbx(tagS)
+                    # print("*******", tagS, blockS)
+                    mD, lD, rivtD = tC.tagbx(tagS)
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"
                     stxtS += mD["tS"] + "\n"
@@ -242,8 +278,8 @@ class Rs:
                     stxtS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT - equation table
                     continue
-            elif tyS == "V" and any(item in slS for item in cmdL[8]):
-                for opS in cmdL[8]:
+            elif tyS == "V" and "|" in slS:
+                for opS in cmdL[9]:
                     if opS in slS:
                         lineS = slS.strip()
                         tC = rvcmd.Cmd(
@@ -255,7 +291,7 @@ class Rs:
                         stxtS += mD["tS"] + "\n"
                         print(mD["uS"])  # STDOUT - compare table
                         break
-                continue
+                    continue
             else:
                 pass
             if "_[" in slS:  # ------------------------------ tags / blocks
@@ -318,26 +354,3 @@ class Rs:
 
         return sutfS, srstS, stxtS, fD, lD, rivtD
         # endregion
-
-    def prt_tabl(self, tabL):
-        tblfmt = "rst"
-        hdrvL = ["variable", "value", "[value]", "description"]
-        alignL = ["left", "left", "left", "left"]
-        sys.stdout.flush()
-        old_stdout = sys.stdout
-        output = StringIO()
-        output.write(
-            tabulate.tabulate(
-                tabL,
-                tablefmt=tblfmt,
-                headers=hdrvL,
-                showindex=False,
-                colglobalalign=alignL,
-                headersalign=alignL,
-            )
-        )
-        outS = output.getvalue()
-        sys.stdout = old_stdout
-        sys.stdout.flush()
-
-        return outS + "\n"

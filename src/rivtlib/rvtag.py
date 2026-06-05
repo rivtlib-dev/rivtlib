@@ -21,7 +21,7 @@ class Tag:
         tagbx(tagS): formats block
     """
 
-    def __init__(self, fD, lD, rivD, rivL, strL):
+    def __init__(self, fD, lD, rivtD, rivL, strL):
         """tags object
 
         Args:
@@ -41,7 +41,7 @@ class Tag:
         self.strL = strL
         self.fD = fD
         self.lD = lD
-        self.rivD = rivD
+        self.rivtD = rivtD
         self.rivL = rivL
 
     def taglx(self, tagS):
@@ -263,48 +263,76 @@ class Tag:
                 wfile.writerows(rstL)
 
         elif cmdS == "bMAR":
-            """markup block"""
+            """markup block
+            
+            literal
+            html
+            reST
+            endnote
+            center
+            bold
+            italic
+            mermaid
+            latex
+            
+            """
             # region
             blkL = (self.strL).split("\n", 1)
-            titleS = blkL[0].strip()
-            tnumI = int(self.mD["lD"]["tableI"])
-            self.mD["lD"]["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            uS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
-            rS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
-            tS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
+            marktypS = blkL[0].strip()
+            if marktypS == "literal":
+                txtS = blkL[1]
+                uS = tS = txtS
+                rS = (
+                    "\n"
+                    + "\n.. code-block:: text \n\n"
+                    + "\n\n"
+                    + textwrap.indent(txtS, "       ")
+                )
+
+                lS = ""
+            else:
+                pass
+            # endregion
+
+        elif cmdS == "bARG":
+            """argument block"""
+            # region
+            blkL = (self.strL).split("\n", 1)
+            parS = blkL[0].strip()
+            varS = parS.split("|")[0].strip()
+            untS = parS.split("|")[1].strip()
+            self.lD["unit_note"] = untS
+            argS = blkL[1].strip()
+            argwS = textwrap.indent(argS, "    ")
+            borderS = "    " + 75 * "="
+            kwargD = {}
+            for line in argS.splitlines():
+                clean_line = line.split("#")[0].strip()
+                if not clean_line:
+                    continue
+                if "=" in clean_line:
+                    key, value = clean_line.split("=", 1)
+                    kwargD[key.strip()] = value.strip()
+            self.rivtD[varS] = kwargD
+            for key, value in kwargD.items():
+                self.rivtD[varS][key] = eval(value)
+            intS = f"    Function Arguments Dictionary : {varS} ({untS})\n{borderS}\n{argwS}\n{borderS}\n"
+            inrS = f".. code-block:: text \n\n    Function Arguments Dictionary : {varS} ({untS})\n{borderS}\n{argwS}\n{borderS}"
+            uS = tS = intS + "\n"
+            rS = inrS + "\n"
             lS = ""
             # endregion
 
         elif cmdS == "bPYT":
             """Python block"""
-
+            # region
             tnumI = int(self.lD["tableI"])
             self.lD["tableI"] = tnumI + 1
             fillS = str(tnumI)
             self.uS = "\nTable " + str(tnumI) + ": " + lineS
             self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
             self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
-
-        elif cmdS == "bTOP":
-            """topics block"""
-
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            self.uS = "\nTable " + str(tnumI) + ": " + lineS
-            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
-            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
-
-        elif cmdS == "bBOX":
-            """box block"""
-
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            self.uS = "\nTable " + str(tnumI) + ": " + lineS
-            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
-            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
+            # endregion
 
         else:
             pass
@@ -316,7 +344,7 @@ class Tag:
             "lS": lS,
         }
 
-        return mD, self.lD
+        return mD, self.lD, self.rivtD
 
     def parse_simple_rst_table(self, table_text):
         # Prepare the input for docutils

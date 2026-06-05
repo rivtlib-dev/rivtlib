@@ -172,6 +172,7 @@ lD1 = {
     "colorS": "none",  # topic background color
     "cntflgI": 0,  # transition line
     "ptypeS": ptypeS,  # pub type override
+    "unit_note": "",  # unit_notes
 }
 # default settings
 lD2 = {
@@ -309,8 +310,7 @@ def I(rS):  # noqa: E743
     ]
     tagbL = [
         "TABLE",  # format and write to csv
-        "TOPIC",  # topic
-        "BOX",  # draw box
+        "MARKUP",  # various markup syntax
         "END",  # end
     ]
     tagL = tagL + tagbL
@@ -331,9 +331,10 @@ def V(rS):
         "TABLE",  # table from file
         "VALTABLE",  # value table from file
         "PYTHON",  # execute Python file
+        "FUNCTION",  # evaluate function
         " ==: ",  # define value
         " <=: ",  # assign value
-        " :=: ",  # assign value
+        " :=: ",  # assign function value
         compL,  # comparisons
     ]
     tagL = [
@@ -344,7 +345,9 @@ def V(rS):
         "C",  # bold center text
         "T",  # table label
     ]
-    tagbL = []
+    tagbL = [
+        "ARGS",
+    ]
     tagL = tagL + tagbL
     dutfS, drstS, dtxtS = doc_parse(rS, "V", tagL, cmdL)
 

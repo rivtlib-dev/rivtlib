@@ -28,6 +28,7 @@ for s in rivtfL:
     print("rivt file:", s)
 print("---------------------------\n\n")
 
+
 rivtP = os.path.dirname(reptP)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
@@ -44,25 +45,29 @@ rivt_storedP = storeP
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
 
-
-# shutil.rmtree(path)
-
+# clean rst files
+for file_path in rstdocsP.glob("*.rst"):
+    try:
+        file_path.unlink()
+        print(f"Deleted: {file_path}")
+    except OSError as e:
+        print(f"Error deleting {file_path}: {e}")
 
 repD = {}
+rvr.repD = repD
 repD["rstdocsP"] = rstdocsP
-
 inS = __main__.iniS
 configL = configparser.ConfigParser()
 configL.read_string(inS)
 repD["repfile"] = configL["settings"]["rept_filename"]
 repD["regen"] = configL["settings"]["regen_pdf"]
 repD["exclude"] = configL["settings"]["exclude"]
-repD["auto"] = configL["settings"]["rivt_cfg"]
+repD["auto"] = configL["settings"]["auto_cfg"]
 repD["title"] = configL["format"]["title"]
 repD["subtitle"] = configL["format"]["subtitle"]
 repD["client"] = configL["format"]["client"]
 repD["projref"] = configL["format"]["project_ref"]
-repD["authors"] = configL["reformatport"]["authors"]
+repD["authors"] = configL["format"]["authors"]
 repD["version"] = configL["format"]["version"]
 repD["copyright"] = configL["format"]["copyright"]
 repD["runlogo"] = configL["format"]["running_logo"]
@@ -74,8 +79,6 @@ repD["pdfmargin"] = configL["format"]["pdf_margins"]
 repD["pdflink"] = configL["format"]["pdf_link"]
 repD["repfilebase"] = repD["repfile"].split(".")[0]
 
-rvr.repD = repD
-
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
     level=logging.DEBUG,
@@ -85,6 +88,124 @@ logging.basicConfig(
     filemode="w",
 )
 warnings.filterwarnings("ignore")
+
+
+def pdfx():
+    """write pdf report
+
+    Returns:
+        msgS (str): completion message
+    """
+
+    # region - pdfx
+    repdocT = Path(pdfpubP, repD["repfile"])
+    parts = Path(repdocT).parts[-3:]  # Take last 3 segments
+    short_p = ".../" + "/".join(parts)
+
+    rvr.pdf_coverS()
+    print("report cover page written")
+    rvr.pdf_yamlS()
+    print("report yaml file written")
+    rvr.pdf_confpy()
+    print("report conf file written")
+
+    # -------------------------- append div tocs to index.rst
+
+    timeS = datetime.now().strftime("%Y-%m-%d")
+    headblkS = f"""**{repD["title"]}** - v{repD["version"]} |s| |s| |s| |s|  **###Section###**"""
+    foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {repD["authors"]}"""
+    foot2blkS = f"""**{repD["runlabel"]}**"""
+
+    imgS = f"""
+.. |blklogo| image:: ./_static/{repD["runlogo"]}
+   :height: 100px
+   :alt: logo
+
+
+"""
+    headS = f"""
+.. header::
+    .. list-table::
+        :class: header-box
+        :align: left
+        :widths: 90 10
+        
+        * - {headblkS}
+          - p. **###Page###**   
+
+          
+"""
+
+    footS = f"""
+.. footer:: 
+    .. list-table::
+        :class: footer-box
+        :align: left
+        :widths: 84 22 16
+        
+        * - {foot1blkS}        
+          - {foot2blkS}        
+          - |blklogo|                  
+"""
+
+    toc1S = """
+    
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+[replace]
+    
+"""
+
+    insS = ".. |s| unicode:: 0xA0 \n\n\n"
+
+    groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
+    tocinS = "\n"
+    indxtocL = [sublist[0] for sublist in groupL]
+    for item in indxtocL:
+        tocinS = tocinS + "    " + item + "\n"
+    tocrS = toc1S.replace("[replace]", tocinS)
+    rvindxT = str(Path(repD["rstdocsP"], "index.rst"))
+
+    preamS = insS + imgS + headS + footS + tocrS
+    with open(rvindxT, "w", encoding="utf-8") as f5:
+        f5.write(preamS)
+
+    # -------------------- append subdiv tocs to rst docs
+    toc2S = ""
+    toc2S = """
+    
+.. toctree::
+    :maxdepth: 2
+
+[replace]
+    
+"""
+    for item in groupL:
+        tocinS = "\n"
+        fL = item[1:]
+        print(fL)
+        for iS in fL:
+            tocinS += "    " + iS + "\n"
+        print(tocinS)
+        tocrS = toc2S.replace("[replace]", tocinS)
+        fpT = Path(rstdocsP, item[0])
+        with open(fpT, "a") as f1:
+            f1.write(tocrS)
+    print("run sphinx-pdf")
+    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
+
+    try:
+        result = subprocess.run(pdfcmdS, shell=True, check=True)
+        if not result.returncode:
+            print(f"pdf file written: {short_p} \n")
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing script: {e}")
+        print("Stderr:", e.stderr)
+
+    return " "
+    # endregion
 
 
 def htmlx():
@@ -240,81 +361,6 @@ def htmlx():
     # endregion
 
 
-def pdfx():
-    """write pdf report
-
-    Returns:
-        msgS (str): completion message
-    """
-
-    # region - pdfx
-    repdocT = Path(pdfpubP, repD["repfile"])
-    parts = Path(repdocT).parts[-3:]  # Take last 3 segments
-    short_p = ".../" + "/".join(parts)
-
-    rvr.pdf_coverS()
-    print("cover page written")
-    rvr.pdf_yamlS()
-    print("yaml file written")
-    rvr.pdf_confpy()
-    print("conf file written")
-    # ------------ write div tocs to index.rst
-    tocinS = "\n"
-    toc1S = """
-
-.. toctree::
-    :hidden:
-
-    pdfcover.rst    
-
-    
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-[replace]
-    
-"""
-    groupL = [list(g) for k, g in groupby(rstfiL, key=lambda x: x[2])]
-    indxtocL = [sublist[0] for sublist in groupL]
-    for item in indxtocL:
-        tocinS = tocinS + "    " + item + "\n"
-    tocrS = toc1S.replace("[replace]", tocinS)
-    rvindxT = str(Path(repD["rstdocsP"], "index.rst"))
-    with open(rvindxT, "w", encoding="utf-8") as f5:
-        f5.write(tocrS)
-    # -------------- append subdiv tocs to rst docs
-    toc2S = """
-.. toctree::
-    :maxdepth: 2
-
-[replace]
-    
-"""
-    for item in groupL:
-        tocinS = "\n"
-        fL = item[1:]
-        for iS in fL:
-            tocinS += tocinS + "    " + iS + "\n"
-        tocrS = toc2S.replace("[replace]", tocinS)
-        fpT = Path(rstdocsP, item[0])
-        with open(fpT, "a") as f1:
-            f1.write(tocrS)
-    print("run sphinx-pdf")
-    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
-
-    try:
-        result = subprocess.run(pdfcmdS, shell=True, check=True)
-        if not result.returncode:
-            print(f"pdf file written: {short_p} \n")
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing script: {e}")
-        print("Stderr:", e.stderr)
-
-    return " "
-    # endregion
-
-
 def textx(txtfL):
     """write text report
 
@@ -352,9 +398,6 @@ def textx(txtfL):
     # endregion
 
 
-rmfileS = str(Path(rstdocsP, "*.rst"))
-for f in glob.glob(rmfileS):
-    os.remove(f)
 # ------------ generate rst for each rivt file in list from type none
 doctitleS = " "
 dochdrL = []  # for html
@@ -378,10 +421,10 @@ for frstS in rivtfL:
     repD["rvbaseS"] = frstS.split(".py")[0].strip()
     parts = Path(frstT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
-    # ----------------- run batch rivt files
+    # --------------------------------------------- run rivt file glob
     get_typeS = repD["repfile"].split(".")[-1].strip()
     if get_typeS == "txt":
-        print("\ngemerate txt file for report: ", short_p, "\n")
+        print("\ngenerate txt file for report: ", short_p, "\n")
         subprocess.run(["python", frstT, "-t text"])
         # -------------- write logs
         errlogT = Path(logsP, frstS[0:7] + "log.txt")
@@ -396,7 +439,7 @@ for frstS in rivtfL:
         with open(errlogT, "a") as f1:
             f1.write("rst written for each rivt file: " + repD["title"] + "\n")
         logging.info("rst files written: " + repD["title"])
-        # -------------- convert list from .py to .rst
+        # -------------- create list of .rst files
         rstfiL = []
         for fS in rivtfL:
             rstfiL.append(fS.replace(".py", ".rst"))

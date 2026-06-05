@@ -2,6 +2,7 @@
 import csv
 import sys
 import textwrap
+from datetime import datetime
 from io import StringIO
 from pathlib import Path
 
@@ -27,7 +28,7 @@ class Cmd:
 
      API        Command                                                  File Types
     ---------  ------------------------------------------------------- ---------------------
-    rv.R        | SHELL | relative path | os, *wait;nowait*               *.sh*
+    rv.R        | MARKUP | relative path | type
     rv.V,I      | IMAGE | relative path |  scale, caption, num;non        *.png, .jpg*
     rv.V,I      | IMAGE2 | relative path | s1, s2, c1, c2, n1, n2         *.png, jpg*
     rv.V,I      | TABLE | relative path | width, l;c;r, title, num;non    *csv, txt, xlsx*
@@ -37,7 +38,7 @@ class Cmd:
     rv.V        b <=: a + 3*FT | unit1, unit2, decimal | ref              assign value
     rv.V        c :=: func1(x,y) | unit1, unit2, decimal | ref            function value
     rv.V        b < a | unit, decimal, true text, false text | ref        compare value
-    rv.T        | MARKUP | relative path | type
+    rv.T        | SHELL | relative path | os, *wait;nowait*               *.sh*
     rv.D        | ATTACHPDF
     rv.D        | PUBLISH
     """
@@ -76,6 +77,7 @@ class Cmd:
         self.tS = ""
         self.lS = ""
         self.wI = self.lD["widthI"]
+        self.rivtD = rivtD
         # endregion
 
     def cmdx(self, cmdS):
@@ -129,7 +131,7 @@ class Cmd:
             print(f"An unexpected error occurred: {e}")
         decS = "%." + dec1S + "f"
         Unum.set_format(value_format=decS, auto_norm=False, unitless="")
-        valU = eval(varS, {}, self.rivtD)
+        valU = eval(varS, globals(), self.rivtD)
         if type(valU) is Unum:
             val2S = str(valU.cast_unit(eval(unit2S)))
             val1U = valU.cast_unit(eval(unit1S))
@@ -258,7 +260,7 @@ class Cmd:
         # endregion
 
     def vfunc(self, feqS):
-        """format function and assign value
+        """format inline function and assign value and var
 
             equation tag  <=:
             a :=: b + 2 | unit1, unit2, decimal | ref
@@ -308,7 +310,6 @@ class Cmd:
         hdr2L = []
         symeqO = sp.sympify(spL[1], _clash2, evaluate=False)
         symaO = symeqO.atoms(sp.Symbol)
-        numvarI = len(symaO)
         for vS in symaO:
             vS = sp.pretty(sp.sympify(vS, _clash2, evaluate=False))
             hdr2L.append(str(vS))
@@ -500,6 +501,7 @@ class Cmd:
         capS = parL[0].strip()
         scS = parL[1].strip()
         figS = parL[2].strip()
+        timS = parL[3].strip()
         try:
             img1 = Image.open(self.inspS)
             _display(img1)
@@ -516,14 +518,19 @@ class Cmd:
             lablS = ""
         lablS = lablS + capS + " "
         bordS = " " * 10 + "-" * 40 + "\n"
-        uS = bordS + lablxS + capS + " [file: " + self.fileS + " ] \n" + bordS
-        tS = bordS + lablxS + capS + "\n" + bordS
+        if timS.strip() == "time":
+            timeS = " | time: " + self.get_image_time(self.inspS)
+            print("**************", timeS)
+        else:
+            timeS = " "
+        uS = bordS + lablxS + capS + f" [file: {self.fileS} {timeS} \n" + bordS
+        tS = bordS + lablxS + capS + timeS + "\n" + bordS
         rS = f"""
 .. figure:: {self.inspS}
     :width: {scS}%
     :align: center
 
-    {lablS}
+    {lablS} {timeS}
     
 """
         self.mD = {
@@ -558,7 +565,8 @@ class Cmd:
         scale2S = parL[3].strip()
         fig1S = parL[4].strip()
         fig2S = parL[5].strip()
-
+        tim1S = parL[6].strip()
+        tim2S = parL[7].strip()
         try:
             img1 = Image.open(insp1S)
             _display(img1)
@@ -578,6 +586,11 @@ class Cmd:
             labl1xS = "Fig. " + num1S + " - " + cap1S + " "
         else:
             labl1S = ""
+        if tim1S.strip() == "time":
+            time1S = " | time 1: " + str(self.get_image_time(self.inspS))
+        else:
+            time1S = " "
+        labl1S = labl1S + time1S
         if fig2S == "num":
             num2S = str(self.lD["figI"])
             self.lD["figI"] = int(num2S) + 1
@@ -585,11 +598,15 @@ class Cmd:
             labl2xS = "Fig. " + num2S + " - " + cap2S + " "
         else:
             labl2S = ""
+        if tim2S.strip() == "time":
+            time2S = " | time  2: " + str(self.get_image_time(self.inspS))
+        else:
+            time2S = " "
+        labl2S = labl2S + time2S
 
         bordS = " " * 10 + "-" * 40 + "\n"
-        uS = bordS + f"{labl1xS} | {labl2xS}  \nfiles: {self.fileS}\n" + bordS
-        tS = bordS + f"{labl1xS} | {labl2xS}  \nfiles: {self.fileS}\n" + bordS
-
+        uS = f"{bordS}{labl1xS} | {labl2xS}\nfiles: {self.fileS} {time1S}, {time2S}\n{bordS}"
+        tS = f"{bordS}{labl1xS} | {labl2xS}\ntimes: {time1S} {time2S}\n{bordS}"
         rS = f"""
 .. list-table::
     :widths: {scale1S} {scale2S}
@@ -702,7 +719,7 @@ class Cmd:
     def TEXT(self):
         """insert text
 
-        |TEXT| rel. pth |  plain; rivt
+        | TEXT | rel. pth |  plain; rivt
         """
         # region
         insP = Path(self.fD["srcP"], self.pthS)
@@ -716,7 +733,7 @@ class Cmd:
     def VALTABLE(self):
         """read file and insert values
 
-        | VALTABLE | relative path | title, rows, num;non
+        | VALTABLE | relative path | title, width
         """
         # region
         fuS = self.fileS
@@ -733,17 +750,8 @@ class Cmd:
         else:
             utlS = xtlS = "\nTable " + fillS + ": " + titleS
             rtlS = "|\n\n**Table " + fillS + "**: " + titlerS
-        sliceS = parL[1].strip()
         with open(self.insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
-        # extract rows
-        sliceS = parL[1].strip()
-        sliceL = sliceS.split(":")
-        if sliceL[1].strip() == "0":
-            sliceO = slice(int(sliceL[0]), len(readL))
-        else:
-            sliceO = slice(int(sliceL[0]), int(sliceL[1]))
-        readL = readL[sliceO]
         tbL = []
         for vaL in readL:
             # print(f"{vaL=}")
@@ -848,6 +856,7 @@ class Cmd:
                 docflg = False
             if s[0:3] == "def":
                 s = s.replace("def", "")
+                s = s.replace("**", "** ")
                 s = s[:-1]
                 funcL.append(s)
                 docflg = True
@@ -871,6 +880,7 @@ class Cmd:
                 tablefmt=tblfmt,
                 headers=hdrvL,
                 showindex=False,
+                maxcolwidths=50,
                 colglobalalign="left",
             )
         )
@@ -891,60 +901,84 @@ class Cmd:
             "rivL": self.rivL,
             "rivtD": self.rivtD,
         }
-
         # endregion
 
-    def LATEX(self):
-        """insert text
+    def FUNCTION(self):
+        """evalutate function and assign value to var
 
-        |TEXT| rel. pth |  plain; rivt
+           | FUNCTION | func(), assign var | title
+
+        Returns:
+            uS, r2S, rS, fD, lD, rivtD, rivL
         """
         # region
-        # print(f"{pthS=}")
-
-    def WIN(self):
-        """insert text
-
-        |TEXT| rel. pth |  plain; rivt
-        """
-        # region
-        # print(f"{pthS=}")
-        insP = Path(self.fD["reptfDP"])
-        insP = Path(Path(insP) / "source" / self.pthS)
-        insS = str(insP.as_posix())
-        pS = " [file: " + self.pthS + "]" + "\n\n"
+        dec1S = "2"
+        decS = "%." + dec1S + "f"
+        functL = self.fileS.split(",")
+        funcS = functL[0].strip()
+        varS = functL[1].strip()
+        newvarS = functL[2].strip()
+        typeS = functL[3].strip()
         parL = self.parS.split(",")
-        # extS = pthP.suffix[1:]  # file extension
-        # pthxP = Path(*Path(pthS).parts[-3:])
-        with open(insP, "r") as fileO:
-            fileS = fileO.read()
-        self.uS = fileS
-        self.r2s = fileS
-        self.rs = fileS
+        refS = parL[0].strip()
+        self.enumI = int(self.lD["equI"])
+        self.enumI += 1
+        self.lD["equI"] = self.enumI
+        self.enumS = str(self.enumI)
+        # argsD = self.rivtD[varS]
+        cmdS = f"{funcS}(**{varS})"
+        # exec(cmdS, globals(), self.rivtD)
+        newvarS = eval(cmdS, globals(), self.rivtD)
+        # eval(f"{funcS}(**{argsD})")
+        eq1S = textwrap.indent(funcS + " | " + self.lD["unit_note"], "      ")
+        eqxS = textwrap.indent(eq1S, chr(9474) + " ")
+        toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
+        erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
+        # string return
+        if typeS == "str":
+            varwS = textwrap.indent(newvarS, "           ")
+            eqrS = (
+                erS
+                + "\n.. code-block:: text \n\n"
+                + eq1S
+                + "\n           "
+                + varwS
+                + "\n\n"
+            )
+            eqtS = (
+                toptS
+                + chr(9474)
+                + "\n"
+                + eqxS
+                + "\n"
+                + chr(9492)
+                + "\n\n"
+                + newvarS
+                + "\n\n"
+            )
+        else:
+            pass
+        uS = tS = eqtS
+        rS = "\n" + eqrS + "\n\n"
+        lS = ""
+        # rivL append - for export
+        # ex2S = spL[0].strip() + " = " + str(val1U)
+        # exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
+        # self.rivL.append(exvS)
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivtD": self.rivtD,
+            "rivL": self.rivL,
+        }
+        return self.mD, self.vardescD
         # endregion
 
-    def OSX(self):
-        """insert text
-
-        |TEXT| rel. pth |  plain; rivt
-        """
-        # region
-        # print(f"{pthS=}")
-        insP = Path(self.fD["reptfDP"])
-        insP = Path(Path(insP) / "source" / self.pthS)
-        insS = str(insP.as_posix())
-        pS = " [file: " + self.pthS + "]" + "\n\n"
-        parL = self.parS.split(",")
-        # extS = pthP.suffix[1:]  # file extension
-        # pthxP = Path(*Path(pthS).parts[-3:])
-        with open(insP, "r") as fileO:
-            fileS = fileO.read()
-        self.uS = fileS
-        self.r2s = fileS
-        self.rs = fileS
-        # endregion
-
-    def LINUX(self):
+    def SHELL(self):
         """insert text
 
         |TEXT| rel. pth |  plain; rivt
@@ -980,3 +1014,62 @@ class Cmd:
             padded_data.append(padded)
 
         return padded_data
+
+    def get_image_time(self, file_path):
+        try:
+            with Image.open(file_path) as img:
+                # Retrieve EXIF data structure from Pillow
+                exif_data = img.getexif()
+                # Dictionary mapping numeric tags to human-readable strings
+                if exif_data is not None:
+                    exif_dict = {
+                        TAGS.get(tag, tag): val
+                        for tag, val in exif_data.items()
+                    }
+                    # Check standard EXIF timestamp priority tags
+                    date_tags = [
+                        "DateTimeOriginal",
+                        "DateTimeDigitized",
+                        "DateTime",
+                    ]
+                    tag = date_tags[0]
+                    if tag in exif_dict and exif_dict[tag]:
+                        # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
+                        raw_date = str(exif_dict[tag]).strip()
+                        try:
+                            return datetime.strptime(
+                                raw_date, "%Y:%m:%d %H:%M:%S"
+                            )
+                        except ValueError:
+                            return "no time"
+            # Check secondary PNG textual chunks or metadata if getexif fails
+            if hasattr(img, "info") and img.info:
+                # PNG files often save timestamp info under 'date:create' or 'Creation Time'
+                png_tags = ["date:create", "Creation Time", "creation_time"]
+                for tag in png_tags:
+                    if tag in img.info:
+                        raw_date = img.info[tag].strip()
+
+                        # Common format variations for PNG text chunks
+                        for fmt in (
+                            "%Y-%m-%dT%H:%M:%S%z",
+                            "%Y:%m:%d %H:%M:%S",
+                            "%Y-%m-%d %H:%M:%S",
+                        ):
+                            try:
+                                # Strip out timezone info if parsing simplified strings
+                                clean_date = (
+                                    raw_date.split("+")[0].split("-")[0]
+                                    if "%" not in fmt
+                                    else raw_date
+                                )
+                                return datetime.strptime(
+                                    raw_date[:19], "%Y-%m-%dT%H:%M:%S"
+                                )
+                            except ValueError:
+                                return "no time"
+                return "no time"
+
+        except Exception as e:
+            print(f"Could not read metadata for {file_path}: {e}")
+            return "no time"

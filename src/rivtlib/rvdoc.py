@@ -17,7 +17,7 @@ import __main__
 
 
 class Cmdp:
-    """publish doc or report
+    """publish doc
 
     Args:
         Args:
@@ -83,14 +83,6 @@ class Cmdp:
             filemode="w",
         )
         self.logging = logging
-
-        # clean rst files
-        for file_path in self.rstdocsP.glob("*.rst"):
-            try:
-                file_path.unlink()
-                print(f"Deleted: {file_path}")
-            except OSError as e:
-                print(f"Error deleting {file_path}: {e}")
 
         # strip leading spaces and comments from section
         sL = sS.split("\n")  # unprocessed lines
@@ -223,7 +215,6 @@ class Cmdp:
         self.linkB = self.configL["layout"]["pdf_link_underline"]
         self.subtitleS = self.configL["layout"]["subtitle"]
         self.privateS = self.configL["process"]["private_heading"]
-        self.keepS = self.configL["process"]["keep_files"]
         self.autoS = self.configL["process"]["auto_cfg"]
         # endregion
 
@@ -377,6 +368,13 @@ class Cmdp:
 
         """
         # region - htmlx
+        # clean rst files
+        for file_path in self.rstdocsP.glob("*.rst"):
+            try:
+                file_path.unlink()
+                print(f"Deleted: {file_path}")
+            except OSError as e:
+                print(f"Error deleting {file_path}: {e}")
         rvd.html_confpy(self, self.fD)  # write conf.py
         rvd.html_templ(self, self.fD)  # write templates
 
@@ -436,6 +434,14 @@ class Cmdp:
             msgS (str): completion message
         """
         # region - pdfx
+        # clean rst files
+        for file_path in self.rstdocsP.glob("*.rst"):
+            try:
+                file_path.unlink()
+                print(f"Deleted: {file_path}")
+            except OSError as e:
+                print(f"Error deleting {file_path}: {e}")
+
         rvd.pdf_confpy(self, self.fD)  # write conf.py
         rvd.pdf_yamlS(self, self.fD)  # write yaml file
 

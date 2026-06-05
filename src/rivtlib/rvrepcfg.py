@@ -17,11 +17,10 @@ def copy_docs():
     copy page and download folders to _rstdocs
     """
     # Source pattern and destination directory
-    src_P = str(Path(rptS, "rvsrc", "page", "*.*"))
+    src_P = str(Path(rptS, "rvsrc", "img", "*.*"))
     destP = str(Path(rptS, "_rstdocs", "_static"))
-
     for fileP in glob.glob(src_P):
-        shutil.copy2(fileP, destP)
+        shutil.copy(fileP, destP)
 
 
 def pdf_confpy():
@@ -112,10 +111,10 @@ suppress_warnings = ['toc.excluded']
 subtitle_prefix = "User Manual"
 # A list of folders to search for stylesheets.
 pdf_style_path = ["./_rstdocs"]
+# A comma-separated list of custom stylesheets.
+pdf_stylesheets = ["rivtstyle.yaml"]
 # A colon-separated list of folders to search for fonts.
 pdf_font_path = ["./_rstdocs/_static/fonts"]
-# A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
 # If false, no coverpage is generated.
 pdf_use_coverpage = True
 # Name of the cover page template to use
@@ -613,12 +612,6 @@ def pdf_coverS():
 .. class:: center  
 
    :stext:`{repD["projref"]}`
-
-   
-.. raw:: pdf
-
-   PageBreak noHead
-   
 
 .. raw:: pdf
 

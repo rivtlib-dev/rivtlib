@@ -17,11 +17,10 @@ def copy_docs():
     """
     # Source pattern and destination directory
     rptS = os.getcwd()
-    src_P = str(Path(rptS, "rvsrc", "page", "*.*"))
+    src_P = str(Path(rptS, "rvsrc", "img", "*.*"))
     destP = str(Path(rptS, "_rstdocs", "_static"))
-
     for fileP in glob.glob(src_P):
-        shutil.copy2(fileP, destP)
+        shutil.copy(fileP, destP)
 
 
 def pdf_confpy(self, fD):
@@ -563,11 +562,7 @@ def html_templ(self, fD):
     """
 
     # region - html template
-    srcS = Path(fD["reptP"], self.coverlogo)
-    destS = Path(fD["rstdocsP"], "_static")
-    shutil.copy(srcS, destS)
-    srcS = Path(fD["reptP"], self.runlogo)
-    shutil.copy(srcS, destS)
+    copy_docs()
     timeS = datetime.now().strftime("%Y-%m-%d")
 
     rvdateS = f"""
