@@ -38,7 +38,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{self.titleS}"
+project = "{self.doctitleS}"
 copyright = "{self.copyS}"
 author = "self.{self.authorS}"
 release = "{self.verS}"
@@ -104,7 +104,7 @@ favicons = [
 # source start file, target name, title, author, options
 # options: ('index', 'MyProject', 'My Project', 'Author Name', {{"pdf_compressed": True}})
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
-pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.titleS}", 
+pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.doctitleS}", 
             "{self.authorS}")]
 # Label to use as a prefix for the subtitle on the cover page
 subtitle_prefix = "User Manual"
@@ -573,7 +573,7 @@ def html_templ(self, fD):
     </p>
 </div>
 """
-    rvdateT = str(Path(fD["rstdocsP"], "_templates", "rv-date.html"))
+    rvdateT = str(Path(fD["rstdocsP"], "_static", "rv-date.html"))
     with open(rvdateT, "w", encoding="utf-8") as f2:
         f2.write(rvdateS)
 
@@ -585,7 +585,7 @@ def html_templ(self, fD):
     </p>
 </div>
 """
-    rvauthT = str(Path(fD["rstdocsP"], "_templates", "rv-author.html"))
+    rvauthT = str(Path(fD["rstdocsP"], "_static", "rv-author.html"))
     with open(rvauthT, "w", encoding="utf-8") as f2:
         f2.write(rvauthS)
 
@@ -593,11 +593,11 @@ def html_templ(self, fD):
 <!-- _templates/rv-title.html -->
 <div class="footer-item">
     <p class="rvtitle">
-        {self.docnameS}  v.{self.verS} 
+        {self.doctitleS}  &nbsp;&nbsp;  v.{self.verS} 
     </p>
 </div>
 """
-    rvtitleT = str(Path(fD["rstdocsP"], "_templates", "rv-title.html"))
+    rvtitleT = str(Path(fD["rstdocsP"], "_static", "rv-title.html"))
     with open(rvtitleT, "w", encoding="utf-8") as f2:
         f2.write(rvtitleS)
     # endregion
@@ -618,7 +618,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{self.titleS}"
+project = "{self.doctitleS}"
 copyright = "{self.copyS}"
 author = "self.{self.authorS}"
 release = "{self.verS}"

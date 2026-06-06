@@ -424,13 +424,19 @@ class Cmd:
         val1U = valU.cast_unit(eval(unitS))
         valU = eval(spL[1], globals(), self.rivtD)
         val2U = valU.cast_unit(eval(unitS))
-        val1L = [val1U, val2U, val1U / val2U, chkS, refS]
+        val1L = [val1U, val2U, str(val1U / val2U), chkS, refS]
         tblL = [val1L]
-        # tabulate
+        # ==== tabulate
         term1S = sp.pretty(sp.sympify(spL[0].strip(), _clash2, evaluate=False))
         term2S = sp.pretty(sp.sympify(spL[1].strip(), _clash2, evaluate=False))
         tblfmt = "rst"
-        hdrL = [term1S, term2S, "ratio L/R", "check", "reference"]
+        hdrL = [
+            "[1] " + term1S,
+            "[2] " + term2S,
+            "ratio [1]/[2]",
+            "check",
+            "reference",
+        ]
         sys.stdout.flush()
         old_stdout = sys.stdout
         output = StringIO()
@@ -447,18 +453,20 @@ class Cmd:
         eq3S = output.getvalue()
         sys.stdout = old_stdout
         sys.stdout.flush()
+
+        # text === symbolic and table
         equS = ""
         for ln in equL:
             ln = chr(9646) + "  " + ln
             equS += ln + "\n"
         uS = tS = eqtS + "\n" + equS + "\n"
+
         # rest  == symbolic and table
         erS = "|\n\n**Eq." + self.enumS + ":** " + refS + "\n"
         outputL = output.getvalue().split("\n")[1:]
         outputS = "\n".join(outputL).replace("=", chr(8212))
-        erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
-        eq3S = ""
         eq3L = outputS.split("\n")
+        eq3S = ""
         for ln in eq3L:
             ln = "  " + chr(9646) + " " + ln
             eq3S += ln + "\n"
@@ -520,10 +528,9 @@ class Cmd:
         bordS = " " * 10 + "-" * 40 + "\n"
         if timS.strip() == "time":
             timeS = " | time: " + self.get_image_time(self.inspS)
-            print("**************", timeS)
         else:
             timeS = " "
-        uS = bordS + lablxS + capS + f" [file: {self.fileS} {timeS} \n" + bordS
+        uS = bordS + lablxS + capS + f" [file: {self.fileS} {timeS} ]\n" + bordS
         tS = bordS + lablxS + capS + timeS + "\n" + bordS
         rS = f"""
 .. figure:: {self.inspS}
@@ -605,7 +612,7 @@ class Cmd:
         labl2S = labl2S + time2S
 
         bordS = " " * 10 + "-" * 40 + "\n"
-        uS = f"{bordS}{labl1xS} | {labl2xS}\nfiles: {self.fileS} {time1S}, {time2S}\n{bordS}"
+        uS = f"{bordS}{labl1xS} | {labl2xS}\nfiles: {self.fileS} {time1S} {time2S}\n{bordS}"
         tS = f"{bordS}{labl1xS} | {labl2xS}\ntimes: {time1S} {time2S}\n{bordS}"
         rS = f"""
 .. list-table::
@@ -1033,23 +1040,27 @@ class Cmd:
                         "DateTime",
                     ]
                     tag = date_tags[0]
-                    if tag in exif_dict and exif_dict[tag]:
-                        # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
-                        raw_date = str(exif_dict[tag]).strip()
-                        try:
-                            return datetime.strptime(
-                                raw_date, "%Y:%m:%d %H:%M:%S"
-                            )
-                        except ValueError:
-                            return "no time"
+                    if exif_dict is not None and exif_dict != {}:
+                        print(exif_dict)
+                        if tag in exif_dict and exif_dict[tag]:
+                            # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
+                            raw_date = str(exif_dict[tag]).strip()
+                            try:
+                                return datetime.strptime(
+                                    raw_date, "%Y:%m:%d %H:%M:%S"
+                                )
+                            except ValueError:
+                                return "no time"
+                    else:
+                        pass
             # Check secondary PNG textual chunks or metadata if getexif fails
-            if hasattr(img, "info") and img.info:
+            if hasattr(img, "info") and img.info != {}:
                 # PNG files often save timestamp info under 'date:create' or 'Creation Time'
                 png_tags = ["date:create", "Creation Time", "creation_time"]
                 for tag in png_tags:
+                    print(img.info)
                     if tag in img.info:
                         raw_date = img.info[tag].strip()
-
                         # Common format variations for PNG text chunks
                         for fmt in (
                             "%Y-%m-%dT%H:%M:%S%z",
@@ -1068,6 +1079,7 @@ class Cmd:
                                 )
                             except ValueError:
                                 return "no time"
+            else:
                 return "no time"
 
         except Exception as e:

@@ -278,22 +278,21 @@ class Rs:
                     stxtS += mD["tS"] + "\n"
                     print(mD["uS"])  # STDOUT - equation table
                     continue
-            elif tyS == "V" and "|" in slS:
-                for opS in cmdL[9]:
-                    if opS in slS:
-                        lineS = slS.strip()
-                        tC = rvcmd.Cmd(
-                            self.tyS, fD, lD, rivtD, rivL, lineS, vardescD
-                        )
-                        mD = tC.vcompare(lineS, opS)
-                        sutfS += mD["uS"] + "\n"
-                        srstS += mD["rS"] + "\n"
-                        stxtS += mD["tS"] + "\n"
-                        print(mD["uS"])  # STDOUT - compare table
-                        break
+            elif tyS == "V" and "|" in slS and any(x in slS for x in cmdL[9]):
+                opS = [item for item in cmdL[9] if item in slS]
+                if opS is None:
+                    pass
+                else:
+                    lineS = slS.strip()
+                    tC = rvcmd.Cmd(
+                        self.tyS, fD, lD, rivtD, rivL, lineS, vardescD
+                    )
+                    mD = tC.vcompare(lineS, opS[0])  # return first in list
+                    sutfS += mD["uS"] + "\n"
+                    srstS += mD["rS"] + "\n"
+                    stxtS += mD["tS"] + "\n"
+                    print(mD["uS"])  # STDOUT - compare table
                     continue
-            else:
-                pass
             if "_[" in slS:  # ------------------------------ tags / blocks
                 if "_[[" in slS:
                     slL = slS.split("_[[")

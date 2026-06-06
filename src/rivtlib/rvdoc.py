@@ -65,7 +65,7 @@ class Cmdp:
         self.clientS = " "
         self.pdfmarginins = " "
         self.linkB = " "
-        self.titleS = " "
+        self.doctitleS = " "
         self.subtitleS = " "
         self.privateS = " "
         self.keepS = " "

@@ -324,7 +324,20 @@ def V(rS):
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD, vdescD
 
-    compL = [" < ", " > ", " != ", " == ", " <= ", " >= "]
+    compL = [
+        " < ",
+        " > ",
+        " != ",
+        " == ",
+        " <= ",
+        " >= ",
+        "<",
+        ">",
+        "!=",
+        "==",
+        "<=",
+        ">=",
+    ]
     cmdL = [
         "IMAGE",  # image from file
         "IMAGE2",  # adjacent images frome files
