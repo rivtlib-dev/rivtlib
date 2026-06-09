@@ -43,8 +43,11 @@ Typing: Last letter of var name indicates type:
 
 import argparse
 import fnmatch
+import glob
 import logging
 import os
+import shutil
+import subprocess
 import sys
 import warnings
 from importlib.metadata import version
@@ -152,6 +155,7 @@ fD = {  # folders
 }
 lD1 = {
     "rvtypeS": "",  # section type r,i,v,t,d
+    "ptypeS": "text",  # default pub type
     "docnumS": rbaseS[0:6],  # doc number
     "sdivI": int(rbaseS[3:5]),  # subdiv number
     "secnumI": 0,  # section number
@@ -166,21 +170,19 @@ lD1 = {
     "descS": "ref",  # value description
     "deciI": 2,  # decimals
     "valexpS": "",  # list of values for export
-    "showB": True,  # print section to doc
-    "mergeB": False,
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "none",  # topic background color
     "cntflgI": 0,  # transition line
-    "ptypeS": ptypeS,  # pub type override
-    "unit_note": "",  # unit_notes
+    "privB": "True",  # do not public write
+    "docB": "True",  # add to doc
+    "mergeB": "False",  # merge to prev section
+    "autocfgB": "True",  # config format from metadata
 }
 # default settings
 lD2 = {
     "widthI": 80,
-    "privateB": True,
-    "notagB": True,
-    "keepfB": True,
-    "autocfgB": True,
+    "privateB": "True",
+    "notagB": "True",
 }
 # labels
 lD = lD1 | lD2
@@ -188,7 +190,7 @@ lD = lD1 | lD2
 lnL = []
 with open(rivtT, "r") as f1:  # noqa: F405
     rivtL = f1.readlines()
-for lnS in rivtL[:20]:
+for lnS in rivtL:
     if lnS[0:4] == "# rv":
         lnL = lnS.split(";")
         lnL = lnL[0].split("=")
@@ -196,6 +198,8 @@ for lnS in rivtL[:20]:
             lD["widthI"] = int(lnL[1].strip())
         elif lnL[0].strip() == "no_tag":
             lD["notagB"] = lnL[1].capitalize.strip()
+        elif lnL[0].strip() == "private":
+            lD["privateB"] = lnL[1].capitalize.strip()
         else:
             pass
 # initialize doc strings
@@ -238,12 +242,12 @@ def doc_parse(rS, tyS, tagL, cmdL):
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     rsL = rS.split("\n")
     conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL, vdescD)
-    sutfS, srstS, stxtS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
+    sutfS, stxtS, srstS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
     dutfS += sutfS
     drstS += srstS
     dtxtS += stxtS
 
-    return dutfS, drstS, dtxtS
+    return dutfS, dtxtS, drstS
 
 
 def R(rS):
@@ -251,7 +255,7 @@ def R(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drstS, dtxtS, fD, lD, rivtD
+    global dutfS, dtxtS, drstS, fD, lD, rivtD
     cmdL = [
         "MARKUP",  # execute script file
     ]
@@ -289,12 +293,13 @@ def I(rS):  # noqa: E743
     Args:
         rS (str): rivt string
     """
-    global dutfS, drstS, dtxtS, fD, lD
+    global dutfS, dtxtS, drstS, fD, lD
 
     cmdL = [
         "IMAGE",  # insert image from file
         "IMAGE2",  # insert adjacent images from file
         "TABLE",  # insert table from file
+        "MARKUP",  # insert text from file
     ]
     tagL = [
         "C",  # bold center text
@@ -310,11 +315,11 @@ def I(rS):  # noqa: E743
     ]
     tagbL = [
         "TABLE",  # format and write to csv
-        "MARKUP",  # various markup syntax
+        "MARKUP",  # process and insert markup
         "END",  # end
     ]
     tagL = tagL + tagbL
-    dutfS, drstS, dtxtS = doc_parse(rS, "I", tagL, cmdL)
+    dutfS, dtxtS, drstS = doc_parse(rS, "I", tagL, cmdL)
 
 
 def V(rS):
@@ -322,7 +327,7 @@ def V(rS):
     Args:
         rS (str): rivt string
     """
-    global dutfS, drstS, dtxtS, fD, lD, rivtD, vdescD
+    global dutfS, dtxtS, drstS, fD, lD, rivtD, vdescD
 
     compL = [
         " < ",
@@ -339,16 +344,17 @@ def V(rS):
         ">=",
     ]
     cmdL = [
+        compL,  # comparisons
         "IMAGE",  # image from file
         "IMAGE2",  # adjacent images frome files
         "TABLE",  # table from file
+        "MARKUP",  # process and insert markup from file
         "VALTABLE",  # value table from file
         "PYTHON",  # execute Python file
         "FUNCTION",  # evaluate function
         " ==: ",  # define value
         " <=: ",  # assign value
         " :=: ",  # assign function value
-        compL,  # comparisons
     ]
     tagL = [
         "M",  # math format
@@ -362,7 +368,7 @@ def V(rS):
         "ARGS",
     ]
     tagL = tagL + tagbL
-    dutfS, drstS, dtxtS = doc_parse(rS, "V", tagL, cmdL)
+    dutfS, dtxtS, drstS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
@@ -371,32 +377,66 @@ def T(rS):
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
-    cmdL = ["SHELL"]  # commands from file
-    tagL = []
-    tagbL = [
-        "SHELL",  # run commands
-        "END",  # end
-    ]
-    tagL = tagL + tagbL
-    dutfS, drstS, dtxtS = doc_parse(rS, "T", tagL, cmdL)
 
     blkB = False
     blkS = ""
     lL = rS.split("\n")
     for lS in lL:
-        if blkB:  # tag flag
-            if "[[END]]" in lS:
-                blkB = False
-                exec(blkS, globals(), rivtD)
-                blkS = ""
-                continue
-            blkS += lS.strip()
+        lS = lS[4:]
+        # print(lS)
+        if lS[:8] == "| COPY |":
+            reptS = str(fD["reptP"])
+            if "-rvsrc-" in lS:
+                lS = lS.replace("-rvsrc-", reptS + "/rvsrc")
+            lcL = lS.split("|")
+            srcP = str(Path(os.path.expandvars(lcL[2].strip())))
+            destP = str(Path(os.path.expandvars(lcL[3].strip())))
+            fileS = lcL[4].strip()
+            source_pattern = str(Path(srcP, fileS))
+            print("\n|||| COPY ||||")
+            print(f"from: {source_pattern}")
+            print(f"to: {destP}")
+            for fpath in glob.glob(source_pattern):
+                print("cccccc", fpath)
+                shutil.copy(fpath, destP)
+            print(f"|||| COPIED |||| {fileS} from {srcP} to {destP}")
+        elif lS[:9] == "| SHELL |":
+            lcL = lS.split("|")
+            cmdS = lcL[3].strip()
+            srcP = Path(fD["reptP"], lcL[2].strip(), cmdS)
+            cmdS = f'"{str(srcP)}"'
+            try:
+                # This will block until finished or raise  error
+                print("\n|||||||||||||| Run shell command ||||||||||||||||||\n")
+                print(f"{cmdS}")
+                print("........\n")
+                result = subprocess.run(cmdS, shell=True, check=True)
+                print("\n shell message: ", result)
+                print("\n||||||||| Shell command finished ||||||||||||||||||\n")
+            except subprocess.CalledProcessError as e:
+                print(
+                    f"||||||||||||||| Command failed with exit code {e.returncode}"
+                )
+        elif "_[[WRITE]]" in lS:
+            blkB = True  # tag flag
+            wfS = lS.split("]]")[1].strip()
+            writeP = Path(fD["reptP"], wfS)
             continue
-        for subS in tagL:  # tags
-            if subS in lS:
-                blkB = True
+        else:
+            if blkB:
+                if "_[[END]]" in lS:
+                    try:
+                        subS = eval(blkS, globals(), rivtD)
+                    except Exception:
+                        subS = blkS
+                    with open(writeP, "w") as f2:
+                        f2.write(subS)
+                    print(f"File {wfS} written to: {fD['reptP']}")
+                    blkB = False
+                    blkS = ""
+                    continue
+                blkS += lS + "\n"
                 continue
-        for subS in cmdL:
             pass
 
 
@@ -407,6 +447,7 @@ def D(rS):
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     wrtdoc = rvdoc.Cmdp(rS, fD, lD, dutfS, drstS, dtxtS)
+    print("\n>>>>>>>>>> end of rivt file\n\n")
     msgS = wrtdoc.cmdx()
     print(f"{msgS}")
     sys.exit()

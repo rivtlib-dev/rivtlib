@@ -180,11 +180,14 @@ class Tag:
 
         elif cmdS == "lU":
             """format url link"""
-
-            uS = tS = " ".join(lineL[1:]).strip()
-            txL = lineL[1].split(",")
-            rS = "`" + txL[0].strip() + " <" + txL[1].strip() + ">`_" + lineL[2]
-            lS = "`" + txL[0].strip() + " <" + txL[1].strip() + ">`_" + lineL[2]
+            # print(lineL)
+            txt1 = lineL[0]
+            txt2 = lineL[1].split("|")[0].strip()
+            txt3 = lineL[1].split("|")[1].strip()
+            txt2a = txt2.split(",")[0].strip()
+            txt2b = "<" + txt2.split(",")[1].strip() + ">"
+            uS = tS = f"{txt1} {txt2a} {txt2b} {txt3}"
+            rS = lS = f"{txt1} `{txt2a} {txt2b}`__ {txt3}"
 
         elif cmdS == "l#":
             """number footnote"""
@@ -194,19 +197,15 @@ class Tag:
             self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
             self.r2S = lineS.replace("*]", "[" + str(ftnumI) + "]")
             self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
-
         else:
             pass
-
         # endregion
-
         mD = {
             "uS": uS,
             "rS": rS,
             "tS": tS,
             "lS": lS,
         }
-
         return mD, self.lD
 
     def tagbx(self, tagS):

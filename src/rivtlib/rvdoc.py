@@ -46,6 +46,7 @@ class Cmdp:
         errlogT = fD["errlogT"]
         self.rvbaseS = fD["rbaseS"]
         self.rstdocsP = fD["rstdocsP"]
+        self.ptypeS = lD["ptypeS"]
         self.confg = []
         self.authorS = " "
         self.verS = " "
@@ -128,11 +129,10 @@ class Cmdp:
             if len(pS) > 0:
                 if pS[0:11] == "| PUBLISH |":
                     pL = pS[5:].split("|")
-                    self.doctitleS = str(pL[1].strip()).strip()
                     if self.doctitleS == "--":
                         self.doctitleS = " "
                     else:
-                        self.doctitleS = str(pL[1]).strip()
+                        self.doctitleS = pL[1].strip()
                     # set doc type
                     typeS = str(pL[2].strip())
                     if typeS not in ["text", "html", "pdf", "none"]:
@@ -140,9 +140,8 @@ class Cmdp:
                             "Doc type must be: text, html or pdf \n"
                             "Type is set to default: text"
                         )
-                        typeS = "text"
-                    if self.lD["ptypeS"] != "--":
-                        typeS = self.lD["ptypeS"]
+                    self.lD["ptypeS"] = typeS
+                    self.ptypeS = typeS
                     dtypeS = typeS + ("x")
                     # call doc functions
                     obj = getattr(Cmdp, dtypeS)
@@ -181,8 +180,6 @@ class Cmdp:
             rS += pS
             tS += pS
             lS += pS
-
-        return "\nend of rivt file\n"
         # endregion
 
     def metadatax(self):
@@ -214,7 +211,6 @@ class Cmdp:
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
         self.subtitleS = self.configL["layout"]["subtitle"]
-        self.privateS = self.configL["process"]["private_heading"]
         self.autoS = self.configL["process"]["auto_cfg"]
         # endregion
 

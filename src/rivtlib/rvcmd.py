@@ -118,6 +118,10 @@ class Cmd:
             unitL[1].strip(),
             unitL[2].strip(),
         )
+        if unit1S == "--":
+            unit1S == "m/m"
+        if unit2S == "--":
+            unit1S == "m/m"
         # rivt store
         descripS = vaL[2].strip()
         exvS = ",".join((eqS, unit1S, unit2S, dec1S, descripS))
@@ -527,18 +531,28 @@ class Cmd:
         lablS = lablS + capS + " "
         bordS = " " * 10 + "-" * 40 + "\n"
         if timS.strip() == "time":
-            timeS = " | time: " + self.get_image_time(self.inspS)
+            gettimeS = self.get_image_time(self.inspS)
+            if gettimeS == None:
+                gettimeS = "no time "
+            timeS = "| time: " + gettimeS
         else:
             timeS = " "
-        uS = bordS + lablxS + capS + f" [file: {self.fileS} {timeS} ]\n" + bordS
+        uS = (
+            bordS
+            + lablxS
+            + capS
+            + f" [file: {self.fileS} | {timeS} ]\n"
+            + bordS
+        )
         tS = bordS + lablxS + capS + timeS + "\n" + bordS
         rS = f"""
 .. figure:: {self.inspS}
-    :width: {scS}%
-    :align: center
+   :width: {scS}%
+   :align: center
 
-    {lablS} {timeS}
+   {lablS} {timeS}
     
+
 """
         self.mD = {
             "uS": uS,
@@ -572,8 +586,6 @@ class Cmd:
         scale2S = parL[3].strip()
         fig1S = parL[4].strip()
         fig2S = parL[5].strip()
-        tim1S = parL[6].strip()
-        tim2S = parL[7].strip()
         try:
             img1 = Image.open(insp1S)
             _display(img1)
@@ -593,11 +605,6 @@ class Cmd:
             labl1xS = "Fig. " + num1S + " - " + cap1S + " "
         else:
             labl1S = ""
-        if tim1S.strip() == "time":
-            time1S = " | time 1: " + str(self.get_image_time(self.inspS))
-        else:
-            time1S = " "
-        labl1S = labl1S + time1S
         if fig2S == "num":
             num2S = str(self.lD["figI"])
             self.lD["figI"] = int(num2S) + 1
@@ -605,15 +612,9 @@ class Cmd:
             labl2xS = "Fig. " + num2S + " - " + cap2S + " "
         else:
             labl2S = ""
-        if tim2S.strip() == "time":
-            time2S = " | time  2: " + str(self.get_image_time(self.inspS))
-        else:
-            time2S = " "
-        labl2S = labl2S + time2S
-
         bordS = " " * 10 + "-" * 40 + "\n"
-        uS = f"{bordS}{labl1xS} | {labl2xS}\nfiles: {self.fileS} {time1S} {time2S}\n{bordS}"
-        tS = f"{bordS}{labl1xS} | {labl2xS}\ntimes: {time1S} {time2S}\n{bordS}"
+        uS = f"{bordS}{labl1xS} | {labl2xS}\nfiles: {self.fileS} \n{bordS}"
+        tS = f"{bordS}{labl1xS} | {labl2xS}\n{bordS}"
         rS = f"""
 .. list-table::
     :widths: {scale1S} {scale2S}
@@ -723,18 +724,52 @@ class Cmd:
         }
         # endregion
 
-    def TEXT(self):
-        """insert text
+    def MARKUP(self):
+        """insert text and format
 
-        | TEXT | rel. pth |  plain; rivt
+            | MARKUP | rel. path | text type
+
+            types:
+                literal
+                reST
+                html
+                LateX
+                markdown
+                wrap
+                python
+
+        Returns:
+            mD{dict)}
         """
+
         # region
-        insP = Path(self.fD["srcP"], self.pthS)
-        with open(insP, "r") as fileO:
-            fileS = fileO.read()
-        self.uS = fileS
-        self.r2s = fileS
-        self.rs = fileS
+        typeS = self.parS.strip()
+        fiS = " [file: " + self.fileS + "]" + "\n\n"
+        with open(self.inspS, "r") as f1:
+            textS = f1.read()
+            txtindS = textwrap.indent(textS, "    ")
+        if typeS == "literal":
+            uS = "\n" + fiS + "\n" + textS + "\n"
+            tS = "\n" + textS + "\n"
+            rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
+        if typeS == "python":
+            uS = "\n" + fiS + "\n" + textS + "\n"
+            tS = "\n" + textS + "\n"
+            rS = lS = (
+                "\n.. code-block:: python \n\n" + "    " + txtindS + "\n\n"
+            )
+
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivtD": self.rivtD,
+        }
+
+        return self.mD
         # endregion
 
     def VALTABLE(self):
@@ -985,27 +1020,6 @@ class Cmd:
         return self.mD, self.vardescD
         # endregion
 
-    def SHELL(self):
-        """insert text
-
-        |TEXT| rel. pth |  plain; rivt
-        """
-        # region
-        # print(f"{pthS=}")
-        insP = Path(self.fD["reptfDP"])
-        insP = Path(Path(insP) / "source" / self.pthS)
-        insS = str(insP.as_posix())
-        pS = " [file: " + self.pthS + "]" + "\n\n"
-        parL = self.parS.split(",")
-        # extS = pthP.suffix[1:]  # file extension
-        # pthxP = Path(*Path(pthS).parts[-3:])
-        with open(insP, "r") as fileO:
-            fileS = fileO.read()
-        self.uS = fileS
-        self.r2s = fileS
-        self.rs = fileS
-        # endregion
-
     def wrap_pad(self, sentences, width=30):
         # Step 1: Wrap all sentences into lists of lines
         wrapped_data = [textwrap.wrap(s, width=width) for s in sentences]
@@ -1041,7 +1055,7 @@ class Cmd:
                     ]
                     tag = date_tags[0]
                     if exif_dict is not None and exif_dict != {}:
-                        print(exif_dict)
+                        # print(exif_dict)
                         if tag in exif_dict and exif_dict[tag]:
                             # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
                             raw_date = str(exif_dict[tag]).strip()
@@ -1058,7 +1072,7 @@ class Cmd:
                 # PNG files often save timestamp info under 'date:create' or 'Creation Time'
                 png_tags = ["date:create", "Creation Time", "creation_time"]
                 for tag in png_tags:
-                    print(img.info)
+                    # print(img.info)
                     if tag in img.info:
                         raw_date = img.info[tag].strip()
                         # Common format variations for PNG text chunks
