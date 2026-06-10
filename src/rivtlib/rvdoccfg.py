@@ -57,7 +57,7 @@ extensions = [
     "rst2pdf.pdfbuilder",
     "sphinxcontrib.mermaid"
 ]
-root_doc = "index"
+root_doc = "docindex"
 duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -110,10 +110,10 @@ pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.doctitleS}",
 subtitle_prefix = "User Manual"
 # A list of folders to search for stylesheets.
 pdf_style_path = ["./_rstdocs/"]
+# A comma-separated list of custom stylesheets.
+pdf_stylesheets = ["rivtstyle.yaml"]
 # A colon-separated list of folders to search for fonts.
 pdf_font_path = ["./_rstdocs/_static/fonts"]
-# A comma-separated list of custom stylesheets.
-pdf_stylesheets = ["./_rstdocs/rivtstyle.yaml"]
 # If false, no coverpage is generated.
 pdf_use_coverpage = False
 # Name of the cover page template to use
@@ -446,8 +446,8 @@ styles:
     spaceBefore: 12
   table:
     alignment: TA_LEFT
-    spaceBefore: 1
-    spaceAfter: 1
+    spaceBefore: 4
+    spaceAfter: 10
     borderPadding: 5
     leftPadding: 6
     rightPadding: 6
@@ -479,7 +479,7 @@ styles:
     borderPadding: 0
     backColor: "#c5d1c5"
     borderColor: darkgray
-    fontName: fontMonoBold
+    fontName: fontSansBold
   tip-heading:
     parent: admonition-heading
   title:
@@ -636,7 +636,7 @@ extensions = [
     "sphinx_new_tab_link",
     "rst2pdf.pdfbuilder",
 ]
-root_doc = "index"
+root_doc = "docindex"
 duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

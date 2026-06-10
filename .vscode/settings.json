@@ -69,28 +69,28 @@
                 "command": "ruff.executeOrganizeImports",
             },
             {
-                "name": "FoldAll",
-                "color": "orange",
-                "useVsCodeApi": true,
-                "command": "editor.foldAll"
-            },
-            {
                 "name": "UnFoldALL",
                 "color": "orange",
                 "useVsCodeApi": true,
                 "command": "editor.unfoldAll"
             },
             {
+                "name": "FoldAll",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldAll"
+            },
+            {
+                "name": "Foldlevel2",
+                "color": "orange",
+                "useVsCodeApi": true,
+                "command": "editor.foldLevel2",
+            },
+            {
                 "name": "FoldRegions",
                 "color": "orange",
                 "useVsCodeApi": true,
                 "command": "editor.foldAllMarkerRegions",
-            },
-            {
-                "name": "Foldlevel1",
-                "color": "orange",
-                "useVsCodeApi": true,
-                "command": "editor.foldLevel1",
             },
             {
                 "name": "FoldX",

@@ -23,12 +23,22 @@ import rvrepcfg as rvr  # noqa: E402
 reptP = os.getcwd()
 rivtfL = glob.glob("rv???*.py", root_dir=reptP)
 rivtfL.sort()
-print("\n\nrivt files included in report\n---------------------------")
+print(
+    "\n\nrivt files included in report\n------------------------------------------------"
+)
 for s in rivtfL:
     print("rivt file:", s)
-print("---------------------------\n\n")
+print("------------------------------------------------\n\n")
 
-
+# clean rst files
+rstdocsP = Path(reptP, "_rstdocs")
+for file_path in rstdocsP.glob("*.rst"):
+    try:
+        file_path.unlink()
+        print(f"Deleted: {file_path}")
+    except OSError as e:
+        print(f"Error deleting {file_path}: {e}")
+# Paths
 rivtP = os.path.dirname(reptP)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
@@ -36,7 +46,6 @@ srcP = Path(reptP, "rvsrc")
 storeP = Path(reptP, "rv_stor")
 publicP = Path(rivtP, "_rivt-public")
 pubP = Path(reptP, "_published")
-rstdocsP = Path(reptP, "_rstdocs")
 htmlpubP = Path(pubP, "docs")
 pdfpubP = Path(pubP, "pdfdocs")
 txtpubP = Path(pubP, "txtdocs")
@@ -44,15 +53,7 @@ logsP = Path(storeP, "logs")
 rivt_storedP = storeP
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
-
-# clean rst files
-for file_path in rstdocsP.glob("*.rst"):
-    try:
-        file_path.unlink()
-        print(f"Deleted: {file_path}")
-    except OSError as e:
-        print(f"Error deleting {file_path}: {e}")
-
+# Dictionaries
 repD = {}
 rvr.repD = repD
 repD["rstdocsP"] = rstdocsP
@@ -398,11 +399,10 @@ def textx(txtfL):
     # endregion
 
 
-# ------------ generate rst for each rivt file in list from type none
-doctitleS = " "
+doctitleS = " "  # ------------ generate rst for each rivt.py file type none
 dochdrL = []  # for html
-firstdocS = rivtfL[0]
-firstdocT = Path(reptP, firstdocS)
+strtdocS = rivtfL[0]
+strtdocT = Path(reptP, strtdocS)
 for frstS in rivtfL:
     frstT = Path(reptP, frstS)
     with open(frstT, "r", encoding="utf-8") as f1:
@@ -421,30 +421,34 @@ for frstS in rivtfL:
     repD["rvbaseS"] = frstS.split(".py")[0].strip()
     parts = Path(frstT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
-    # --------------------------------------------- run rivt file glob
     get_typeS = repD["repfile"].split(".")[-1].strip()
-    if get_typeS == "txt":
-        print("\ngenerate txt file for report: ", short_p, "\n")
-        subprocess.run(["python", frstT, "-t text"])
+    if get_typeS == "txt":  # ------------------------------------- type text
+        print("\n|||||||||||||| generate txt file for report: ", short_p, "\n")
+        subprocess.run(["python", frstT, "-t", "text"])  # --------generate txt
+
         # -------------- write logs
         errlogT = Path(logsP, frstS[0:7] + "log.txt")
         with open(errlogT, "a") as f1:
             f1.write("txt written for each rivt file: " + repD["title"] + "\n")
         logging.info("txt files written: " + repD["title"])
-    elif get_typeS == "pdf" or get_typeS == "html":
-        print("\ngenerate rst file report: ", short_p, "\n")
-        subprocess.run(["python", frstT, "-t none"])
-        # -------------- write logs
-        errlogT = Path(logsP, frstS[0:7] + "log.txt")
-        with open(errlogT, "a") as f1:
-            f1.write("rst written for each rivt file: " + repD["title"] + "\n")
-        logging.info("rst files written: " + repD["title"])
-        # -------------- create list of .rst files
-        rstfiL = []
-        for fS in rivtfL:
-            rstfiL.append(fS.replace(".py", ".rst"))
-        rsttabL = ["    " + tS for tS in rstfiL]
-        rsttabL = "\n".join(rsttabL)
+    elif get_typeS == "pdf" or get_typeS == "html":  # -----------type html/pdf
+        print("\ngenerate rst file : ", short_p, "\n")
+        result = subprocess.run(
+            ["python", frstT, "-t", "none", "-k", "true"], text=True
+        )
+        print("\n||||||||||||| rst file generated: ", frstT, "\n")
+        print(result)
+# -------------- write logs
+errlogT = Path(logsP, frstS[0:7] + "log.txt")
+with open(errlogT, "a") as f1:
+    f1.write("rst written for each rivt file: " + repD["title"] + "\n")
+logging.info("rst files written: " + repD["title"])
+# -------------- create list of .rst files
+rstfiL = []
+for fS in rivtfL:
+    rstfiL.append(fS.replace(".py", ".rst"))
+rsttabL = ["    " + tS for tS in rstfiL]
+rsttabL = "\n".join(rsttabL)
 # ------------------------------------- write readme report
 reptitleS = repD["repfile"]
 versionS = repD["version"]
@@ -476,7 +480,7 @@ parts = Path(readmeT).parts[-3:]  # Take last 3 segments
 short_p = ".../" + "/".join(parts)
 print("\nREADME report written: ", short_p, "\n")
 logging.info("README report : " + repD["title"])
-# ------------------------- write report
+# --------------------------------------- write report
 if get_typeS == "txt":
     """write text report"""
     print("write text report")
@@ -485,7 +489,7 @@ if get_typeS == "txt":
     txt_folderP = Path(pubP, "txtdocs")
     txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
     txtfL.sort()
-    msgS = txtx(txtfL)
+    msgS = textx(txtfL)
     print(msgS)
 elif get_typeS == "pdf":
     """write pdf report"""

@@ -46,7 +46,9 @@ class Cmdp:
         errlogT = fD["errlogT"]
         self.rvbaseS = fD["rbaseS"]
         self.rstdocsP = fD["rstdocsP"]
-        self.ptypeS = lD["ptypeS"]
+        self.reptypeS = lD["reptypeS"]
+        self.repkeepS = lD["repkeepS"]
+        self.doctypeS = lD["doctypeS"]
         self.confg = []
         self.authorS = " "
         self.verS = " "
@@ -97,6 +99,19 @@ class Cmdp:
         with open(errlogT, "a") as f4:
             f4.write(self.sL[0] + "\n")
         self.logging.info("SECTION : " + self.sL[0])
+
+        # clean rst files
+        print("*****************************************", lD["repkeepS"])
+        if lD["repkeepS"].strip() == "true":
+            pass
+        elif lD["repkeepS"].strip() == "false":
+            rstdocsP = Path(self.reptP, "_rstdocs")
+            for file_path in rstdocsP.glob("*.rst"):
+                try:
+                    file_path.unlink()
+                    print(f"Deleted: {file_path}")
+                except OSError as e:
+                    print(f"Error deleting {file_path}: {e}")
         # endregion
 
     def cmdx(self):
@@ -140,8 +155,10 @@ class Cmdp:
                             "Doc type must be: text, html or pdf \n"
                             "Type is set to default: text"
                         )
-                    self.lD["ptypeS"] = typeS
-                    self.ptypeS = typeS
+                    if self.reptypeS == "none":
+                        typeS = "none"
+                    self.lD["doctypeS"] = typeS
+                    self.doctypeS = typeS
                     dtypeS = typeS + ("x")
                     # call doc functions
                     obj = getattr(Cmdp, dtypeS)
@@ -180,10 +197,13 @@ class Cmdp:
             rS += pS
             tS += pS
             lS += pS
+
+        return "end of doc processing"
+
         # endregion
 
     def metadatax(self):
-        """read meta blockfor config parameters
+        """read meta block for config parameters
 
         Returns:
             msgS (str): metadata read
@@ -211,7 +231,6 @@ class Cmdp:
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
         self.subtitleS = self.configL["layout"]["subtitle"]
-        self.autoS = self.configL["process"]["auto_cfg"]
         # endregion
 
     def attachpdfx(self):
@@ -364,13 +383,6 @@ class Cmdp:
 
         """
         # region - htmlx
-        # clean rst files
-        for file_path in self.rstdocsP.glob("*.rst"):
-            try:
-                file_path.unlink()
-                print(f"Deleted: {file_path}")
-            except OSError as e:
-                print(f"Error deleting {file_path}: {e}")
         rvd.html_confpy(self, self.fD)  # write conf.py
         rvd.html_templ(self, self.fD)  # write templates
 
@@ -430,14 +442,6 @@ class Cmdp:
             msgS (str): completion message
         """
         # region - pdfx
-        # clean rst files
-        for file_path in self.rstdocsP.glob("*.rst"):
-            try:
-                file_path.unlink()
-                print(f"Deleted: {file_path}")
-            except OSError as e:
-                print(f"Error deleting {file_path}: {e}")
-
         rvd.pdf_confpy(self, self.fD)  # write conf.py
         rvd.pdf_yamlS(self, self.fD)  # write yaml file
 
@@ -533,5 +537,5 @@ class Cmdp:
         parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
-        return f"nonex - rst file written: {short_p} \n"
+        return f"||||||||||||  nonex - rst file written: {short_p} \n"
         # endregion

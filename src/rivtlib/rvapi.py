@@ -72,13 +72,20 @@ else:
     print("""where D is an alpha-numeric division label""")
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
-# print(rivtN, rivtT)
-rivtT = Path(reptP, rivtN)
 # Configure arg parser
+args = ""
 parser = argparse.ArgumentParser(description="Example script")
-parser.add_argument("-t", "--type", default="--", help="file type")
+parser.add_argument("-t", "--ptype", default="text", help="file type")
+parser.add_argument("-k", "--keep", default="false", help="keep rst")
 args = parser.parse_args()
-ptypeS = (args.type).strip()
+print(44444444444444444444, args)
+reptypeS = args.ptype
+repkeepS = args.keep
+print(3333333333333333333333333333333333333333333333333333, reptypeS, repkeepS)
+
+# Paths
+rivtT = Path(reptP, rivtN)
+# print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 rbaseS = rivtN.split(".")[0]
@@ -155,7 +162,9 @@ fD = {  # folders
 }
 lD1 = {
     "rvtypeS": "",  # section type r,i,v,t,d
-    "ptypeS": "text",  # default pub type
+    "reptypeS": reptypeS,  # default pub type
+    "doctypeS": "text",  # default doc
+    "repkeepS": repkeepS,  # default keep rst files
     "docnumS": rbaseS[0:6],  # doc number
     "sdivI": int(rbaseS[3:5]),  # subdiv number
     "secnumI": 0,  # section number
@@ -251,7 +260,9 @@ def doc_parse(rS, tyS, tagL, cmdL):
 
 
 def R(rS):
-    """Run scripts and insert markup
+    """Run API
+    Evaluate markup and Python scripts
+
     Args:
         rS (str): rivt string
     """
@@ -289,7 +300,9 @@ def R(rS):
 
 
 def I(rS):  # noqa: E743
-    """Insert static source
+    """Insert API
+    Insert static files e.g. tables, images and text
+
     Args:
         rS (str): rivt string
     """
@@ -298,24 +311,26 @@ def I(rS):  # noqa: E743
     cmdL = [
         "IMAGE",  # insert image from file
         "IMAGE2",  # insert adjacent images from file
+        "MARKUP",  # format text from file
         "TABLE",  # insert table from file
-        "MARKUP",  # insert text from file
     ]
     tagL = [
-        "C",  # bold center text
-        "M",  # ascii math
-        "L",  # LaTeX math
-        "#",  # footnote
         "G",  # glossary term
         "S",  # section link
         "U",  # url link
         "D",  # download link
+        "R",  # right justify
+        "C",  # center bold
+        "B",  # bold line
+        "M",  # ascii math
+        "L",  # LaTeX math
         "V",  # var value
         "T",  # table label
+        "#",  # footnote
     ]
     tagbL = [
-        "TABLE",  # format and write to csv
-        "MARKUP",  # process and insert markup
+        "MARKUP",  # format text
+        "TABLE",  # format inline rst and write to csv
         "END",  # end
     ]
     tagL = tagL + tagbL
@@ -323,7 +338,7 @@ def I(rS):  # noqa: E743
 
 
 def V(rS):
-    """Values calculate
+    """Values API
     Args:
         rS (str): rivt string
     """
@@ -357,10 +372,12 @@ def V(rS):
         " :=: ",  # assign function value
     ]
     tagL = [
+        "R",  # right justify
+        "C",  # center bold
+        "B",  # bold line of text
         "M",  # math format
         "L",  # LaTeX format
         "V",  # var value
-        "F",  # figure label
         "C",  # bold center text
         "T",  # table label
     ]
@@ -372,7 +389,9 @@ def V(rS):
 
 
 def T(rS):
-    """Execute external programs
+    """Tools API
+    Execute shell commands
+
     Args:
         rS (str): rivt string
     """
@@ -441,20 +460,22 @@ def T(rS):
 
 
 def D(rS):
-    """Publish doc files as .txt, .pdf  and .html
+    """Doc API
+    Publish doc files as .txt, .pdf, .html
+
     Args:
         rS (str): rivt string
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     wrtdoc = rvdoc.Cmdp(rS, fD, lD, dutfS, drstS, dtxtS)
-    print("\n>>>>>>>>>> end of rivt file\n\n")
-    msgS = wrtdoc.cmdx()
-    print(f"{msgS}")
+    print(f"{wrtdoc.cmdx()}")
+    print("\n|||||||||||||||| end of rivt file\n\n")
     sys.exit()
 
 
 def S(rS):
     """Skip rivt string processing
+
     Args:
         rS (str): rivt string
     """
@@ -464,7 +485,8 @@ def S(rS):
 
 
 def X(rS):
-    """exit rivt file processing
+    """Exit rivt file processing
+
     Args:
         rS (str): rivt string
     """

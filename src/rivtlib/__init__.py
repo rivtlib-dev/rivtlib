@@ -12,10 +12,10 @@ usage:
     import rivtlib.rvapi as rv
 
 API functions:
-    rv.R(rS) - (Run) Execute shell scripts
+    rv.R(rS) - (Run) Execute markup and Python scripts
     rv.I(rS) - (Insert) Insert static text, math, images and tables
     rv.V(rS) - (Values) Evaluate values and equations
-    rv.T(rS) - (Tools) Execute Python scripts
+    rv.T(rS) - (Tools) Execute shell scripts
     rv.D(rS) - (Docs) Publish formatted doc file
     rv.S(rS) - (Skip) Skip processing of section
     rv.X(rS) - (Exit) Exit processing of rivt file

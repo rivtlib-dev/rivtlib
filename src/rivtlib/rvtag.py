@@ -52,16 +52,17 @@ class Tag:
          I          **text text**                        bold words
          I           *text text*                         italic words
          I,V      text  _[C]                             bold center text (all)
+         I,V      text  _[R]                             bold center text (all)
+         I,V      text  _[B]                             bold text (pdf, html)
+         I,V      math  _[L]                             format LaTeX math (pdf, html)
          I,V      math  _[M]                             format ASCII math (all)
-         I,V      math  _[X]                             format LaTeX math (all)
-         I,V      label _[F]                             figure number and label (all)
          I,V      title _[T]                             table number and title (all)
          I,V      text  _[#] text                        number endnote (all)
-         I,V      text  _[V] var_name ] text             variable substitution (all)
-         I,V      text  _[G] term link ] text            link term to glossary (all)
-         I,V      text  _[D] label,filename ] text       variable substitution (all)
-         I,V      text  _[S] label, section link ] text  link to section in report (all)
-         I,V      text  _[U] label, external link ] text external url link (all)
+         I,V      text  _[V] var_name | text             variable substitution (all)
+         I,V      text  _[G] term link | text            link term to glossary (all)
+         I,V      text  _[D] label,filename | text       variable substitution (all)
+         I,V      text  _[S] label, section link | text  link to section in report (all)
+         I,V      text  _[U] label, external link | text external url link (all)
          all      ## text                                non-printing comment
 
          Args:
@@ -76,30 +77,60 @@ class Tag:
         # region
 
         if cmdS == "lC":
-            """center text"""
+            """bold center text"""
 
             uS = tS = lineS.center(wI) + "\n"
-            rS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n"
-            lS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n"
+            rS = lS = "\n.. rst-class:: align-center\n\n**" + lineS + "**\n"
 
         elif cmdS == "lR":
-            """right justify text"""
+            """right justify line"""
 
             uS = tS = lineS.rjust(wI) + "\n"
-            rS += "\n.. rst-class:: align-right\n\n   " + lineS + "\n"
-            lS = ""
+            rS = lS = "\n.. rst-class:: align-right\n\n   " + lineS + "\n"
 
-        if cmdS == "lB":
+        elif cmdS == "lB":
             """bold text"""
 
-            uS = tS = lineS + "\n"
-            rS = lS = "**" + lineS + "**" + "\n"
+            uS = tS = lineS + "\n\n"
+            rS = lS = "**" + lineS.strip() + "**" + "\n\n"
 
-        if cmdS == "lI":
-            """italic text"""
+        elif cmdS == "lS":
+            """format section link"""
 
-            uS = tS = lineS + "\n"
-            rS = lS = "*" + lineS + "*" + "\n"
+            txt1 = lineL[0]
+            txt2 = lineL[1].split("|")[0].strip()
+            txt3 = lineL[1].split("|")[1].strip()
+            txt2a = txt2.split(",")[0].strip()
+            txt2b = "<" + txt2.split(",")[1].strip() + ">"
+            uS = tS = f"{txt1} {txt2a} [ref: {txt2b}] {txt3}"
+            rS = lS = f"{txt1} **<** :ref:`{txt2a} {txt2b}` **>** {txt3}"
+
+        elif cmdS == "lG":
+            """format glossary term link"""
+
+            lineL = lineS.split(",")
+            uS = tS = lineL[0] + ": " + lineL[1]
+            rS = ".. _" + lineL[0] + ": " + lineL[1]
+            lS = ".. _" + lineL[0] + ": " + lineL[1]
+
+        elif cmdS == "lU":
+            """format url link"""
+            # print(lineL)
+            txt1 = lineL[0]
+            txt2 = lineL[1].split("|")[0].strip()
+            txt3 = lineL[1].split("|")[1].strip()
+            txt2a = txt2.split(",")[0].strip()
+            txt2b = "<" + txt2.split(",")[1].strip() + ">"
+            uS = tS = f"{txt1} {txt2a} {txt2b} {txt3}"
+            rS = lS = f"{txt1} `{txt2a} {txt2b}`__ {txt3}"
+
+        elif cmdS == "lD":
+            """download link"""
+
+            lineL = lineS.split(",")
+            uS = tS = lineL[0] + ": " + lineL[1]
+            rS = ".. _" + lineL[0] + ": " + lineL[1]
+            lS = ".. _" + lineL[0] + ": " + lineL[1]
 
         elif cmdS == "lM":
             """format sympy"""
@@ -130,28 +161,8 @@ class Tag:
             rS = eqrS + "\n\n"
             lS = ""
 
-        elif cmdS == "lT":
-            """number table"""
-
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            uS = tS = "\nTable " + str(tnumI) + ": " + lineS
-            rS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
-            lS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
-
-        elif cmdS == "lF":
-            """number figure"""
-
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            uS = tS = "\nTable " + str(tnumI) + ": " + lineS
-            rS = "\n**Table " + fillS + "**: " + lineS + "\n"
-            lS = "\n**Table " + fillS + "**: " + lineS + "\n"
-
         elif cmdS == "lL":
-            """format latex"""
+            """format latex math"""
 
             spS = lineS.strip()
             spL = spS.split("=")
@@ -162,32 +173,15 @@ class Tag:
             rS = "\n.. code:: \n\n" + indlineS + "\n\n"
             lS = "\n.. code:: \n\n" + indlineS + "\n\n"
 
-        elif cmdS == "lG":
-            """format glossary term link"""
+        elif cmdS == "lT":
+            """label and number table"""
 
-            lineL = lineS.split(",")
-            uS = tS = lineL[0] + ": " + lineL[1]
-            rS = ".. _" + lineL[0] + ": " + lineL[1]
-            lS = ".. _" + lineL[0] + ": " + lineL[1]
-
-        elif cmdS == "lS":
-            """format section link"""
-
-            lineL = lineS.split(",")
-            uS = tS = lineL[0] + ": " + lineL[1]
-            rS = ".. _" + lineL[0] + ": " + lineL[1]
-            lS = ".. _" + lineL[0] + ": " + lineL[1]
-
-        elif cmdS == "lU":
-            """format url link"""
-            # print(lineL)
-            txt1 = lineL[0]
-            txt2 = lineL[1].split("|")[0].strip()
-            txt3 = lineL[1].split("|")[1].strip()
-            txt2a = txt2.split(",")[0].strip()
-            txt2b = "<" + txt2.split(",")[1].strip() + ">"
-            uS = tS = f"{txt1} {txt2a} {txt2b} {txt3}"
-            rS = lS = f"{txt1} `{txt2a} {txt2b}`__ {txt3}"
+            tnumI = int(self.lD["tableI"])
+            self.lD["tableI"] = tnumI + 1
+            fillS = str(tnumI)
+            uS = tS = "\nTable " + str(tnumI) + ": " + lineS
+            rS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
+            lS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
 
         elif cmdS == "l#":
             """number footnote"""
@@ -264,15 +258,16 @@ class Tag:
         elif cmdS == "bMAR":
             """markup block
             
-            literal
-            html
-            reST
-            endnote
-            center
-            bold
-            italic
-            mermaid
-            latex
+            types:
+                literal
+                html
+                reST
+                endnote
+                center
+                bold
+                italic
+                mermaid
+                latex
             
             """
             # region

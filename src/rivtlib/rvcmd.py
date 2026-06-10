@@ -532,7 +532,7 @@ class Cmd:
         bordS = " " * 10 + "-" * 40 + "\n"
         if timS.strip() == "time":
             gettimeS = self.get_image_time(self.inspS)
-            if gettimeS == None:
+            if gettimeS is None:
                 gettimeS = "no time "
             timeS = "| time: " + gettimeS
         else:
@@ -613,8 +613,8 @@ class Cmd:
         else:
             labl2S = ""
         bordS = " " * 10 + "-" * 40 + "\n"
-        uS = f"{bordS}{labl1xS} | {labl2xS}\nfiles: {self.fileS} \n{bordS}"
-        tS = f"{bordS}{labl1xS} | {labl2xS}\n{bordS}"
+        uS = f"{bordS}{labl1xS} | {labl2xS}\nfiles: {self.fileS} \n{bordS}\n"
+        tS = f"{bordS}{labl1xS} | {labl2xS}\n{bordS}\n"
         rS = f"""
 .. list-table::
     :widths: {scale1S} {scale2S}
@@ -629,6 +629,7 @@ class Cmd:
             :width: 100%
             
             {labl2S}
+
                      
 """
 

@@ -128,7 +128,7 @@ pdf_language = "en_US"
 # literal blocks wider than the frame overflow, shrink or truncate
 pdf_fit_mode = "shrink"
 # 1 means top-level sections start in a new page 0 disabled
-pdf_break_level = 0
+pdf_break_level = 1
 # When a section starts in a new page, force it to be 'even', 'odd', 'any
 pdf_breakside = "any"
 # Show Table Of Contents at the beginning?
@@ -246,8 +246,27 @@ styles:
     strike: false
     textColor: black
     wordWrap: null
+  toc-item:
+    parent: normal
+    leftIndent: 0
+  toc-level-1:
+    parent: toc-item
+    leftIndent: 0
+  toc-level-2:
+    parent: toc-item
+    leftIndent: 0
+  toc-level-3:
+    parent: toc-item
+    leftIndent: 0
+  internal_link:
+    parent: bodytext
+    textcolor: blue
+    linkColor: blue
+    fontName: fontSansBold
+  link:
     linkUnderline: {repD["pdflink"]}
     linkColor: blue
+    textcolor: blue
   tableofcontents:
     parent: normal
   big-text:
@@ -503,46 +522,46 @@ styles:
     fontName: fontSansBold
     parent: toc
   toc10:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc11:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc12:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc13:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc14:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc15:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc2:
-    leftIndent: 20
+    leftIndent: 0
     parent: toc
   toc3:
-    leftIndent: 40
+    leftIndent: 0
     parent: toc
   toc4:
-    leftIndent: 60
+    leftIndent: 0
     parent: toc
   toc5:
-    leftIndent: 80
+    leftIndent: 0
     parent: toc
   toc6:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc7:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc8:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   toc9:
-    leftIndent: 100
+    leftIndent: 0
     parent: toc
   topic-title:
     parent: heading3

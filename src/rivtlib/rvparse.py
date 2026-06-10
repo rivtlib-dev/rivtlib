@@ -68,27 +68,29 @@ class Rs:
             addtgS = ""
         hL = rsL[0].split("|")
         # -----  get section title
-        lD["docS"] = hL[0].strip()
+        sectitleS = hL[0].strip()
+        lD["docS"] = sectitleS
         if hL[0].strip()[0:2] == "--":
             lD["docS"] = hL[0].split("--")[1][1]
             sutfS = "\n"
             srstS = "\n"
             stxtS = "\n"
         else:
+            slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link
             snumI = lD["secnumI"] + 1
             lD["secnumI"] = snumI
             sdivS = str(lD["sdivI"])
             divS = str(lD["divS"])
             snumS = f"{divS}.{sdivS}.{str(snumI)}{addtgS}"
             snum1S = f"**{divS}.{sdivS}.{str(snumI)}{addtgS}**"
-            headS = snumS + " | " + hL[0].strip()
-            head1S = snum1S + " | " + hL[0].strip()
+            headS = snumS + " | " + sectitleS
+            head1S = snum1S + " | " + sectitleS
             bordrS = lD["widthI"] * "-" + "\n"
             sutfS = "\n" + headS + "\n" + bordrS
             stxtS = "\n" + headS + "\n" + bordrS
-            srstS = "\n" + head1S + "\n" + bordrS
+            srstS = slinkS + head1S + "\n" + bordrS
             print(sutfS)  # STDOUT section header
-        file_path = str(fD["rivtT"])  # insert interactive link
+        file_path = str(fD["rivtT"])  # insert interactive link in terminal
         for linenumI, lineS in enumerate(rivtL):
             if rsL[0] in lineS:
                 print(f"[link] {file_path}:{linenumI + 1}\n")
@@ -172,22 +174,25 @@ class Rs:
         return outS + "\n"
 
     def remove_aster(self, text):
-        # remove italic and bold * from rv.I content
-        # (?<!\*)    - Negative lookbehind: ensure the asterisk isn't preceded by another *
-        # \*{1,2}    - Match 1 or 2 asterisks
-        # (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
-        # (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
+        """remove italic and bold * from rv.I content
+
+        (?<!\*)    - Negative lookbehind: ensure the asterisk isn't preceded by another *
+        \*{1,2}    - Match 1 or 2 asterisks
+        (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
+        (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
+        """
         pattern = r"(?<!\*)(?:\*{1,2})(?!\*)(?!\s)"
 
         return re.sub(pattern, "", text)
 
-    # ------------------------------------------------- section content
-    def content(self, tyS, tagL, cmdL):
+    def content(self, tyS, tagL, cmdL):  # --------- format section content
         """parse content substring
+
         Args:
             tyS (str): api type
             tagL (list): tag list
             cmdL (list): command list
+
         Returns:
             sutfS (str): utf doc string
             srstS (str): rest doc string
@@ -220,23 +225,21 @@ class Rs:
         for slS in self.spL:
             if tyS == "I":
                 slS = self.remove_aster(slS)
-            # print("**", f"{slS=}")
+            # print("****", f"{slS=}")
             if len(slS.strip()) == 0 and len(tabL) > 0:  # print inline valtable
                 outS = self.prt_tabl(tabL)
                 sutfS += outS + " \n"
                 srstS += outS + " \n"
                 stxtS += outS + " \n"
-                print(outS, "\n")  # STDOUT - values block
+                print(outS, "\n")  # STDOUT - inline values block
                 tabL = []
                 continue
-            elif len(slS.strip()) == 0 and not blockB:  # print blank line
+            if len(slS.strip()) == 0 and not blockB:  # print blank line
                 sutfS += " \n"
                 srstS += " \n"
                 stxtS += " \n"
                 print(" ")  # STDOUT- blank line
                 continue
-            else:
-                pass
             if blockB:  # ----------------------------------- block accumulate
                 # print(f"**{blockS}")
                 if blockB and ("_[[END]]" in slS):  # end of block
@@ -354,7 +357,7 @@ class Rs:
                 srstS += slS + "\n"
                 stxtS += textwrap.fill(slS, width=lD["widthI"]) + "\n"
 
-        # export values file
+        # export values file to vDss-#.csv where # is section number
         if self.tyS == "V" and len(rivL) > 0:
             fileS = lD["valprfx"] + str(lD["secnumI"]) + ".csv"
             fileP = Path(fD["storeP"], fileS)
