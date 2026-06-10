@@ -246,18 +246,12 @@ styles:
     strike: false
     textColor: black
     wordWrap: null
-  toc-item:
-    parent: normal
-    leftIndent: 0
-  toc-level-1:
-    parent: toc-item
-    leftIndent: 0
-  toc-level-2:
-    parent: toc-item
-    leftIndent: 0
-  toc-level-3:
-    parent: toc-item
-    leftIndent: 0
+  ref:
+    parent: bodytext
+    textColor: blue
+  url:
+    parent: bodytext
+    textColor: blue
   internal_link:
     parent: bodytext
     textcolor: blue
