@@ -43,6 +43,7 @@ class Tag:
         self.lD = lD
         self.rivtD = rivtD
         self.rivL = rivL
+        self.wI = int(self.lD["widthI"])
 
     def taglx(self, tagS):
         """formats a line
@@ -222,7 +223,7 @@ class Tag:
         """
         # region
         cmdS = "b" + tagS[0:3]
-        wI = int(self.lD["widthI"])
+        lineS = self.strL[0].strip()
 
         if cmdS == "bSHE":
             """shell blocki"""
@@ -259,6 +260,7 @@ class Tag:
             """markup block
             
             types:
+                wrap
                 literal
                 html
                 reST
@@ -273,6 +275,10 @@ class Tag:
             # region
             blkL = (self.strL).split("\n", 1)
             marktypS = blkL[0].strip()
+            if marktypS == "wrap":
+                txtS = blkL[1]
+                uS = tS = textwrap.fill(txtS, width=self.wI)
+
             if marktypS == "literal":
                 txtS = blkL[1]
                 uS = tS = txtS
@@ -355,7 +361,8 @@ class Tag:
         col_widths, headers, body = parser.parse(lines)
 
         # helper to clean up cell content
-        clean = lambda cell: " ".join(line.strip() for line in cell[3]).strip()
+        def clean(cell):
+            return " ".join(line.strip() for line in cell[3]).strip()
 
         # Process headers
         header_data = [[clean(cell) for cell in row] for row in headers]

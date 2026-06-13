@@ -175,16 +175,6 @@ def pdfx(rstL):
     with open(rvindxT, "w", encoding="utf-8") as f5:
         f5.write(preamS)
 
-    # -------------------- append subdiv tocs to rst docs
-    toc2S = """
-    
-.. toctree::
-    :maxdepth: 1
-
-[replace]
-    
-"""
-
     print("||||||||||||||||||| run sphinx-pdf")
     pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
 

@@ -53,7 +53,7 @@ class Rs:
         stxtS = ""  # text doc
         sutfS = ""  # utf doc
         srstS = ""  # rest doc
-        sltxS = ""  # latex doc
+        # sltxS = ""  # latex doc
         newpageS = ""
         self.vardescD = vdescD
         # ----------------------------------------------   section header
@@ -185,10 +185,10 @@ class Rs:
     def remove_aster(self, text):
         """remove italic and bold * from rv.I content
 
-        (?<!\*)    - Negative lookbehind: ensure the asterisk isn't preceded by another *
-        \*{1,2}    - Match 1 or 2 asterisks
-        (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
-        (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
+        # (?<!\*)    - Negative lookbehind: ensure the asterisk isn't preceded by another *
+        # \*{1,2}    - Match 1 or 2 asterisks
+        # (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
+        # (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
         """
         pattern = r"(?<!\*)(?:\*{1,2})(?!\*)(?!\s)"
 

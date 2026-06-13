@@ -254,7 +254,7 @@ class Cmdp:
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
-
+        print("------------ | ", result)
         return f"\nPDF doc written to ============ | {short_p}"
         # endregion
 
@@ -263,7 +263,6 @@ class Cmdp:
 
         # region - insert pdf header
         timeS = datetime.now().strftime("%Y-%m-%d")
-        sdivS = str(self.lD["sdivI"])
         headblkS = f"""**{self.doctitleS}** - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
         foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
         foot2blkS = f"""**{self.runlabelS}**"""
@@ -407,7 +406,6 @@ class Cmdp:
         rvd.html_templ(self, self.fD)  # write templates
         rvfileS = self.fD["rbaseS"] + ".rst"
         rvfileT = str(Path(self.fD["rstdocsP"], rvfileS))
-        sdivS = str(self.lD["sdivI"])
         doctitleS = f"**{self.doctitleS}**"
         # doctitleS = f"**| {self.lD['divS']}.{sdivS} |** " + self.doctitleS
         self.drstS = f"{doctitleS}\n" + "=" * 80 + "\n\n" + self.drstS
@@ -424,8 +422,6 @@ class Cmdp:
         )
         try:
             result = subprocess.run(htmlcmdS, shell=True, check=True)
-            if not result.returncode:
-                pass
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
@@ -433,6 +429,7 @@ class Cmdp:
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
+        print("---------- | ", result)
         return f"HTML doc written to ============ | {short_p}"
 
         # endregion
@@ -451,7 +448,6 @@ class Cmdp:
         doctitleS = self.doctitleS
         versionS = "v-" + self.verS.strip()
         authorS = self.authorS.strip()
-        sdivS = str(self.lD["sdivI"])
         doctitleS = self.doctitleS
         hdlS = doctitleS + " | " + authorS + " | " + versionS + " | " + timeS
         headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n"
@@ -488,7 +484,6 @@ class Cmdp:
 
         borderS = "-" * self.lD["widthI"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
-        sdivS = str(self.lD["sdivI"])
         doctitleS = self.doctitleS
         versionS = "v-" + self.verS.strip()
         authorS = self.authorS.strip()

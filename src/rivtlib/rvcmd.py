@@ -901,11 +901,13 @@ class Cmd:
         titleS = self.parS.strip() + " (" + fuS + ")\n"
         titlerS = self.parS.strip() + " (" + fuS + ")\n\n"
         if titleS[0:2] == "--":
-            utlS = xtlS = " (" + fuS + ")\n"
-            rtlS = " (" + fuS + ")\n\n"
+            ulS = " (" + fuS + ")\n"
+            tlS = "(from file)"
+            rlS = llS = " (" + fuS + ")\n\n"
         else:
-            utlS = xtlS = "\nTable " + fillS + ": " + titleS
-            rtlS = "\n**Table " + fillS + "**: " + titlerS
+            ulS = "\nTable " + fillS + ": " + titleS
+            tlS = "\nTable " + fillS + ": (from file)"
+            rlS = llS = "\n**Table " + fillS + "**: " + titlerS
         tblfmt = "rst"
         hdrvL = ["Function", "Docstring"]
         sys.stdout.flush()
@@ -925,9 +927,10 @@ class Cmd:
         sys.stdout = old_stdout
         sys.stdout.flush()
         # pthxS = str(Path(*Path(pthS).parts[-3:]))
-        uS = tS = utlS + "\n" + outS + "\n"
-        rS = rtlS + "\n" + outS + "\n"
-        lS = ""
+        uS = ulS + "\n" + outS + "\n"
+        tS = tlS + "\n" + outS + "\n"
+        rS = rlS + "\n" + outS + "\n"
+        lS = llS + "\n" + outS + "\n"
 
         self.mD = {
             "uS": uS,
@@ -949,8 +952,6 @@ class Cmd:
             uS, r2S, rS, fD, lD, rivtD, rivL
         """
         # region
-        dec1S = "2"
-        decS = "%." + dec1S + "f"
         functL = self.fileS.split(",")
         funcS = functL[0].strip()
         varS = functL[1].strip()
@@ -1013,10 +1014,6 @@ class Cmd:
         uS = tS = eqtS
         rS = "\n" + eqrS + "\n\n"
         lS = ""
-        # rivL append - for export
-        # ex2S = spL[0].strip() + " = " + str(val1U)
-        # exvS = ",".join((ex2S, unit1S, unit2S, dec1S, refS.strip()))
-        # self.rivL.append(exvS)
         self.mD = {
             "uS": uS,
             "rS": rS,
@@ -1054,7 +1051,7 @@ class Cmd:
                 # Dictionary mapping numeric tags to human-readable strings
                 if exif_data is not None:
                     exif_dict = {
-                        TAGS.get(tag, tag): val
+                        exif_data.get(tag, tag): val
                         for tag, val in exif_data.items()
                     }
                     # Check standard EXIF timestamp priority tags
@@ -1092,12 +1089,6 @@ class Cmd:
                             "%Y-%m-%d %H:%M:%S",
                         ):
                             try:
-                                # Strip out timezone info if parsing simplified strings
-                                clean_date = (
-                                    raw_date.split("+")[0].split("-")[0]
-                                    if "%" not in fmt
-                                    else raw_date
-                                )
                                 return datetime.strptime(
                                     raw_date[:19], "%Y-%m-%dT%H:%M:%S"
                                 )
@@ -1107,5 +1098,5 @@ class Cmd:
                 return "no time"
 
         except Exception as e:
-            print(f"Could not read metadata for {file_path}: {e}")
+            print(f"cmd: Could not read metadata for {file_path}: {e}")
             return "no time"
