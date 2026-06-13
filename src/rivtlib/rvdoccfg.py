@@ -57,7 +57,7 @@ extensions = [
     "rst2pdf.pdfbuilder",
     "sphinxcontrib.mermaid"
 ]
-root_doc = "docindex"
+root_doc = "index"
 duration_write_json = ""
 html_show_sourcelink = False
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -120,6 +120,8 @@ pdf_use_coverpage = False
 pdf_cover_template = ""
 # Show Table Of Contents at the beginning?
 pdf_use_toc = False
+# How many levels deep should the table of contents be?
+pdf_toc_depth = {self.toc_level}
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
 # Example: compressed=True
@@ -132,8 +134,6 @@ pdf_fit_mode = "shrink"
 pdf_break_level = 0
 # When a section starts in a new page, force it to be 'even', 'odd', 'any
 pdf_breakside = "any"
-# How many levels deep should the table of contents be?
-pdf_toc_depth = 9999
 # Insert footnotes where they are defined 
 pdf_inline_footnotes = False
 # If false, no index is generated.
@@ -555,16 +555,11 @@ styles:
 
 
 def html_templ(self, fD):
-    """write html templates
+    """write html templates"""
 
-    Return:
-
-    """
-
-    # region - html template
     copy_docs()
     timeS = datetime.now().strftime("%Y-%m-%d")
-
+    # region - html template
     rvdateS = f"""
 <!-- _templates/rv-date.html -->
 <div class="footer-item">
@@ -656,8 +651,8 @@ html_theme_options = {{
     "collapse_navigation": True,
     "header_links_before_dropdown": 6,
     "navbar_align": "left",
-    "show_toc_level": 1,
-    "navigation_depth": 1,
+    "show_toc_level": {self.toc_level},
+    "navigation_depth": {self.toc_level},
     "footer_start": ["rv-author"],
     "footer_center": ["rv-title"],
     "footer_end": ["rv-date"],

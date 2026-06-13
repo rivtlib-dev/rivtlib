@@ -66,29 +66,38 @@ class Rs:
             addtgS = tyS.lower()
         else:
             addtgS = ""
-        hL = rsL[0].split("|")
         # -----  get section title
+        hL = rsL[0].split("|")
         sectitleS = hL[0].strip()
         lD["docS"] = sectitleS
+        # ------ suppress title
         if hL[0].strip()[0:2] == "--":
             lD["docS"] = hL[0].split("--")[1][1]
             sutfS = "\n"
             srstS = "\n"
             stxtS = "\n"
+        # ------ write title
         else:
-            slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link
+            slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for STDOUT
             snumI = lD["secnumI"] + 1
             lD["secnumI"] = snumI
+            if snumI > 1:
+                snS = " - " + str(snumI)
+            else:
+                snS = ""
             sdivS = str(lD["sdivI"])
             divS = str(lD["divS"])
-            snumS = f"{divS}.{sdivS}.{str(snumI)}{addtgS}"
-            snum1S = f"**{divS}.{sdivS}.{str(snumI)}{addtgS}**"
+            snumS = f"{divS}.{sdivS}{snS}{addtgS}"
+            snumrS = f"**{divS}.{sdivS}{snS}{addtgS}**"
             headS = snumS + " | " + sectitleS
-            head1S = snum1S + " | " + sectitleS
+            head1S = snumrS + " | " + sectitleS
             bordrS = lD["widthI"] * "-" + "\n"
+            bordr1S = lD["widthI"] * "=" + "\n"
+            if snumI == 1:
+                bordrS = bordr1S
             sutfS = "\n" + headS + "\n" + bordrS
             stxtS = "\n" + headS + "\n" + bordrS
-            srstS = slinkS + head1S + "\n" + bordrS
+            srstS += slinkS + head1S + "\n" + bordrS
             print(sutfS)  # STDOUT section header
         file_path = str(fD["rivtT"])  # insert interactive link in terminal
         for linenumI, lineS in enumerate(rivtL):

@@ -6,10 +6,10 @@ usage:
     import rivtlib.rvapi as rv
 
 API functions:
-    rv.R(rS) - (Run) Execute shell scripts
+    rv.R(rS) - (Run) Execute markup and Python scripts
     rv.I(rS) - (Insert) Insert static text, math, images and tables
     rv.V(rS) - (Values) Evaluate values and equations
-    rv.T(rS) - (Tools) Execute Python scripts
+    rv.T(rS) - (Tools) External programs and shell scripts
     rv.D(rS) - (Docs) Publish formatted doc file
     rv.S(rS) - (Skip) Skip processing of section
     rv.X(rS) - (Exit) Exit processing of rivt file
@@ -75,14 +75,11 @@ else:
 # Configure arg parser
 args = ""
 parser = argparse.ArgumentParser(description="Example script")
-parser.add_argument("-t", "--ptype", default="text", help="file type")
+parser.add_argument("-t", "--ptype", default="---", help="file type")
 parser.add_argument("-k", "--keep", default="false", help="keep rst")
 args = parser.parse_args()
-print(44444444444444444444, args)
 reptypeS = args.ptype
 repkeepS = args.keep
-print(3333333333333333333333333333333333333333333333333333, reptypeS, repkeepS)
-
 # Paths
 rivtT = Path(reptP, rivtN)
 # print(rivtN, rivtT)
@@ -107,7 +104,7 @@ rivtT = Path(reptP, rivtN)
 rivt_storedP = storeP
 # endregion
 
-# region - logs
+# region - logs and bak
 warnings.filterwarnings("ignore")
 logging.basicConfig(
     level=logging.DEBUG,
@@ -120,7 +117,6 @@ package_version = version("rivtlib")
 verS = f"rivtlib version: {package_version}"
 logging.info("Doc start")
 logging.info(verS)
-# write backup file
 with open(rivtT, "r") as f2:  # noqa: F405
     rivtS = f2.read()
 with open(bakT, "w") as f3:  # noqa: F405
@@ -147,7 +143,7 @@ fD = {  # folders
     "docP": Path(reptP, "rivtDocs"),
     "pdfN": rbaseS + ".pdf",
     "readmeT": Path(rivtP, "README.txt"),
-    "rvreadmeT": Path(pubP, "readme", docnumS + "readme.txt"),
+    "publreadmeT": Path(pubP, "readme", docnumS + "README.txt"),
     "rstdocsP": rstdocsP,
     "reptpubP": pubP,
     "pdfpubP": Path(pubP, "pdfdocs"),
@@ -160,11 +156,17 @@ fD = {  # folders
     "styleP": Path(srcP, "styles"),
     "tempP": Path(srcP, "temp"),
 }
+# default settings
+lD2 = {
+    "widthI": 80,
+    "privateB": "True",
+    "notagB": "True",
+}
 lD1 = {
     "rvtypeS": "",  # section type r,i,v,t,d
     "reptypeS": reptypeS,  # default pub type
-    "doctypeS": "text",  # default doc
     "repkeepS": repkeepS,  # default keep rst files
+    "doctypeS": "txt",  # default doc
     "docnumS": rbaseS[0:6],  # doc number
     "sdivI": int(rbaseS[3:5]),  # subdiv number
     "secnumI": 0,  # section number
@@ -179,19 +181,14 @@ lD1 = {
     "descS": "ref",  # value description
     "deciI": 2,  # decimals
     "valexpS": "",  # list of values for export
+    "argsname": "",  # name of argument dictionary
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
-    "colorS": "none",  # topic background color
+    "colorS": "white",  # topic background color
     "cntflgI": 0,  # transition line
     "privB": "True",  # do not public write
     "docB": "True",  # add to doc
     "mergeB": "False",  # merge to prev section
     "autocfgB": "True",  # config format from metadata
-}
-# default settings
-lD2 = {
-    "widthI": 80,
-    "privateB": "True",
-    "notagB": "True",
 }
 # labels
 lD = lD1 | lD2
@@ -212,11 +209,20 @@ for lnS in rivtL:
         else:
             pass
 # initialize doc strings
-dutfS = ""
 drstS = ""
+dutfS = ""
 dtxtS = ""
 dlatS = ""
 dcmdS = ""
+drstS = """
+.. raw:: pdf
+
+   PageBreak
+
+      
+"""
+# if lD["sdivI"] > 0:
+#     drstS = ":orphan:\n\n" + drstS
 # endregion
 
 
@@ -469,7 +475,7 @@ def D(rS):
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     wrtdoc = rvdoc.Cmdp(rS, fD, lD, dutfS, drstS, dtxtS)
     print(f"{wrtdoc.cmdx()}")
-    print("\n|||||||||||||||| end of rivt file\n\n")
+    print("\n>>>>>>>>>>>>>>>>>>> End of rivt file\n\n")
     sys.exit()
 
 

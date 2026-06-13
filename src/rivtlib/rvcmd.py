@@ -534,16 +534,10 @@ class Cmd:
             gettimeS = self.get_image_time(self.inspS)
             if gettimeS is None:
                 gettimeS = "no time "
-            timeS = "| time: " + gettimeS
+            timeS = " | time: " + gettimeS
         else:
             timeS = " "
-        uS = (
-            bordS
-            + lablxS
-            + capS
-            + f" [file: {self.fileS} | {timeS} ]\n"
-            + bordS
-        )
+        uS = bordS + lablxS + capS + f" [file: {self.fileS}{timeS} ]\n" + bordS
         tS = bordS + lablxS + capS + timeS + "\n" + bordS
         rS = f"""
 .. figure:: {self.inspS}
@@ -968,13 +962,28 @@ class Cmd:
         self.enumI += 1
         self.lD["equI"] = self.enumI
         self.enumS = str(self.enumI)
-        # argsD = self.rivtD[varS]
         cmdS = f"{funcS}(**{varS})"
-        # exec(cmdS, globals(), self.rivtD)
         newvarS = eval(cmdS, globals(), self.rivtD)
-        # eval(f"{funcS}(**{argsD})")
-        eq1S = textwrap.indent(funcS + " | " + self.lD["unit_note"], "      ")
-        eqxS = textwrap.indent(eq1S, chr(9474) + " ")
+        eq1S = textwrap.indent(
+            "function: "
+            + funcS
+            + " | args: "
+            + self.lD["argsname"]
+            + " | "
+            + self.lD["unit_note"],
+            "      ",
+        )
+
+        eqxS = textwrap.indent(
+            "function: "
+            + funcS
+            + " | args: "
+            + self.lD["argsname"]
+            + " | "
+            + self.lD["unit_note"],
+            chr(9474) + "    ",
+        )
+
         toptS = chr(9484) + "  Eq-" + self.enumS + " | " + refS + "\n"
         erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
         # string return

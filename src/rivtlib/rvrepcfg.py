@@ -136,7 +136,7 @@ pdf_use_toc = True
 # Page template name for "regular" pages
 pdf_page_template = 'mainPage'
 # How many levels deep should the table of contents be?
-pdf_toc_depth = 9999
+pdf_toc_depth = {repD["toc_level"]}
 # Insert footnotes where they are defined 
 pdf_inline_footnotes = False
 # If false, no index is generated.
@@ -247,20 +247,20 @@ styles:
     textColor: black
     wordWrap: null
   ref:
-    parent: bodytext
+    fontName: fontSansBold
     textColor: blue
   url:
     parent: bodytext
     textColor: blue
   internal_link:
     parent: bodytext
-    textcolor: blue
+    textColor: blue
     linkColor: blue
     fontName: fontSansBold
   link:
     linkUnderline: {repD["pdflink"]}
     linkColor: blue
-    textcolor: blue
+    textColor: blue
   tableofcontents:
     parent: normal
   big-text:
@@ -299,11 +299,11 @@ styles:
     leftIndent: 0
     parent: literal
     fontName: fontMonoBold
-  compgreen:
+  rolgreen:
     textColor: green
     alignment: TA_RIGHT
     fontName: fontSansBold
-  compred:
+  rolred:
     textColor: red
     alignment: TA_RIGHT
     fontName: fontSansBold
@@ -512,31 +512,17 @@ styles:
   toc:
     parent: normal
     fontSize: 100%
+    leftIndent: 10
   toc1:
     fontName: fontSansBold
-    parent: toc
-  toc10:
-    leftIndent: 0
-    parent: toc
-  toc11:
-    leftIndent: 0
-    parent: toc
-  toc12:
-    leftIndent: 0
-    parent: toc
-  toc13:
-    leftIndent: 0
-    parent: toc
-  toc14:
-    leftIndent: 0
-    parent: toc
-  toc15:
     leftIndent: 0
     parent: toc
   toc2:
+    fontName: fontSansBold
     leftIndent: 0
     parent: toc
   toc3:
+    fontName: fontSansBold
     leftIndent: 0
     parent: toc
   toc4:
@@ -555,6 +541,24 @@ styles:
     leftIndent: 0
     parent: toc
   toc9:
+    leftIndent: 0
+    parent: toc
+  toc10:
+    leftIndent: 0
+    parent: toc
+  toc11:
+    leftIndent: 0
+    parent: toc
+  toc12:
+    leftIndent: 0
+    parent: toc
+  toc13:
+    leftIndent: 0
+    parent: toc
+  toc14:
+    leftIndent: 0
+    parent: toc
+  toc15:
     leftIndent: 0
     parent: toc
   topic-title:
@@ -695,7 +699,7 @@ html_theme_options = {{
     "header_links_before_dropdown": 6,
     "navbar_align": "left",
     "show_toc_level": 1,
-    "navigation_depth": 1,
+    "navigation_depth": 2,
     "footer_start": ["rv-author"],
     "footer_center": ["rv-title"],
     "footer_end": ["rv-date"],
@@ -748,7 +752,7 @@ def html_index():
 
 |    
 
-.. image:: ../{repD["coverlogo"]}
+.. image:: ./_static/{repD["coverlogo"]}
     :width: {repD["logosize"]}%
     :align: center        
     :alt: rivt logo

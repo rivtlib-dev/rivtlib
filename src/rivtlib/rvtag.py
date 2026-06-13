@@ -121,8 +121,8 @@ class Tag:
             txt3 = lineL[1].split("|")[1].strip()
             txt2a = txt2.split(",")[0].strip()
             txt2b = "<" + txt2.split(",")[1].strip() + ">"
-            uS = tS = f"{txt1} {txt2a} {txt2b} {txt3}"
-            rS = lS = f"{txt1} `{txt2a} {txt2b}`__ {txt3}"
+            uS = tS = f"{txt1} {txt2a} {txt2b} {txt3}".strip()
+            rS = lS = f"{txt1} **<** `{txt2a} {txt2b}`__ **>** {txt3}".strip()
 
         elif cmdS == "lD":
             """download link"""
@@ -310,6 +310,7 @@ class Tag:
             self.rivtD[varS] = kwargD
             for key, value in kwargD.items():
                 self.rivtD[varS][key] = eval(value)
+            self.lD["argsname"] = varS
             intS = f"    Function Arguments Dictionary : {varS} ({untS})\n{borderS}\n{argwS}\n{borderS}\n"
             inrS = f".. code-block:: text \n\n    Function Arguments Dictionary : {varS} ({untS})\n{borderS}\n{argwS}\n{borderS}"
             uS = tS = intS + "\n"
