@@ -186,12 +186,10 @@ class Tag:
 
         elif cmdS == "l#":
             """number footnote"""
-            ftnumI = self.lD["footL"].pop(0)
-            self.lD["noteL"].append(ftnumI + 1)
-            self.lD["footL"].append(ftnumI + 1)
-            self.uS = lineS.replace("*]", "[" + str(ftnumI) + "]")
-            self.r2S = lineS.replace("*]", "[" + str(ftnumI) + "]")
-            self.rS = lineS.replace("*]", "[" + str(ftnumI) + "]")
+            noteI = self.lD["noteI"]
+            self.lD["noteI"] = noteI + 1
+            uS = tS = lineS.replace("#]", "[" + str(noteI) + "]")
+            rS = lS = lineS.replace("#]", "[" + str(noteI) + "]_")
         else:
             pass
         # endregion
@@ -256,44 +254,6 @@ class Tag:
                 wfile = csv.writer(f1)
                 wfile.writerows(rstL)
 
-        elif cmdS == "bMAR":
-            """markup block
-            
-            types:
-                wrap
-                literal
-                html
-                reST
-                endnote
-                center
-                bold
-                italic
-                mermaid
-                latex
-            
-            """
-            # region
-            blkL = (self.strL).split("\n", 1)
-            marktypS = blkL[0].strip()
-            if marktypS == "wrap":
-                txtS = blkL[1]
-                uS = tS = textwrap.fill(txtS, width=self.wI)
-
-            if marktypS == "literal":
-                txtS = blkL[1]
-                uS = tS = txtS
-                rS = (
-                    "\n"
-                    + "\n.. code-block:: text \n\n"
-                    + "\n\n"
-                    + textwrap.indent(txtS, "       ")
-                )
-
-                lS = ""
-            else:
-                pass
-            # endregion
-
         elif cmdS == "bARG":
             """argument block"""
             # region
@@ -324,15 +284,23 @@ class Tag:
             lS = ""
             # endregion
 
-        elif cmdS == "bPYT":
-            """Python block"""
+        elif cmdS == "bTEX":
+            """format text
+            
+            types:  center
+                    bold
+                    italic
+                    wrap
+                    indent
+                    literal
+            """
             # region
-            tnumI = int(self.lD["tableI"])
-            self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            self.uS = "\nTable " + str(tnumI) + ": " + lineS
-            self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
-            self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
+            insP = Path(self.foldD["srcP"], self.pthS)
+            with open(insP, "r") as fileO:
+                fileS = fileO.read()
+            self.uS = fileS
+            self.r2s = fileS
+            self.rs = fileS
             # endregion
 
         else:

@@ -79,7 +79,7 @@ HENRY = new_unit("H", WB / A, "henry")
 #
 # --------------------------------------------------- metric
 #
-G = new_unit("G", 9.80665 * M / S**2, "gravity acceleration")
+g = new_unit("G", 9.80665 * M / S**2, "gravity acceleration")
 # pressure
 PA = new_unit("PA", N / M**2, "pascal")
 MPA = new_unit("MPA", PA * (10**6), "megapascals")

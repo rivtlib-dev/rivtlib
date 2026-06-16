@@ -53,99 +53,111 @@ class Rs:
         stxtS = ""  # text doc
         sutfS = ""  # utf doc
         srstS = ""  # rest doc
+        self.sutfS = ""  # utf doc
+        self.stxtS = ""  # text doc
+        self.srstS = ""  # rst2pdf doc
         # sltxS = ""  # latex doc
         newpageS = ""
         self.vardescD = vdescD
-        # ----------------------------------------------   section header
-        if lD["cntflgI"] == 0:  # add transition and API type
-            transS = "\n"
-            lD["cntflgI"] += 1
-        else:  # add tags and transition
-            transS = "\n\n--------------\n\n"
-        if lD["notagB"] == "False":
-            addtgS = tyS.lower()
-        else:
-            addtgS = ""
         # -----  get section title
         hL = rsL[0].split("|")
         sectitleS = hL[0].strip()
-        lD["docS"] = sectitleS
-        # ------ suppress title
-        if hL[0].strip()[0:2] == "--":
-            lD["docS"] = hL[0].split("--")[1][1]
-            sutfS = "\n"
-            srstS = "\n"
-            stxtS = "\n"
-        # ------ write title
-        else:
-            slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for STDOUT
-            snumI = lD["secnumI"] + 1
-            lD["secnumI"] = snumI
-            if snumI > 1:
-                snS = " - " + str(snumI)
-            else:
-                snS = ""
-            sdivS = str(lD["sdivI"])
-            divS = str(lD["divS"])
-            snumS = f"{divS}.{sdivS}{snS}{addtgS}"
-            snumrS = f"**{divS}.{sdivS}{snS}{addtgS}**"
-            headS = snumS + " | " + sectitleS
-            head1S = snumrS + " | " + sectitleS
-            bordrS = lD["widthI"] * "-" + "\n"
-            bordr1S = lD["widthI"] * "=" + "\n"
-            if snumI == 1:
-                bordrS = bordr1S
-            sutfS = "\n" + headS + "\n" + bordrS
-            stxtS = "\n" + headS + "\n" + bordrS
-            srstS += slinkS + head1S + "\n" + bordrS
-            print(sutfS)  # STDOUT section header
-        file_path = str(fD["rivtT"])  # insert interactive link in terminal
-        for linenumI, lineS in enumerate(rivtL):
-            if rsL[0] in lineS:
-                print(f"[link] {file_path}:{linenumI + 1}\n")
-                break
-        # ----------  parse header params
+        self.lD["docS"] = sectitleS
+        # ----- get rv.R type
+        if tyS == "R":
+            typeL = [
+                "endnotes",
+                "python",
+                "html",
+                "rst",
+                "latex",
+                "mermaid",
+                "dot",
+            ]
+            matched = next((item for item in typeL if item in hL[1]), None)
+            self.lD["runtypeS"] = matched
+        # ----------  parse header param settings
         try:
             paraL = hL[1].strip().split("|")
         except Exception:
             paraL = []
         # set default header parameters
-        lD["rvtypeS"] = tyS
-        lD["mergeB"] = "False"
-        lD["privB"] = "True"
-        if lD["privateB"] == "True" or lD["privateB"] == "False":
-            lD["privB"] = lD["privateB"]
-        if tyS == "D":
-            lD["privB"] = "False"
-        lD["docB"] = "False"
-        if tyS == "I" or tyS == "V":
-            lD["docB"] = "True"
+        self.lD["rvtypeS"] = tyS
+        self.lD["mergeB"] = "False"
+        self.lD["docB"] = "True"
+        self.lD["privB"] = lD["privateB"]
+        if tyS == "R":
+            self.lD["docB"] = "False"
+            self.lD["mergeB"] = "True"
         # override header defaults
         if len(paraL) > 0:
             if "doc" in paraL:
-                lD["docB"] = "True"
+                self.lD["docB"] = "True"
             elif "nodoc" in paraL:
-                lD["docB"] = "True"
+                self.lD["docB"] = "False"
             if "private" in paraL:
-                lD["privB"] = "True"
+                self.lD["privB"] = "True"
             elif "public" in paraL:
-                lD["privB"] = "False"
-            if "section" in paraL:
-                lD["mergeB"] = "False"
+                self.lD["privB"] = "False"
             elif "merge" in paraL:
-                lD["mergeB"] = "True"
+                self.lD["mergeB"] = "True"
+            elif "section" in paraL:
+                self.lD["mergeB"] = "False"
             newpageS = ""  # for rst2pdf doc
             if "pdfpage" in paraL:
                 newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
             else:
                 pass
-
-        # initialize content substring
-        srstS = transS + newpageS + srstS  # add transition and new page
-        self.sutfS = sutfS  # utf doc
-        self.stxtS = stxtS  # text doc
-        self.srstS = srstS  # rst2pdf doc
-        self.logging.info("SECTION " + snumS + " - type " + tyS)
+        # ----------------------------------------------   section header
+        if self.lD["mergeB"] == "False":
+            if self.lD["cntflgI"] == 0:  # add transition and API type
+                transS = "\n"
+                self.lD["cntflgI"] += 1
+            else:  # add tags and transition
+                transS = "\n\n--------------\n\n"
+            if self.lD["notagB"] == "False":
+                addtgS = tyS.lower()
+            else:
+                addtgS = ""
+            # ------ suppress title
+            if hL[0].strip()[0:2] == "--":
+                lD["docS"] = hL[0].split("--")[1][1]
+                sutfS = "\n"
+                srstS = "\n"
+                stxtS = "\n"
+            # ------ write title
+            else:
+                slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for STDOUT
+                snumI = self.lD["secnumI"] + 1
+                self.lD["secnumI"] = snumI
+                if snumI > 1:
+                    snS = " - " + str(snumI)
+                else:
+                    snS = ""
+                sdivS = str(lD["sdivI"])
+                divS = str(lD["divS"])
+                snumS = f"{divS}.{sdivS}{snS}{addtgS}"
+                snumrS = f"**{divS}.{sdivS}{snS}{addtgS}**"
+                headS = snumS + " | " + sectitleS
+                head1S = snumrS + " | " + sectitleS
+                bordrS = lD["widthI"] * "-" + "\n"
+                bordr1S = lD["widthI"] * "=" + "\n"
+                if snumI == 1:
+                    bordrS = bordr1S
+                sutfS = "\n" + headS + "\n" + bordrS
+                stxtS = "\n" + headS + "\n" + bordrS
+                srstS += slinkS + head1S + "\n" + bordrS
+                print(sutfS)  # STDOUT section header
+            file_path = str(fD["rivtT"])  # insert interactive link in terminal
+            for linenumI, lineS in enumerate(rivtL):
+                if rsL[0] in lineS:
+                    print(f"[link] {file_path}:{linenumI + 1}\n")
+                    break
+            srstS = transS + newpageS + srstS  # add transition and new page
+            self.sutfS = sutfS  # utf doc
+            self.stxtS = stxtS  # text doc
+            self.srstS = srstS  # rst2pdf doc
+            self.logging.info("SECTION " + snumS + " - type " + tyS)
         # preprocess  section
         self.spL = []
         for slS in rsL[1:]:
@@ -183,12 +195,12 @@ class Rs:
         return outS + "\n"
 
     def remove_aster(self, text):
-        """remove italic and bold * from rv.I content
+        r"""remove italic and bold * from rv.I content
 
-        # (?<!\*)    - Negative lookbehind: ensure the asterisk isn't preceded by another *
-        # \*{1,2}    - Match 1 or 2 asterisks
-        # (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
-        # (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
+        (?<!\*)    - Negative lookbehind: ensure the asterisk isn't preceded by another *
+        \*{1,2}    - Match 1 or 2 asterisks
+        (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
+        (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
         """
         pattern = r"(?<!\*)(?:\*{1,2})(?!\*)(?!\s)"
 
@@ -231,6 +243,9 @@ class Rs:
         mD = {}  # returns as dict
         mD["uS"] = mD["tS"] = mD["rS"] = """"""  # returned doc string
         # ---------------------------------- loop over content substring
+        # ---------------------------------------------------------------
+        if tyS == "R":
+            return self.sutfS, self.stxtS, self.srstS, self.fD, self.lD, rivtD
         for slS in self.spL:
             if tyS == "I":
                 slS = self.remove_aster(slS)

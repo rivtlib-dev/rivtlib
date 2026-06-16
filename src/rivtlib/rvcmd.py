@@ -502,6 +502,63 @@ class Cmd:
         return self.mD
         # endregion
 
+    def TEXT(self):
+        """_summary_"""
+        # fiS = " [file: " + self.fileS + "]" + "\n\n"
+        # if typeS == "literal":
+        #     uS = "\n" + fiS + "\n" + textS + "\n"
+        #     tS = "\n" + textS + "\n"
+        #     rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
+
+    def RUNFILE(self):
+        """run script and insert
+
+        | RUNFILE | rel. path | text type
+
+            types:
+                endnotes
+                reST
+                html
+                LateX
+
+        Returns:
+            mD{dict)}
+        """
+
+        # region
+        typeS = self.parS.strip()
+        fiS = " [file: " + self.fileS + "]"
+        with open(self.inspS, "r") as f1:
+            textS = f1.read()
+            # txtindS = textwrap.indent(textS, "    ")
+        if typeS == "endnotes":
+            endL = textS.split("\n")
+            endrS = "\n" + "-" * 80 + "\n\n"
+            enduS = fiS + "\n" + "-" * 80 + "\n\n"
+            endtS = "\n" + "-" * 80 + "\n\n"
+            fnI = 0
+            for ln in endL:
+                lS = " ".join(ln.strip())
+                fnI += 1
+                enduS += f"[{str(fnI)}] {lS}\n\n"
+                endrS += f".. [{str(fnI)}] {lS}\n\n"
+            uS = enduS
+            tS = endtS
+            rS = lS = endrS
+
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivtD": self.rivtD,
+        }
+
+        return self.mD
+        # endregion
+
     def IMAGE(self):
         """insert image
 
@@ -719,54 +776,6 @@ class Cmd:
         }
         # endregion
 
-    def MARKUP(self):
-        """insert text and format
-
-            | MARKUP | rel. path | text type
-
-            types:
-                literal
-                reST
-                html
-                LateX
-                markdown
-                wrap
-                python
-
-        Returns:
-            mD{dict)}
-        """
-
-        # region
-        typeS = self.parS.strip()
-        fiS = " [file: " + self.fileS + "]" + "\n\n"
-        with open(self.inspS, "r") as f1:
-            textS = f1.read()
-            txtindS = textwrap.indent(textS, "    ")
-        if typeS == "literal":
-            uS = "\n" + fiS + "\n" + textS + "\n"
-            tS = "\n" + textS + "\n"
-            rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
-        if typeS == "python":
-            uS = "\n" + fiS + "\n" + textS + "\n"
-            tS = "\n" + textS + "\n"
-            rS = lS = (
-                "\n.. code-block:: python \n\n" + "    " + txtindS + "\n\n"
-            )
-
-        self.mD = {
-            "uS": uS,
-            "rS": rS,
-            "tS": tS,
-            "lS": lS,
-            "lD": self.lD,
-            "rivL": self.rivL,
-            "rivtD": self.rivtD,
-        }
-
-        return self.mD
-        # endregion
-
     def VALTABLE(self):
         """read file and insert values
 
@@ -801,8 +810,6 @@ class Cmd:
             dec1S, descripS = vaL[3].strip(), vaL[4].strip()
             decS = "%." + dec1S + "f"
             Unum.set_format(value_format=decS, auto_norm=True, unitless="")
-            # print(dir(Unum.set_format))
-            # wI = self.lD["widthI"]
             if unit1S != "-":
                 if isinstance(eval(valS), list):
                     val1U = np.array(eval(valS)) * eval(unit1S)

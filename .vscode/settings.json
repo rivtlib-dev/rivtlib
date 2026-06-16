@@ -4,7 +4,7 @@
     "workbench.colorTheme": "Dark Modern",
     "workbench.iconTheme": "vscode-icons",
     "workbench.editor.empty.hint": "hidden",
-    "workbench.sideBar.location": "right",
+    "workbench.sideBar.location": "left",
     "workbench.startupEditor": "none",
     "workbench.colorCustomizations": {
         "editor.lineHighlightBorder": "#34495d",
@@ -123,7 +123,6 @@
                 "command": "settings.cycle.ExplorerSort1",
             },
         ]
-        editor.foldlevel2
     },
     "ShortcutMenuBar.beautify": false,
     "ShortcutMenuBar.showCommands": true,

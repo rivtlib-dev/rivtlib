@@ -55,7 +55,7 @@ from pathlib import Path
 
 import __main__
 import rivtlib.rvunits as rvunit
-from rivtlib import rvdoc, rvparse
+from rivtlib import rvdoc, rvmarkup, rvparse
 
 # region - top level rivt files
 reptP = Path(os.getcwd())
@@ -171,13 +171,14 @@ lD1 = {
     "sdivI": int(rbaseS[3:5]),  # subdiv number
     "secnumI": 0,  # section number
     "divS": rbaseS[2],  # div character
-    "valprfx": rbaseS[0:6].replace("rv", "v"),
+    "valprfx": rbaseS[0:6].replace("rv", "t"),
+    "toolprfx": rbaseS[0:6].replace("rv", "t"),
     "sectS": "",  # section title
     "equI": 0,  # equation number
     "tableI": 1,  # table number
     "figI": 1,  # figure number
     "pageI": 1,  # starting page number
-    "noteL": [0],  # endnote counter
+    "noteI": 0,  # endnote counter
     "descS": "ref",  # value description
     "deciI": 2,  # decimals
     "valexpS": "",  # list of values for export
@@ -185,10 +186,11 @@ lD1 = {
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "white",  # topic background color
     "cntflgI": 0,  # transition line
-    "privB": "True",  # do not public write
+    "privB": "True",  # do not write to public
     "docB": "True",  # add to doc
     "mergeB": "False",  # merge to prev section
     "autocfgB": "True",  # config format from metadata
+    "runtypeS": "",  # type for rv.R
 }
 # labels
 lD = lD1 | lD2
@@ -221,9 +223,6 @@ drstS = """
 
       
 """
-# if lD["sdivI"] > 0:
-#     drstS = ":orphan:\n\n" + drstS
-# endregion
 
 
 def cmdhelp():
@@ -258,51 +257,46 @@ def doc_parse(rS, tyS, tagL, cmdL):
     rsL = rS.split("\n")
     conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL, vdescD)
     sutfS, stxtS, srstS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
-    dutfS += sutfS
-    drstS += srstS
-    dtxtS += stxtS
+    if tyS == "I" or tyS == "V":
+        if lD["docB"] == "True":
+            dutfS += sutfS
+            drstS += srstS
+            dtxtS += stxtS
+    else:
+        pass
 
     return dutfS, dtxtS, drstS
 
 
 def R(rS):
-    """Run API
-    Evaluate markup and Python scripts
+    """Run API - Evaluate and insert scripts
+
+        types - specified in header
+        --------------------------
+        endnotes
+        rst
+        python
+        html
+        latex - requires cli texlive
+        mermaid - requires cli mermaid
+        dot - requires cli graphviz
 
     Args:
         rS (str): rivt string
     """
     global dutfS, dtxtS, drstS, fD, lD, rivtD
-    cmdL = [
-        "MARKUP",  # execute script file
-    ]
+
+    cmdL = []
     tagL = []
-    tagbL = [
-        "PYTHON",  # Python script
-        "MARKUP",  # format block
-        "END",  # end
-    ]
+    tagbL = []
+    tagL = tagL + tagbL
+    dutfS, dtxtS, drstS = doc_parse(rS, "R", tagL, cmdL)
 
-    tagL = tagbL + tagL
-
-    blkB = False
-    blkS = ""
-    lL = rS.split("\n")
-    for lS in lL:
-        if blkB:  # tag flag
-            if "[[END]]" in lS:
-                blkB = False
-                exec(blkS, globals(), rivtD)
-                blkS = ""
-                continue
-            blkS += lS.strip()
-            continue
-        for subS in tagL:  # tags
-            if subS in lS:
-                blkB = True
-                continue
-        for subS in cmdL:
-            pass
+    r1S = rS.split("\n", 1)[1]
+    uS, tS, rS = rvmarkup.typex(lD["runtypeS"], r1S)
+    dutfS += uS
+    dtxtS += tS
+    drstS += rS
 
 
 def I(rS):  # noqa: E743
@@ -317,7 +311,7 @@ def I(rS):  # noqa: E743
     cmdL = [
         "IMAGE",  # insert image from file
         "IMAGE2",  # insert adjacent images from file
-        "MARKUP",  # format text from file
+        "TEXT",  # format text from file
         "TABLE",  # insert table from file
     ]
     tagL = [
@@ -335,7 +329,7 @@ def I(rS):  # noqa: E743
         "#",  # footnote
     ]
     tagbL = [
-        "MARKUP",  # format text
+        "TEXT",  # format text
         "TABLE",  # format inline rst and write to csv
         "END",  # end
     ]
@@ -369,7 +363,6 @@ def V(rS):
         "IMAGE",  # image from file
         "IMAGE2",  # adjacent images frome files
         "TABLE",  # table from file
-        "MARKUP",  # process and insert markup from file
         "VALTABLE",  # value table from file
         "PYTHON",  # execute Python file
         "FUNCTION",  # evaluate function
@@ -403,10 +396,16 @@ def T(rS):
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
 
+    rL = rS.split("\n", 1)
+    fileS = lD["toolprfx"] + str(lD["secnumI"]) + ".txt"
+    fileP = Path(fD["storeP"], fileS)
+    with open(fileP, "w") as file1:
+        file1.write("\n".join(rL[1:]))
+
     blkB = False
     blkS = ""
-    lL = rS.split("\n")
-    for lS in lL:
+    rvL = rS.split("\n")
+    for lS in rvL[1:]:
         lS = lS[4:]
         # print(lS)
         if lS[:8] == "| COPY |":
@@ -418,29 +417,32 @@ def T(rS):
             destP = str(Path(os.path.expandvars(lcL[3].strip())))
             fileS = lcL[4].strip()
             source_pattern = str(Path(srcP, fileS))
-            print("\n|||| COPY ||||")
+            print("\n---| COPY | ---")
             print(f"from: {source_pattern}")
             print(f"to: {destP}")
             for fpath in glob.glob(source_pattern):
-                print("cccccc", fpath)
                 shutil.copy(fpath, destP)
-            print(f"|||| COPIED |||| {fileS} from {srcP} to {destP}")
-        elif lS[:9] == "| SHELL |":
+            print(f"---| COPIED |--- {fileS} from {srcP} to {destP}")
+        elif lS[:9] == "--- | SHELL | -----":
             lcL = lS.split("|")
             cmdS = lcL[3].strip()
             srcP = Path(fD["reptP"], lcL[2].strip(), cmdS)
             cmdS = f'"{str(srcP)}"'
             try:
                 # This will block until finished or raise  error
-                print("\n|||||||||||||| Run shell command ||||||||||||||||||\n")
+                print(
+                    "\n-----------------| Run shell command |------------------\n"
+                )
                 print(f"{cmdS}")
                 print("........\n")
                 result = subprocess.run(cmdS, shell=True, check=True)
                 print("\n shell message: ", result)
-                print("\n||||||||| Shell command finished ||||||||||||||||||\n")
+                print(
+                    "\n--------- | Shell command finished |------------------\n"
+                )
             except subprocess.CalledProcessError as e:
                 print(
-                    f"||||||||||||||| Command failed with exit code {e.returncode}"
+                    f"--------------- | Command failed with exit code {e.returncode}"
                 )
         elif "_[[WRITE]]" in lS:
             blkB = True  # tag flag
