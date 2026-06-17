@@ -347,6 +347,20 @@ class Rs:
                     s1L = slS.split("_[")
                     s2L = s1L[1].split("]")
                     lineL = [s1L[0]] + s2L[1:]
+                    if "_[#]" in slS:
+                        cI = lD["noteI"] + 1
+                        lD["noteI"] = cI
+                        lineS = (
+                            str(s1L[0])
+                            + " ["
+                            + str(cI)
+                            + "]_ "
+                            + str(s2L[1:][0])
+                        )
+                        sutfS += lineS + "\n"
+                        srstS += lineS + "\n"
+                        stxtS += lineS + "\n"
+                        continue
                     tagS = s2L[0]
                     if tagS in tagL:  # check tag list
                         # print(f"{tagS=}")

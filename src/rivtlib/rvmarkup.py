@@ -1,7 +1,9 @@
 """functions that process inline markup"""
 
+import textwrap
 
-def typex(cmdS, r1S):
+
+def typex(lD, r1S):
     """call command
 
     Args:
@@ -10,8 +12,9 @@ def typex(cmdS, r1S):
     Returns:
         uS, rS, tS, lS, fD, lD, rivtD, rivL
     """
+    cmdS = lD["runtypeS"]
     typcmdS = cmdS + "x"
-    uS, tS, rS = globals()[typcmdS](r1S)
+    uS, tS, rS = globals()[typcmdS](lD, r1S)
 
     return uS, tS, rS
 
@@ -20,20 +23,40 @@ def pythonx():
     pass
 
 
-def endnotesx(r1S):
-    endL = r1S.split("\n")
-    endrS = "\n" + "-" * 80 + "\n\n"
-    enduS = "\n" + "-" * 80 + "\n\n"
+def endnotesx(lD, r1S):
+    wI = lD["widthI"]
+    erS = "\n" + "-" * 80 + "\n\n"
+    euS = "\n" + "-" * 80 + "\n\n"
     fnI = 0
-    for ln in endL:
-        lS = " ".join(ln.strip())
+    r1L = r1S.split("\n")
+    r2L = []
+    for ln in r1L:
+        ln = ln.strip()
+        if len(ln) == 0:
+            ln = "\n\n"
+        else:
+            pass
+        r2L.append(ln)
+    r2S = "".join(r2L)
+    groups = r2S.split("\n\n")
+    result = [group.replace("\n", " ") for group in groups]
+    fnI = 0
+    uS = euS
+    rS = erS
+    for ln in result:
+        if len(ln.strip()) == 0:
+            continue
         fnI += 1
-        enduS += f"[{str(fnI)}] {lS}\n\n"
-        endrS += f".. [{str(fnI)}] {lS}\n\n"
+        lS = ln.strip() + "\n"
+        euS = f"[{str(fnI)}] {lS}\n\n"
+        euS = textwrap.fill(euS, width=wI) + "\n\n"
+        erS = f".. [{str(fnI)}] {lS}\n\n"
+        uS += euS
+        rS += erS
+    tS = uS
+    lS = rS
 
-    uS = tS = enduS
-    rS = lS = endrS
-
+    print(uS)
     return uS, tS, rS
 
 

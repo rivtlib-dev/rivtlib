@@ -184,14 +184,6 @@ class Tag:
             rS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
             lS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
 
-        elif cmdS == "l#":
-            """number footnote"""
-            noteI = self.lD["noteI"]
-            self.lD["noteI"] = noteI + 1
-            uS = tS = lineS.replace("#]", "[" + str(noteI) + "]")
-            rS = lS = lineS.replace("#]", "[" + str(noteI) + "]_")
-        else:
-            pass
         # endregion
         mD = {
             "uS": uS,

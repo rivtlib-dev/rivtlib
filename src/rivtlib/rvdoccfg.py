@@ -318,6 +318,10 @@ styles:
     parent: bodytext
   figure-legend:
     parent: bodytext
+  endnote:
+    commands:
+      - [VALIGN, [0, 0], [-1, -1], TOP]
+    colWidths: [25pt, null]
   footer-box:
     alignment: TA_CENTER
     fontName: fontSans

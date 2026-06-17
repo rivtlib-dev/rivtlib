@@ -277,9 +277,9 @@ def R(rS):
         rst
         python
         html
-        latex - requires cli texlive
-        mermaid - requires cli mermaid
-        dot - requires cli graphviz
+        latex - require texlive cli
+        mermaid - requires mermaid cli
+        dot - requires graphviz cli
 
     Args:
         rS (str): rivt string
@@ -293,7 +293,7 @@ def R(rS):
     dutfS, dtxtS, drstS = doc_parse(rS, "R", tagL, cmdL)
 
     r1S = rS.split("\n", 1)[1]
-    uS, tS, rS = rvmarkup.typex(lD["runtypeS"], r1S)
+    uS, tS, rS = rvmarkup.typex(lD, r1S)
     dutfS += uS
     dtxtS += tS
     drstS += rS
