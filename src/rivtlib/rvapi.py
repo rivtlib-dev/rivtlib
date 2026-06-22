@@ -57,9 +57,8 @@ import __main__
 import rivtlib.rvunits as rvunit
 from rivtlib import rvdoc, rvmarkup, rvparse
 
-# region - top level rivt files
 reptP = Path(os.getcwd())
-rivtP = Path(os.path.dirname(reptP))
+rootP = reptP.parent
 try:
     rivtN = os.path.basename(__main__.__file__)
 except Exception:
@@ -72,7 +71,6 @@ else:
     print("""where D is an alpha-numeric division label""")
     print("""and ss is a two-digit subdivision integer""")
     sys.exit()
-# Configure arg parser
 args = ""
 parser = argparse.ArgumentParser(description="Example script")
 parser.add_argument("-t", "--ptype", default="---", help="file type")
@@ -80,9 +78,8 @@ parser.add_argument("-k", "--keep", default="false", help="keep rst")
 args = parser.parse_args()
 reptypeS = args.ptype
 repkeepS = args.keep
-# Paths
+# Basic paths
 rivtT = Path(reptP, rivtN)
-# print(rivtN, rivtT)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 rbaseS = rivtN.split(".")[0]
@@ -90,21 +87,26 @@ reptpubN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
 bakN = rbaseS + ".bak"
 errlogN = docnumS + "log.txt"
-rootP = reptP.parent
-publicP = Path(rootP, "_rivt-public")
-storeP = Path(reptP, "rv_stor")
-pubP = Path(reptP, "_published")
-rstdocsP = Path(reptP, "_rstdocs")
-readmeP = Path(reptP, "_published", "readme")
 srcP = Path(reptP, "rvsrc")
+storeP = Path(reptP, "rv_stor")
 logsP = Path(storeP, "logs")
 errlogT = Path(logsP, errlogN)
 bakT = Path(logsP, bakN)
 rivtT = Path(reptP, rivtN)
 rivt_storedP = storeP
-# endregion
-
-# region - logs and bak
+publicP = Path(rootP, "_rivt-public")  # not used with rivtbooks
+# Set paths and flags for rivt-report or rivtbooks
+if reptP.name == "rivt-report":
+    rstdocsP = Path(reptP, "_rstdocs")
+    pubP = Path(reptP, "_published")
+    reptflagB = True
+    pdfpubP = Path(pubP, "pdfdocs")
+else:
+    rstdocsP = Path(rootP, "_rstdocs")
+    pubP = rootP
+    reptflagB = False
+    pdfpubP = Path(rootP, "_pdfdocs")
+# logs and backups
 warnings.filterwarnings("ignore")
 logging.basicConfig(
     level=logging.DEBUG,
@@ -117,50 +119,37 @@ package_version = version("rivtlib")
 verS = f"rivtlib version: {package_version}"
 logging.info("Doc start")
 logging.info(verS)
-with open(rivtT, "r") as f2:  # noqa: F405
+with open(rivtT, "r") as f2:
     rivtS = f2.read()
-with open(bakT, "w") as f3:  # noqa: F405
+with open(bakT, "w") as f3:
     f3.write(rivtS)
-logging.info(f"""rivt backup : {bakT}""")  # noqa: F405
-# endregion
-
-# region - dictionaries
+logging.info(f"""rivt backup : {bakT}""")
+# region - folder and label dictionaries
 vdescD = {}
 rivtD = {}
 rvunitD = vars(rvunit)
 rivtD = rivtD | rvunitD  # add units to dictionary
 metaD = {}  # metadata
-fD = {  # folders
+fD = {
+    "rivtN": rivtN,  # file name
+    "rivtT": rivtT,  # full path name
+    "reptP": reptP,
+    "rbaseS": rbaseS,  # file base name
+    "rivtfldN": rootP,
     "errlogT": errlogT,
     "bakT": bakT,
     "pthS": " ",
     "srcnS": " ",
-    "rivtN": rivtN,  # file name
-    "rivtT": rivtT,  # full path name
-    "reptP": Path(os.getcwd()),
-    "rbaseS": rbaseS,  # file base name
-    "rivtfldN": os.path.dirname(reptP),
-    "docP": Path(reptP, "rivtDocs"),
     "pdfN": rbaseS + ".pdf",
-    "readmeT": Path(rivtP, "README.txt"),
+    "readmeT": Path(rootP, "README.txt"),
     "publreadmeT": Path(pubP, "readme", docnumS + "README.txt"),
     "rstdocsP": rstdocsP,
     "reptpubP": pubP,
-    "pdfpubP": Path(pubP, "pdfdocs"),
-    "htmlpubP": Path(pubP, "docs"),
-    "publicT": Path(reptP, "public", reptpubN),
     "srcP": srcP,
     "storeP": storeP,
-    "valP": Path(srcP, "values"),
-    "toolP": Path(srcP, "tools"),
-    "styleP": Path(srcP, "styles"),
-    "tempP": Path(srcP, "temp"),
-}
-# default settings
-lD2 = {
-    "widthI": 80,
-    "privateB": "True",
-    "notagB": "True",
+    "pdfpubP": pdfpubP,
+    "htmlpubP": Path(pubP, "docs"),  # not used with rivtbooks
+    "publicT": Path(reptP, "public", reptpubN),  # not used with rivtbooks
 }
 lD1 = {
     "rvtypeS": "",  # section type r,i,v,t,d
@@ -191,12 +180,18 @@ lD1 = {
     "mergeB": "False",  # merge to prev section
     "autocfgB": "True",  # config format from metadata
     "runtypeS": "",  # type for rv.R
+    "reptflagB": reptflagB,  # True if rivt-report, False if rivtbooks
 }
-# labels
+# defaults for rivt file comment settings
+lD2 = {
+    "widthI": 80,
+    "privateB": "True",
+    "notagB": "True",
+}
 lD = lD1 | lD2
-# settings from rivt file
+# settings from rivt file comment settings
 lnL = []
-with open(rivtT, "r") as f1:  # noqa: F405
+with open(rivtT, "r") as f1:
     rivtL = f1.readlines()
 for lnS in rivtL:
     if lnS[0:4] == "# rv":
@@ -211,12 +206,12 @@ for lnS in rivtL:
         else:
             pass
 # initialize doc strings
-drstS = ""
-dutfS = ""
-dtxtS = ""
-dlatS = ""
-dcmdS = ""
-drstS = """
+dutfS = ""  # doc utf string
+dtxtS = ""  # doc text string
+dlatS = ""  # doc latex string
+dcmdS = ""  # doc command string
+# doc rst string
+drstS = """ 
 .. raw:: pdf
 
    PageBreak

@@ -13,7 +13,7 @@ from pathlib import Path
 def copy_docs():
     """copy to _rstdocs
 
-    copy page and download folders to _rstdocs
+    copy img and download folders to _rstdocs
     """
     # Source pattern and destination directory
     rptS = os.getcwd()
@@ -34,12 +34,14 @@ def pdf_confpy(self, fD):
     copy_docs()
     confpyS = f"""
 import sys
+import os
 from pathlib import Path
 
-sys.path.append(str(Path(".").resolve()))
+font_folder_path = os.path.join(os.path.dirname(__file__), '_static',  'fonts')
+# sys.path.append(str(Path(".").resolve()))
 
 project = "{self.doctitleS}"
-copyright = "{self.copyS}"
+copyright = "{self.copyrightS}"
 author = "self.{self.authorS}"
 release = "{self.verS}"
 
@@ -106,18 +108,18 @@ favicons = [
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
 pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.doctitleS}", 
             "{self.authorS}")]
-# Label to use as a prefix for the subtitle on the cover page
-subtitle_prefix = "User Manual"
 # A list of folders to search for stylesheets.
-pdf_style_path = ["./_rstdocs/"]
+pdf_style_path = []
+# A colon-separated list of folders to search for fonts.
+pdf_font_path = ['/_static/fonts/', font_folder_path ]
 # A comma-separated list of custom stylesheets.
 pdf_stylesheets = ["rivtstyle.yaml"]
-# A colon-separated list of folders to search for fonts.
-pdf_font_path = ["./_rstdocs/_static/fonts"]
 # If false, no coverpage is generated.
 pdf_use_coverpage = False
 # Name of the cover page template to use
 pdf_cover_template = ""
+# Label to use as a prefix for the subtitle on the cover page
+# subtitle_prefix = "User Manual"
 # Show Table Of Contents at the beginning?
 pdf_use_toc = False
 # How many levels deep should the table of contents be?
@@ -321,7 +323,7 @@ styles:
   endnote:
     commands:
       - [VALIGN, [0, 0], [-1, -1], TOP]
-    colWidths: [25pt, null]
+    colWidths: [30pt, null]
   footer-box:
     alignment: TA_CENTER
     fontName: fontSans
@@ -618,7 +620,7 @@ from pathlib import Path
 sys.path.append(str(Path(".").resolve()))
 
 project = "{self.doctitleS}"
-copyright = "{self.copyS}"
+copyright = "{self.copyrightS}"
 author = "self.{self.authorS}"
 release = "{self.verS}"
 

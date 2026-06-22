@@ -287,12 +287,21 @@ class Tag:
                     literal
             """
             # region
-            insP = Path(self.foldD["srcP"], self.pthS)
-            with open(insP, "r") as fileO:
-                fileS = fileO.read()
-            self.uS = fileS
-            self.r2s = fileS
-            self.rs = fileS
+            blkL = (self.strL).split("\n", 1)
+            marktypS = blkL[0].strip()
+            if marktypS == "literal":
+                txtS = blkL[1]
+                uS = tS = txtS
+                rS = (
+                    "\n"
+                    + "\n.. code-block:: text \n\n"
+                    + "\n\n"
+                    + textwrap.indent(txtS, "       ")
+                )
+
+                lS = ""
+            else:
+                pass
             # endregion
 
         else:

@@ -17,16 +17,6 @@ from pathlib import Path
 
 import __main__
 
-# -------------------- import rvrepcfg .py file
-script_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, script_dir)
-import rvrepcfg as rvr  # noqa: E402
-
-# -------------------- get report settings from rivt-report.py
-setS = os.getenv("reportset")
-configL = configparser.ConfigParser()
-configL.read_string(setS)
-
 # -------------------- make list of rivt files
 reptP = os.getcwd()
 rivtfL = glob.glob("rv???*.py", root_dir=reptP)
@@ -45,21 +35,11 @@ for file_path in rstdocsP.glob("*.rst"):
         print(f"Error deleting {file_path}: {e}")
 print("||||||||||||||||||| \n\n")
 
-# Paths
-rivtP = os.path.dirname(reptP)
-pypathS = os.path.dirname(sys.executable)
-reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
-srcP = Path(reptP, "rvsrc")
-storeP = Path(reptP, "rv_stor")
-publicP = Path(rivtP, "_rivt-public")
-pubP = Path(reptP, "_published")
-htmlpubP = Path(pubP, "docs")
-pdfpubP = Path(pubP, "pdfdocs")
-txtpubP = Path(pubP, "txtdocs")
-logsP = Path(storeP, "logs")
-rivt_storedP = storeP
-rptlogT = Path(storeP, "logs", "reportlog.txt")
-timeS = datetime.now().strftime("%Y-%m-%d")
+
+# -------------------- get report settings from rivt-report.py
+setS = os.getenv("reportset")
+configL = configparser.ConfigParser()
+configL.read_string(setS)
 
 # Dictionaries
 repD = {}
@@ -85,6 +65,31 @@ repD["pdfmargin"] = configL["format"]["pdf_margins"]
 repD["pdflink"] = configL["format"]["pdf_link"]
 repD["toc_level"] = configL["format"]["toc_level"]
 repD["repfilebase"] = repD["repfile"].split(".")[0]
+
+# -------------------- import rvrepcfg .py file
+script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, script_dir)
+import rvrepcfg as rvr  # noqa: E402
+
+# --------------------- add dictionaries to rvr
+for key, value in repD.items():
+    rvr.repD[key] = value
+
+# Paths
+rootP = os.path.dirname(reptP)
+pypathS = os.path.dirname(sys.executable)
+reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
+srcP = Path(reptP, "rvsrc")
+storeP = Path(reptP, "rv_stor")
+publicP = Path(rootP, "_rivt-public")
+pubP = Path(reptP, "_published")
+htmlpubP = Path(pubP, "docs")
+pdfpubP = Path(pubP, "pdfdocs")
+txtpubP = Path(pubP, "txtdocs")
+logsP = Path(storeP, "logs")
+rivt_storedP = storeP
+rptlogT = Path(storeP, "logs", "reportlog.txt")
+timeS = datetime.now().strftime("%Y-%m-%d")
 
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
@@ -465,7 +470,7 @@ for item in dochdrL:
 borderS = "=" * 80
 hdlS = repD["title"] + " v-" + versionS + " | " + authorS + " | " + timeS
 headS = "\n" + borderS + "\n| rivt | " + hdlS + "\n" + borderS + "\n\n"
-readmeT = Path(rivtP, "README.txt")
+readmeT = Path(rootP, "README.txt")
 rtxtS = headS
 rme_folderP = Path(pubP, "readme")
 rdfL = glob.glob("rv???-*.txt", root_dir=rme_folderP)

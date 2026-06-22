@@ -14,7 +14,7 @@ rptS = os.getcwd()
 def copy_docs():
     """copy to _rstdocs
 
-    copy page and download folders to _rstdocs
+    copy img and download folders to _rstdocs
     """
     # Source pattern and destination directory
     src_P = str(Path(rptS, "rvsrc", "img", "*.*"))
@@ -39,7 +39,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{repD["doctitleS"]}"
+project = "{repD["title"]}"
 copyright = "{repD["copyright"]}"
 author = "{repD["authors"]}"
 release = "{repD["version"]}"
@@ -660,7 +660,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(".").resolve()))
 
-project = "{repD["doctitleS"]}"
+project = "{repD["title"]}"
 copyright = "{repD["copyright"]}"
 author = "{repD["authors"]}"
 release = "{repD["version"]}"

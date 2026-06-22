@@ -3,8 +3,10 @@ write docs
 """
 
 import configparser
+import glob
 import logging
 import os
+import shutil
 import subprocess
 import warnings
 from datetime import datetime
@@ -50,13 +52,13 @@ class Cmdp:
         self.confg = []
         self.authorS = " "
         self.verS = " "
-        self.copyS = " "
+        self.copyrightS = " "
         self.repoS = " "
         self.licenS = " "
         self.f1_authorrs = " "
         self.f1_verS = " "
         self.f1_repoS = " "
-        self.f1_liceS = " "
+        self.f1_licenS = " "
         self.coverlogo = " "
         self.logosize = " "
         self.runlogo = " "
@@ -97,11 +99,17 @@ class Cmdp:
             f4.write(self.sL[0] + "\n")
         self.logging.info("SECTION : " + self.sL[0])
 
+        # copy images
+        src_P = str(Path(fD["reptP"], "img", "*.*"))
+        destP = str(Path(fD["rstdocsP"], "_static"))
+        for fileP in glob.glob(src_P):
+            shutil.copy(fileP, destP)
+
         # clean rst files
         if lD["repkeepS"].strip() == "true":
             pass
         elif lD["repkeepS"].strip() == "false":
-            rstdocsP = Path(self.reptP, "_rstdocs")
+            rstdocsP = fD["rstdocsP"]
             for file_path in rstdocsP.glob("*.rst"):
                 try:
                     file_path.unlink()
@@ -201,13 +209,13 @@ class Cmdp:
         self.configL.read_string(self.blockS)
         self.authorS = self.configL["doc"]["authors"]
         self.verS = self.configL["doc"]["version"]
-        self.copyS = self.configL["doc"]["copyright"]
+        self.copyrightS = self.configL["doc"]["copyright"]
         self.repoS = self.configL["doc"]["repo"]
         self.licenS = self.configL["doc"]["license"]
         self.f1_authorS = self.configL["doc"]["fork1_authors"]
         self.f1_verS = self.configL["doc"]["fork1_version"]
         self.f1_repoS = self.configL["doc"]["fork1_repo"]
-        self.f1_liceS = self.configL["doc"]["fork1_license"]
+        self.f1_licenS = self.configL["doc"]["fork1_license"]
         self.coverlogo = self.configL["layout"]["coverlogo"]
         self.coverpageB = self.configL["layout"]["coverpage"]
         self.logosize = self.configL["layout"]["coverlogo_size"]
@@ -252,8 +260,7 @@ class Cmdp:
         try:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
         except subprocess.CalledProcessError as e:
-            print(f"Error executing script: {e}")
-            print("Stderr:", e.stderr)
+            result = f"[Error executing script]: {e}"
         print("------------ | ", result)
         return f"\nPDF doc written to ============ | {short_p}"
         # endregion
@@ -316,11 +323,15 @@ class Cmdp:
 
 |
 |
+|
+|
         
 .. image:: _static/{self.coverlogo}
    :width: {self.logosize}%
    :align: center
 
+|
+|
 |
 |
 |

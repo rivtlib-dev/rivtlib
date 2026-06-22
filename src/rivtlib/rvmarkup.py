@@ -24,6 +24,11 @@ def pythonx():
 
 
 def endnotesx(lD, r1S):
+    """writes endnotes
+
+    footnote marks are written in rvparse
+    """
+
     wI = lD["widthI"]
     erS = "\n" + "-" * 80 + "\n\n"
     euS = "\n" + "-" * 80 + "\n\n"
