@@ -185,9 +185,10 @@ class Cmd:
         # rest
         eq1S = textwrap.indent(eq1S, "           ")
         erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
-        if unit1S != "-":  # =================== rivtD
+        if unit1S != "--":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
+            unit1S = unit2S = "m/m"
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivtD)
         valU = eval(spL[0], globals(), self.rivtD)
@@ -299,9 +300,10 @@ class Cmd:
         erS = "\n\n**Eq. " + self.enumS + ":**  " + refS + "\n"
         # rst
         self.vardescD[spL[0].strip()] = refS
-        if unit1S != "-":  # =================== rivtD
+        if unit1S != "--":  # =================== rivtD
             exec(eqS, globals(), self.rivtD)
         else:
+            unit1S = unit2S = "m/m"
             cmdS = spL[0] + " = " + spL[1]
             exec(cmdS, globals(), self.rivtD)
         valU = eval(spL[0], globals(), self.rivtD)

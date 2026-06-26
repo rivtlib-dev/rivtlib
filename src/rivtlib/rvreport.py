@@ -21,19 +21,19 @@ import __main__
 reptP = os.getcwd()
 rivtfL = glob.glob("rv???*.py", root_dir=reptP)
 rivtfL.sort()
+rstdocsP = Path(reptP, "_rstdocs")
 print("\n||||||||||||||||| rivt files included in report")
 for s in rivtfL:
     print("rivt file:", s)
 print("||||||||||||||||||| \n\n")
-rstdocsP = Path(reptP, "_rstdocs")
-print("\n||||||||||||||||| rst files deleted")
+
 for file_path in rstdocsP.glob("*.rst"):
     try:
         file_path.unlink()
         print(f"Deleted: {file_path}")
     except OSError as e:
         print(f"Error deleting {file_path}: {e}")
-print("||||||||||||||||||| \n\n")
+print("\n||||||||||||||||| rst files deleted\n\n")
 
 
 # -------------------- get report settings from rivt-report.py
@@ -385,8 +385,8 @@ def txtx(txtfL):
     # endregion
 
 
-# ---------------------------------------loop over files in report
-doctitleS = " "  # ------------ get publish params for each py file
+# ---------- loop over folders in book get doc title from PUBLISH
+doctitleS = " "
 dochdrL = []  # for html
 strtdocS = rivtfL[0]
 strtdocT = Path(reptP, strtdocS)
@@ -429,7 +429,7 @@ for frstS in rivtfL:
     logging.info(f">>{get_typeS}<< generated from: {frstT}\n")
     print(f"|||||||||||||{get_typeS}<< file generated from: {frstT}\n")
     print("result from subprocess", result)
-    # ----------------------------------------------------- write report
+# ----------------------------------------------------- write report
 # generate list of rst files
 rstfiL = []
 for fS in rivtfL:

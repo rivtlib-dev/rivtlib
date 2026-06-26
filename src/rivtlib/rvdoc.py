@@ -98,12 +98,25 @@ class Cmdp:
         with open(errlogT, "a") as f4:
             f4.write(self.sL[0] + "\n")
         self.logging.info("SECTION : " + self.sL[0])
-
         # copy images
-        src_P = str(Path(fD["reptP"], "img", "*.*"))
-        destP = str(Path(fD["rstdocsP"], "_static"))
-        for fileP in glob.glob(src_P):
-            shutil.copy(fileP, destP)
+        if lD["reptflagS"] == "report":
+            src_P = str(Path(fD["reptP"], "img", "*.*"))
+            destP = str(Path(fD["rstdocsP"], "_static"))
+            print("11111111111111111111", src_P, destP)
+            for fileP in glob.glob(src_P):
+                shutil.copy(fileP, destP)
+        elif lD["reptflagS"] == "book":
+            src_P = str(Path(fD["reptP"], "img", "*.*"))
+            destP = str(Path(fD["rstdocsP"], "_static"))
+            print("222222222222222", src_P, destP)
+            for fileP in glob.glob(src_P):
+                shutil.copy(fileP, destP)
+        elif lD["reptflagS"] == "chapter":
+            src_P = str(Path(fD["reptP"], "img", "*.*"))
+            destP = str(Path(fD["rstdocsP"], "_static"))
+            print("33333333333333333", src_P, destP)
+            for fileP in glob.glob(src_P):
+                shutil.copy(fileP, destP)
 
         # clean rst files
         if lD["repkeepS"].strip() == "true":
@@ -446,7 +459,7 @@ class Cmdp:
         # endregion
 
     def txtx(self):
-        """write text doc and README
+        """write text doc
 
         Returns:
             msgS (str): completion message
@@ -511,9 +524,9 @@ class Cmdp:
         headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n"
         dutfS = headS + "\n" + self.dutfS
 
-        with open(self.fD["readmeT"], "w", encoding="utf-8") as f5:
+        with open(self.fD["docreadmeT"], "w", encoding="utf-8") as f5:
             f5.write(dutfS)
         # with open(self.fD["publreadmeT"], "w", encoding="utf-8") as f5:
         #     f5.write(dutfS)
 
-        return f"README.txt written to ========== |  {self.fD['rivtfldN']}"
+        return f"README.txt written to ========== |  {self.fD['docreadmeT']}"

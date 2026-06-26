@@ -266,7 +266,7 @@ class Rs:
                 continue
             if blockB:  # ----------------------------------- block accumulate
                 # print(f"**{blockS}")
-                if blockB and ("_[[END]]" in slS):  # end of block
+                if "_[[END]]" in slS:  # end of block
                     blockB = False
                     tC = rvtag.Tag(fD, lD, rivtD, rivL, blockS)
                     # print("*******", tagS, blockS)
@@ -279,7 +279,10 @@ class Rs:
                     blockS = """"""
                     continue
                 else:
-                    blockS += slS + " \n"
+                    if len(slS.strip()) == 0:
+                        blockS += "\n"
+                    else:
+                        blockS += slS + "\n"
                     continue
             if " ==: " in slS:  # define ------------------- operators
                 if " ==: " in cmdL:

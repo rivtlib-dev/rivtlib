@@ -57,8 +57,8 @@ import __main__
 import rivtlib.rvunits as rvunit
 from rivtlib import rvdoc, rvmarkup, rvparse
 
+# parse command line arguments
 reptP = Path(os.getcwd())
-rootP = reptP.parent
 try:
     rivtN = os.path.basename(__main__.__file__)
 except Exception:
@@ -79,33 +79,47 @@ args = parser.parse_args()
 reptypeS = args.ptype
 repkeepS = args.keep
 # Basic paths
-rivtT = Path(reptP, rivtN)
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
 rbaseS = rivtN.split(".")[0]
+bakN = rbaseS + ".bak"
 reptpubN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
-bakN = rbaseS + ".bak"
-errlogN = docnumS + "log.txt"
 srcP = Path(reptP, "rvsrc")
-storeP = Path(reptP, "rv_stor")
-logsP = Path(storeP, "logs")
-errlogT = Path(logsP, errlogN)
-bakT = Path(logsP, bakN)
-rivtT = Path(reptP, rivtN)
-rivt_storedP = storeP
-publicP = Path(rootP, "_rivt-public")  # not used with rivtbooks
-# Set paths and flags for rivt-report or rivtbooks
+publicP = Path(reptP, "_rivt-public")  # not used with rivtbooks
+# Set paths and flags for report, book, or chapter
+print("--------------", reptP.name)
 if reptP.name == "rivt-report":
+    reptflagS = "doc"
+    storeP = Path(reptP, "rv_stor")
     rstdocsP = Path(reptP, "_rstdocs")
-    pubP = Path(reptP, "_published")
-    reptflagB = True
-    pdfpubP = Path(pubP, "pdfdocs")
+    pubdocP = Path(reptP, "_published")
+    pdfpubP = Path(pubdocP, "pdfdocs")
+    storeP = Path(reptP, "rv_stor")
+    logsP = Path(storeP, "logs")
+    errlogN = docnumS + "log.txt"
+    errlogT = Path(logsP, errlogN)
+    bakT = Path(logsP, bakN)
+    rivt_storedP = storeP
+    rivtT = Path(reptP, rivtN)
+    rvreadmeT = Path(reptP.parent, "README.txt")
+    docreadmeT = Path(reptP, "_published", "readme", docnumS + "readme.txt")
+    pubreadmeT = Path(publicP, "README.txt")
 else:
-    rstdocsP = Path(rootP, "_rstdocs")
-    pubP = rootP
-    reptflagB = False
-    pdfpubP = Path(rootP, "_pdfdocs")
+    reptflagS = "chapter"
+    pubdocP = " "
+    rstdocsP = Path(reptP.parent, "_rstdocs")
+    pdfpubP = Path(reptP.parent, "_pdfdocs")
+    storeP = Path(reptP.parent, "_rvstor")
+    logsP = Path(storeP, "logs")
+    errlogN = docnumS + "log.txt"
+    errlogT = Path(logsP, errlogN)
+    bakT = Path(logsP, bakN)
+    rivt_storedP = storeP
+    rivtT = Path(reptP, rivtN)
+    rvreadmeT = Path(reptP.parent, "README.txt")
+    docreadmeT = Path(reptP.parent, "_rvstor", docnumS + "readme.txt")
+    pubreadmeT = " "
 # logs and backups
 warnings.filterwarnings("ignore")
 logging.basicConfig(
@@ -135,20 +149,20 @@ fD = {
     "rivtT": rivtT,  # full path name
     "reptP": reptP,
     "rbaseS": rbaseS,  # file base name
-    "rivtfldN": rootP,
     "errlogT": errlogT,
     "bakT": bakT,
     "pthS": " ",
     "srcnS": " ",
     "pdfN": rbaseS + ".pdf",
-    "readmeT": Path(rootP, "README.txt"),
-    "publreadmeT": Path(pubP, "readme", docnumS + "README.txt"),
+    "rvreadmeT": rvreadmeT,
+    "pubreadmeT": pubreadmeT,
+    "docreadmeT": docreadmeT,
     "rstdocsP": rstdocsP,
-    "reptpubP": pubP,
+    "reptpubP": pubdocP,
     "srcP": srcP,
     "storeP": storeP,
     "pdfpubP": pdfpubP,
-    "htmlpubP": Path(pubP, "docs"),  # not used with rivtbooks
+    "htmlpubP": Path(pubdocP, "docs"),  # not used with rivtbooks
     "publicT": Path(reptP, "public", reptpubN),  # not used with rivtbooks
 }
 lD1 = {
@@ -180,7 +194,7 @@ lD1 = {
     "mergeB": "False",  # merge to prev section
     "autocfgB": "True",  # config format from metadata
     "runtypeS": "",  # type for rv.R
-    "reptflagB": reptflagB,  # True if rivt-report, False if rivtbooks
+    "reptflagS": reptflagS,  # rivt-report, rivtbook or chapter
 }
 # defaults for rivt file comment settings
 lD2 = {

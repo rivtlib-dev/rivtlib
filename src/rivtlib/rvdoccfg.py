@@ -109,9 +109,9 @@ favicons = [
 pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.doctitleS}", 
             "{self.authorS}")]
 # A list of folders to search for stylesheets.
-pdf_style_path = []
+pdf_style_path = ["_rstdocs"]
 # A colon-separated list of folders to search for fonts.
-pdf_font_path = ['/_static/fonts/', font_folder_path ]
+pdf_font_path = ['/_static/fonts/',"_rstdocs/_static/fonts" ]
 # A comma-separated list of custom stylesheets.
 pdf_stylesheets = ["rivtstyle.yaml"]
 # If false, no coverpage is generated.
@@ -275,8 +275,8 @@ styles:
     alignment: TA_RIGHT
     parent: bodytext
   code:
-    spaceBefore: 6
-    spaceAfter: 6
+    spaceBefore: 3
+    spaceAfter: 3
     backColor: "#d1dede"
     borderColor: darkgray
     borderPadding: 6
@@ -334,7 +334,7 @@ styles:
         - - -1
           - -1
         - 0.25
-        - white
+        - transparent
   header-box:
     alignment: TA_RIGHT
     fontName: fontSans
@@ -345,7 +345,8 @@ styles:
         - - -1
           - -1
         - 0.25
-        - white
+        - transparent
+  admonition:
   heading:
     keepWithNext: true
     parent: normal
@@ -405,12 +406,23 @@ styles:
     hyphenation: false
     parent: normal
     wordWrap: null
+    spaceBefore: 6
+    spaceAfter: 6
+    leading: 11
   normal:
     parent: base
   note:
+    firstlineIndent: 0
+    leftIndent: 0
+    bulletIndent: 0
     parent: admonition
+    backColor: "#d1dede"
+    borderColor: black
+    borderPadding: 10
+    borderWidth: 0.5
   note-heading:
     parent: admonition-heading
+    fontName: fontSansBold
   option-list:
     colWidths:
       - null

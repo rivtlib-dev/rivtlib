@@ -289,16 +289,32 @@ class Tag:
             # region
             blkL = (self.strL).split("\n", 1)
             marktypS = blkL[0].strip()
-            if marktypS == "literal":
+            blkS = ""
+            if marktypS == "note":
+                paraS = blkL[1]
+                paraL = blkL[1].split("\n\n")
+                for ln in paraL:
+                    ln = ln.lstrip("\n")
+                    ln = ln.replace("\n", " ")
+                    blkS += textwrap.fill(ln, 80) + "\n\n"
+                uS = tS = blkS
+                rS = (
+                    "\n"
+                    + "\n.. note::  "
+                    + "\n\n"
+                    + textwrap.indent(paraS, prefix="   ")
+                    + "\n"
+                )
+                lS = ""
+            elif marktypS == "literal":
                 txtS = blkL[1]
                 uS = tS = txtS
                 rS = (
                     "\n"
-                    + "\n.. code-block:: text \n\n"
+                    + "\n.. code-block:: literal \n\n"
                     + "\n\n"
                     + textwrap.indent(txtS, "       ")
                 )
-
                 lS = ""
             else:
                 pass
