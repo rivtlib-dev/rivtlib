@@ -18,7 +18,7 @@ import __main__
 
 # -------------------- make list of rivtbook folders
 bookP = os.getcwd()  # root of rivtbook folders
-bookfL = glob.glob("bk???-*", root_dir=bookP)
+bookfL = glob.glob("bk*-*", root_dir=bookP)
 bookfL.sort()
 rstdocsP = Path(bookP, "_rstdocs")  # rst folder
 storeP = Path(bookP, "_rvstor")
@@ -223,7 +223,6 @@ for dirS in bookfL:
     pypathS = os.path.dirname(sys.executable)
     bookPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
     pdfpubP = Path(bookP, "_pdfdocs")
-    print("*******************", bkdivP)
     srcP = Path(bkdivP, "rvsrc")
     bookfS = glob.glob("rv???-*.py", root_dir=bkdivP)[0]
     frstT = Path(bkdivP, bookfS)

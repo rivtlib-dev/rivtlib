@@ -364,7 +364,16 @@ def txtx(txtfL):
     authorS = repD["authors"]
 
     borderS = "=" * 80
-    hdlS = repD["title"] + " | " + authorS + " | " + versionS + " | " + timeS
+    hdlS = (
+        "| rivt report | "
+        + repD["title"]
+        + " | "
+        + authorS
+        + " | "
+        + versionS
+        + " | "
+        + timeS
+    )
     headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n\n"
     toctxtS = "Table of Contents\n==================\n"
     for item in dochdrL:
@@ -427,7 +436,7 @@ for frstS in rivtfL:
     with open(errlogT, "a") as f1:
         f1.write(f">>{get_typeS}<< generated from: {frstT}\n")
     logging.info(f">>{get_typeS}<< generated from: {frstT}\n")
-    print(f"|||||||||||||{get_typeS}<< file generated from: {frstT}\n")
+    print(f"||||||||||||| >>{get_typeS}<< file generated from: {frstT}\n")
     print("result from subprocess", result)
 # ----------------------------------------------------- write report
 # generate list of rst files
@@ -469,7 +478,7 @@ for item in dochdrL:
     toctxtS += it[2] + "." + str(int(it[3:5])) + "  " + item[1] + "\n"
 borderS = "=" * 80
 hdlS = repD["title"] + " v-" + versionS + " | " + authorS + " | " + timeS
-headS = "\n" + borderS + "\n| rivt | " + hdlS + "\n" + borderS + "\n\n"
+headS = "\n" + borderS + "\n| rivt report | " + hdlS + "\n" + borderS + "\n\n"
 readmeT = Path(rootP, "README.txt")
 rtxtS = headS
 rme_folderP = Path(pubP, "readme")

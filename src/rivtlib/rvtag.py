@@ -306,12 +306,12 @@ class Tag:
                     + "\n"
                 )
                 lS = ""
-            elif marktypS == "literal":
+            elif marktypS == "text":
                 txtS = blkL[1]
                 uS = tS = txtS
                 rS = (
                     "\n"
-                    + "\n.. code-block:: literal \n\n"
+                    + "\n.. code-block:: text \n\n"
                     + "\n\n"
                     + textwrap.indent(txtS, "       ")
                 )

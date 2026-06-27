@@ -269,7 +269,6 @@ class Rs:
                 if "_[[END]]" in slS:  # end of block
                     blockB = False
                     tC = rvtag.Tag(fD, lD, rivtD, rivL, blockS)
-                    # print("*******", tagS, blockS)
                     mD, lD, rivtD = tC.tagbx(tagS)
                     sutfS += mD["uS"] + "\n"
                     srstS += mD["rS"] + "\n"

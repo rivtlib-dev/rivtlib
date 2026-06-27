@@ -1036,7 +1036,7 @@ class Cmd:
         return self.mD, self.vardescD
         # endregion
 
-    def wrap_pad(self, sentences, width=30):
+    def wrap_pad(self, sentences, width=20):
         # Step 1: Wrap all sentences into lists of lines
         wrapped_data = [textwrap.wrap(s, width=width) for s in sentences]
 

@@ -99,22 +99,14 @@ class Cmdp:
             f4.write(self.sL[0] + "\n")
         self.logging.info("SECTION : " + self.sL[0])
         # copy images
-        if lD["reptflagS"] == "report":
+        if lD["reptflagS"] == "doc":
             src_P = str(Path(fD["reptP"], "img", "*.*"))
             destP = str(Path(fD["rstdocsP"], "_static"))
-            print("11111111111111111111", src_P, destP)
-            for fileP in glob.glob(src_P):
-                shutil.copy(fileP, destP)
-        elif lD["reptflagS"] == "book":
-            src_P = str(Path(fD["reptP"], "img", "*.*"))
-            destP = str(Path(fD["rstdocsP"], "_static"))
-            print("222222222222222", src_P, destP)
             for fileP in glob.glob(src_P):
                 shutil.copy(fileP, destP)
         elif lD["reptflagS"] == "chapter":
             src_P = str(Path(fD["reptP"], "img", "*.*"))
             destP = str(Path(fD["rstdocsP"], "_static"))
-            print("33333333333333333", src_P, destP)
             for fileP in glob.glob(src_P):
                 shutil.copy(fileP, destP)
 
@@ -159,7 +151,9 @@ class Cmdp:
                     else:
                         self.doctitleS = pL[1].strip()
                     # set doc type
-                    print("reptypeS ================== | ", self.lD["reptypeS"])
+                    print(
+                        "reptypeS -------------------- | ", self.lD["reptypeS"]
+                    )
                     if self.lD["reptypeS"] != "---":
                         typeS = self.lD["reptypeS"]
                     else:
@@ -167,7 +161,7 @@ class Cmdp:
                     if typeS not in ["txt", "html", "pdf", "none"]:
                         print("Doc type must be: txt, html or pdf \n")
                     dtypeS = typeS + ("x")
-                    print("dtypeS ================== | ", dtypeS)
+                    print("dtypeS -------------------- | ", dtypeS)
                     continue
                 elif pS[0:13] == "| ATTACHPDF |":
                     dtypeS = "attachpdfx"
@@ -208,7 +202,7 @@ class Cmdp:
         rme_msgS = self.docreadme()
         print(rme_msgS)
 
-        return "=================== End of doc processing"
+        return "------------------ End of doc processing"
         # endregion
 
     def metadatax(self):
@@ -274,8 +268,8 @@ class Cmdp:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
         except subprocess.CalledProcessError as e:
             result = f"[Error executing script]: {e}"
-        print("------------ | ", result)
-        return f"\nPDF doc written to ============ | {short_p}"
+        # print("------------ | ", result)
+        return f"\n ------------------   PDF doc written to  | {short_p}"
         # endregion
 
     def pdf_insert(self):
@@ -454,7 +448,7 @@ class Cmdp:
         short_p = ".../" + "/".join(parts)
 
         print("---------- | ", result)
-        return f"HTML doc written to ============ | {short_p}"
+        return f"HTML doc written to -------------- | {short_p}"
 
         # endregion
 
@@ -481,7 +475,7 @@ class Cmdp:
 
         parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
-        return f"text doc written to ============== | {short_p}"
+        return f"text doc written to -------------- | {short_p}"
         # endregion
 
     def nonex(self):
@@ -500,7 +494,7 @@ class Cmdp:
         parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
-        return f"rst file written for report ========== | : {short_p}"
+        return f"rst file written for doc --------------- | : {short_p}"
         # endregion
 
     def docreadme(self):
@@ -526,7 +520,16 @@ class Cmdp:
 
         with open(self.fD["docreadmeT"], "w", encoding="utf-8") as f5:
             f5.write(dutfS)
+        with open(self.fD["rvreadmeT"], "w", encoding="utf-8") as f5:
+            f5.write(dutfS)
         # with open(self.fD["publreadmeT"], "w", encoding="utf-8") as f5:
         #     f5.write(dutfS)
 
-        return f"README.txt written to ========== |  {self.fD['docreadmeT']}"
+        parts = Path(self.fD["docreadmeT"]).parts[-4:-1]  # Take last 3 segments
+        short_p1 = ".../" + "/".join(parts)
+        parts = Path(self.fD["rvreadmeT"]).parts[-3:-1]  # Take last 2 segments
+        short_p2 = ".../" + "/".join(parts)
+        return (
+            f"README.txt written to -------------- |  {short_p1}\n"
+            + f"README.txt written to -------------- |  {short_p2}"
+        )

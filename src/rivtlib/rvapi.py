@@ -91,16 +91,14 @@ publicP = Path(reptP, "_rivt-public")  # not used with rivtbooks
 print("--------------", reptP.name)
 if reptP.name == "rivt-report":
     reptflagS = "doc"
-    storeP = Path(reptP, "rv_stor")
     rstdocsP = Path(reptP, "_rstdocs")
     pubdocP = Path(reptP, "_published")
     pdfpubP = Path(pubdocP, "pdfdocs")
     storeP = Path(reptP, "rv_stor")
-    logsP = Path(storeP, "logs")
     errlogN = docnumS + "log.txt"
+    logsP = Path(storeP, "logs")
     errlogT = Path(logsP, errlogN)
     bakT = Path(logsP, bakN)
-    rivt_storedP = storeP
     rivtT = Path(reptP, rivtN)
     rvreadmeT = Path(reptP.parent, "README.txt")
     docreadmeT = Path(reptP, "_published", "readme", docnumS + "readme.txt")
@@ -115,7 +113,6 @@ else:
     errlogN = docnumS + "log.txt"
     errlogT = Path(logsP, errlogN)
     bakT = Path(logsP, bakN)
-    rivt_storedP = storeP
     rivtT = Path(reptP, rivtN)
     rvreadmeT = Path(reptP.parent, "README.txt")
     docreadmeT = Path(reptP.parent, "_rvstor", docnumS + "readme.txt")
@@ -174,7 +171,7 @@ lD1 = {
     "sdivI": int(rbaseS[3:5]),  # subdiv number
     "secnumI": 0,  # section number
     "divS": rbaseS[2],  # div character
-    "valprfx": rbaseS[0:6].replace("rv", "t"),
+    "valprfx": rbaseS[0:6].replace("rv", "v"),
     "toolprfx": rbaseS[0:6].replace("rv", "t"),
     "sectS": "",  # section title
     "equI": 0,  # equation number
