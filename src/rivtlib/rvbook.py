@@ -26,6 +26,7 @@ logsP = Path(storeP, "logs")
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 rvreadmeT = Path(bookP, "README.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
+txtpubP = Path(bookP, "_txtdocs")
 
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
@@ -79,6 +80,7 @@ repD["pdfmargin"] = configL["format"]["pdf_margins"]
 repD["pdflink"] = configL["format"]["pdf_link"]
 repD["toc_level"] = configL["format"]["toc_level"]
 repD["repfilebase"] = repD["repfile"].split(".")[0]
+get_typeS = repD["repfile"].split(".")[-1].strip()
 
 # -------------------- import rvrepcfg .py file
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -180,17 +182,16 @@ def pdfx(rstL):
 
 
 def txtx(txtfL):
-    """write text report
+    """write text rivtbook
 
     Returns:
         msgS (str): completion message
     """
     # region - txtx
-    rvrepT = Path(txtpubP, repD["repfile"])
+    rvrepT = Path(bookP, "_txtdocs", repD["repfile"])
     timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
     versionS = repD["version"]
     authorS = repD["authors"]
-
     borderS = "=" * 80
     hdlS = repD["title"] + " | " + authorS + " | " + versionS + " | " + timeS
     headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n\n"
@@ -198,18 +199,18 @@ def txtx(txtfL):
     for item in dochdrL:
         itm = item[0]
         toctxtS += itm[2] + "." + str(int(itm[3:5])) + "  " + item[1] + "\n"
-    with open(rvrepT, "w") as f5:
+    with open(rvrepT, "w", encoding="utf-8") as f5:
         for fname in txtfL:
             fnameT = Path(txtpubP, fname)
-            with open(fnameT) as infile:
+            with open(fnameT, "r", encoding="utf-8") as infile:
                 f5.write(infile.read())
-    with open(rvrepT, "r") as f1:
+    with open(rvrepT, "r", encoding="utf-8") as f1:
         content = f1.read()
-    with open(rvrepT, "w") as f2:
+    with open(rvrepT, "w", encoding="utf-8") as f2:
         f2.write(headS + "\n" + toctxtS + "\n\n" + content)
     parts = Path(rvrepT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
-    return f"text report written: {short_p} \n"
+    return f"text rivtbook written: {short_p} \n"
     # endregion
 
 
@@ -217,56 +218,79 @@ def txtx(txtfL):
 doctitleS = " "
 dochdrL = []  # for html
 # strtdocS = rivtfL[0]
-# strtdocT = Path(bookP, strtdocS)
+# strtdocT = Path(bookP, strtdocS)``
 for dirS in bookfL:
     bkdivP = Path(bookP, dirS)
     pypathS = os.path.dirname(sys.executable)
     bookPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
     pdfpubP = Path(bookP, "_pdfdocs")
+    txtpubP = Path(bookP, "_txtdocs")
     srcP = Path(bkdivP, "rvsrc")
     bookfS = glob.glob("rv???-*.py", root_dir=bkdivP)[0]
     frstT = Path(bkdivP, bookfS)
     with open(frstT, "r", encoding="utf-8") as f1:
         fL = f1.readlines()
-        for lS in fL:
-            if len(lS) > 0:
-                if "| PUBLISH |" in lS:
-                    pL = lS[5:].split("|")
-                    doctitleS = str(pL[1].strip()).strip()
-                    if doctitleS == "--":
-                        doctitleS = " "
-                    else:
-                        doctitleS = str(pL[1]).strip()
-    dochdrS = [bookfS.replace(".py", ".rst"), doctitleS]
+    for lS in fL:
+        if len(lS) > 0:
+            if "| PUBLISH |" in lS:
+                pL = lS[5:].split("|")
+                doctitleS = str(pL[1].strip()).strip()
+                if doctitleS == "--":
+                    doctitleS = " "
+                else:
+                    doctitleS = str(pL[1]).strip()
     repD["doctitleS"] = doctitleS
     repD["rvbaseS"] = bookfS.split(".py")[0].strip()
     parts = Path(frstT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     # -------------------------------------- generate rst file and logs
-    script_dir = Path(frstT).resolve().parent
-    os.chdir(script_dir)
-    print("\n||| generate rst : ", short_p, "\n")
-    print("\n||| cwd : ", os.getcwd(), "\n")
-    result = subprocess.run(
-        ["python", frstT, "-t", "none", "-k", "true"], text=True
-    )
+    if get_typeS == "pdf":
+        script_dir = Path(frstT).resolve().parent
+        os.chdir(script_dir)
+        print("\n||| write rst : ", short_p, "\n")
+        print("\n||| cwd : ", os.getcwd(), "\n")
+        result = subprocess.run(
+            ["python", frstT, "-t", "none", "-k", "true"], text=True
+        )
+        print(f"||||||||||||| >> rst << rivtbook chapter generated: {frstT}\n")
+    elif get_typeS == "txt":
+        script_dir = Path(frstT).resolve().parent
+        os.chdir(script_dir)
+        print("\n||| write txt : ", short_p, "\n")
+        print("\n||| cwd : ", os.getcwd(), "\n")
+        result = subprocess.run(
+            ["python", frstT, "-t", "txt", "-k", "true"], text=True
+        )
+        print(
+            "|||||||||||||| >> txt << rivtbook chapter generated: ",
+            {frstT},
+            "\n",
+        )
+    print("result from subprocess", result)
     errlogT = Path(logsP, bookfS[0:7] + "log.txt")
     with open(errlogT, "a") as f1:
-        f1.write(f">> rst << generated from: {frstT}\n")
-    logging.info(f">> rst << generated from: {frstT}\n")
-    print(f"||||||||||||| >> rst << file generated from: {frstT}\n")
-    print("result from subprocess", result)
+        f1.write(f">> {get_typeS} << generated from: {frstT}\n")
+    logging.info(f">> {get_typeS} << generated from: {frstT}\n")
 # ----------------------------------------------------- write pdf - book
-rstfiL = []
-bookrstL = glob.glob("rv???-*.rst", root_dir=rstdocsP)
-for fS in bookrstL:
-    rstfiL.append(fS)
-    rsttabL = ["    " + tS for tS in rstfiL]
-rsttabL = "\n".join(rsttabL)
-print("--------------- write pdf report")
-pubT = Path(bookP, "_pdfdocs", repD["repfile"].strip())
-msgS = pdfx(rsttabL)
-print(f"||||||||||||| pdfx: {msgS}")
+if get_typeS == "pdf":
+    rstfiL = []
+    bookrstL = glob.glob("rv???-*.rst", root_dir=rstdocsP)
+    for fS in bookrstL:
+        rstfiL.append(fS)
+        rsttabL = ["    " + tS for tS in rstfiL]
+    rsttabL = "\n".join(rsttabL)
+    print("||||||||||||| write pdf rivtbook")
+    pubT = Path(bookP, "_pdfdocs", repD["repfile"].strip())
+    msgS = pdfx(rsttabL)
+    print(f"||||||||||||| pdf rivtbook: {msgS}")
+elif get_typeS == "txt":
+    print("||||||||||||| write text rivtbook")
+    pubT = Path(bookP, "_txtdocs", repD["repfile"].strip())
+    txt_folderP = Path(bookP, "_txtdocs")
+    txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
+    txtfL.sort()
+    msgS = txtx(txtfL)
+    print(f"||||||||||||| txt rivtbook:  {msgS}")
 # ------------------------------------- write readme - book
 reptitleS = repD["repfile"]
 versionS = repD["version"]

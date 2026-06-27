@@ -92,6 +92,7 @@ print("--------------", reptP.name)
 if reptP.name == "rivt-report":
     reptflagS = "doc"
     rstdocsP = Path(reptP, "_rstdocs")
+    txtdocsP = Path(reptP, "txtdocs")
     pubdocP = Path(reptP, "_published")
     pdfpubP = Path(pubdocP, "pdfdocs")
     storeP = Path(reptP, "rv_stor")
@@ -107,6 +108,7 @@ else:
     reptflagS = "chapter"
     pubdocP = " "
     rstdocsP = Path(reptP.parent, "_rstdocs")
+    txtdocsP = Path(reptP.parent, "_txtdocs")
     pdfpubP = Path(reptP.parent, "_pdfdocs")
     storeP = Path(reptP.parent, "_rvstor")
     logsP = Path(storeP, "logs")
@@ -155,6 +157,7 @@ fD = {
     "pubreadmeT": pubreadmeT,
     "docreadmeT": docreadmeT,
     "rstdocsP": rstdocsP,
+    "txtdocsP": txtdocsP,
     "reptpubP": pubdocP,
     "srcP": srcP,
     "storeP": storeP,

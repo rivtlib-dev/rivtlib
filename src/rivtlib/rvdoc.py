@@ -268,7 +268,7 @@ class Cmdp:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
         except subprocess.CalledProcessError as e:
             result = f"[Error executing script]: {e}"
-        # print("------------ | ", result)
+            print("------------ | ", result)
         return f"\n ------------------   PDF doc written to  | {short_p}"
         # endregion
 
@@ -460,7 +460,7 @@ class Cmdp:
         """
         # region - txtx
         rvdocS = self.fD["rbaseS"] + ".txt"
-        rvdocT = str(Path(self.reptPubP, "txtdocs", rvdocS))
+        rvdocT = str(Path(self.fD["txtdocsP"], rvdocS))
         borderS = "-" * self.lD["widthI"]
         timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
         doctitleS = self.doctitleS
