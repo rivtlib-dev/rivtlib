@@ -202,9 +202,8 @@ class Rs:
         (?!\*)     - Negative lookahead: ensure the asterisk isn't followed by another *
         (?!\s)     - Negative lookahead: ensure the asterisk isn't followed by a space
         """
-        pattern = r"(?<!\*)(?:\*{1,2})(?!\*)(?!\s)"
 
-        return re.sub(pattern, "", text)
+        return re.sub(r"\*{1,2}(.*?)\*{1,2}", r"\1", text)
 
     def content(self, tyS, tagL, cmdL):  # --------- format section content
         """parse content substring
@@ -247,8 +246,6 @@ class Rs:
         if tyS == "R":
             return self.sutfS, self.stxtS, self.srstS, self.fD, self.lD, rivtD
         for slS in self.spL:
-            if tyS == "I":
-                slS = self.remove_aster(slS)
             # print("****", f"{slS=}")
             if len(slS.strip()) == 0 and len(tabL) > 0:  # print inline valtable
                 outS = self.prt_tabl(tabL)
@@ -392,10 +389,12 @@ class Rs:
                     print(mD["uS"])  # STDOUT - command
                     continue
             else:  # everything else - STDOUT - raw line
+                if self.tyS == "I":
+                    slSx = self.remove_aster(slS)
                 print(textwrap.fill(slS, width=lD["widthI"]), flush=True)
-                sutfS += textwrap.fill(slS, width=lD["widthI"]) + "\n"
+                sutfS += textwrap.fill(slSx, width=lD["widthI"]) + "\n"
                 srstS += slS + "\n"
-                stxtS += textwrap.fill(slS, width=lD["widthI"]) + "\n"
+                stxtS += textwrap.fill(slSx, width=lD["widthI"]) + "\n"
 
         # export values file to vDss-#.csv where # is section number
         if self.tyS == "V" and len(rivL) > 0:

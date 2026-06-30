@@ -108,10 +108,10 @@ favicons = [
 # More than one author : \\r'Guido van Rossum\\Fred L. Drake, Jr., editor'
 pdf_documents = [("{self.rvbaseS}", "{self.rvbaseS}", "{self.doctitleS}", 
             "{self.authorS}")]
-# A list of folders to search for stylesheets.
-pdf_style_path = ["_rstdocs"]
 # A colon-separated list of folders to search for fonts.
-pdf_font_path = ['/_static/fonts/',"_rstdocs/_static/fonts" ]
+pdf_font_path = ["_rstdocs/_static/fonts","../_rstdocs/_static/fonts/" ]
+# A list of folders to search for stylesheets.
+pdf_style_path = ["_rstdocs","../_rstdocs"]
 # A comma-separated list of custom stylesheets.
 pdf_stylesheets = ["rivtstyle.yaml"]
 # If false, no coverpage is generated.

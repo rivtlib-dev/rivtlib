@@ -92,7 +92,7 @@ print("--------------", reptP.name)
 if reptP.name == "rivt-report":
     reptflagS = "doc"
     rstdocsP = Path(reptP, "_rstdocs")
-    txtdocsP = Path(reptP, "txtdocs")
+    txtdocsP = Path(reptP, "_published", "txtdocs")
     pubdocP = Path(reptP, "_published")
     pdfpubP = Path(pubdocP, "pdfdocs")
     storeP = Path(reptP, "rv_stor")
@@ -120,6 +120,7 @@ else:
     docreadmeT = Path(reptP.parent, "_rvstor", docnumS + "readme.txt")
     pubreadmeT = " "
 # logs and backups
+print("-----------------------", reptflagS)
 warnings.filterwarnings("ignore")
 logging.basicConfig(
     level=logging.DEBUG,

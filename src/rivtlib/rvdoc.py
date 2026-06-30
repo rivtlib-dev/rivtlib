@@ -160,14 +160,14 @@ class Cmdp:
                         typeS = str(pL[2].strip())
                     if typeS not in ["txt", "html", "pdf", "none"]:
                         print("Doc type must be: txt, html or pdf \n")
-                    dtypeS = typeS + ("x")
-                    print("dtypeS -------------------- | ", dtypeS)
+                    doctypeS = typeS + ("x")
+                    print("doctypeS -------------------- | ", doctypeS)
                     continue
                 elif pS[0:13] == "| ATTACHPDF |":
-                    dtypeS = "attachpdfx"
+                    doctypeS = "attachpdfx"
                     self.pthS = pL[1].strip()
                     self.parS = pL[2].strip()
-                    obj = getattr(Cmdp, dtypeS)
+                    obj = getattr(Cmdp, doctypeS)
                     obj(self)
                     continue
                 elif "_[[" in pS and ("_[[END]]" not in pS):  # block start
@@ -195,7 +195,7 @@ class Cmdp:
             tS += pS
             lS += pS
         # call publish function
-        obj = getattr(Cmdp, dtypeS)
+        obj = getattr(Cmdp, doctypeS)
         msgS = obj(self)
         print(msgS)
 
