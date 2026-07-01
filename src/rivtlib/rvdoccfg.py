@@ -361,6 +361,8 @@ styles:
     underlineColor: black
     underlineWidth: 1
     underlineOffset: 5
+    spaceAfter: 12
+    spaceBefore: 5
   heading2:
     fontSize: 110%
     parent: heading
@@ -368,6 +370,8 @@ styles:
     underlineColor: black
     underlineWidth: 1
     underlineOffset: 5
+    spaceAfter: 5
+    spaceBefore: 5
   heading3:
     fontSize: 100%
     parent: heading
@@ -411,6 +415,11 @@ styles:
     leading: 11
   normal:
     parent: base
+  math-block:
+    fontSize: 10
+    alignment: TA_CENTER
+    spaceBefore: 6
+    spaceAfter: 6
   note:
     firstlineIndent: 0
     leftIndent: 0

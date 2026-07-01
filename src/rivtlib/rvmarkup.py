@@ -26,11 +26,11 @@ def pythonx():
 def endnotesx(lD, r1S):
     """writes endnotes
 
-    footnote marks are written in rvparse
+    footnote marks are inserted in rvparse loops
     """
 
     wI = lD["widthI"]
-    erS = "\n" + "-" * 80 + "\n\n"
+    erS = "\n"
     euS = "\n" + "-" * 80 + "\n\n"
     fnI = 0
     r1L = r1S.split("\n")

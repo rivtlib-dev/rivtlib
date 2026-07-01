@@ -189,13 +189,13 @@ lD1 = {
     "argsname": "",  # name of argument dictionary
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "white",  # topic background color
-    "cntflgI": 0,  # transition line
     "privB": "True",  # do not write to public
     "docB": "True",  # add to doc
     "mergeB": "False",  # merge to prev section
     "autocfgB": "True",  # config format from metadata
     "runtypeS": "",  # type for rv.R
     "reptflagS": reptflagS,  # rivt-report, rivtbook or chapter
+    "cntflgI": 0,  # counter flag - skips transition for first section
 }
 # defaults for rivt file comment settings
 lD2 = {
@@ -266,6 +266,11 @@ def doc_parse(rS, tyS, tagL, cmdL):
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     rsL = rS.split("\n")
     conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL, vdescD)
+    if tyS == "R":
+        dutfS += conC.sutfS
+        drstS += conC.srstS
+        dtxtS += conC.stxtS
+        return dutfS, dtxtS, drstS
     sutfS, stxtS, srstS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
     if tyS == "I" or tyS == "V":
         if lD["docB"] == "True":
@@ -301,7 +306,6 @@ def R(rS):
     tagbL = []
     tagL = tagL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "R", tagL, cmdL)
-
     r1S = rS.split("\n", 1)[1]
     uS, tS, rS = rvmarkup.typex(lD, r1S)
     dutfS += uS

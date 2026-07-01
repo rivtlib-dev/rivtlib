@@ -165,14 +165,24 @@ class Tag:
         elif cmdS == "lL":
             """format latex math"""
 
-            spS = lineS.strip()
-            spL = spS.split("=")
-            spS = "Eq(" + spL[0] + ",(" + spL[1] + "))"
-            lineS = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
-            indlineS = textwrap.indent(lineS, "     ")
-            uS = tS = indlineS + "\n"
-            rS = "\n.. code:: \n\n" + indlineS + "\n\n"
-            lS = "\n.. code:: \n\n" + indlineS + "\n\n"
+            self.enumI = int(self.lD["equI"])
+            self.enumI += 1
+            self.lD["equI"] = self.enumI
+            self.enumS = str(self.enumI)
+            eS = "\nEq." + self.enumS + "\n"
+            ebS = "\n**Eq." + self.enumS + "**\n\n"
+            labellnS = eS + r"[LaTeX] " + lineS.strip()
+            indlineS = textwrap.indent(lineS.strip(), "     ")
+            uS = tS = labellnS + "\n"
+            rS = (
+                ebS
+                + "\n.. container:: math-block \n\n"
+                + "    .. math:: \n"
+                + "    "
+                + indlineS
+                + "\n\n"
+            )
+            lS = ""
 
         elif cmdS == "lT":
             """label and number table"""
@@ -187,8 +197,8 @@ class Tag:
         # endregion
         mD = {
             "uS": uS,
-            "rS": rS,
             "tS": tS,
+            "rS": rS,
             "lS": lS,
         }
         return mD, self.lD
