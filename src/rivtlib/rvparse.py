@@ -396,12 +396,12 @@ class Rs:
                     continue
             else:  # everything else - STDOUT - raw line
                 if self.tyS == "I":
-                    slSx = self.remove_aster(slS)
+                    slS = self.remove_aster(slS)
                 textencS = textwrap.fill(slS, width=lD["widthI"])
                 print(textencS, flush=True)  # STDOUT - raw line
-                sutfS += textwrap.fill(slSx, width=lD["widthI"]) + "\n"
+                sutfS += textwrap.fill(slS, width=lD["widthI"]) + "\n"
                 srstS += slS + "\n"
-                stxtS += textwrap.fill(slSx, width=lD["widthI"]) + "\n"
+                stxtS += textwrap.fill(slS, width=lD["widthI"]) + "\n"
 
         # export values file to vDss-#.csv where # is section number
         if self.tyS == "V" and len(rivL) > 0:

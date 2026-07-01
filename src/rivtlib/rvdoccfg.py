@@ -233,9 +233,9 @@ styles:
     commands: []
     firstLineIndent: 0
     fontName: fontSans
-    fontSize: 9
+    fontSize: 10
+    leading: 14
     hyphenation: false
-    leading: 12
     leftIndent: 0
     parent: null
     rightIndent: 0
@@ -324,9 +324,19 @@ styles:
     commands:
       - [VALIGN, [0, 0], [-1, -1], TOP]
     colWidths: [30pt, null]
+  footer:
+    parent: normal
+    fontName: fontSans
+    fontSize: 9
+  header:
+    parent: normal
+    fontName: fontSans
+    fontSize: 9
   footer-box:
+    parent: normal
     alignment: TA_CENTER
     fontName: fontSans
+    fontSize: 9
     commands:
       - - BOX
         - - 0
@@ -336,8 +346,10 @@ styles:
         - 0.25
         - transparent
   header-box:
+    parent: normal
     alignment: TA_RIGHT
     fontName: fontSans
+    fontSize: 9
     commands:
       - - BOX
         - - 0
@@ -350,7 +362,7 @@ styles:
   heading:
     keepWithNext: true
     parent: normal
-    spaceAfter: 1
+    spaceAfter: 4
     spaceBefore: 10
     fontName: fontSerif
     textColor: "#222222"
@@ -361,7 +373,7 @@ styles:
     underlineColor: black
     underlineWidth: 1
     underlineOffset: 5
-    spaceAfter: 12
+    spaceAfter: 18
     spaceBefore: 5
   heading2:
     fontSize: 110%
@@ -370,11 +382,13 @@ styles:
     underlineColor: black
     underlineWidth: 1
     underlineOffset: 5
-    spaceAfter: 5
+    spaceAfter: 18
     spaceBefore: 5
   heading3:
     fontSize: 100%
     parent: heading
+    spaceAfter: 10
+    spaceBefore: 5
   heading4:
     parent: heading
   heading5:
