@@ -30,7 +30,7 @@ def endnotesx(lD, r1S):
     """
 
     wI = lD["widthI"]
-    erS = "\n"
+    erS = "\n" + "-" * 20 + "\n"
     euS = "\n" + "-" * 80 + "\n\n"
     fnI = 0
     r1L = r1S.split("\n")
@@ -55,7 +55,7 @@ def endnotesx(lD, r1S):
         lS = ln.strip() + "\n"
         euS = f"[{str(fnI)}] {lS}\n\n"
         euS = textwrap.fill(euS, width=wI) + "\n\n"
-        erS = f".. [{str(fnI)}] {lS}\n\n"
+        erS = "\n\n" + f".. _[{str(fnI)}]: \n\n[{str(fnI)}]   {lS}\n\n\n"
         uS += euS
         rS += erS
     tS = uS

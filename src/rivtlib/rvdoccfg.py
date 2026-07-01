@@ -137,7 +137,7 @@ pdf_break_level = 0
 # When a section starts in a new page, force it to be 'even', 'odd', 'any
 pdf_breakside = "any"
 # Insert footnotes where they are defined 
-pdf_inline_footnotes = False
+pdf_inline_footnotes = True
 # If false, no index is generated.
 pdf_use_index = False
 # If false, no modindex is generated.
@@ -246,6 +246,11 @@ styles:
     wordWrap: null
     linkUnderline: {self.linkB}
     linkColor: blue
+  citation-reference:
+    parent: bodytext
+    super: false 
+    alignment: TA_LEFT
+    textColor: blue
   tableofcontents:
     parent: normal
   big-text:
@@ -320,10 +325,6 @@ styles:
     parent: bodytext
   figure-legend:
     parent: bodytext
-  endnote:
-    commands:
-      - [VALIGN, [0, 0], [-1, -1], TOP]
-    colWidths: [30pt, null]
   footer:
     parent: normal
     fontName: fontSans

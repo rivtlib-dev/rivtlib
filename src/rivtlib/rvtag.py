@@ -177,7 +177,7 @@ class Tag:
             rS = (
                 ebS
                 + "\n.. container:: math-block \n\n"
-                + "    .. math:: \n"
+                + "    .. math:: \n\n"
                 + "    "
                 + indlineS
                 + "\n\n"

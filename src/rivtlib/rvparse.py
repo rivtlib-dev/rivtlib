@@ -72,7 +72,7 @@ class Rs:
         self.lD["rvtypeS"] = tyS
         self.lD["mergeB"] = "False"
         self.lD["docB"] = "True"
-        self.lD["notagB"] = "False"
+        self.lD["notagB"] = "True"
         self.lD["privB"] = lD["privateB"]
         # override header defaults
         if len(paraL) > 0:
@@ -355,13 +355,7 @@ class Rs:
                     if "_[#]" in slS:
                         cI = lD["noteI"] + 1
                         lD["noteI"] = cI
-                        lineS = (
-                            str(s1L[0])
-                            + " ["
-                            + str(cI)
-                            + "]_ "
-                            + str(s2L[1:][0])
-                        )
+                        lineS = f"""{s1L[0]} `[{cI}]`_ {s2L[1:][0]}"""
                         sutfS += lineS + "\n"
                         srstS += lineS + "\n"
                         stxtS += lineS + "\n"

@@ -234,9 +234,9 @@ class Cmdp:
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
         self.linkB = self.configL["layout"]["pdf_link_underline"]
         self.subtitleS = self.configL["layout"]["subtitle"]
+        self.toc_level = self.configL["layout"]["toc_level"]
         self.doc_verbose = self.configL["process"]["doc_verbose"]
         self.auto_cfg = self.configL["process"]["auto_cfg"]
-        self.toc_level = self.configL["layout"]["toc_level"]
         # endregion
 
     def attachpdfx(self):
@@ -269,7 +269,7 @@ class Cmdp:
         except subprocess.CalledProcessError as e:
             result = f"[Error executing script]: {e}"
             print("------------ | ", result)
-        return f"\n ------------------   PDF doc written to  | {short_p}"
+        return f"\n PDF doc written to --------------- | {short_p}"
         # endregion
 
     def pdf_insert(self):
@@ -319,6 +319,9 @@ class Cmdp:
 
         # region pdf-cover page
         coverpgS = f"""
+.. role:: cite
+   :class: citation-reference
+
 .. role:: btext
    :class: big-text
 
