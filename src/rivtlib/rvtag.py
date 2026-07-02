@@ -121,9 +121,9 @@ class Tag:
             txt2 = lineL[1].split("|")[0].strip()
             txt3 = lineL[1].split("|")[1].strip()
             txt2a = txt2.split(",")[0].strip()
-            txt2b = "<" + txt2.split(",")[1].strip() + ">"
+            txt2b = txt2.split(",")[1].strip()
             uS = tS = f"{txt1} {txt2a} {txt2b} {txt3}".strip()
-            rS = lS = f"{txt1} **<** `{txt2a} {txt2b}`__ **>** {txt3}".strip()
+            rS = lS = f"{txt1} `{txt2a} <{txt2b}>`_ {txt3}".strip()
 
         elif cmdS == "lD":
             """download link"""

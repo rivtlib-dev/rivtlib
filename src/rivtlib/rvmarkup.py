@@ -52,10 +52,12 @@ def endnotesx(lD, r1S):
         if len(ln.strip()) == 0:
             continue
         fnI += 1
+        ftnoteS = lD["divS"] + "." + str(lD["sdivI"]) + "." + str(fnI)
         lS = ln.strip() + "\n"
-        euS = f"[{str(fnI)}] {lS}\n\n"
+        euS = f"[{ftnoteS}] {lS}\n\n"
         euS = textwrap.fill(euS, width=wI) + "\n\n"
-        erS = "\n\n" + f".. _[{str(fnI)}]: \n\n[{str(fnI)}]   {lS}\n\n\n"
+        lS = textwrap.indent(lS, " " * 4)
+        erS = "\n\n" + f".. _[{ftnoteS}]:\n\n**[{ftnoteS}]** \n{lS}\n\n\n"
         uS += euS
         rS += erS
     tS = uS

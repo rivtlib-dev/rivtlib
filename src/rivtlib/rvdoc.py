@@ -67,11 +67,13 @@ class Cmdp:
         self.projrefS = " "
         self.clientS = " "
         self.pdfmarginins = " "
-        self.linkB = " "
+        self.linkB = "false"
         self.doctitleS = " "
         self.subtitleS = " "
+        self.autoS = "true"
+        self.toc_level = "1"
+        self.linkcolorS = "brown"
         self.privateS = " "
-        self.autoS = " "
 
         warnings.filterwarnings("ignore")
         modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
@@ -235,8 +237,10 @@ class Cmdp:
         self.linkB = self.configL["layout"]["pdf_link_underline"]
         self.subtitleS = self.configL["layout"]["subtitle"]
         self.toc_level = self.configL["layout"]["toc_level"]
+        self.linkcolorS = self.configL["layout"]["pdf_link_color"]
         self.doc_verbose = self.configL["process"]["doc_verbose"]
         self.auto_cfg = self.configL["process"]["auto_cfg"]
+
         # endregion
 
     def attachpdfx(self):

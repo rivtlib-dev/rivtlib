@@ -176,6 +176,8 @@ def pdf_yamlS(self, fD):
 
     # region - pdf yaml
     rivstyS = f"""
+linkColor: {self.linkcolorS}
+linkFontName: DejaVuSansBold
 fontsAlias:
   fontSerif: DejaVuSans
   fontSerifBold: DejaVuSans-Bold
@@ -189,6 +191,7 @@ fontsAlias:
   fontSansBold: DejaVuSans-Bold
   fontSansBoldItalic: DejaVuSans-BoldOblique
   fontSansItalic: DejaVuSans-Oblique
+  stdBold: DejaVuSans-Bold
 pageSetup:
   firstTemplate: noHead
   height: null
@@ -230,7 +233,6 @@ styles:
     bulletFontName: fontMono
     bulletFontSize: 10
     bulletIndent: 0
-    commands: []
     firstLineIndent: 0
     fontName: fontSans
     fontSize: 10
@@ -245,20 +247,13 @@ styles:
     textColor: black
     wordWrap: null
     linkUnderline: {self.linkB}
-    linkColor: blue
-  citation-reference:
-    parent: bodytext
-    super: false 
-    alignment: TA_LEFT
-    textColor: blue
-  tableofcontents:
-    parent: normal
+    commands: []
   big-text:
     fontSize: 175%
     parent: base
     fontName: fontSans
   medium-text:
-    fontSize: 125%
+    fontSize: 130%
     parent: base
     fontName: fontSans
   small-text:

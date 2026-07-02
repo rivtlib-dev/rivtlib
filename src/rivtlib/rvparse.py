@@ -355,7 +355,10 @@ class Rs:
                     if "_[#]" in slS:
                         cI = lD["noteI"] + 1
                         lD["noteI"] = cI
-                        lineS = f"""{s1L[0]} `[{cI}]`_ {s2L[1:][0]}"""
+                        ftnoteS = (
+                            lD["divS"] + "." + str(lD["sdivI"]) + "." + str(cI)
+                        )
+                        lineS = f"""{s1L[0]} `[{ftnoteS}]`_ {s2L[1:][0]}"""
                         sutfS += lineS + "\n"
                         srstS += lineS + "\n"
                         stxtS += lineS + "\n"
