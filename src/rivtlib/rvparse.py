@@ -359,9 +359,10 @@ class Rs:
                             lD["divS"] + "." + str(lD["sdivI"]) + "." + str(cI)
                         )
                         lineS = f"""{s1L[0]} `[{ftnoteS}]`_ {s2L[1:][0]}"""
-                        sutfS += lineS + "\n"
+                        linexS = f"""{s1L[0]}[{ftnoteS}]{s2L[1:][0]}"""
+                        sutfS += linexS + "\n"
                         srstS += lineS + "\n"
-                        stxtS += lineS + "\n"
+                        stxtS += linexS + "\n"
                         continue
                     tagS = s2L[0]
                     if tagS in tagL:  # check tag list
