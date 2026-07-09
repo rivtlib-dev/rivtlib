@@ -26,14 +26,11 @@
         },
         {
             "source": "C:/git/rivtlib-git/src/rivtlib",
-            "target": "E:/OneDrive/StL-rivt/rivtlib-dev/src/",
+            "target": "E:/OneDrive/StL-rivt/rivtlib-dev/rivtlib-src/",
             "include": "**/*.*",
             "exclude": "",
             "deleteTargetOnDeploy": true,
         }
-    ],
-    "projectManager.git.basefDers": [
-        "c:\\git"
     ],
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
@@ -43,7 +40,6 @@
     "python.terminal.executeInFileDir": true,
     "python.analysis.autoFormatStrings": true,
     "python.languageServer": "Pylance",
-    "seito-openfile.searchSubfDersOfWorkspacefDers": [],
     "seito-openfile.openNewTab": true,
     "seito-openfile.searchPaths": [],
     "seito-openfile.notFoundTriggerQuickOpen": false,
@@ -139,8 +135,6 @@
     "githubRepositories.indexing.verboseDownloadNotification": false,
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
-    "explorer.compactfDers": false,
-    "explorer.sortOrder": "name",
     "settings.cycle": [
         {
             "id": "ExplorerSort1", // must be unique
