@@ -22,18 +22,18 @@ reptP = os.getcwd()
 rivtfL = glob.glob("rv???*.py", root_dir=reptP)
 rivtfL.sort()
 rstdocsP = Path(reptP, "_rstdocs")
-print("\n||||||||||||||||| rivt files included in report")
+print("\n\033[34m||||||||||||||||| rivt files included in report\033[0m")
 for s in rivtfL:
-    print("rivt file:", s)
-print("||||||||||||||||||| \n\n")
+    print("\033[34mrivt file:\033[0m", s)
+print("\033[34m||||||||||||||||||| \033[0m\n\n")
 
 for file_path in rstdocsP.glob("*.rst"):
     try:
         file_path.unlink()
-        print(f"Deleted: {file_path}")
+        print(f"\033[34mDeleted: {file_path}\033[0m")
     except OSError as e:
-        print(f"Error deleting {file_path}: {e}")
-print("\n||||||||||||||||| rst files deleted\n\n")
+        print(f"\033[34mError deleting {file_path}: {e}\033[0m")
+print("\n\033[34m||||||||||||||||| rst files deleted\033[0m\n\n")
 
 
 # -------------------- get report settings from rivt-report.py
@@ -44,26 +44,27 @@ configL.read_string(setS)
 # Dictionaries
 repD = {}
 repD["rstdocsP"] = rstdocsP
-repD["repfile"] = configL["settings"]["rept_filename"]
-repD["regen"] = configL["settings"]["regen_pdf"]
-repD["exclude"] = configL["settings"]["exclude"]
-repD["auto"] = configL["settings"]["auto_cfg"]
-repD["verbose"] = configL["settings"]["rep_verbose"]
-repD["title"] = configL["format"]["title"]
-repD["subtitle"] = configL["format"]["subtitle"]
-repD["client"] = configL["format"]["client"]
-repD["projref"] = configL["format"]["project_ref"]
-repD["authors"] = configL["format"]["authors"]
-repD["version"] = configL["format"]["version"]
-repD["copyright"] = configL["format"]["copyright"]
-repD["runlogo"] = configL["format"]["running_logo"]
-repD["runlabel"] = configL["format"]["running_label"]
-repD["coverlogo"] = configL["format"]["coverlogo"]
-repD["logosize"] = configL["format"]["coverlogo_size"]
-repD["pdfpage"] = configL["format"]["pdf_pagesize"]
-repD["pdfmargin"] = configL["format"]["pdf_margins"]
-repD["pdflink"] = configL["format"]["pdf_link"]
-repD["toc_level"] = configL["format"]["toc_level"]
+repD["repfile"] = configL["report"]["rept_filename"]
+repD["exclude"] = configL["report"]["exclude"]
+repD["regen"] = configL["process"]["regen_pdf"]
+repD["auto"] = configL["process"]["auto_cfg"]
+repD["verbose"] = configL["process"]["rep_verbose"]
+repD["title"] = configL["layout"]["title"]
+repD["subtitle"] = configL["layout"]["subtitle"]
+repD["client"] = configL["layout"]["client"]
+repD["projref"] = configL["layout"]["project_ref"]
+repD["authors"] = configL["layout"]["authors"]
+repD["version"] = configL["layout"]["version"]
+repD["copyright"] = configL["layout"]["copyright"]
+repD["runlogo"] = configL["layout"]["running_logo"]
+repD["runlabel"] = configL["layout"]["running_label"]
+repD["coverlogo"] = configL["layout"]["coverlogo"]
+repD["logosize"] = configL["layout"]["coverlogo_size"]
+repD["pdfpage"] = configL["layout"]["pdf_pagesize"]
+repD["pdfmargin"] = configL["layout"]["pdf_margins"]
+repD["pdflink"] = configL["layout"]["pdf_link_underline"]
+repD["linkcolor"] = configL["layout"]["pdf_link_color"]
+repD["toc_level"] = configL["layout"]["toc_level"]
 repD["repfilebase"] = repD["repfile"].split(".")[0]
 
 # -------------------- import rvrepcfg .py file
@@ -113,11 +114,11 @@ def pdfx(rstL):
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     rvr.pdf_coverS()
-    print("||||||||||||||||||| report cover page written")
+    print("\033[34m||||||||||||||||||| report cover page written\033[0m")
     rvr.pdf_yamlS()
-    print("||||||||||||||||||| report yaml file written")
+    print("\033[34m||||||||||||||||||| report yaml file written\033[0m")
     rvr.pdf_confpy()
-    print("||||||||||||||||||| report conf file written")
+    print("\033[34m||||||||||||||||||| report conf file written\033[0m")
     # -------------------------- append div tocs to index.rst
     timeS = datetime.now().strftime("%Y-%m-%d")
     headblkS = f"""**{repD["title"]}** - v{repD["version"]} |s| |s| |s| |s|  **###Section###**"""
@@ -180,16 +181,18 @@ def pdfx(rstL):
     with open(rvindxT, "w", encoding="utf-8") as f5:
         f5.write(preamS)
 
-    print("||||||||||||||||||| run sphinx-pdf")
-    pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
+    print("\033[34m||||||||||||||||||| run sphinx-pdf\033[0m")
+    pdfcmdS = f"\033[34msphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \033[0m\n"
 
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)
         if not result.returncode:
-            print(f"||||||||||||||||||| pdf file written: {short_p} \n")
+            print(
+                f"\033[34m||||||||||||||||||| pdf file written: {short_p} \033[0m\n"
+            )
     except subprocess.CalledProcessError as e:
-        print(f"||||||||||||||||||| Error executing script: {e}")
-        print("Stderr:", e.stderr)
+        print(f"\033[34m||||||||||||||||||| Error executing script: {e}\033[0m")
+        print("\033[34mStderr:\033[0m", e.stderr)
 
     return " "
     # endregion
@@ -205,9 +208,9 @@ def htmlx():
 
     # region - htmlx
     rvr.html_confpy()
-    print("||||||||||||||||||| html_conf.py file written")
+    print("\033[34m||||||||||||||||||| html_conf.py file written\033[0m")
     rvr.html_index()
-    print("||||||||||||||||||| html_index file written")
+    print("\033[34m||||||||||||||||||| html_index file written\033[0m")
     timeS = datetime.now().strftime("%Y-%m-%d")
     # html classes
     rvdateS = f"""
@@ -334,20 +337,20 @@ def htmlx():
     #     # with open(docT, "w", encoding="utf-8") as f2:
     #     #     f2.write(hdrS + content)
 
-    print("||||||||||||||||||| run sphinx-html")
-    htmlcmdS = f"sphinx-build -E -D root_doc=index {rstdocsP} {htmlpubP} \n"
+    print("\033[34m||||||||||||||||||| run sphinx-html\033[0m")
+    htmlcmdS = f"\033[34msphinx-build -E -D root_doc=index {rstdocsP} {htmlpubP} \033[0m\n"
     try:
         result = subprocess.run(htmlcmdS, shell=True, check=True)
         if not result.returncode:
-            print("||||||||||||||||||| html script executed")
+            print("\033[34m||||||||||||||||||| html script executed\033[0m")
     except subprocess.CalledProcessError as e:
-        print(f"||||||||||||||||||| Error executing script: {e}")
-        print("Stderr:", e.stderr)
+        print(f"\033[34m||||||||||||||||||| Error executing script: {e}\033[0m")
+        print("\033[34mStderr:\033[0m", e.stderr)
 
     repdocT = Path(htmlpubP, repD["repfile"])
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
-    return f"file written: {short_p} \n"
+    return f"\033[34mfile written\033[0m: {short_p} \n"
     # endregion
 
 
@@ -390,7 +393,7 @@ def txtx(txtfL):
         f2.write(headS + "\n" + toctxtS + "\n\n" + content)
     parts = Path(rvrepT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
-    return f"text report written: {short_p} \n"
+    return f"\033[34mtext report written: {short_p} \033[0m\n"
     # endregion
 
 
@@ -420,12 +423,20 @@ for frstS in rivtfL:
     # -------------------------------------- types
     get_typeS = repD["repfile"].split(".")[-1].strip()
     if get_typeS == "txt":
-        print("\n|||||||||||||| generate txt file for report: ", short_p, "\n")
+        print(
+            "\n\033[34m|||||||||||||| generate txt file for report: \033[0m",
+            short_p,
+            "\n",
+        )
         result = subprocess.run(  # -------------- from txt list generate doc
             ["python", frstT, "-t", "txt", "-k", "true"], text=True
         )
     elif get_typeS == "pdf" or get_typeS == "html":
-        print("\n|||||||||||||| generate rst file : ", short_p, "\n")
+        print(
+            "\n\033[34m|||||||||||||| generate rst file : \033[0m",
+            short_p,
+            "\n",
+        )
         result = subprocess.run(  # -------------- from rst list gen rst
             ["python", frstT, "-t", "none", "-k", "true"], text=True
         )
@@ -436,8 +447,10 @@ for frstS in rivtfL:
     with open(errlogT, "a") as f1:
         f1.write(f">>{get_typeS}<< generated from: {frstT}\n")
     logging.info(f">>{get_typeS}<< generated from: {frstT}\n")
-    print(f"||||||||||||| >>{get_typeS}<< file generated from: {frstT}\n")
-    print("result from subprocess", result)
+    print(
+        f"\033[34m||||||||||||| >>{get_typeS}<< file generated from: {frstT}\033[0m\n"
+    )
+    print("\033[34mresult from subprocess\033[0m", result)
 # ----------------------------------------------------- write report
 # generate list of rst files
 rstfiL = []
@@ -447,25 +460,25 @@ rsttabL = ["    " + tS for tS in rstfiL]
 rsttabL = "\n".join(rsttabL)
 if get_typeS == "txt":
     """write text report"""
-    print("||||||||||||| write text report")
+    print("\033[34m||||||||||||| write text report\033[0m")
     pubT = Path(pubP, "txtdocs", repD["repfile"].strip())
     txt_folderP = Path(pubP, "txtdocs")
     txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
     txtfL.sort()
     msgS = txtx(txtfL)
-    print(f"||||||||||||| txtx:  {msgS}")
+    print(f"\033[34m||||||||||||| txtx:  {msgS}\033[0m")
 elif get_typeS == "pdf":
     """write pdf report"""
-    print("--------------- write pdf report")
+    print("\033[34m--------------- write pdf report\033[0m")
     pubT = Path(pubP, "pdfdocs", repD["repfile"].strip())
     msgS = pdfx(rsttabL)
-    print(f"||||||||||||| pdfx: {msgS}")
+    print(f"\033[34m||||||||||||| pdfx: {msgS}\033[0m")
 elif get_typeS == "html":
     """write html report"""
-    print("--------------- write html report")
+    print("\033[34m--------------- write html report\033[0m")
     pubT = Path(pubP, "docs", repD["repfile"].strip())
     msgS = htmlx()
-    print(f"||||||||||||| htmlx: {msgS}")
+    print(f"\033[34m||||||||||||| htmlx: {msgS}\033[0m")
 else:
     pass
 # ------------------------------------- write readme report
@@ -497,5 +510,5 @@ with open(readmeT, "w") as f1:
 # with open(, "w", encoding="utf-8") as f3:
 parts = Path(readmeT).parts[-3:]  # Take last 3 segments
 short_p = ".../" + "/".join(parts)
-logging.info("|||||||||| README report : " + repD["title"])
-print(f"||||||||||||| README report written:  {short_p}")
+logging.info("\033[34m|||||||||| README report : \033[0m" + repD["title"])
+print(f"\033[34m||||||||||||| README report written:  {short_p}\033[0m")

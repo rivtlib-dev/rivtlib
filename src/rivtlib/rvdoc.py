@@ -72,7 +72,7 @@ class Cmdp:
         self.subtitleS = " "
         self.autoS = "true"
         self.toc_level = "1"
-        self.linkcolorS = "brown"
+        self.linkcolorS = "black"
         self.privateS = " "
 
         warnings.filterwarnings("ignore")
@@ -154,7 +154,8 @@ class Cmdp:
                         self.doctitleS = pL[1].strip()
                     # set doc type
                     print(
-                        "reptypeS -------------------- | ", self.lD["reptypeS"]
+                        "\033[32mreptypeS -------------------- | \033[0m",
+                        self.lD["reptypeS"],
                     )
                     if self.lD["reptypeS"] != "---":
                         typeS = self.lD["reptypeS"]
@@ -163,7 +164,10 @@ class Cmdp:
                     if typeS not in ["txt", "html", "pdf", "none"]:
                         print("Doc type must be: txt, html or pdf \n")
                     doctypeS = typeS + ("x")
-                    print("doctypeS -------------------- | ", doctypeS)
+                    print(
+                        "\033[32mdoctypeS -------------------- | \033[0m",
+                        doctypeS,
+                    )
                     continue
                 elif pS[0:13] == "| ATTACHPDF |":
                     doctypeS = "attachpdfx"
@@ -204,7 +208,7 @@ class Cmdp:
         rme_msgS = self.docreadme()
         print(rme_msgS)
 
-        return "------------------ End of doc processing"
+        return "\033[32m------------------ End of doc processing\033[0m"
         # endregion
 
     def metadatax(self):
@@ -216,6 +220,8 @@ class Cmdp:
         # region - metadata
         self.configL = configparser.ConfigParser()
         self.configL.read_string(self.blockS)
+        self.doc_verbose = self.configL["process"]["doc_verbose"]
+        self.auto_cfg = self.configL["process"]["auto_cfg"]
         self.authorS = self.configL["doc"]["authors"]
         self.verS = self.configL["doc"]["version"]
         self.copyrightS = self.configL["doc"]["copyright"]
@@ -234,12 +240,10 @@ class Cmdp:
         self.projrefS = self.configL["layout"]["project_ref"]
         self.clientS = self.configL["layout"]["client"]
         self.pdfmarginS = self.configL["layout"]["pdf_margins"]
-        self.linkB = self.configL["layout"]["pdf_link_underline"]
         self.subtitleS = self.configL["layout"]["subtitle"]
         self.toc_level = self.configL["layout"]["toc_level"]
         self.linkcolorS = self.configL["layout"]["pdf_link_color"]
-        self.doc_verbose = self.configL["process"]["doc_verbose"]
-        self.auto_cfg = self.configL["process"]["auto_cfg"]
+        self.linkB = self.configL["layout"]["pdf_link_underline"]
 
         # endregion
 
@@ -272,8 +276,10 @@ class Cmdp:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
         except subprocess.CalledProcessError as e:
             result = f"[Error executing script]: {e}"
-            print("------------ | ", result)
-        return f"\n PDF doc written to --------------- | {short_p}"
+            print("\033[32m------------ | \033[0m", result)
+        return (
+            f"\n\033[32mPDF doc written to --------------- | \033[0m{short_p}"
+        )
         # endregion
 
     def pdf_insert(self):
@@ -454,8 +460,8 @@ class Cmdp:
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
-        print("---------- | ", result)
-        return f"HTML doc written to -------------- | {short_p}"
+        print("\033[32m---------- | \033[0m", result)
+        return f"\033[32mHTML doc written to -------------- | \033[0m{short_p}"
 
         # endregion
 
@@ -482,7 +488,7 @@ class Cmdp:
 
         parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
-        return f"text doc written to -------------- | {short_p}"
+        return f"\033[32mtext doc written to -------------- | \033[0m{short_p}"
         # endregion
 
     def nonex(self):
@@ -501,7 +507,7 @@ class Cmdp:
         parts = Path(rstfileT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
-        return f"rst file written for doc --------------- | : {short_p}"
+        return f"\033[32mrst file written for doc --------------- | \033[0m{short_p}"
         # endregion
 
     def docreadme(self):
@@ -537,6 +543,6 @@ class Cmdp:
         parts = Path(self.fD["rvreadmeT"]).parts[-3:-1]  # Take last 2 segments
         short_p2 = ".../" + "/".join(parts)
         return (
-            f"README.txt written to -------------- |  {short_p1}\n"
-            + f"README.txt written to -------------- |  {short_p2}"
+            f"\033[32mREADME.txt written to -------------- | \033[0m{short_p1}\n"
+            + f"\033[32mREADME.txt written to -------------- | \033[0m{short_p2}"
         )

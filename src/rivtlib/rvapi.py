@@ -491,7 +491,7 @@ def D(rS):
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     wrtdoc = rvdoc.Cmdp(rS, fD, lD, dutfS, drstS, dtxtS)
     print(f"{wrtdoc.cmdx()}")
-    print("\n>>>>>>>>>>>>>>>>>>> End of rivt file\n\n")
+    print("\n\033[32m>>>>>>>>>>>>>>>>>>> End of rivt file\033[0m\n\n")
     sys.exit()
 
 
