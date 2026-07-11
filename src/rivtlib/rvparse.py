@@ -138,8 +138,8 @@ class Rs:
                 snS = ""
             sdivS = str(lD["sdivI"])
             divS = str(lD["divS"])
-            snumS = f"{divS}.{sdivS}{snS}{addtgS}"
-            snumrS = f"**{divS}.{sdivS}{snS}{addtgS}**"
+            snumS = f"{divS}.{sdivS}{snS}-{snumI}{addtgS}"
+            snumrS = f"**{divS}.{sdivS}{snS}{snumI}{addtgS}**"
             headS = snumS + " | " + sectitleS
             head1S = snumrS + " | " + sectitleS
             bordrS = lD["widthI"] * "-" + "\n"
@@ -404,7 +404,7 @@ class Rs:
         # export values file to vDss-#.csv where # is section number
         if self.tyS == "V" and len(rivL) > 0:
             fileS = lD["valprfx"] + str(lD["secnumI"]) + ".csv"
-            fileP = Path(fD["storeP"], fileS)
+            fileP = Path(fD["storeP"], "data", fileS)
             with open(fileP, "w") as file1:
                 file1.write("\n".join(rivL))
 

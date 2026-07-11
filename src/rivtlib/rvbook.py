@@ -1,6 +1,6 @@
 """generate rivtbook report
 
-The module is called by the make-rivtbook.py script file.
+This module is called by the make-rivtbook.py script file.
 """
 
 import configparser
@@ -20,6 +20,7 @@ import __main__
 bookP = os.getcwd()  # root of rivtbook folders
 bookfL = glob.glob("bk*-*", root_dir=bookP)
 bookfL.sort()
+# -------------------- redefine paths for rivtbook
 rstdocsP = Path(bookP, "_rstdocs")  # rst folder
 storeP = Path(bookP, "_rvstor")
 logsP = Path(storeP, "logs")
@@ -39,46 +40,47 @@ logging.basicConfig(
 warnings.filterwarnings("ignore")
 
 
-print("\n||||||||||||||||| folders included in book")
+print("\n\033[33m||||||||||||||||| folders included in book\033[0m")
 for s in bookfL:
-    print("rivtbook folder:", s)
-print("||||||||||||||||||| \n\n")
+    print("\033[33mrivtbook folder:\033[0m", s)
+print("\033[33m||||||||||||||||||| \n\n\033[0m")
 for file_path in rstdocsP.glob("*.rst"):
     try:
         file_path.unlink()
-        print(f"Deleted: {file_path}")
+        print(f"\033[33mDeleted: {file_path}\033[0m")
     except OSError as e:
-        print(f"Error deleting {file_path}: {e}")
-print("\n||||||||||||||||| rst files deleted\n\n")
+        print(f"\033[31mError deleting {file_path}: {e}\033[0m")
+print("\033[33m||||||||||||| rst files deleted\n\n\033[0m")
 
 # -------------------- get report settings from rivt-report.py
 setS = os.getenv("bookset")
 configL = configparser.ConfigParser()
 configL.read_string(setS)
 
-# Dictionaries
+# Dictionary of config settings
 repD = {}
 repD["rstdocsP"] = rstdocsP
-repD["repfile"] = configL["settings"]["rept_filename"]
-repD["regen"] = configL["settings"]["regen_pdf"]
-repD["exclude"] = configL["settings"]["exclude"]
-repD["auto"] = configL["settings"]["auto_cfg"]
-repD["verbose"] = configL["settings"]["rep_verbose"]
-repD["title"] = configL["format"]["title"]
-repD["subtitle"] = configL["format"]["subtitle"]
-repD["client"] = configL["format"]["client"]
-repD["projref"] = configL["format"]["project_ref"]
-repD["authors"] = configL["format"]["authors"]
-repD["version"] = configL["format"]["version"]
-repD["copyright"] = configL["format"]["copyright"]
-repD["runlogo"] = configL["format"]["running_logo"]
-repD["runlabel"] = configL["format"]["running_label"]
-repD["coverlogo"] = configL["format"]["coverlogo"]
-repD["logosize"] = configL["format"]["coverlogo_size"]
-repD["pdfpage"] = configL["format"]["pdf_pagesize"]
-repD["pdfmargin"] = configL["format"]["pdf_margins"]
-repD["pdflink"] = configL["format"]["pdf_link"]
-repD["toc_level"] = configL["format"]["toc_level"]
+repD["regen"] = configL["process"]["regen_pdf"]
+repD["auto"] = configL["process"]["auto_cfg"]
+repD["verbose"] = configL["process"]["book_verbose"]
+repD["repfile"] = configL["book"]["book_filename"]
+repD["exclude"] = configL["book"]["exclude"]
+repD["version"] = configL["book"]["version"]
+repD["title"] = configL["layout"]["title"]
+repD["subtitle"] = configL["layout"]["subtitle"]
+repD["client"] = configL["layout"]["client"]
+repD["projref"] = configL["layout"]["project_ref"]
+repD["authors"] = configL["layout"]["authors"]
+repD["copyright"] = configL["layout"]["copyright"]
+repD["runlogo"] = configL["layout"]["running_logo"]
+repD["runlabel"] = configL["layout"]["running_label"]
+repD["coverlogo"] = configL["layout"]["coverlogo"]
+repD["logosize"] = configL["layout"]["coverlogo_size"]
+repD["pdfpage"] = configL["layout"]["pdf_pagesize"]
+repD["pdfmargin"] = configL["layout"]["pdf_margins"]
+repD["pdflink"] = configL["layout"]["pdf_link_underline"]
+repD["linkcolor"] = configL["layout"]["pdf_link_color"]
+repD["toc_level"] = configL["layout"]["toc_level"]
 repD["repfilebase"] = repD["repfile"].split(".")[0]
 get_typeS = repD["repfile"].split(".")[-1].strip()
 
@@ -103,11 +105,11 @@ def pdfx(rstL):
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     rvb.pdf_coverS()
-    print("||||||||||||||||||| report cover page written")
+    print("\033[33m||||||||||||||||||| report cover page written\033[0m")
     rvb.pdf_yamlS()
-    print("||||||||||||||||||| report yaml file written")
+    print("\033[33m||||||||||||||||||| report yaml file written\033[0m")
     rvb.pdf_confpy()
-    print("||||||||||||||||||| report conf file written")
+    print("\033[33m||||||||||||||||||| report conf file written\033[0m")
     # -------------------------- append div tocs to index.rst
     timeS = datetime.now().strftime("%Y-%m-%d")
     headblkS = f"""**{repD["title"]}** - v{repD["version"]} |s| |s| |s| |s|  **###Section###**"""
@@ -165,17 +167,19 @@ def pdfx(rstL):
     with open(rvindxT, "w", encoding="utf-8") as f5:
         f5.write(preamS)
 
-    print("||||||||||||||||||| book - running sphinx-pdf ")
+    print("\033[33m||||||||||||||||||| book - running sphinx-pdf \033[0m")
     curP = Path(os.getcwd())
     os.chdir(curP.parent)
     pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \n"
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)
         if not result.returncode:
-            print(f"||||||||||||||||||| book - pdf written: {short_p} \n")
+            print(
+                f"\033[34m||||||||||||||||||| book - pdf written: {short_p} \033[0m\n"
+            )
     except subprocess.CalledProcessError as e:
-        print(f"||||||||||||||||||| Error executing script: {e}")
-        print("Stderr:", e.stderr)
+        print(f"\033[33m||||||||||||||||||| Error executing script: {e}\033[0m")
+        print(f"\033[33mStderr:\033[0m {e.stderr}")
 
     return " "
     # endregion
@@ -210,13 +214,13 @@ def txtx(txtfL):
         f2.write(headS + "\n" + toctxtS + "\n\n" + content)
     parts = Path(rvrepT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
-    return f"text rivtbook written: {short_p} \n"
+    return f"\033[33mtext rivtbook written: {short_p}\033[0m\n"
     # endregion
 
 
 # ---------- loop over folders in book - get doc title from PUBLISH
 doctitleS = " "
-dochdrL = []  # for html
+dochdrL = []  # for txt
 # strtdocS = rivtfL[0]
 # strtdocT = Path(bookP, strtdocS)``
 for dirS in bookfL:
@@ -239,6 +243,7 @@ for dirS in bookfL:
                     doctitleS = " "
                 else:
                     doctitleS = str(pL[1]).strip()
+    dochdrL.append(f"{bookfS[2:5]} - {doctitleS}")
     repD["doctitleS"] = doctitleS
     repD["rvbaseS"] = bookfS.split(".py")[0].strip()
     parts = Path(frstT).parts[-3:]  # Take last 3 segments
@@ -247,29 +252,29 @@ for dirS in bookfL:
     if get_typeS == "pdf":
         script_dir = Path(frstT).resolve().parent
         os.chdir(script_dir)
-        print("\n||| write rst : ", short_p, "\n")
-        print("\n||| cwd : ", os.getcwd(), "\n")
+        print("\n\033[33m||| write rst : \033[0m", short_p, "\n")
+        print("\n\033[33m||| cwd : \033[0m", os.getcwd(), "\n")
         result = subprocess.run(
             ["python", frstT, "-t", "none", "-k", "true"], text=True
         )
-        print(f"||||||||||||| >> rst << rivtbook chapter generated: {frstT}\n")
+        print(
+            f"\033[33m||||||||||||| >> rst << rivtbook chapter generated: {frstT}\033[0m\n"
+        )
     elif get_typeS == "txt":
         script_dir = Path(frstT).resolve().parent
         os.chdir(script_dir)
-        print("\n||| write txt : ", short_p, "\n")
-        print("\n||| cwd : ", os.getcwd(), "\n")
+        print("\n\033[33m||| write txt : \033[0m", short_p, "\n")
+        print("\n\033[33m||| cwd : \033[0m", os.getcwd(), "\n")
         result = subprocess.run(
             ["python", frstT, "-t", "txt", "-k", "true"], text=True
         )
         print(
-            "|||||||||||||| >> txt << rivtbook chapter generated: ",
-            {frstT},
-            "\n",
+            f"\033[33m|||||||||||||| >> txt << rivtbook chapter generated: {frstT}\033[0m\n"
         )
-    print("result from subprocess", result)
+    print("\033[33mresult from subprocess\033[0m", result)
     errlogT = Path(logsP, bookfS[0:7] + "log.txt")
     with open(errlogT, "a") as f1:
-        f1.write(f">> {get_typeS} << generated from: {frstT}\n")
+        f1.write(f"\033[33m>> {get_typeS} << generated from: {frstT}\033[0m\n")
     logging.info(f">> {get_typeS} << generated from: {frstT}\n")
 # ----------------------------------------------------- write pdf - book
 if get_typeS == "pdf":
@@ -279,26 +284,25 @@ if get_typeS == "pdf":
         rstfiL.append(fS)
         rsttabL = ["    " + tS for tS in rstfiL]
     rsttabL = "\n".join(rsttabL)
-    print("||||||||||||| write pdf rivtbook")
+    print("\033[33m||||||||||||| write pdf rivtbook\033[0m")
     pubT = Path(bookP, "_pdfdocs", repD["repfile"].strip())
     msgS = pdfx(rsttabL)
-    print(f"||||||||||||| pdf rivtbook: {msgS}")
+    print(f"\033[33m||||||||||||| pdf rivtbook: {msgS}\033[0m")
 elif get_typeS == "txt":
-    print("||||||||||||| write text rivtbook")
+    print("\033[33m||||||||||||| write text rivtbook\033[0m")
     pubT = Path(bookP, "_txtdocs", repD["repfile"].strip())
     txt_folderP = Path(bookP, "_txtdocs")
     txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
     txtfL.sort()
     msgS = txtx(txtfL)
-    print(f"||||||||||||| txt rivtbook:  {msgS}")
+    print(f"\033[33m||||||||||||| txt rivtbook:  {msgS}\033[0m")
 # ------------------------------------- write readme - book
 reptitleS = repD["repfile"]
 versionS = repD["version"]
 authorS = repD["authors"]
-toctxtS = "Table of Contents\n==================\n"
+toctxtS = "rivtbook Table of Contents\n===================================\n\n"
 for item in dochdrL:
-    it = item[0]
-    toctxtS += it[2] + "." + str(int(it[3:5])) + "  " + item[1] + "\n"
+    toctxtS += item + "\n"
 borderS = "=" * 80
 hdlS = repD["title"] + " v-" + versionS + " | " + authorS + " | " + timeS
 headS = "\n" + borderS + "\n| rivtbook | " + hdlS + "\n" + borderS + "\n\n"
@@ -320,5 +324,5 @@ with open(rvreadmeT, "w", encoding="utf-8") as f1:
 # with open(, "w", encoding="utf-8") as f3:
 parts = Path(rvreadmeT).parts[-3:]  # Take last 3 segments
 short_p = ".../" + "/".join(parts)
-logging.info("|||||||||| README book : " + repD["title"])
-print(f"||||||||||||| README book written:  {short_p}")
+logging.info(f"|||||||||| README book : {repD['title']}")
+print(f"\033[33m||||||||||||| README book written:  {short_p}\033[0m")

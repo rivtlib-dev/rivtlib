@@ -46,6 +46,7 @@ repD = {}
 repD["rstdocsP"] = rstdocsP
 repD["repfile"] = configL["report"]["rept_filename"]
 repD["exclude"] = configL["report"]["exclude"]
+repD["version"] = configL["report"]["version"]
 repD["regen"] = configL["process"]["regen_pdf"]
 repD["auto"] = configL["process"]["auto_cfg"]
 repD["verbose"] = configL["process"]["rep_verbose"]
@@ -54,7 +55,6 @@ repD["subtitle"] = configL["layout"]["subtitle"]
 repD["client"] = configL["layout"]["client"]
 repD["projref"] = configL["layout"]["project_ref"]
 repD["authors"] = configL["layout"]["authors"]
-repD["version"] = configL["layout"]["version"]
 repD["copyright"] = configL["layout"]["copyright"]
 repD["runlogo"] = configL["layout"]["running_logo"]
 repD["runlabel"] = configL["layout"]["running_label"]
@@ -88,6 +88,7 @@ htmlpubP = Path(pubP, "docs")
 pdfpubP = Path(pubP, "pdfdocs")
 txtpubP = Path(pubP, "txtdocs")
 logsP = Path(storeP, "logs")
+rstdocsP = Path(reptP, "_rstdocs")
 rivt_storedP = storeP
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
@@ -397,9 +398,9 @@ def txtx(txtfL):
     # endregion
 
 
-# ---------- loop over folders in book get doc title from PUBLISH
+# ---------- loop over folders get doc title from PUBLISH
 doctitleS = " "
-dochdrL = []  # for html
+dochdrL = []  # for txt report table of contents
 strtdocS = rivtfL[0]
 strtdocT = Path(reptP, strtdocS)
 for frstS in rivtfL:

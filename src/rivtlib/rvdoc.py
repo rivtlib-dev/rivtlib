@@ -290,7 +290,6 @@ class Cmdp:
         headblkS = f"""**{self.doctitleS}** - v{self.verS} |s| |s| |s| |s|  **###Section###**"""
         foot1blkS = f"""{timeS} |s| |s| |s| **|** |s| |s| |s| {self.authorS}"""
         foot2blkS = f"""**{self.runlabelS}**"""
-
         imgS = f"""
 .. |blklogo| image:: ./_static/{self.runlogo}
    :height: 100px
