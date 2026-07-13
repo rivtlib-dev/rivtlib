@@ -59,10 +59,12 @@ from rivtlib import rvdoc, rvmarkup, rvparse
 
 # parse command line arguments
 reptP = Path(os.getcwd())
+# print(f"Current working directory: {reptP}")
 try:
     rivtN = os.path.basename(__main__.__file__)
 except Exception:
     rivtN = os.path.basename(__main__.__name__)
+
 if fnmatch.fnmatch(rivtN, "rv[A-Z0-9][0-9][0-9]-*.py"):
     pass
 else:
@@ -88,7 +90,7 @@ docnumS = rbaseS[0:6]
 srcP = Path(reptP, "rvsrc")
 publicP = Path(reptP, "_rivt-public")  # not used with rivtbooks
 # Set paths and flags for report, book, or chapter
-print("--------------", reptP.name)
+# print("--------------", reptP.name)
 if reptP.name == "rivt-report":
     reptflagS = "doc"
     rstdocsP = Path(reptP, "_rstdocs")
@@ -120,7 +122,7 @@ else:
     docreadmeT = Path(reptP.parent, "_rvstor", docnumS + "readme.txt")
     pubreadmeT = " "
 # logs and backups
-print("-----------------------", reptflagS)
+# print("-----------------------", reptflagS)
 warnings.filterwarnings("ignore")
 logging.basicConfig(
     level=logging.DEBUG,
@@ -506,13 +508,14 @@ def S(rS):
     print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
 
 
-def X(rS):
+def X():
     """Exit rivt file processing
 
     Args:
         rS (str): rivt string
     """
-    shL = rS.split("\n")
-    logging.info("exit rivt file at: " + shL[0])
-    print("\n[" + shL[0].strip() + "] : rivtlib exit " + "\n")
+    logging.info("exit rivt file with rv.X()")
+    print("\n\033[31m------------------------------------------------\033[0m")
+    print("\n\033[31mrivtlib exited with rv.X()\033[0m")
+    print("\n\033[31m------------------------------------------------\033[0m")
     sys.exit()

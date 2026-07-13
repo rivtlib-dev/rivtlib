@@ -1,6 +1,6 @@
 {
     "terminal.integrated.environmentChangesRelaunch": true,
-    "window.title": "${dirty}${activeEditorLong}${separator}${separator} profile: ${profileName}${separator} repo: ${activeRepositoryName}",
+    "window.title": "${dirty}${separator}${activeFolderShort}${separator}${activeEditorLong}",
     "workbench.colorTheme": "Dark Modern",
     "workbench.iconTheme": "vscode-icons",
     "workbench.editor.empty.hint": "hidden",

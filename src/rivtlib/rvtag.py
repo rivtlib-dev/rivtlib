@@ -289,18 +289,18 @@ class Tag:
         elif cmdS == "bTEX":
             """format text
             
-            types:  center
+            types: indent n
                     bold
                     italic
-                    wrap
-                    indent
+                    wrap                    
                     literal
+                    text
             """
             # region
             blkL = (self.strL).split("\n", 1)
             marktypS = blkL[0].strip()
             blkS = ""
-            if marktypS == "note":
+            if marktypS == "note":  # footnote reference
                 paraS = blkL[1]
                 paraL = blkL[1].split("\n\n")
                 for ln in paraL:
@@ -324,6 +324,26 @@ class Tag:
                     + "\n.. code-block:: text \n\n"
                     + "\n\n"
                     + textwrap.indent(txtS, "       ")
+                )
+                lS = ""
+            elif marktypS == "italic":
+                txtS = blkL[1]
+                uS = tS = txtS
+                riS = "*" + txtS.strip() + "*"
+                riS = textwrap.indent(riS, "       ")
+                rS = "\n\n" + riS + "\n\n"
+                lS = ""
+            elif marktypS == "bold":
+                txtS = blkL[1]
+                uS = tS = txtS
+                rS = "\n\n    **" + txtS.strip() + "**\n\n"
+                lS = ""
+            elif marktypS == "topic":
+                ln1S = blkL[1].split("\n", 1)[0]
+                txtS = blkL[1].split("\n", 1)[1]
+                uS = tS = txtS
+                rS = f"\n\n.. topic:: {ln1S} \n\n" + textwrap.indent(
+                    txtS, "       "
                 )
                 lS = ""
             else:

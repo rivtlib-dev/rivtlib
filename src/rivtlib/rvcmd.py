@@ -193,8 +193,11 @@ class Cmd:
             exec(cmdS, globals(), self.rivtD)
         valU = eval(spL[0], globals(), self.rivtD)
         self.rivtD[spL[0]] = valU
-        val1U = valU.cast_unit(eval(unit1S))
-        val2U = valU.cast_unit(eval(unit2S))
+        if unit1S != "m/m":
+            val1U = valU.cast_unit(eval(unit1S))
+            val2U = valU.cast_unit(eval(unit2S))
+        else:
+            val1U = val2U = valU
         eq2S = sp.pretty(sp.sympify(spL[0], _clash2, evaluate=False))  # results
         tbl1L = []  # ============ values table
         tbl2L = []

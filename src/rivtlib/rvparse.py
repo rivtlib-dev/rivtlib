@@ -138,8 +138,8 @@ class Rs:
                 snS = ""
             sdivS = str(lD["sdivI"])
             divS = str(lD["divS"])
-            snumS = f"{divS}.{sdivS}{snS}-{snumI}{addtgS}"
-            snumrS = f"**{divS}.{sdivS}{snS}{snumI}{addtgS}**"
+            snumS = f"{divS}.{sdivS}{snS}{addtgS}"
+            snumrS = f"**{divS}.{sdivS}{snS}{addtgS}**"
             headS = snumS + " | " + sectitleS
             head1S = snumrS + " | " + sectitleS
             bordrS = lD["widthI"] * "-" + "\n"
@@ -149,7 +149,7 @@ class Rs:
         file_path = str(fD["rivtT"])  # insert interactive link in terminal
         for linenumI, lineS in enumerate(rivtL):
             if rsL[0] in lineS:
-                print(f"[link] {file_path}:{linenumI + 1}\n")
+                print(f"\n\033[32m[link] {file_path}:{linenumI + 1}\033[0m")
                 break
         if self.lD["mergeB"] == "True":  # add transition and new page
             srstS = "\n"
