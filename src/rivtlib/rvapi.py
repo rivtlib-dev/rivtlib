@@ -286,33 +286,83 @@ def doc_parse(rS, tyS, tagL, cmdL):
 
 
 def R(rS):
-    """Run API - Evaluate and insert scripts
-
-        types - specified in header
-        --------------------------
-        endnotes
-        rst
-        python
-        html
-        latex - require texlive cli
-        mermaid - requires mermaid cli
-        dot - requires graphviz cli
+    """Tools API
+    run shell commands
 
     Args:
         rS (str): rivt string
     """
-    global dutfS, dtxtS, drstS, fD, lD, rivtD
+    global dutfS, drstS, dtxtS, fD, lD, rivtD
 
-    cmdL = []
-    tagL = []
-    tagbL = []
-    tagL = tagL + tagbL
-    dutfS, dtxtS, drstS = doc_parse(rS, "R", tagL, cmdL)
-    r1S = rS.split("\n", 1)[1]
-    uS, tS, rS = rvmarkup.typex(lD, r1S)
-    dutfS += uS
-    dtxtS += tS
-    drstS += rS
+    rL = rS.split("\n", 1)
+    fileS = lD["toolprfx"] + str(lD["secnumI"]) + ".txt"
+    fileP = Path(fD["storeP"], fileS)
+    with open(fileP, "w") as file1:
+        file1.write("\n".join(rL[1:]))
+
+    blkB = False
+    blkS = ""
+    rvL = rS.split("\n")
+    for lS in rvL[1:]:
+        lS = lS[4:]
+        # print(lS)
+        if lS[:8] == "| COPY |":
+            reptS = str(fD["reptP"])
+            if "-rvsrc-" in lS:
+                lS = lS.replace("-rvsrc-", reptS + "/rvsrc")
+            lcL = lS.split("|")
+            srcP = str(Path(os.path.expandvars(lcL[2].strip())))
+            destP = str(Path(os.path.expandvars(lcL[3].strip())))
+            fileS = lcL[4].strip()
+            source_pattern = str(Path(srcP, fileS))
+            print("\n---| COPY | ---")
+            print(f"from: {source_pattern}")
+            print(f"to: {destP}")
+            for fpath in glob.glob(source_pattern):
+                shutil.copy(fpath, destP)
+            print(f"---| COPIED |--- {fileS} from {srcP} to {destP}")
+        elif lS[:9] == "--- | SHELL | -----":
+            lcL = lS.split("|")
+            cmdS = lcL[3].strip()
+            srcP = Path(fD["reptP"], lcL[2].strip(), cmdS)
+            cmdS = f'"{str(srcP)}"'
+            try:
+                # This will block until finished or raise  error
+                print(
+                    "\n-----------------| Run shell command |------------------\n"
+                )
+                print(f"{cmdS}")
+                print("........\n")
+                result = subprocess.run(cmdS, shell=True, check=True)
+                print("\n shell message: ", result)
+                print(
+                    "\n--------- | Shell command finished |------------------\n"
+                )
+            except subprocess.CalledProcessError as e:
+                print(
+                    f"--------------- | Command failed with exit code {e.returncode}"
+                )
+        elif "_[[WRITE]]" in lS:
+            blkB = True  # tag flag
+            wfS = lS.split("]]")[1].strip()
+            writeP = Path(fD["reptP"], wfS)
+            continue
+        else:
+            if blkB:
+                if "_[[END]]" in lS:
+                    try:
+                        subS = eval(blkS, globals(), rivtD)
+                    except Exception:
+                        subS = blkS
+                    with open(writeP, "w") as f2:
+                        f2.write(subS)
+                    print(f"File {wfS} written to: {fD['reptP']}")
+                    blkB = False
+                    blkS = ""
+                    continue
+                blkS += lS + "\n"
+                continue
+            pass
 
 
 def I(rS):  # noqa: E743
@@ -404,83 +454,36 @@ def V(rS):
 
 
 def T(rS):
-    """Tools API
-    Execute shell commands
+    """Text API - Equivalent to _[[TEXT]] block
+
+        formats text types
+        --------------------------
+        endnotes
+        rst
+        python
+        html
+        endnotes
+        text
+        note
+        latex - requires texlive cli
+        mermaid - requires mermaid cli
+        dot - requires graphviz cli
 
     Args:
         rS (str): rivt string
     """
-    global dutfS, drstS, dtxtS, fD, lD, rivtD
+    global dutfS, dtxtS, drstS, fD, lD, rivtD
 
-    rL = rS.split("\n", 1)
-    fileS = lD["toolprfx"] + str(lD["secnumI"]) + ".txt"
-    fileP = Path(fD["storeP"], fileS)
-    with open(fileP, "w") as file1:
-        file1.write("\n".join(rL[1:]))
-
-    blkB = False
-    blkS = ""
-    rvL = rS.split("\n")
-    for lS in rvL[1:]:
-        lS = lS[4:]
-        # print(lS)
-        if lS[:8] == "| COPY |":
-            reptS = str(fD["reptP"])
-            if "-rvsrc-" in lS:
-                lS = lS.replace("-rvsrc-", reptS + "/rvsrc")
-            lcL = lS.split("|")
-            srcP = str(Path(os.path.expandvars(lcL[2].strip())))
-            destP = str(Path(os.path.expandvars(lcL[3].strip())))
-            fileS = lcL[4].strip()
-            source_pattern = str(Path(srcP, fileS))
-            print("\n---| COPY | ---")
-            print(f"from: {source_pattern}")
-            print(f"to: {destP}")
-            for fpath in glob.glob(source_pattern):
-                shutil.copy(fpath, destP)
-            print(f"---| COPIED |--- {fileS} from {srcP} to {destP}")
-        elif lS[:9] == "--- | SHELL | -----":
-            lcL = lS.split("|")
-            cmdS = lcL[3].strip()
-            srcP = Path(fD["reptP"], lcL[2].strip(), cmdS)
-            cmdS = f'"{str(srcP)}"'
-            try:
-                # This will block until finished or raise  error
-                print(
-                    "\n-----------------| Run shell command |------------------\n"
-                )
-                print(f"{cmdS}")
-                print("........\n")
-                result = subprocess.run(cmdS, shell=True, check=True)
-                print("\n shell message: ", result)
-                print(
-                    "\n--------- | Shell command finished |------------------\n"
-                )
-            except subprocess.CalledProcessError as e:
-                print(
-                    f"--------------- | Command failed with exit code {e.returncode}"
-                )
-        elif "_[[WRITE]]" in lS:
-            blkB = True  # tag flag
-            wfS = lS.split("]]")[1].strip()
-            writeP = Path(fD["reptP"], wfS)
-            continue
-        else:
-            if blkB:
-                if "_[[END]]" in lS:
-                    try:
-                        subS = eval(blkS, globals(), rivtD)
-                    except Exception:
-                        subS = blkS
-                    with open(writeP, "w") as f2:
-                        f2.write(subS)
-                    print(f"File {wfS} written to: {fD['reptP']}")
-                    blkB = False
-                    blkS = ""
-                    continue
-                blkS += lS + "\n"
-                continue
-            pass
+    cmdL = []
+    tagL = []
+    tagbL = []
+    tagL = tagL + tagbL
+    dutfS, dtxtS, drstS = doc_parse(rS, "R", tagL, cmdL)
+    r1S = rS.split("\n", 1)[1]
+    uS, tS, rS = rvmarkup.typex(lD, r1S)
+    dutfS += uS
+    dtxtS += tS
+    drstS += rS
 
 
 def D(rS):

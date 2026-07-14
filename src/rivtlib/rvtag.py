@@ -289,18 +289,20 @@ class Tag:
         elif cmdS == "bTEX":
             """format text
             
-            types: indent n
+            types:  indent n
                     bold
                     italic
                     wrap                    
-                    literal
                     text
+                    python
+                    note
+                    endnote
             """
             # region
             blkL = (self.strL).split("\n", 1)
-            marktypS = blkL[0].strip()
+            texttypS = blkL[0].strip()
             blkS = ""
-            if marktypS == "note":  # footnote reference
+            if texttypS == "note":  # note block
                 paraS = blkL[1]
                 paraL = blkL[1].split("\n\n")
                 for ln in paraL:
@@ -316,7 +318,7 @@ class Tag:
                     + "\n"
                 )
                 lS = ""
-            elif marktypS == "text":
+            elif texttypS == "text":
                 txtS = blkL[1]
                 uS = tS = txtS
                 rS = (
@@ -326,19 +328,19 @@ class Tag:
                     + textwrap.indent(txtS, "       ")
                 )
                 lS = ""
-            elif marktypS == "italic":
+            elif texttypS == "italic":
                 txtS = blkL[1]
                 uS = tS = txtS
                 riS = "*" + txtS.strip() + "*"
                 riS = textwrap.indent(riS, "       ")
                 rS = "\n\n" + riS + "\n\n"
                 lS = ""
-            elif marktypS == "bold":
+            elif texttypS == "bold":
                 txtS = blkL[1]
                 uS = tS = txtS
                 rS = "\n\n    **" + txtS.strip() + "**\n\n"
                 lS = ""
-            elif marktypS == "topic":
+            elif texttypS == "topic":
                 ln1S = blkL[1].split("\n", 1)[0]
                 txtS = blkL[1].split("\n", 1)[1]
                 uS = tS = txtS
