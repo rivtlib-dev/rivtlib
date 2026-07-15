@@ -132,10 +132,7 @@ class Rs:
             slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for STDOUT
             snumI = self.lD["secnumI"] + 1
             self.lD["secnumI"] = snumI
-            if snumI > 1:
-                snS = " - " + str(snumI)
-            else:
-                snS = ""
+            snS = "-" + str(snumI)
             sdivS = str(lD["sdivI"])
             divS = str(lD["divS"])
             snumS = f"{divS}.{sdivS}{snS}{addtgS}"
@@ -404,7 +401,7 @@ class Rs:
         # export values file to vDss-#.csv where # is section number
         if self.tyS == "V" and len(rivL) > 0:
             fileS = lD["valprfx"] + str(lD["secnumI"]) + ".csv"
-            fileP = Path(fD["storeP"], "data", fileS)
+            fileP = Path(fD["storeP"], "vals", fileS)
             with open(fileP, "w") as file1:
                 file1.write("\n".join(rivL))
 

@@ -1,4 +1,4 @@
-"""functions that process inline markup"""
+"""functions that process inline text"""
 
 import textwrap
 

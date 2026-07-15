@@ -72,6 +72,7 @@ class Cmd:
         self.parS = parL[2].strip()
         self.insP = Path(fD["reptP"], self.fileS)
         self.inspS = str(self.insP.as_posix())
+        print("*********", self.inspS)
         self.uS = ""
         self.rS = ""
         self.tS = ""
@@ -508,12 +509,55 @@ class Cmd:
         # endregion
 
     def TEXT(self):
-        """_summary_"""
-        # fiS = " [file: " + self.fileS + "]" + "\n\n"
-        # if typeS == "literal":
-        #     uS = "\n" + fiS + "\n" + textS + "\n"
-        #     tS = "\n" + textS + "\n"
-        #     rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
+        """insert text and format
+
+            | TEXT | rel. path | text type
+
+            types:
+                text
+                reST
+                html
+                LaTeX
+                markdown
+                wrap
+                python
+                endotes
+                notes
+
+        Returns:
+            mD{dict)}
+        """
+
+        # region
+        typeS = self.parS.strip()
+        fiS = " [file: " + self.fileS + "]" + "\n\n"
+        with open(self.inspS, "r") as f1:
+            textS = f1.read()
+            txtindS = textwrap.indent(textS, "    ")
+        if typeS == "text":
+            uS = "\n" + fiS + "\n" + textS + "\n"
+            tS = "\n" + textS + "\n"
+            rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
+        if typeS == "python":
+            uS = "\n" + fiS + "\n" + textS + "\n"
+            tS = "\n" + textS + "\n"
+            rS = lS = (
+                "\n.. code-block:: python \n\n" + "    " + txtindS + "\n\n"
+            )
+
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivtD": self.rivtD,
+        }
+
+        return self.mD
+
+        # endregion
 
     def RUNFILE(self):
         """run script and insert

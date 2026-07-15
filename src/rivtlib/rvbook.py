@@ -199,10 +199,10 @@ def txtx(txtfL):
     borderS = "=" * 80
     hdlS = repD["title"] + " | " + authorS + " | " + versionS + " | " + timeS
     headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n\n"
-    toctxtS = "Table of Contents\n==================\n"
+    toctxtS = "Table of Contents\n==================================\n"
+    print("*******************", dochdrL)
     for item in dochdrL:
-        itm = item[0]
-        toctxtS += itm[2] + "." + str(int(itm[3:5])) + "  " + item[1] + "\n"
+        toctxtS += item + "\n"
     with open(rvrepT, "w", encoding="utf-8") as f5:
         for fname in txtfL:
             fnameT = Path(txtpubP, fname)
@@ -269,7 +269,7 @@ for dirS in bookfL:
             ["python", frstT, "-t", "txt", "-k", "true"], text=True
         )
         print(
-            f"\033[33m|||||||||||||| >> txt << rivtbook chapter generated: {frstT}\033[0m\n"
+            f"\033[33m||||||||||| >> txt << rivtbook chapter generated: {frstT}\033[0m\n"
         )
     print("\033[33mresult from subprocess\033[0m", result)
     errlogT = Path(logsP, bookfS[0:7] + "log.txt")

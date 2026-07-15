@@ -339,7 +339,7 @@ def htmlx():
     #     #     f2.write(hdrS + content)
 
     print("\033[34m||||||||||||||||||| run sphinx-html\033[0m")
-    htmlcmdS = f"\033[34msphinx-build -E -D root_doc=index {rstdocsP} {htmlpubP} \033[0m\n"
+    htmlcmdS = f"sphinx-build -E -D root_doc=index {rstdocsP} {htmlpubP}\n"
     try:
         result = subprocess.run(htmlcmdS, shell=True, check=True)
         if not result.returncode:
@@ -348,7 +348,9 @@ def htmlx():
         print(f"\033[34m||||||||||||||||||| Error executing script: {e}\033[0m")
         print("\033[34mStderr:\033[0m", e.stderr)
 
+    inxT = Path(htmlpubP, "index.html")
     repdocT = Path(htmlpubP, repD["repfile"])
+    os.rename(inxT, repdocT)
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     return f"\033[34mfile written\033[0m: {short_p} \n"

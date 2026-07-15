@@ -455,11 +455,12 @@ class Cmdp:
         except subprocess.CalledProcessError as e:
             print(f"Error executing script: {e}")
             print("Stderr:", e.stderr)
+            result = f"[Error executing script]: {e}"
 
         parts = Path(rvdocT).parts[-3:]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
-        print("\033[32m---------- | \033[0m", result)
+        print("\033[32m sphinx build result ------------- | \033[0m", result)
         return f"\033[32mHTML doc written to -------------- | \033[0m{short_p}"
 
         # endregion

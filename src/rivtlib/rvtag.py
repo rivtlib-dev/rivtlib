@@ -1,4 +1,7 @@
+import ast
 import csv
+import io
+import sys
 import textwrap
 from pathlib import Path
 
@@ -209,10 +212,10 @@ class Tag:
          API         Syntax                               Description (output types)
         --------- -------------------------------------- -------------------------------------
         R          _[[SHELL]] type, *wait;nowait*          command script (all)
-        I          _[[TOPIC]] topic label                  topic box (all)
+        V          _[[PYTHON] topic label                  topic box (all)
         I          _[[BOX]] optional label                 box (all)
         V          _[[TABLE]] title                        format table, store csv (all)
-        T          _[[MARKUP]] type                        markup (all)
+        V,I        _[[TEXT]] type                          markup (all)
         D          _[[METADATA]] label                     meta and layout data (all)
         all        _[[END]]                                end block (all)
 
@@ -351,6 +354,24 @@ class Tag:
             else:
                 pass
             # endregion
+        elif cmdS == "bPYT":
+            """execute python code block
+            
+            """
+            blkL = (self.strL).split("\n", 1)
+            txtS = blkL[1]
+            procS = blkL[0].strip()
+            self.build_transcript(txtS)
+            pytxtS = self.build_transcript(txtS)
+            uS = tS = pytxtS
+            lS = ""
+            rS = (
+                "\n"
+                + "\n.. code-block:: python \n\n"
+                + "\n\n"
+                + textwrap.indent(pytxtS, "       ")
+                + "\n\n"
+            )
 
         else:
             pass
@@ -363,6 +384,73 @@ class Tag:
         }
 
         return mD, self.lD, self.rivtD
+
+    def build_transcript(self, txtS):
+        """
+        Returns (transcript, source_lines)
+
+        transcript   -- list of strings representing the full annotated
+                        output: every source line (comments/blank lines
+                        included) plus any print() output inserted right
+                        after the statement that generated it.
+        source_lines -- list of every raw line of the input file, as strings,
+                        in original order (this is the plain "capture every
+                        line as a string" list, with no output mixed in).
+        """
+        lines = txtS.splitlines()
+
+        tree = ast.parse(txtS)
+
+        globals_ns = globals().copy()
+        transcript = []
+        source_lines = []
+
+        prev_end = 0
+        real_stdout = sys.stdout
+
+        def emit_raw(ln_start, ln_end):
+            for ln in range(ln_start, ln_end + 1):
+                text = lines[ln - 1]
+                source_lines.append(text)
+                transcript.append(text)
+
+        for node in tree.body:
+            start = node.lineno
+            end = getattr(node, "end_lineno", start)
+
+            # Comment-only / blank lines sitting between statements: just
+            # display them, nothing to execute.
+            if start - 1 >= prev_end + 1:
+                emit_raw(prev_end + 1, start - 1)
+
+            # The statement's own source lines.
+            emit_raw(start, end)
+
+            # Execute just this one statement, capturing whatever it prints.
+            module = ast.Module(body=[node], type_ignores=[])
+            ast.fix_missing_locations(module)
+            code_obj = compile(module, txtS, "exec")
+
+            buf = io.StringIO()
+            sys.stdout = buf
+            try:
+                exec(code_obj, globals_ns)
+            finally:
+                sys.stdout = real_stdout
+
+            output = buf.getvalue()
+            if output:
+                transcript.extend(output.rstrip("\n").split("\n"))
+
+            prev_end = end
+
+        # Any trailing comment/blank lines after the final statement.
+        if prev_end + 1 <= len(lines):
+            emit_raw(prev_end + 1, len(lines))
+
+        globals().update(globals_ns)
+        result = "\n".join(transcript)
+        return result
 
     def parse_simple_rst_table(self, table_text):
         # Prepare the input for docutils

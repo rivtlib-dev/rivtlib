@@ -55,7 +55,7 @@ from pathlib import Path
 
 import __main__
 import rivtlib.rvunits as rvunit
-from rivtlib import rvdoc, rvmarkup, rvparse
+from rivtlib import rvdoc, rvparse, rvtext
 
 # parse command line arguments
 reptP = Path(os.getcwd())
@@ -446,9 +446,7 @@ def V(rS):
         "C",  # bold center text
         "T",  # table label
     ]
-    tagbL = [
-        "ARGS",
-    ]
+    tagbL = ["ARGS", "PYTHON"]
     tagL = tagL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "V", tagL, cmdL)
 
@@ -480,7 +478,7 @@ def T(rS):
     tagL = tagL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "R", tagL, cmdL)
     r1S = rS.split("\n", 1)[1]
-    uS, tS, rS = rvmarkup.typex(lD, r1S)
+    uS, tS, rS = rvtext.typex(lD, r1S)
     dutfS += uS
     dtxtS += tS
     drstS += rS
