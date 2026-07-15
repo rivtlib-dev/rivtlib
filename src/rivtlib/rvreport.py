@@ -183,7 +183,7 @@ def pdfx(rstL):
         f5.write(preamS)
 
     print("\033[34m||||||||||||||||||| run sphinx-pdf\033[0m")
-    pdfcmdS = f"\033[34msphinx-build -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)} \033[0m\n"
+    pdfcmdS = f"python -m sphinx -a -E -b pdf -D root_doc=index {str(rstdocsP)} {str(pdfpubP)}"
 
     try:
         result = subprocess.run(pdfcmdS, shell=True, check=True)

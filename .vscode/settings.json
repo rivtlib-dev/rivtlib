@@ -191,6 +191,5 @@
         "rivtcalc",
         "sympy",
     ],
-    "cSpell.enabled": false,
     "window.zoomLevel": 1,
 }

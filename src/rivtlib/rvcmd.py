@@ -72,7 +72,6 @@ class Cmd:
         self.parS = parL[2].strip()
         self.insP = Path(fD["reptP"], self.fileS)
         self.inspS = str(self.insP.as_posix())
-        print("*********", self.inspS)
         self.uS = ""
         self.rS = ""
         self.tS = ""

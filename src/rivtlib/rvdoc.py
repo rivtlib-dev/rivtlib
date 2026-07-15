@@ -271,7 +271,7 @@ class Cmdp:
         parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
-        pdfcmdS = f"sphinx-build -a -E -b pdf -D root_doc={self.fD['rbaseS']} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
+        pdfcmdS = f"python -m sphinx -a -E -b pdf -D root_doc={self.fD['rbaseS']} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
         try:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
         except subprocess.CalledProcessError as e:

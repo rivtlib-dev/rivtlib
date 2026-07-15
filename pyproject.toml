@@ -1,6 +1,6 @@
 [project]
 name = "rivtlib"
-version = "1.0.0a13"
+version = "1.0.0a14"
 description = "write, share and reuse engineering documents"
 authors = [{ name = "rholland", email = "support@structurelabs.com" }]
 requires-python = ">=3.14"

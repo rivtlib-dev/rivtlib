@@ -200,7 +200,6 @@ def txtx(txtfL):
     hdlS = repD["title"] + " | " + authorS + " | " + versionS + " | " + timeS
     headS = "\n" + borderS + "\n" + hdlS + "\n" + borderS + "\n\n"
     toctxtS = "Table of Contents\n==================================\n"
-    print("*******************", dochdrL)
     for item in dochdrL:
         toctxtS += item + "\n"
     with open(rvrepT, "w", encoding="utf-8") as f5:
