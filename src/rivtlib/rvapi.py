@@ -49,9 +49,12 @@ import os
 import shutil
 import subprocess
 import sys
+import textwrap
 import warnings
 from importlib.metadata import version
 from pathlib import Path
+
+from docutils.core import publish_parts
 
 import __main__
 import rivtlib.rvunits as rvunit
@@ -291,6 +294,11 @@ def R(rS):
 
     Args:
         rS (str): rivt string
+
+        | COPY |
+        | SHELL |
+       _[[WRITE]]
+
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
 
@@ -321,7 +329,7 @@ def R(rS):
             for fpath in glob.glob(source_pattern):
                 shutil.copy(fpath, destP)
             print(f"---| COPIED |--- {fileS} from {srcP} to {destP}")
-        elif lS[:9] == "--- | SHELL | -----":
+        elif lS[:9] == "| SHELL |":
             lcL = lS.split("|")
             cmdS = lcL[3].strip()
             srcP = Path(fD["reptP"], lcL[2].strip(), cmdS)
@@ -374,12 +382,6 @@ def I(rS):  # noqa: E743
     """
     global dutfS, dtxtS, drstS, fD, lD
 
-    cmdL = [
-        "IMAGE",  # insert image from file
-        "IMAGE2",  # insert adjacent images from file
-        "TEXT",  # format text from file
-        "TABLE",  # insert table from file
-    ]
     tagL = [
         "G",  # glossary term
         "S",  # section link
@@ -395,9 +397,15 @@ def I(rS):  # noqa: E743
         "#",  # footnote
     ]
     tagbL = [
-        "TEXT",  # format text
         "TABLE",  # format inline rst and write to csv
+        "ENDNOTES",  # list footnote references in order
         "END",  # end
+    ]
+    cmdL = [
+        "IMAGE",  # insert image from file
+        "IMAGE2",  # insert adjacent images from file
+        "TEXT",  # format text from file
+        "TABLE",  # insert table from file
     ]
     tagL = tagL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "I", tagL, cmdL)
@@ -456,12 +464,9 @@ def T(rS):
 
         formats text types
         --------------------------
-        endnotes
-        rst
-        python
-        html
-        endnotes
         text
+        rst
+        html
         note
         latex - requires texlive cli
         mermaid - requires mermaid cli
@@ -482,6 +487,25 @@ def T(rS):
     dutfS += uS
     dtxtS += tS
     drstS += rS
+
+    textS = rS.split("\n", 1)[1]
+    typeS = lD["runtypeS"]
+    txtindS = textwrap.indent(textS, "    ")
+    if typeS == "text":
+        uS = "\n" + "\n" + textS + "\n"
+        tS = "\n" + textS + "\n"
+        rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
+    elif typeS == "note":
+        uS = "\n" + "\n" + textS + "\n"
+        tS = "\n" + textS + "\n"
+        rS = lS = "\n.. code-block:: note \n\n" + "    " + txtindS + "\n\n"
+    elif typeS == "rst-html":
+        uS = "\n" + "\n" + textS + "\n"
+        tS = "\n" + textS + "\n"
+        partS = publish_parts(source=textS, writer_name="html")
+        rS = lS = "\n" + partS["body"] + "\n\n"
+    else:
+        pass
 
 
 def D(rS):

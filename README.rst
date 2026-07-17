@@ -4,45 +4,34 @@ rivtlib
 **rivtlib is alpha software. Some features are not complete and the program has
 bugs.**
 
-*rivt* is an extensible, open source tool for writing engineering documents with
-and emphasis on reuse. *rivt* includes the built-in capability to export
-selected sections of a *private rivt file* to a *public rivt file* for sharing
-and reuse. For futher details please refer to the 
-`rivt user manual <https://rivt.info>`__.
+*rivt* is an extensible, open source tool for writing calculation documents with
+an emphasis on reuse. *rivt* includes a built-in capability to export selected
+sections of *private rivt files* to *public rivt files*  facilitating sharing of
+at least parts of calculation documents. For futher details refer to the `rivt
+user manual <https://rivt.info>`__.
 
 A *rivt file* is a Python file (.py) that imports the *rivtlib* Python package
-and includes *rivt markup*. *Markup* publishes the file as a 
-**text, PDF or HTML doc** that can be assembled and 
-linked, with other *docs*, into a *rivt report*.
+and includes *rivt markup* that formats and publishes the file as a *text, PDF
+or HTML doc*. *Docs* can be linked and assembled into  *rivt reports*. *rivt
+files* can be also be organized into *rivtbooks* - collections of *rivt files*
+with a common subject and organized for export to *rivt reports*. 
 
-The primary use case for *rivt* is producing clear, accurate engineering
+The primary use case for *rivt* is producing clear, accurate calculation
 documents that are: 
 
-#. Easier to write and format than LaTeX, Excel, Word or other general purpose
-   word processors.
+#. Easier to write, format and integrate with calculations compared to LaTeX,
+   Excel, Word or other general purpose document processors.
 
-#. Do not need to be formatted to the precise standards of a formal journal
-   publication.
+#. Calculation documents that need to be clear and accurate but not necessarily
+   formatted to the precise standards of formal journal publications.
 
-Specific examples include:
+Specific examples include: internal communication, research documentation,
+government permits, technical reports, funding applications, teaching, 
+presentations, homework, and front or back ends for calculation software. 
 
-#. internal communication
-#. research documentation
-#. government permits
-#. technical reports
-#. funding applications
-#. teaching
-#. presentations
-
-*rivt* can: 
-
-#. function as a front and back end for external software. 
-#. be used for real time collaboration.
-
-The table below compares limitations between different software
-programs. *rivt* is designed to address these limitations and serve as a
-complement or replacement to existing software.
-
+The table below compares limitations in current software programs. *rivt* is
+designed to address these limitations and serve as a complement to or replacement
+of existing software.
 
 Software Comparison
 --------------------
@@ -69,7 +58,7 @@ Quarto           yes          yes        no     no        no           no       
 .. [6] Forward and backward compatibility
 .. [7] Cross-platform
 .. [8] Collaboration support
-.. [9] PDF and HTML documents from the same input file  
+.. [9] text, PDF and HTML documents from the same input file  
 
 
 Modules - Summary

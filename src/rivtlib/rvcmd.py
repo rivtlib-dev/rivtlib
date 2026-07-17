@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import sympy as sp
 import tabulate
+from docutils.core import publish_parts
 from fastcore.utils import store_attr
 from IPython.display import display as _display
 from PIL import Image
@@ -512,16 +513,17 @@ class Cmd:
 
             | TEXT | rel. path | text type
 
-            types:
-                text
-                reST
-                html
-                LaTeX
-                markdown
-                wrap
-                python
-                endotes
-                notes
+        formats text types
+        --------------------------
+        text
+        note
+        rst-html
+        rst-pdf
+        html
+
+        latex - requires texlive cli
+        mermaid - requires mermaid cli
+        dot - requires graphviz cli
 
         Returns:
             mD{dict)}
@@ -537,12 +539,17 @@ class Cmd:
             uS = "\n" + fiS + "\n" + textS + "\n"
             tS = "\n" + textS + "\n"
             rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
-        if typeS == "python":
+        elif typeS == "note":
             uS = "\n" + fiS + "\n" + textS + "\n"
             tS = "\n" + textS + "\n"
-            rS = lS = (
-                "\n.. code-block:: python \n\n" + "    " + txtindS + "\n\n"
-            )
+            rS = lS = "\n.. code-block:: note \n\n" + "    " + txtindS + "\n\n"
+        elif typeS == "rst-html":
+            uS = "\n" + fiS + "\n" + textS + "\n"
+            tS = "\n" + textS + "\n"
+            partS = publish_parts(source=textS, writer_name="html")
+            rS = lS = "\n" + partS["body"] + "\n\n"
+        else:
+            pass
 
         self.mD = {
             "uS": uS,
@@ -557,21 +564,6 @@ class Cmd:
         return self.mD
 
         # endregion
-
-    def RUNFILE(self):
-        """run script and insert
-
-        | RUNFILE | rel. path | text type
-
-            types:
-                endnotes
-                reST
-                html
-                LateX
-
-        Returns:
-            mD{dict)}
-        """
 
         # region
         typeS = self.parS.strip()

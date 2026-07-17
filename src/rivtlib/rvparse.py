@@ -94,12 +94,12 @@ class Rs:
             else:
                 newpageS = ""
         # ----- get rv.R type
-        if tyS == "R":
+        if tyS == "T":
             typeL = [
-                "endnotes",
-                "python",
-                "html",
-                "rst",
+                "text",
+                "note",
+                "rst-html",
+                "rst-pdf",
                 "latex",
                 "mermaid",
                 "dot",

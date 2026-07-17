@@ -359,17 +359,20 @@ class Tag:
             
             """
             blkL = (self.strL).split("\n", 1)
-            txtS = blkL[1]
             procS = blkL[0].strip()
-            self.build_transcript(txtS)
-            pytxtS = self.build_transcript(txtS)
+            txtS = blkL[1]
+            if procS == "compile":
+                self.build_transcript(txtS)
+                pytxtS = self.build_transcript(txtS)
+            elif procS == "code":
+                pytxtS = txtS
+            else:
+                pytxtS = txtS
             uS = tS = pytxtS
             lS = ""
             rS = (
-                "\n"
-                + "\n.. code-block:: python \n\n"
-                + "\n\n"
-                + textwrap.indent(pytxtS, "       ")
+                "\n.. code-block:: python\n\n"
+                + textwrap.indent(pytxtS, "   ")
                 + "\n\n"
             )
 

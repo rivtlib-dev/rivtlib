@@ -19,10 +19,6 @@ def typex(lD, r1S):
     return uS, tS, rS
 
 
-def pythonx():
-    pass
-
-
 def endnotesx(lD, r1S):
     """writes endnotes
 

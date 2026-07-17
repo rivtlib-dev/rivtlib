@@ -59,6 +59,7 @@ extensions = [
     "rst2pdf.pdfbuilder",
     "sphinxcontrib.mermaid"
 ]
+pygments_style = "borland"
 root_doc = "index"
 duration_write_json = ""
 html_show_sourcelink = False
@@ -583,8 +584,13 @@ styles:
     parent: admonition
   warning-heading:
     parent: admonition-heading
-
-"""
+  pygments-s:
+    textColor: "#0000FF"
+  pygments-s1:
+    textColor: "#0000FF"
+  pygments-s2:
+    textColor: "#0000FF"
+  """
     # endregion
 
     with open(rvfileT, "w", encoding="utf-8") as f5:

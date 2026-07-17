@@ -1,8 +1,8 @@
 [project]
 name = "rivtlib"
-version = "1.0.0a14"
-description = "write, share and reuse engineering documents"
-authors = [{ name = "rholland", email = "support@structurelabs.com" }]
+version = "1.0.0a16"
+description = "write - share - reuse calculation documents"
+authors = [{ name = "rivt support", email = "support@rivt.info" }]
 requires-python = ">=3.14"
 
 dependencies = [
