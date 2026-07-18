@@ -519,6 +519,7 @@ class Cmd:
             rst - format restructured text
             text - format literal
             wrap:n - wrap with indent
+            python - python code
 
             latex - requires texlive cli
             mermaid - requires mermaid cli
@@ -533,9 +534,13 @@ class Cmd:
         fiS = " [file: " + self.fileS + "]" + "\n\n"
         with open(self.inspS, "r") as f1:
             textS = f1.read()
+        iS = "0"
+        uS, tS, rS, lS = rvtext.format_text(
+            typeS, textS, iS, self.lD, self.rivtD
+        )
+        print("555555555", rS)
 
-        uS, tS, rS, lS = rvtext.txtprocS(typeS, textS, iS, self.lD, self.rivtD)
-
+        uS = "Python: " + fiS + "\n" + uS.strip()
         self.mD = {
             "uS": uS,
             "rS": rS,

@@ -93,20 +93,6 @@ class Rs:
                 newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
             else:
                 newpageS = ""
-        # ----- get rv.T type
-        if tyS == "T":
-            typeL = [
-                "text",
-                "note",
-                "rst-html",
-                "rst-pdf",
-                "latex",
-                "mermaid",
-                "dot",
-            ]
-            matched = next((item for item in typeL if item in hL[1]), None)
-            self.lD["runtypeS"] = matched
-            self.lD["mergeB"] = "True"
         # ----------------------------------------------   section header
         # add transition
         transS = ""

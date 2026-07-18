@@ -314,12 +314,11 @@ class Tag:
             blkL = (self.strL).split("\n", 1)
             texttypS = blkL[0].strip()
             blkS = blkL[1]
-            uS, rS, lS = rvtext.format_text(texttypS, blkS)
-
-            uS = tS = blkS + "\n"
-            rS = blkS + "\n"
+            iS = "0"
+            uS, tS, rS, lS = rvtext.format_text(
+                texttypS, blkS, iS, self.lD, self.rivtD
+            )
             lS = ""
-            print(uS)
 
             # endregion
         elif cmdS == "bPYT":
@@ -331,15 +330,9 @@ class Tag:
             
             """
             blkL = (self.strL).split("\n", 1)
-            procS = blkL[0].strip()
             txtS = blkL[1]
-            if procS == "compile":
-                self.build_transcript(txtS)
-                pytxtS = self.build_transcript(txtS)
-            elif procS == "code":
-                pytxtS = txtS
-            else:
-                pytxtS = txtS
+            self.build_transcript(txtS)
+            pytxtS = self.build_transcript(txtS)
             uS = tS = pytxtS
             lS = ""
             rS = (

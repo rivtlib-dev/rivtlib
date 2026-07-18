@@ -49,12 +49,9 @@ import os
 import shutil
 import subprocess
 import sys
-import textwrap
 import warnings
 from importlib.metadata import version
 from pathlib import Path
-
-from docutils.core import publish_parts
 
 import __main__
 import rivtlib.rvunits as rvunit
@@ -399,6 +396,7 @@ def I(rS):  # noqa: E743
     tagbL = [
         "TABLE",  # format inline rst and write to csv
         "ENDNOTES",  # list footnote references in order
+        "TEXT",  # format text block
         "END",  # end
     ]
     cmdL = [
@@ -478,41 +476,40 @@ def T(rS):
         mermaid - requires mermaid cli
         dot - requires graphviz cli
 
-
     Args:
         rS (str): rivt string
     """
     global dutfS, dtxtS, drstS, fD, lD, rivtD
 
-    cmdL = []
-    tagL = []
-    tagbL = []
-    tagL = tagL + tagbL
-    dutfS, dtxtS, drstS = doc_parse(rS, "R", tagL, cmdL)
+    typeL = [
+        "bold",  # bold text with indent
+        "endnote",  # list of endnotes in order
+        "html",  # include in html
+        "indent",  # format literal with indent
+        "italic",  # italic text with indent
+        "latex",  # include in pdf, attach to pdf
+        "note",  # note in box
+        "rst",  # format restructured text
+        "text",  # format literal
+        "wrap",  # wrap with indent
+        "latex",  # requires texlive cli
+        "mermaid",  # requires mermaid cli
+        "dot",  # requires graphviz cli
+    ]
+
+    r1h = rS.split("\n", 1)[0]
+    r1L = r1h.split("|")
     r1S = rS.split("\n", 1)[1]
-    uS, tS, rS = rvtext.typex(lD, r1S)
+    typeL = r1L[1].strip().split("-")
+    typeS = typeL[0].strip()
+    try:
+        indS = typeL[1].strip()
+    except Exception:
+        indS = "0"
+    uS, tS, rS, lS = rvtext.format_text(typeS, r1S, indS, lD, rivtD)
     dutfS += uS
     dtxtS += tS
     drstS += rS
-
-    textS = rS.split("\n", 1)[1]
-    typeS = lD["runtypeS"]
-    txtindS = textwrap.indent(textS, "    ")
-    if typeS == "text":
-        uS = "\n" + "\n" + textS + "\n"
-        tS = "\n" + textS + "\n"
-        rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
-    elif typeS == "note":
-        uS = "\n" + "\n" + textS + "\n"
-        tS = "\n" + textS + "\n"
-        rS = lS = "\n.. code-block:: note \n\n" + "    " + txtindS + "\n\n"
-    elif typeS == "rst-html":
-        uS = "\n" + "\n" + textS + "\n"
-        tS = "\n" + textS + "\n"
-        partS = publish_parts(source=textS, writer_name="html")
-        rS = lS = "\n" + partS["body"] + "\n\n"
-    else:
-        pass
 
 
 def D(rS):
