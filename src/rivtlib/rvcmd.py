@@ -10,12 +10,12 @@ import numpy as np
 import pandas as pd
 import sympy as sp
 import tabulate
-from docutils.core import publish_parts
 from fastcore.utils import store_attr
 from IPython.display import display as _display
 from PIL import Image
 from sympy.abc import _clash2
 
+from rivtlib import rvtext
 from rivtlib.rvunits import *  # noqa: F403
 from rivtlib.unum.core import Unum
 
@@ -61,12 +61,7 @@ class Cmd:
         """
         # region
         store_attr()
-        # unicode switch
         sp.init_printing(use_unicode=True)
-        # if stS == "V":
-        #     sp.init_printing(use_unicode=False)
-        # else:
-        #     sp.init_printing(use_unicode=True)
 
         self.fileS = parL[1].strip()
         self.file2L = parL[1].split(",")
@@ -511,22 +506,26 @@ class Cmd:
     def TEXT(self):
         """insert text and format
 
-            | TEXT | rel. path | text type
+                | TEXT | rel. path | text type
 
-        formats text types
-        --------------------------
-        text
-        note
-        rst-html
-        rst-pdf
-        html
+        Options:
+            bold:n - bold text with indent
+            endnote - list of endnotes in order
+            html - include in html
+            indent:n - format literal with indent
+            italic:n - italic text with indent
+            latex - include in pdf, attach to pdf
+            note - note in box
+            rst - format restructured text
+            text - format literal
+            wrap:n - wrap with indent
 
-        latex - requires texlive cli
-        mermaid - requires mermaid cli
-        dot - requires graphviz cli
+            latex - requires texlive cli
+            mermaid - requires mermaid cli
+            dot - requires graphviz cli
 
-        Returns:
-            mD{dict)}
+            Returns:
+                mD{dict)}
         """
 
         # region
@@ -534,22 +533,8 @@ class Cmd:
         fiS = " [file: " + self.fileS + "]" + "\n\n"
         with open(self.inspS, "r") as f1:
             textS = f1.read()
-            txtindS = textwrap.indent(textS, "    ")
-        if typeS == "text":
-            uS = "\n" + fiS + "\n" + textS + "\n"
-            tS = "\n" + textS + "\n"
-            rS = lS = "\n.. code-block:: text \n\n" + "    " + txtindS + "\n\n"
-        elif typeS == "note":
-            uS = "\n" + fiS + "\n" + textS + "\n"
-            tS = "\n" + textS + "\n"
-            rS = lS = "\n.. code-block:: note \n\n" + "    " + txtindS + "\n\n"
-        elif typeS == "rst-html":
-            uS = "\n" + fiS + "\n" + textS + "\n"
-            tS = "\n" + textS + "\n"
-            partS = publish_parts(source=textS, writer_name="html")
-            rS = lS = "\n" + partS["body"] + "\n\n"
-        else:
-            pass
+
+        uS, tS, rS, lS = rvtext.txtprocS(typeS, textS, iS, self.lD, self.rivtD)
 
         self.mD = {
             "uS": uS,
@@ -562,42 +547,6 @@ class Cmd:
         }
 
         return self.mD
-
-        # endregion
-
-        # region
-        typeS = self.parS.strip()
-        fiS = " [file: " + self.fileS + "]"
-        with open(self.inspS, "r") as f1:
-            textS = f1.read()
-            # txtindS = textwrap.indent(textS, "    ")
-        if typeS == "endnotes":
-            endL = textS.split("\n")
-            endrS = "\n" + "-" * 80 + "\n\n"
-            enduS = fiS + "\n" + "-" * 80 + "\n\n"
-            endtS = "\n" + "-" * 80 + "\n\n"
-            fnI = 0
-            for ln in endL:
-                lS = " ".join(ln.strip())
-                fnI += 1
-                enduS += f"[{str(fnI)}] {lS}\n\n"
-                endrS += f".. [{str(fnI)}] {lS}\n\n"
-            uS = enduS
-            tS = endtS
-            rS = lS = endrS
-
-        self.mD = {
-            "uS": uS,
-            "rS": rS,
-            "tS": tS,
-            "lS": lS,
-            "lD": self.lD,
-            "rivL": self.rivL,
-            "rivtD": self.rivtD,
-        }
-
-        return self.mD
-        # endregion
 
     def IMAGE(self):
         """insert image

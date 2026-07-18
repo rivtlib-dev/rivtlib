@@ -93,7 +93,7 @@ class Rs:
                 newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
             else:
                 newpageS = ""
-        # ----- get rv.R type
+        # ----- get rv.T type
         if tyS == "T":
             typeL = [
                 "text",

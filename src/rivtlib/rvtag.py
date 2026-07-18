@@ -13,6 +13,8 @@ from fastcore.utils import store_attr
 from numpy import *  # noqa: F403
 from sympy.abc import _clash2
 
+from rivtlib import rvtext
+
 tabulate.PRESERVE_WHITESPACE = True
 
 
@@ -292,70 +294,40 @@ class Tag:
         elif cmdS == "bTEX":
             """format text
             
-            types:  indent n
-                    bold
-                    italic
-                    wrap                    
-                    text
-                    python
-                    note
-                    endnote
+            types:  
+                bold n - bold text with indent
+                endnote - list of endnotes in order
+                html - include in html 
+                indent n - format literal with indent
+                italic n - italic text with indent
+                latex - include in pdf, attach to pdf
+                note - note in bolx
+                rst - format restructured text  
+                text - format literal
+                wrap n - wrap with indent  
+
+                latex - requires texlive cli
+                mermaid - requires mermaid cli
+                dot - requires graphviz cli            
             """
             # region
             blkL = (self.strL).split("\n", 1)
             texttypS = blkL[0].strip()
-            blkS = ""
-            if texttypS == "note":  # note block
-                paraS = blkL[1]
-                paraL = blkL[1].split("\n\n")
-                for ln in paraL:
-                    ln = ln.lstrip("\n")
-                    ln = ln.replace("\n", " ")
-                    blkS += textwrap.fill(ln, 80) + "\n\n"
-                uS = tS = blkS
-                rS = (
-                    "\n"
-                    + "\n.. note::  "
-                    + "\n\n"
-                    + textwrap.indent(paraS, prefix="   ")
-                    + "\n"
-                )
-                lS = ""
-            elif texttypS == "text":
-                txtS = blkL[1]
-                uS = tS = txtS
-                rS = (
-                    "\n"
-                    + "\n.. code-block:: text \n\n"
-                    + "\n\n"
-                    + textwrap.indent(txtS, "       ")
-                )
-                lS = ""
-            elif texttypS == "italic":
-                txtS = blkL[1]
-                uS = tS = txtS
-                riS = "*" + txtS.strip() + "*"
-                riS = textwrap.indent(riS, "       ")
-                rS = "\n\n" + riS + "\n\n"
-                lS = ""
-            elif texttypS == "bold":
-                txtS = blkL[1]
-                uS = tS = txtS
-                rS = "\n\n    **" + txtS.strip() + "**\n\n"
-                lS = ""
-            elif texttypS == "topic":
-                ln1S = blkL[1].split("\n", 1)[0]
-                txtS = blkL[1].split("\n", 1)[1]
-                uS = tS = txtS
-                rS = f"\n\n.. topic:: {ln1S} \n\n" + textwrap.indent(
-                    txtS, "       "
-                )
-                lS = ""
-            else:
-                pass
+            blkS = blkL[1]
+            uS, rS, lS = rvtext.format_text(texttypS, blkS)
+
+            uS = tS = blkS + "\n"
+            rS = blkS + "\n"
+            lS = ""
+            print(uS)
+
             # endregion
         elif cmdS == "bPYT":
             """execute python code block
+
+            options: 
+                compile
+                code
             
             """
             blkL = (self.strL).split("\n", 1)
@@ -438,6 +410,7 @@ class Tag:
             sys.stdout = buf
             try:
                 exec(code_obj, globals_ns)
+                self.rivtD.update(globals_ns)
             finally:
                 sys.stdout = real_stdout
 

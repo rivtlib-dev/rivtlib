@@ -355,7 +355,6 @@ styles:
           - -1
         - 0.25
         - transparent
-  admonition:
   heading:
     keepWithNext: true
     parent: normal

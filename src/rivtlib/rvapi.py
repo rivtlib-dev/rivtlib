@@ -460,17 +460,24 @@ def V(rS):
 
 
 def T(rS):
-    """Text API - Equivalent to _[[TEXT]] block
+    """Text API - Equivalent to | TEXT | command
 
-        formats text types
-        --------------------------
-        text
-        rst
-        html
-        note
+    parameters:
+        bold:n - bold text with indent
+        endnote - list of endnotes in order
+        html - include in html
+        indent:n - format literal with indent
+        italic:n - italic text with indent
+        latex - include in pdf, attach to pdf
+        note - note in box
+        rst - format restructured text
+        text - format literal
+        wrap:n - wrap with indent
+
         latex - requires texlive cli
         mermaid - requires mermaid cli
         dot - requires graphviz cli
+
 
     Args:
         rS (str): rivt string
