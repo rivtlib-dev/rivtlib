@@ -380,23 +380,22 @@ def I(rS):  # noqa: E743
     global dutfS, dtxtS, drstS, fD, lD
 
     tagL = [
-        "G",  # glossary term
-        "S",  # section link
-        "U",  # url link
-        "D",  # download link
         "R",  # right justify
         "C",  # center bold
-        "B",  # bold line
-        "M",  # ascii math
-        "L",  # LaTeX math
+        "B",  # bold text
+        "M",  # math format
+        "L",  # LaTeX format
         "V",  # var value
         "T",  # table label
+        "U",  # url link
+        "S",  # section link
+        "D",  # download link
+        "G",  # glossary term
         "#",  # footnote
     ]
     tagbL = [
         "TABLE",  # format inline rst and write to csv
         "ENDNOTES",  # list footnote references in order
-        "TEXT",  # format text block
         "END",  # end
     ]
     cmdL = [
@@ -436,6 +435,7 @@ def V(rS):
         "IMAGE2",  # adjacent images frome files
         "TABLE",  # table from file
         "VALTABLE",  # value table from file
+        "VALDATA",  # value table from file
         "PYTHON",  # execute Python file
         "FUNCTION",  # evaluate function
         " ==: ",  # define value
@@ -445,14 +445,17 @@ def V(rS):
     tagL = [
         "R",  # right justify
         "C",  # center bold
-        "B",  # bold line of text
+        "B",  # bold text
         "M",  # math format
         "L",  # LaTeX format
         "V",  # var value
-        "C",  # bold center text
         "T",  # table label
     ]
-    tagbL = ["ARGS", "PYTHON"]
+    tagbL = [
+        "ARGS",  # argument dictionary for function
+        "PYTHON",  # execute Python script
+        "END",  # end
+    ]
     tagL = tagL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "V", tagL, cmdL)
 
@@ -461,20 +464,24 @@ def T(rS):
     """Text API - Equivalent to | TEXT | command
 
     parameters:
-        bold:n - bold text with indent
-        endnote - list of endnotes in order
+
+        document formatting:
+        bold-n - bold text with indent
+        indent-n - format literal with indent
+        italic-n - italic text with indent
+        wrap-n - wrap with indent
         html - include in html
-        indent:n - format literal with indent
-        italic:n - italic text with indent
-        latex - include in pdf, attach to pdf
         note - note in box
         rst - format restructured text
         text - format literal
-        wrap:n - wrap with indent
 
-        latex - requires texlive cli
+        diagrams and math:
+        latex - requires texlive cli, pdf only
         mermaid - requires mermaid cli
         dot - requires graphviz cli
+
+        engineering and analysis:
+        opensees - requires opensees installation
 
     Args:
         rS (str): rivt string
@@ -484,14 +491,14 @@ def T(rS):
     typeL = [
         "bold",  # bold text with indent
         "endnote",  # list of endnotes in order
-        "html",  # include in html
         "indent",  # format literal with indent
         "italic",  # italic text with indent
-        "latex",  # include in pdf, attach to pdf
         "note",  # note in box
         "rst",  # format restructured text
         "text",  # format literal
         "wrap",  # wrap with indent
+        "latex",  # include in pdf
+        "html",  # include in html
         "latex",  # requires texlive cli
         "mermaid",  # requires mermaid cli
         "dot",  # requires graphviz cli

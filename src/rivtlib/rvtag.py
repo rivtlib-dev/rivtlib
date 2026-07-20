@@ -1,19 +1,12 @@
-import ast
 import csv
-import io
-import sys
 import textwrap
 from pathlib import Path
 
-import docutils.parsers.rst.tableparser
-import docutils.statemachine
 import sympy as sp
 import tabulate
 from fastcore.utils import store_attr
 from numpy import *  # noqa: F403
 from sympy.abc import _clash2
-
-from rivtlib import rvtext
 
 tabulate.PRESERVE_WHITESPACE = True
 
@@ -217,7 +210,6 @@ class Tag:
         V          _[[PYTHON] topic label                  topic box (all)
         I          _[[BOX]] optional label                 box (all)
         V          _[[TABLE]] title                        format table, store csv (all)
-        V,I        _[[TEXT]] type                          markup (all)
         D          _[[METADATA]] label                     meta and layout data (all)
         all        _[[END]]                                end block (all)
 
@@ -290,57 +282,6 @@ class Tag:
             rS = inrS + "\n"
             lS = ""
             # endregion
-
-        elif cmdS == "bTEX":
-            """format text
-            
-            types:  
-                bold n - bold text with indent
-                endnote - list of endnotes in order
-                html - include in html 
-                indent n - format literal with indent
-                italic n - italic text with indent
-                latex - include in pdf, attach to pdf
-                note - note in bolx
-                rst - format restructured text  
-                text - format literal
-                wrap n - wrap with indent  
-
-                latex - requires texlive cli
-                mermaid - requires mermaid cli
-                dot - requires graphviz cli            
-            """
-            # region
-            blkL = (self.strL).split("\n", 1)
-            texttypS = blkL[0].strip()
-            blkS = blkL[1]
-            iS = "0"
-            uS, tS, rS, lS = rvtext.format_text(
-                texttypS, blkS, iS, self.lD, self.rivtD
-            )
-            lS = ""
-
-            # endregion
-        elif cmdS == "bPYT":
-            """execute python code block
-
-            options: 
-                compile
-                code
-            
-            """
-            blkL = (self.strL).split("\n", 1)
-            txtS = blkL[1]
-            self.build_transcript(txtS)
-            pytxtS = self.build_transcript(txtS)
-            uS = tS = pytxtS
-            lS = ""
-            rS = (
-                "\n.. code-block:: python\n\n"
-                + textwrap.indent(pytxtS, "   ")
-                + "\n\n"
-            )
-
         else:
             pass
 
@@ -352,96 +293,3 @@ class Tag:
         }
 
         return mD, self.lD, self.rivtD
-
-    def build_transcript(self, txtS):
-        """
-        Returns (transcript, source_lines)
-
-        transcript   -- list of strings representing the full annotated
-                        output: every source line (comments/blank lines
-                        included) plus any print() output inserted right
-                        after the statement that generated it.
-        source_lines -- list of every raw line of the input file, as strings,
-                        in original order (this is the plain "capture every
-                        line as a string" list, with no output mixed in).
-        """
-        lines = txtS.splitlines()
-
-        tree = ast.parse(txtS)
-
-        globals_ns = globals().copy()
-        transcript = []
-        source_lines = []
-
-        prev_end = 0
-        real_stdout = sys.stdout
-
-        def emit_raw(ln_start, ln_end):
-            for ln in range(ln_start, ln_end + 1):
-                text = lines[ln - 1]
-                source_lines.append(text)
-                transcript.append(text)
-
-        for node in tree.body:
-            start = node.lineno
-            end = getattr(node, "end_lineno", start)
-
-            # Comment-only / blank lines sitting between statements: just
-            # display them, nothing to execute.
-            if start - 1 >= prev_end + 1:
-                emit_raw(prev_end + 1, start - 1)
-
-            # The statement's own source lines.
-            emit_raw(start, end)
-
-            # Execute just this one statement, capturing whatever it prints.
-            module = ast.Module(body=[node], type_ignores=[])
-            ast.fix_missing_locations(module)
-            code_obj = compile(module, txtS, "exec")
-
-            buf = io.StringIO()
-            sys.stdout = buf
-            try:
-                exec(code_obj, globals_ns)
-                self.rivtD.update(globals_ns)
-            finally:
-                sys.stdout = real_stdout
-
-            output = buf.getvalue()
-            if output:
-                transcript.extend(output.rstrip("\n").split("\n"))
-
-            prev_end = end
-
-        # Any trailing comment/blank lines after the final statement.
-        if prev_end + 1 <= len(lines):
-            emit_raw(prev_end + 1, len(lines))
-
-        globals().update(globals_ns)
-        result = "\n".join(transcript)
-        return result
-
-    def parse_simple_rst_table(self, table_text):
-        # Prepare the input for docutils
-        lines = docutils.statemachine.StringList(
-            table_text.strip().splitlines()
-        )
-
-        # Initialize the parser
-        parser = docutils.parsers.rst.tableparser.SimpleTableParser()
-
-        # Parse into a tuple: (column_widths, header_rows, body_rows)
-        # The header and body rows are lists of cells (each cell is a list of lines)
-        col_widths, headers, body = parser.parse(lines)
-
-        # helper to clean up cell content
-        def clean(cell):
-            return " ".join(line.strip() for line in cell[3]).strip()
-
-        # Process headers
-        header_data = [[clean(cell) for cell in row] for row in headers]
-
-        # Process body
-        body_data = [[clean(cell) for cell in row] for row in body]
-
-        return header_data, body_data

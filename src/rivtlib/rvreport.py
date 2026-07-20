@@ -7,6 +7,7 @@ import configparser
 import glob
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -350,7 +351,7 @@ def htmlx():
 
     inxT = Path(htmlpubP, "index.html")
     repdocT = Path(htmlpubP, repD["repfile"])
-    os.rename(inxT, repdocT)
+    shutil.copy(inxT, repdocT)
     parts = Path(repdocT).parts[-3:]  # Take last 3 segments
     short_p = ".../" + "/".join(parts)
     return f"\033[34mfile written\033[0m: {short_p} \n"
