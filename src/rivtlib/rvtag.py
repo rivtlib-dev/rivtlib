@@ -2,6 +2,7 @@ import csv
 import textwrap
 from pathlib import Path
 
+import docutils.parsers.rst.tableparser
 import sympy as sp
 import tabulate
 from fastcore.utils import store_attr
@@ -219,10 +220,10 @@ class Tag:
             uS, r2S, rS, fD, lD, rivD, rivL
         """
         # region
-        cmdS = "b" + tagS[0:3]
+        cmdS = "b" + tagS[0:4]
         lineS = self.strL[0].strip()
 
-        if cmdS == "bSHE":
+        if cmdS == "bSHEL":
             """shell blocki"""
 
             tnumI = int(self.lD["tableI"])
@@ -232,7 +233,7 @@ class Tag:
             self.r2S = "\n**Table " + fillS + "**: " + lineS + "\n"
             self.rS = "\n**Table " + fillS + "**: " + lineS + "\n"
 
-        elif cmdS == "bTAB":
+        elif cmdS == "bTABL":
             """table block"""
             # region
             blkL = (self.strL).split("\n", 1)
@@ -253,7 +254,7 @@ class Tag:
                 wfile = csv.writer(f1)
                 wfile.writerows(rstL)
 
-        elif cmdS == "bARG":
+        elif cmdS == "bARGS":
             """argument block"""
             # region
             blkL = (self.strL).split("\n", 1)
@@ -282,6 +283,47 @@ class Tag:
             rS = inrS + "\n"
             lS = ""
             # endregion
+        elif cmdS == "bENDN":
+            r1L = (self.strL).split("\n")
+            r2L = []
+            for ln in r1L:
+                ln = ln.strip()
+                if len(ln) == 0:
+                    ln = "\n\n"
+                else:
+                    pass
+                r2L.append(ln)
+            r2S = "".join(r2L)
+            groups = r2S.split("\n\n")
+            result = [group.replace("\n", " ") for group in groups]
+            wI = self.lD["widthI"]
+            fnI = 0
+            erS = "\n" + "-" * 20 + "\n"
+            euS = "\n" + "-" * 80 + "\n\n"
+            uS = euS
+            rS = erS
+            for ln in result:
+                if len(ln.strip()) == 0:
+                    continue
+                fnI += 1
+                ftnoteS = (
+                    self.lD["divS"]
+                    + "."
+                    + str(self.lD["sdivI"])
+                    + "."
+                    + str(fnI)
+                )
+                lS = ln.strip() + "\n"
+                euS = f"[{ftnoteS}] {lS}\n\n"
+                euS = textwrap.fill(euS, width=wI) + "\n\n"
+                lS = textwrap.indent(lS, " " * 4)
+                erS = (
+                    "\n\n" + f".. _[{ftnoteS}]:\n\n**[{ftnoteS}]** \n{lS}\n\n\n"
+                )
+                uS += euS
+                rS += erS
+            tS = uS
+            lS = ""
         else:
             pass
 
@@ -293,3 +335,28 @@ class Tag:
         }
 
         return mD, self.lD, self.rivtD
+
+    def parse_simple_rst_table(self, table_text):
+        # Prepare the input for docutils
+        lines = docutils.statemachine.StringList(
+            table_text.strip().splitlines()
+        )
+
+        # Initialize the parser
+        parser = docutils.parsers.rst.tableparser.SimpleTableParser()
+
+        # Parse into a tuple: (column_widths, header_rows, body_rows)
+        # The header and body rows are lists of cells (each cell is a list of lines)
+        col_widths, headers, body = parser.parse(lines)
+
+        # helper to clean up cell content
+        def clean(cell):
+            return " ".join(line.strip() for line in cell[3]).strip()
+
+        # Process headers
+        header_data = [[clean(cell) for cell in row] for row in headers]
+
+        # Process body
+        body_data = [[clean(cell) for cell in row] for row in body]
+
+        return header_data, body_data

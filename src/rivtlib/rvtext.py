@@ -92,39 +92,6 @@ def format_text(texttypS, blkS, iS, lD, rivtD):
         uS = tS = "\n" + txtS + "\n"
         partS = publish_parts(source=txtS, writer_name="html")
         rS = lS = "\n" + partS["body"] + "\n\n"
-    elif texttypS == "endnotes":
-        r1L = txtS.split("\n")
-        r2L = []
-        for ln in r1L:
-            ln = ln.strip()
-            if len(ln) == 0:
-                ln = "\n\n"
-            else:
-                pass
-            r2L.append(ln)
-        r2S = "".join(r2L)
-        groups = r2S.split("\n\n")
-        result = [group.replace("\n", " ") for group in groups]
-        wI = lD["widthI"]
-        fnI = 0
-        erS = "\n" + "-" * 20 + "\n"
-        euS = "\n" + "-" * 80 + "\n\n"
-        uS = euS
-        rS = erS
-        for ln in result:
-            if len(ln.strip()) == 0:
-                continue
-            fnI += 1
-            ftnoteS = lD["divS"] + "." + str(lD["sdivI"]) + "." + str(fnI)
-            lS = ln.strip() + "\n"
-            euS = f"[{ftnoteS}] {lS}\n\n"
-            euS = textwrap.fill(euS, width=wI) + "\n\n"
-            lS = textwrap.indent(lS, " " * 4)
-            erS = "\n\n" + f".. _[{ftnoteS}]:\n\n**[{ftnoteS}]** \n{lS}\n\n\n"
-            uS += euS
-            rS += erS
-        tS = uS
-        lS = ""
     elif texttypS == "text":
         """literal text block"""
         uS = tS = txtS
@@ -232,31 +199,6 @@ def format_text(texttypS, blkS, iS, lD, rivtD):
         globals().update(globals_ns)
         result = "\n".join(transcript)
         return result
-
-    def parse_simple_rst_table(self, table_text):
-        # Prepare the input for docutils
-        lines = docutils.statemachine.StringList(
-            table_text.strip().splitlines()
-        )
-
-        # Initialize the parser
-        parser = docutils.parsers.rst.tableparser.SimpleTableParser()
-
-        # Parse into a tuple: (column_widths, header_rows, body_rows)
-        # The header and body rows are lists of cells (each cell is a list of lines)
-        col_widths, headers, body = parser.parse(lines)
-
-        # helper to clean up cell content
-        def clean(cell):
-            return " ".join(line.strip() for line in cell[3]).strip()
-
-        # Process headers
-        header_data = [[clean(cell) for cell in row] for row in headers]
-
-        # Process body
-        body_data = [[clean(cell) for cell in row] for row in body]
-
-        return header_data, body_data
 
 
 def mermaidx():

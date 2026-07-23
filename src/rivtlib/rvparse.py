@@ -65,34 +65,41 @@ class Rs:
         self.lD["docS"] = sectitleS
         # ----------  parse header param settings
         try:
-            paraL = hL[1].strip().split("|")
+            paraS = hL[1].strip()
         except Exception:
-            paraL = []
-        # set default header parameters
-        self.lD["rvtypeS"] = tyS
-        self.lD["mergeB"] = "False"
-        self.lD["docB"] = "True"
-        self.lD["notagB"] = "True"
-        self.lD["privB"] = lD["privateB"]
+            paraS = ""
+
+        try:
+            typeS = hL[2].strip()
+        except Exception:
+            typeS = ""
+
+        try:
+            fileP = hL[3].strip()
+        except Exception:
+            fileP = ""
+
+        # set header parameters; shmpn
+        if "m" in paraS:
+            self.lD["mergeB"] = "true"
+        if "h" in paraS:
+            self.lD["docB"] = "false"
+        if "s" in paraS:
+            self.lD["storeB"] = "true"
+        if "n" in paraS:
+            newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
+        else:
+            newpageS = ""
+        if "p" in paraS:
+            currentB = lD["privateB"]
+            currentB = "true" if currentB == "false" else "false"
+            self.lD["privB"] = currentB
+        else:
+            pass
+
+        self.lD["rvtypeS"] = typeS
         # override header defaults
-        if len(paraL) > 0:
-            if "doc" in paraL:
-                self.lD["docB"] = "True"
-            elif "nodoc" in paraL:
-                self.lD["docB"] = "False"
-            if "private" in paraL:
-                self.lD["privB"] = "True"
-            elif "public" in paraL:
-                self.lD["privB"] = "False"
-            elif "merge" in paraL:
-                self.lD["mergeB"] = "True"
-            elif "section" in paraL:
-                self.lD["mergeB"] = "False"
-            # for rst2pdf doc
-            if "pdfpage" in paraL:
-                newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
-            else:
-                newpageS = ""
+
         # ----------------------------------------------   section header
         # add transition
         transS = ""
@@ -387,7 +394,7 @@ class Rs:
         # export values file to vDss-#.csv where # is section number
         if self.tyS == "V" and len(rivL) > 0:
             fileS = lD["valprfx"] + str(lD["secnumI"]) + ".csv"
-            fileP = Path(fD["storeP"], "vals", fileS)
+            fileP = Path(fD["storeP"], "data", fileS)
             with open(fileP, "w") as file1:
                 file1.write("\n".join(rivL))
 

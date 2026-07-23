@@ -96,8 +96,8 @@ if reptP.name == "rivt-report":
     rstdocsP = Path(reptP, "_rstdocs")
     txtdocsP = Path(reptP, "_published", "txtdocs")
     pubdocP = Path(reptP, "_published")
+    storeP = Path(reptP, "_rvstor")
     pdfpubP = Path(pubdocP, "pdfdocs")
-    storeP = Path(reptP, "rv_stor")
     errlogN = docnumS + "log.txt"
     logsP = Path(storeP, "logs")
     errlogT = Path(logsP, errlogN)
@@ -191,13 +191,14 @@ lD1 = {
     "argsname": "",  # name of argument dictionary
     "colorL": ["red", "blue", "yellow", "green", "gray"],  # pallete
     "colorS": "white",  # topic background color
+    "reptflagS": reptflagS,  # rivt-report, rivtbook or chapter
+    "cntflgI": 0,  # counter flag - skips transition for first section
     "privB": "True",  # do not write to public
     "docB": "True",  # add to doc
     "mergeB": "False",  # merge to prev section
+    "storeB": "False",  # write section to _rvstor
     "autocfgB": "True",  # config format from metadata
-    "runtypeS": "",  # type for rv.R
-    "reptflagS": reptflagS,  # rivt-report, rivtbook or chapter
-    "cntflgI": 0,  # counter flag - skips transition for first section
+    "runtypeS": "",  # type for rv.T
 }
 # defaults for rivt file comment settings
 lD2 = {
@@ -283,6 +284,22 @@ def doc_parse(rS, tyS, tagL, cmdL):
         pass
 
     return dutfS, dtxtS, drstS
+
+
+tagsL = [
+    "R",  # right justify
+    "C",  # center bold
+    "B",  # bold text
+    "M",  # math format
+    "L",  # LaTeX format
+    "V",  # var value
+    "T",  # table label
+    "U",  # url link
+    "S",  # section link
+    "D",  # download link
+    "G",  # glossary term
+    "#",  # footnote
+]
 
 
 def R(rS):
@@ -379,20 +396,6 @@ def I(rS):  # noqa: E743
     """
     global dutfS, dtxtS, drstS, fD, lD
 
-    tagL = [
-        "R",  # right justify
-        "C",  # center bold
-        "B",  # bold text
-        "M",  # math format
-        "L",  # LaTeX format
-        "V",  # var value
-        "T",  # table label
-        "U",  # url link
-        "S",  # section link
-        "D",  # download link
-        "G",  # glossary term
-        "#",  # footnote
-    ]
     tagbL = [
         "TABLE",  # format inline rst and write to csv
         "ENDNOTES",  # list footnote references in order
@@ -404,7 +407,7 @@ def I(rS):  # noqa: E743
         "TEXT",  # format text from file
         "TABLE",  # insert table from file
     ]
-    tagL = tagL + tagbL
+    tagL = tagsL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "I", tagL, cmdL)
 
 
@@ -415,6 +418,13 @@ def V(rS):
     """
     global dutfS, dtxtS, drstS, fD, lD, rivtD, vdescD
 
+    tagbL = [
+        "ARGS",  # argument dictionary for function
+        "TABLE",  # format inline rst and write to csv
+        "ENDNOTES",  # list footnote references in order
+        "END",  # end
+    ]
+    tagL = tagsL + tagbL
     compL = [
         " < ",
         " > ",
@@ -431,40 +441,25 @@ def V(rS):
     ]
     cmdL = [
         compL,  # comparisons
-        "IMAGE",  # image from file
-        "IMAGE2",  # adjacent images frome files
+        "IMAGE",  # image
+        "IMAGE2",  # adjacent images
+        "PYTHON",  # read functions
         "TABLE",  # table from file
-        "VALTABLE",  # value table from file
-        "VALDATA",  # value table from file
-        "PYTHON",  # execute Python file
+        "VALTABLE",  # value table from rvsrc/data
+        "VALDATA",  # value table from stored file
         "FUNCTION",  # evaluate function
         " ==: ",  # define value
         " <=: ",  # assign value
         " :=: ",  # assign function value
     ]
-    tagL = [
-        "R",  # right justify
-        "C",  # center bold
-        "B",  # bold text
-        "M",  # math format
-        "L",  # LaTeX format
-        "V",  # var value
-        "T",  # table label
-    ]
-    tagbL = [
-        "ARGS",  # argument dictionary for function
-        "PYTHON",  # execute Python script
-        "END",  # end
-    ]
-    tagL = tagL + tagbL
+
     dutfS, dtxtS, drstS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
-    """Text API - Equivalent to | TEXT | command
+    """Text API - reads scripts
 
-    parameters:
-
+    type parameter:
         document formatting:
         bold-n - bold text with indent
         indent-n - format literal with indent

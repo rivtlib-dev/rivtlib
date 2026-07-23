@@ -15,7 +15,6 @@ from IPython.display import display as _display
 from PIL import Image
 from sympy.abc import _clash2
 
-from rivtlib import rvtext
 from rivtlib.rvunits import *  # noqa: F403
 from rivtlib.unum.core import Unum
 
@@ -66,8 +65,6 @@ class Cmd:
         self.fileS = parL[1].strip()
         self.file2L = parL[1].split(",")
         self.parS = parL[2].strip()
-        self.insP = Path(fD["reptP"], self.fileS)
-        self.inspS = str(self.insP.as_posix())
         self.uS = ""
         self.rS = ""
         self.tS = ""
@@ -503,56 +500,6 @@ class Cmd:
         return self.mD
         # endregion
 
-    def TEXT(self):
-        """insert text and format
-
-                | TEXT | rel. path | text type
-
-        Options:
-            bold:n - bold text with indent
-            endnote - list of endnotes in order
-            html - include in html
-            indent:n - format literal with indent
-            italic:n - italic text with indent
-            latex - include in pdf, attach to pdf
-            note - note in box
-            rst - format restructured text
-            text - format literal
-            wrap:n - wrap with indent
-            python - python code
-
-            latex - requires texlive cli
-            mermaid - requires mermaid cli
-            dot - requires graphviz cli
-
-            Returns:
-                mD{dict)}
-        """
-
-        # region
-        typeS = self.parS.strip()
-        fiS = " [file: " + self.fileS + "]" + "\n\n"
-        with open(self.inspS, "r") as f1:
-            textS = f1.read()
-        iS = "0"
-        uS, tS, rS, lS = rvtext.format_text(
-            typeS, textS, iS, self.lD, self.rivtD
-        )
-        print("555555555", rS)
-
-        uS = "Python: " + fiS + "\n" + uS.strip()
-        self.mD = {
-            "uS": uS,
-            "rS": rS,
-            "tS": tS,
-            "lS": lS,
-            "lD": self.lD,
-            "rivL": self.rivL,
-            "rivtD": self.rivtD,
-        }
-
-        return self.mD
-
     def IMAGE(self):
         """insert image
 
@@ -565,8 +512,10 @@ class Cmd:
         scS = parL[1].strip()
         figS = parL[2].strip()
         timS = parL[3].strip()
+        insP = Path(self.fD["reptP"], "rvsrc", "image", self.fileS)
+        inspS = str(insP.as_posix())
         try:
-            img1 = Image.open(self.inspS)
+            img1 = Image.open(inspS)
             _display(img1)
         except Exception:
             pass
@@ -591,7 +540,7 @@ class Cmd:
         uS = bordS + lablxS + capS + f" [file: {self.fileS}{timeS} ]\n" + bordS
         tS = bordS + lablxS + capS + timeS + "\n" + bordS
         rS = f"""
-.. figure:: {self.inspS}
+.. figure:: {inspS}
    :width: {scS}%
    :align: center
 
@@ -619,8 +568,8 @@ class Cmd:
 
         file1S = self.file2L[0].strip()
         file2S = self.file2L[1].strip()
-        ins1P = Path(self.fD["reptP"], file1S)
-        ins2P = Path(self.fD["reptP"], file2S)
+        ins1P = Path(self.fD["reptP"], "rvsrc", "image", file1S)
+        ins2P = Path(self.fD["reptP"], "rvsrc", "image", file2S)
         insp1S = str(ins1P.as_posix())
         insp2S = str(ins2P.as_posix())
 
@@ -773,10 +722,12 @@ class Cmd:
     def VALTABLE(self):
         """read file and insert values
 
-        | VALTABLE | relative path | title, width
+        | VALTABLE | file name | title, width
         """
         # region
         fuS = self.fileS
+        insP = Path(self.fD["reptP"], "rvsrc", "data", fuS)
+        inspS = str(insP.as_posix())
         parL = self.parS.split(",")
         titleS = parL[0].strip()
         tnumI = int(self.lD["tableI"])
@@ -790,7 +741,7 @@ class Cmd:
         else:
             utlS = xtlS = "\nTable " + fillS + ": " + titleS
             rtlS = "|\n\n**Table " + fillS + "**: " + titlerS
-        with open(self.insP, "r") as csvfile:
+        with open(insP, "r") as csvfile:
             readL = list(csv.reader(csvfile))
         tbL = []
         for vaL in readL:
@@ -875,10 +826,11 @@ class Cmd:
         # region
         # print(f"{readL=}")
         fuS = self.fileS
+        fileP = Path(self.fD["reptP"], "rvsrc", "scripts", fuS)
+        inspS = str(fileP.as_posix())
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
         fillS = str(tnumI)
-        fileP = Path(self.fD["reptP"], self.fileS)
         with open(fileP, "r") as f10:
             pyscriptS = f10.read()
         exec(pyscriptS, globals(), self.rivtD)
