@@ -59,47 +59,42 @@ class Rs:
         # sltxS = ""  # latex doc
         newpageS = ""
         self.vardescD = vdescD
-        # -----  get section title
+        # ----  get section title
         hL = rsL[0].split("|")
         sectitleS = hL[0].strip()
         self.lD["docS"] = sectitleS
-        # ----------  parse header param settings
-        try:
-            paraS = hL[1].strip()
-        except Exception:
-            paraS = ""
-
-        try:
-            typeS = hL[2].strip()
-        except Exception:
-            typeS = ""
-
-        try:
-            fileP = hL[3].strip()
-        except Exception:
-            fileP = ""
-
-        # set header parameters; shmpn
-        if "m" in paraS:
-            self.lD["mergeB"] = "true"
-        if "h" in paraS:
-            self.lD["docB"] = "false"
-        if "s" in paraS:
-            self.lD["storeB"] = "true"
-        if "n" in paraS:
-            newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
-        else:
-            newpageS = ""
-        if "p" in paraS:
-            currentB = lD["privateB"]
-            currentB = "true" if currentB == "false" else "false"
-            self.lD["privB"] = currentB
-        else:
-            pass
-
-        self.lD["rvtypeS"] = typeS
-        # override header defaults
-
+        # ----  parse header param settings
+        if len(hL) > 1:
+            try:
+                paraS = hL[1].strip()
+                # set header parameters; shmpn
+                if "m" in paraS:
+                    self.lD["mergeB"] = "true"
+                if "h" in paraS:
+                    self.lD["docB"] = "false"
+                if "s" in paraS:
+                    self.lD["storeB"] = "true"
+                if "n" in paraS:
+                    newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
+                else:
+                    newpageS = ""
+                if "p" in paraS:
+                    currentB = lD["privateB"]
+                    currentB = "true" if currentB == "false" else "false"
+                    self.lD["privB"] = currentB
+                else:
+                    pass
+            except Exception:
+                paraS = ""
+            try:
+                fileP = hL[2].strip()
+            except Exception:
+                fileP = ""
+            try:
+                typeS = hL[3].strip()
+                self.lD["rvtypeS"] = typeS
+            except Exception:
+                typeS = ""
         # ----------------------------------------------   section header
         # add transition
         transS = ""

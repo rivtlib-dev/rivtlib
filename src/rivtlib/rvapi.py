@@ -43,11 +43,8 @@ Typing: Last letter of var name indicates type:
 
 import argparse
 import fnmatch
-import glob
 import logging
 import os
-import shutil
-import subprocess
 import sys
 import warnings
 from importlib.metadata import version
@@ -55,7 +52,7 @@ from pathlib import Path
 
 import __main__
 import rivtlib.rvunits as rvunit
-from rivtlib import rvdoc, rvparse, rvtext
+from rivtlib import rvdoc, rvparse, rvshell, rvtext
 
 # parse command line arguments
 reptP = Path(os.getcwd())
@@ -93,13 +90,15 @@ publicP = Path(reptP, "_rivt-public")  # not used with rivtbooks
 # print("--------------", reptP.name)
 if reptP.name == "rivt-report":
     reptflagS = "doc"
-    rstdocsP = Path(reptP, "_rstdocs")
-    txtdocsP = Path(reptP, "_published", "txtdocs")
     pubdocP = Path(reptP, "_published")
     storeP = Path(reptP, "_rvstor")
+    rstdocsP = Path(reptP, "_rstdocs")
     pdfpubP = Path(pubdocP, "pdfdocs")
+    txtdocsP = Path(pubdocP, "txtdocs")
     errlogN = docnumS + "log.txt"
     logsP = Path(storeP, "logs")
+    dataP = Path(storeP, "data")
+    scriptsP = Path(storeP, "scripts")
     errlogT = Path(logsP, errlogN)
     bakT = Path(logsP, bakN)
     rivtT = Path(reptP, rivtN)
@@ -108,11 +107,11 @@ if reptP.name == "rivt-report":
     pubreadmeT = Path(publicP, "README.txt")
 else:
     reptflagS = "chapter"
-    pubdocP = " "
+    pubdocP = Path(reptP.parent, "_published")
     rstdocsP = Path(reptP.parent, "_rstdocs")
-    txtdocsP = Path(reptP.parent, "_txtdocs")
-    pdfpubP = Path(reptP.parent, "_pdfdocs")
     storeP = Path(reptP.parent, "_rvstor")
+    txtdocsP = Path(pubdocP, "_txtdocs")
+    pdfpubP = Path(pubdocP, "_pdfdocs")
     logsP = Path(storeP, "logs")
     errlogN = docnumS + "log.txt"
     errlogT = Path(logsP, errlogN)
@@ -269,13 +268,10 @@ def doc_parse(rS, tyS, tagL, cmdL):
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     rsL = rS.split("\n")
     conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL, vdescD)
-    if tyS == "R":
-        dutfS += conC.sutfS
-        drstS += conC.srstS
-        dtxtS += conC.stxtS
-        return dutfS, dtxtS, drstS
-    sutfS, stxtS, srstS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
-    if tyS == "I" or tyS == "V":
+    if tyS == "R" or tyS == "T":
+        return conC.sutfS, conC.stxtS, conC.srstS
+    elif tyS == "I" or tyS == "V":
+        sutfS, stxtS, srstS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
         if lD["docB"] == "True":
             dutfS += sutfS
             drstS += srstS
@@ -303,88 +299,31 @@ tagsL = [
 
 
 def R(rS):
-    """Tools API
-    run shell commands
+    """Run shell commands
 
     Args:
         rS (str): rivt string
-
-        | COPY |
-        | SHELL |
-       _[[WRITE]]
-
     """
-    global dutfS, drstS, dtxtS, fD, lD, rivtD
+    global dutfS, dtxtS, drstS, fD, lD
 
-    rL = rS.split("\n", 1)
-    fileS = lD["toolprfx"] + str(lD["secnumI"]) + ".txt"
-    fileP = Path(fD["storeP"], fileS)
-    with open(fileP, "w") as file1:
-        file1.write("\n".join(rL[1:]))
+    cmdL = [
+        "COPY",  # copy file from source to target
+        "SHELL",  # execute shell command
+    ]
 
-    blkB = False
-    blkS = ""
-    rvL = rS.split("\n")
-    for lS in rvL[1:]:
-        lS = lS[4:]
-        # print(lS)
-        if lS[:8] == "| COPY |":
-            reptS = str(fD["reptP"])
-            if "-rvsrc-" in lS:
-                lS = lS.replace("-rvsrc-", reptS + "/rvsrc")
-            lcL = lS.split("|")
-            srcP = str(Path(os.path.expandvars(lcL[2].strip())))
-            destP = str(Path(os.path.expandvars(lcL[3].strip())))
-            fileS = lcL[4].strip()
-            source_pattern = str(Path(srcP, fileS))
-            print("\n---| COPY | ---")
-            print(f"from: {source_pattern}")
-            print(f"to: {destP}")
-            for fpath in glob.glob(source_pattern):
-                shutil.copy(fpath, destP)
-            print(f"---| COPIED |--- {fileS} from {srcP} to {destP}")
-        elif lS[:9] == "| SHELL |":
-            lcL = lS.split("|")
-            cmdS = lcL[3].strip()
-            srcP = Path(fD["reptP"], lcL[2].strip(), cmdS)
-            cmdS = f'"{str(srcP)}"'
-            try:
-                # This will block until finished or raise  error
-                print(
-                    "\n-----------------| Run shell command |------------------\n"
-                )
-                print(f"{cmdS}")
-                print("........\n")
-                result = subprocess.run(cmdS, shell=True, check=True)
-                print("\n shell message: ", result)
-                print(
-                    "\n--------- | Shell command finished |------------------\n"
-                )
-            except subprocess.CalledProcessError as e:
-                print(
-                    f"--------------- | Command failed with exit code {e.returncode}"
-                )
-        elif "_[[WRITE]]" in lS:
-            blkB = True  # tag flag
-            wfS = lS.split("]]")[1].strip()
-            writeP = Path(fD["reptP"], wfS)
-            continue
-        else:
-            if blkB:
-                if "_[[END]]" in lS:
-                    try:
-                        subS = eval(blkS, globals(), rivtD)
-                    except Exception:
-                        subS = blkS
-                    with open(writeP, "w") as f2:
-                        f2.write(subS)
-                    print(f"File {wfS} written to: {fD['reptP']}")
-                    blkB = False
-                    blkS = ""
-                    continue
-                blkS += lS + "\n"
-                continue
-            pass
+    tagbL = [
+        "WRITE",  # write text block to rvsrc/data
+    ]
+    tagL = tagbL
+    sutfS, stxtS, srstS = doc_parse(rS, "R", tagL, cmdL)
+    r1S = rS.split("\n", 1)[1]
+    uS, tS, rS, lS = rvshell.run_shell(r1S, lD, fD, rivtD)
+    sutfS += uS
+    stxtS += tS
+    srstS += rS
+    dutfS += sutfS
+    dtxtS += stxtS
+    drstS += srstS
 
 
 def I(rS):  # noqa: E743
@@ -399,12 +338,13 @@ def I(rS):  # noqa: E743
     tagbL = [
         "TABLE",  # format inline rst and write to csv
         "ENDNOTES",  # list footnote references in order
+        "WRITE",  # write text block to rvsrc/data
         "END",  # end
     ]
     cmdL = [
         "IMAGE",  # insert image from file
         "IMAGE2",  # insert adjacent images from file
-        "TEXT",  # format text from file
+        "TEXT",  # insert text from file and format
         "TABLE",  # insert table from file
     ]
     tagL = tagsL + tagbL
@@ -422,9 +362,10 @@ def V(rS):
         "ARGS",  # argument dictionary for function
         "TABLE",  # format inline rst and write to csv
         "ENDNOTES",  # list footnote references in order
+        "TEXT",  # insert text from fileand format
+        "WRITE",  # write text block to rvsrc/data
         "END",  # end
     ]
-    tagL = tagsL + tagbL
     compL = [
         " < ",
         " > ",
@@ -447,36 +388,18 @@ def V(rS):
         "TABLE",  # table from file
         "VALTABLE",  # value table from rvsrc/data
         "VALDATA",  # value table from stored file
-        "FUNCTION",  # evaluate function
+        "TEXT",  # insert text and format
         " ==: ",  # define value
         " <=: ",  # assign value
         " :=: ",  # assign function value
     ]
 
+    tagL = tagsL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
-    """Text API - reads scripts
-
-    type parameter:
-        document formatting:
-        bold-n - bold text with indent
-        indent-n - format literal with indent
-        italic-n - italic text with indent
-        wrap-n - wrap with indent
-        html - include in html
-        note - note in box
-        rst - format restructured text
-        text - format literal
-
-        diagrams and math:
-        latex - requires texlive cli, pdf only
-        mermaid - requires mermaid cli
-        dot - requires graphviz cli
-
-        engineering and analysis:
-        opensees - requires opensees installation
+    """Text API - reads and processes scripts
 
     Args:
         rS (str): rivt string
@@ -497,21 +420,45 @@ def T(rS):
         "latex",  # requires texlive cli
         "mermaid",  # requires mermaid cli
         "dot",  # requires graphviz cli
+        "subpython",  # substitute into python code block
     ]
-
-    r1h = rS.split("\n", 1)[0]
-    r1L = r1h.split("|")
+    tagL = []
+    cmdL = []
+    hS = rS.split("\n", 1)[0]
+    hL = hS.split("|")
     r1S = rS.split("\n", 1)[1]
-    typeL = r1L[1].strip().split("-")
-    typeS = typeL[0].strip()
     try:
-        indS = typeL[1].strip()
+        typeS = hL[3].strip()
+        if typeS in typeL:
+            lD["rvtypeS"] = typeS
+        else:
+            print(
+                f"\033[31m{typeS} is not a valid type for rv.T() - type reset to 'text'\033[0m"
+            )
+            typeS = "text"
     except Exception:
-        indS = "0"
-    uS, tS, rS, lS = rvtext.format_text(typeS, r1S, indS, lD, rivtD)
-    dutfS += uS
-    dtxtS += tS
-    drstS += rS
+        typeS = "text"
+    try:
+        fileS = hL[2].strip()
+    except Exception:
+        fileS = ""
+    try:
+        fileP = Path(srcP, "scripts", fileS)
+        with open(fileP, "r") as f1:
+            r2S = f1.read()
+    except Exception:
+        r2S = ""
+    sutfS, stxtS, srstS = doc_parse(rS, "T", tagL, cmdL)
+    uS, tS, rS, lS = rvtext.format_text(typeS, r1S, r2S, fileS, lD, fD, rivtD)
+    print(uS + "\n")
+
+    sutfS += uS
+    stxtS += tS
+    srstS += rS
+
+    dutfS += sutfS
+    dtxtS += stxtS
+    drstS += srstS
 
 
 def D(rS):

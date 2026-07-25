@@ -208,9 +208,7 @@ class Tag:
          API         Syntax                               Description (output types)
         --------- -------------------------------------- -------------------------------------
         R          _[[SHELL]] type, *wait;nowait*          command script (all)
-        V          _[[PYTHON] topic label                  topic box (all)
-        I          _[[BOX]] optional label                 box (all)
-        V          _[[TABLE]] title                        format table, store csv (all)
+        I          _[[WRITE]] optional label               write to file (all)
         D          _[[METADATA]] label                     meta and layout data (all)
         all        _[[END]]                                end block (all)
 
@@ -283,6 +281,7 @@ class Tag:
             rS = inrS + "\n"
             lS = ""
             # endregion
+
         elif cmdS == "bENDN":
             r1L = (self.strL).split("\n")
             r2L = []
@@ -324,6 +323,20 @@ class Tag:
                 rS += erS
             tS = uS
             lS = ""
+
+        elif cmdS == "bWRIT":
+            "write block to file"
+            blkL = (self.strL).split("\n", 1)
+            parS = blkL[0].strip()
+            try:
+                strS = "\n".join(blkL)
+                subS = eval(f"f'''{strS}'''", globals(), self.rivtD)
+            except Exception:
+                subS = strS
+            writeP = Path(self.lD["reptP"], "scripts", parS)
+            with open(writeP, "w") as f2:
+                f2.write(subS)
+            print(f"File written to: {writeP}")
         else:
             pass
 

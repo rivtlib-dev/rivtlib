@@ -500,6 +500,80 @@ class Cmd:
         return self.mD
         # endregion
 
+    def wrap_pad(self, sentences, width=20):
+        # Step 1: Wrap all sentences into lists of lines
+        wrapped_data = [textwrap.wrap(s, width=width) for s in sentences]
+
+        # Step 2: Identify the maximum number of lines
+        max_height = max(len(lines) for lines in wrapped_data)
+
+        # Step 3: Pad shorter sentences with empty lines to match max_height
+        padded_data = []
+        for lines in wrapped_data:
+            # Create a copy and add empty strings until length matches max_height
+            padded = lines + ["-"] * (max_height - len(lines))
+            padded_data.append(padded)
+
+        return padded_data
+
+    def get_image_time(self, file_path):
+        try:
+            with Image.open(file_path) as img:
+                # Retrieve EXIF data structure from Pillow
+                exif_data = img.getexif()
+                # Dictionary mapping numeric tags to human-readable strings
+                if exif_data is not None:
+                    exif_dict = {
+                        exif_data.get(tag, tag): val
+                        for tag, val in exif_data.items()
+                    }
+                    # Check standard EXIF timestamp priority tags
+                    date_tags = [
+                        "DateTimeOriginal",
+                        "DateTimeDigitized",
+                        "DateTime",
+                    ]
+                    tag = date_tags[0]
+                    if exif_dict is not None and exif_dict != {}:
+                        # print(exif_dict)
+                        if tag in exif_dict and exif_dict[tag]:
+                            # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
+                            raw_date = str(exif_dict[tag]).strip()
+                            try:
+                                return datetime.strptime(
+                                    raw_date, "%Y:%m:%d %H:%M:%S"
+                                )
+                            except ValueError:
+                                return "no time"
+                    else:
+                        pass
+            # Check secondary PNG textual chunks or metadata if getexif fails
+            if hasattr(img, "info") and img.info != {}:
+                # PNG files often save timestamp info under 'date:create' or 'Creation Time'
+                png_tags = ["date:create", "Creation Time", "creation_time"]
+                for tag in png_tags:
+                    # print(img.info)
+                    if tag in img.info:
+                        raw_date = img.info[tag].strip()
+                        # Common format variations for PNG text chunks
+                        for fmt in (
+                            "%Y-%m-%dT%H:%M:%S%z",
+                            "%Y:%m:%d %H:%M:%S",
+                            "%Y-%m-%d %H:%M:%S",
+                        ):
+                            try:
+                                return datetime.strptime(
+                                    raw_date[:19], "%Y-%m-%dT%H:%M:%S"
+                                )
+                            except ValueError:
+                                return "no time"
+            else:
+                return "no time"
+
+        except Exception as e:
+            print(f"cmd: Could not read metadata for {file_path}: {e}")
+            return "no time"
+
     def IMAGE(self):
         """insert image
 
@@ -531,7 +605,7 @@ class Cmd:
         lablS = lablS + capS + " "
         bordS = " " * 10 + "-" * 40 + "\n"
         if timS.strip() == "time":
-            gettimeS = self.get_image_time(self.inspS)
+            gettimeS = self.get_image_time(inspS)
             if gettimeS is None:
                 gettimeS = "no time "
             timeS = " | time: " + gettimeS
@@ -640,15 +714,13 @@ class Cmd:
     def TABLE(self):
         """insert table
 
-            | TABLE | rel. path | title, width, head;nohead, num;non
+            | TABLE | file | title, width, head;nohead, num;non
 
         Returns:
             mD{dict)}
 
         """
         # region
-        # print(f"{pthS=}")
-
         parL = self.parS.split(",")
         titleS = parL[0].strip()
         if titleS == "--":
@@ -666,10 +738,12 @@ class Cmd:
             utlS = "\nTable : " + titleS
             rtlS = "\n**Table**: " + titleS
             xtlS = utlS + fiS  # file path - text
-        extS = self.insP.suffix  # file extension
+        insP = Path(self.fD["reptP"], "rvsrc", "data", self.fileS)
+        inspS = str(insP.as_posix())
+        extS = insP.suffix  # file extension
         readL = []
         if extS == ".csv":  # read csv file
-            with open(self.inspS, "r") as csvfile:
+            with open(inspS, "r") as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
                     # print(f"{row=}")
@@ -720,13 +794,112 @@ class Cmd:
         # endregion
 
     def VALTABLE(self):
-        """read file and insert values
+        """read file from rvsrc/data and insert values
 
         | VALTABLE | file name | title, width
         """
         # region
         fuS = self.fileS
         insP = Path(self.fD["reptP"], "rvsrc", "data", fuS)
+        inspS = str(insP.as_posix())
+        parL = self.parS.split(",")
+        titleS = parL[0].strip()
+        tnumI = int(self.lD["tableI"])
+        self.lD["tableI"] = tnumI + 1
+        fillS = str(tnumI)
+        titleS = parL[0].strip() + " (" + fuS + ")\n"
+        titlerS = parL[0].strip() + " (" + fuS + ")\n\n"
+        if titleS[0:2] == "--":
+            utlS = xtlS = " (" + fuS + ")\n"
+            rtlS = " (" + fuS + ")\n\n"
+        else:
+            utlS = xtlS = "\nTable " + fillS + ": " + titleS
+            rtlS = "|\n\n**Table " + fillS + "**: " + titlerS
+        with open(insP, "r") as csvfile:
+            readL = list(csv.reader(csvfile))
+        tbL = []
+        for vaL in readL:
+            # print(f"{vaL=}")
+            if len(vaL) != 5:
+                continue
+            eqS = vaL[0].strip()
+            varS = vaL[0].split("=")[0].strip()
+            valS = vaL[0].split("=")[1].strip()
+            unit1S, unit2S = vaL[1], vaL[2]
+            dec1S, descripS = vaL[3].strip(), vaL[4].strip()
+            decS = "%." + dec1S + "f"
+            Unum.set_format(value_format=decS, auto_norm=True, unitless="")
+            if unit1S != "-":
+                if isinstance(eval(valS), list):
+                    val1U = np.array(eval(valS)) * eval(unit1S)
+                    val2U = [varS.cast_unit(eval(unit2S)) for varS in val1U]
+                else:
+                    eqS = varS + " = " + valS
+                    try:
+                        exec(eqS, globals(), self.rivtD)
+                    except ValueError as ve:
+                        print(f"A ValueError occurred: {ve}")
+                    except Exception as e:
+                        print(f"An unexpected error occurred: {e}")
+                    valU = eval(varS, globals(), self.rivtD)
+                    val1U = str(valU.cast_unit(eval(unit1S)))
+                    val2U = str(valU.cast_unit(eval(unit2S)))
+            else:
+                eqS = varS + " = " + valS
+                exec(eqS, globals(), self.rivtD)
+                valU = eval(varS)
+                val1U = str(valU)
+                val2U = str(valU)
+            tbL.append([varS, val1U, val2U, descripS])
+        # print("tbl", tbL)
+        for ln in readL:
+            symS = str(ln[0].split("=")[0].strip())
+            self.vardescD[symS] = ln[4].strip()
+        tblfmt = "rst"
+        hdrvL = ["variable", "value", "[value]", "description"]
+        sys.stdout.flush()
+        old_stdout = sys.stdout
+        output = StringIO()
+        output.write(
+            tabulate.tabulate(
+                tbL,
+                tablefmt=tblfmt,
+                headers=hdrvL,
+                showindex=False,
+                colglobalalign="left",
+            )
+        )
+        outS = output.getvalue()
+        sys.stdout = old_stdout
+        sys.stdout.flush()
+        # pthxS = str(Path(*Path(pthS).parts[-3:]))
+        uS = utlS + outS + "\n\n"
+        rS = rtlS + outS + "\n\n"
+        tS = xtlS + outS + "\n"
+        lS = ""
+
+        self.mD = {
+            "uS": uS,
+            "rS": rS,
+            "tS": tS,
+            "lS": lS,
+            "lD": self.lD,
+            "rivL": self.rivL,
+            "rivtD": self.rivtD,
+        }
+
+        return self.mD, self.vardescD
+
+        # endregion
+
+    def VALDATA(self):
+        """read file from _rvstor/data and insert values
+
+        | VALTABLE | file name | title, width
+        """
+        # region
+        fuS = self.fileS
+        insP = Path(self.fD["reptP"], "_rvstor", "data", fuS)
         inspS = str(insP.as_posix())
         parL = self.parS.split(",")
         titleS = parL[0].strip()
@@ -980,76 +1153,90 @@ class Cmd:
         return self.mD, self.vardescD
         # endregion
 
-    def wrap_pad(self, sentences, width=20):
-        # Step 1: Wrap all sentences into lists of lines
-        wrapped_data = [textwrap.wrap(s, width=width) for s in sentences]
+    def TEXT(self):
+        """insert text
 
-        # Step 2: Identify the maximum number of lines
-        max_height = max(len(lines) for lines in wrapped_data)
+        | TEXT | rel. pth |  plain; rivt
+        """
+        # region
+        insP = Path(self.fD["srcP"], "data", self.fileS)
+        with open(insP, "r") as fileO:
+            fileS = fileO.read()
+        typS = self.parS.strip()
+        # endregion
 
-        # Step 3: Pad shorter sentences with empty lines to match max_height
-        padded_data = []
-        for lines in wrapped_data:
-            # Create a copy and add empty strings until length matches max_height
-            padded = lines + ["-"] * (max_height - len(lines))
-            padded_data.append(padded)
+        if "bold" in typS.strip():
+            """bold text block"""
+            n = int(typS.split("bold")[1].strip())
+            utS = ttS = fileS
+            riS = "**" + fileS.strip() + "**"
+            riS = textwrap.indent(riS, " " * n)
+            rtS = "\n\n" + riS + "\n\n"
+            ltS = ""
 
-        return padded_data
+        elif "italic" in typS.strip():
+            """italic text block"""
+            n = int(typS.split("italic")[1].strip())
+            utS = ttS = fileS
+            riS = "*" + fileS.strip() + "*"
+            riS = textwrap.indent(riS, " " * n)
+            rtS = "\n\n" + riS + "\n\n"
+            ltS = ""
 
-    def get_image_time(self, file_path):
-        try:
-            with Image.open(file_path) as img:
-                # Retrieve EXIF data structure from Pillow
-                exif_data = img.getexif()
-                # Dictionary mapping numeric tags to human-readable strings
-                if exif_data is not None:
-                    exif_dict = {
-                        exif_data.get(tag, tag): val
-                        for tag, val in exif_data.items()
-                    }
-                    # Check standard EXIF timestamp priority tags
-                    date_tags = [
-                        "DateTimeOriginal",
-                        "DateTimeDigitized",
-                        "DateTime",
-                    ]
-                    tag = date_tags[0]
-                    if exif_dict is not None and exif_dict != {}:
-                        # print(exif_dict)
-                        if tag in exif_dict and exif_dict[tag]:
-                            # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
-                            raw_date = str(exif_dict[tag]).strip()
-                            try:
-                                return datetime.strptime(
-                                    raw_date, "%Y:%m:%d %H:%M:%S"
-                                )
-                            except ValueError:
-                                return "no time"
-                    else:
-                        pass
-            # Check secondary PNG textual chunks or metadata if getexif fails
-            if hasattr(img, "info") and img.info != {}:
-                # PNG files often save timestamp info under 'date:create' or 'Creation Time'
-                png_tags = ["date:create", "Creation Time", "creation_time"]
-                for tag in png_tags:
-                    # print(img.info)
-                    if tag in img.info:
-                        raw_date = img.info[tag].strip()
-                        # Common format variations for PNG text chunks
-                        for fmt in (
-                            "%Y-%m-%dT%H:%M:%S%z",
-                            "%Y:%m:%d %H:%M:%S",
-                            "%Y-%m-%d %H:%M:%S",
-                        ):
-                            try:
-                                return datetime.strptime(
-                                    raw_date[:19], "%Y-%m-%dT%H:%M:%S"
-                                )
-                            except ValueError:
-                                return "no time"
-            else:
-                return "no time"
+        elif "indent" in typS.strip():
+            """indent text block"""
+            n = int(typS.split("indent")[1].strip())
+            paraL = fileS.split("\n\n")
+            blkS = ""
+            for ln in paraL:
+                ln = ln.lstrip("\n")
+                ln = ln.replace("\n", " ")
+                blkS += textwrap.indent(blkS, prefix=n * " ") + "\n\n"
 
-        except Exception as e:
-            print(f"cmd: Could not read metadata for {file_path}: {e}")
-            return "no time"
+        elif "wrap" in typS.strip():
+            """wrap text block"""
+            paraL = fileS.split("\n\n")
+            blkS = ""
+            for ln in paraL:
+                ln = ln.lstrip("\n")
+                ln = ln.replace("\n", " ")
+                blkS += textwrap.fill(ln, 80) + "\n\n"
+
+        elif "note" in typS.strip():
+            """note text block"""
+            paraL = fileS.split("\n\n")
+            blkS = ""
+            for ln in paraL:
+                ln = ln.lstrip("\n")
+                ln = ln.replace("\n", " ")
+                blkS += textwrap.fill(ln, 80) + "\n\n"
+            utS = ttS = blkS
+            rtS = (
+                "\n"
+                + "\n.. note::  "
+                + "\n\n"
+                + textwrap.indent(blkS, prefix=n * " ")
+                + "\n"
+            )
+            ltS = ""
+
+        elif "text" in typS.strip():
+            """literal text block"""
+            utS = ttS = fileS
+            rtS = (
+                "\n\n.. code-block:: text \n\n"
+                + textwrap.indent(fileS, "        ")
+                + "\n\n"
+            )
+            ltS = ""
+
+        self.mD = {
+            "uS": utS,
+            "rS": rtS,
+            "tS": ttS,
+            "lS": ltS,
+            "lD": self.lD,
+            "fD": self.fD,
+            "rivtD": self.rivtD,
+            "rivL": self.rivL,
+        }
