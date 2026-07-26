@@ -4,37 +4,25 @@ rivtlib
 **rivtlib is alpha software. Some features are not complete and the program has
 bugs.**
 
-*rivt* is an extensible, open source tool for writing calculation documents with
-an emphasis on reuse. *rivt* includes a built-in capability to export selected
-sections of *private rivt files* to *public rivt files*  facilitating sharing of
-at least parts of calculation documents. For futher details refer to the `rivt
-user manual <https://rivt.info>`__.
+*rivt* is an open-source program for writing and assembling calculation
+documents with a focus on reuse [1]_. Many engineering calculation software
+tools are available but few or none allow live documents to be
+assembled from essentially all of the existing tools. Also, *rivt's*
+straightforward markup language facilitates conversion of any PDF or text to a
+live calculation document. Python knowledge is not required but *rivt*
+capabilities can be extended using Python scientific and engineering libraries
+and scripts.
 
-A *rivt file* is a Python file (.py) that imports the *rivtlib* Python package
-and includes *rivt markup* that formats and publishes the file as a *text, PDF
-or HTML doc*. *Docs* can be linked and assembled into  *rivt reports*. *rivt
-files* can be also be organized into *rivtbooks* - collections of *rivt files*
-with a common subject and organized for export to *rivt reports*. 
+For further details refer to the `rivt user manual <https://rivt.info>`__.
 
-The primary use case for *rivt* is producing clear, accurate calculation
-documents that are: 
+The primary use case for *rivt* is producing clear, informative live calculation
+documents that can be easily shared, reused and maintained. 
 
-#. Easier to write, format and integrate with calculations compared to LaTeX,
-   Excel, Word or other general purpose document processors.
+The table below compares limitations in current software programs that *rivt* is
+designed complement or replace. 
 
-#. Calculation documents that need to be clear and accurate but not necessarily
-   formatted to the precise standards of formal journal publications.
 
-Specific examples include: internal communication, research documentation,
-government permits, technical reports, funding applications, teaching, 
-presentations, homework, and front or back ends for calculation software. 
-
-The table below compares limitations in current software programs. *rivt* is
-designed to address these limitations and serve as a complement to or replacement
-of existing software.
-
-Software Comparison
---------------------
+**Software Comparison (commercial programs in italics)**
 
 ============= ============ ========= ======== ========== =========== ========== ========= ============= ===========
 Program       Reprt [1]_   Ver [2]_  Txt [3]_  Priv [4]_  Unts [5]_  Comp [6]_  C-P [7]_   Coll [8]_     Pub [9]_
@@ -65,48 +53,46 @@ Modules - Summary
 -------------------
 
 ::
-    
+
     ================================================================================
-    Total Project Line Count:  5761
+    Total Project Line Count:  6035
     ================================================================================ 
 
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvapi.py   | Total Lines: 522
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvapi.py   | Total Lines: 493
     ================================================================================
 
     IMPORTS:
     - import argparse
     - import fnmatch
-    - import glob
     - import logging
     - import os
-    - import shutil
-    - import subprocess
+    - import string
     - import sys
     - import warnings
     - from importlib.metadata import version
     - from pathlib import Path
     - import __main__
     - import rivtlib.rvunits as rvunit
-    - from rivtlib import rvdoc, rvparse, rvtext
+    - from rivtlib import rvdoc, rvparse, rvshell, rvtext
 
     CLASSES & METHODS:
 
     TOP-LEVEL FUNCTIONS:
     - cmdhelp() -> 12 lines
-    - doc_parse() -> 32 lines
-    - R() -> 78 lines
-    - I() -> 36 lines
-    - V() -> 46 lines
-    - T() -> 31 lines
-    - D() -> 12 lines
+    - doc_parse() -> 29 lines
+    - R() -> 26 lines
+    - I() -> 22 lines
+    - V() -> 45 lines
+    - T() -> 60 lines
+    - D() -> 11 lines
     - S() -> 9 lines
-    - X() -> 11 lines
+    - X() -> 7 lines
     ================================================================================
 
-    
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvbook.py   | Total Lines: 327================================================================================
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvbook.py   | Total Lines: 327
+    ================================================================================
 
     IMPORTS:
     - import configparser
@@ -130,7 +116,8 @@ Modules - Summary
     ================================================================================
 
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvcmd.py   | Total Lines: 1157================================================================================
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvcmd.py   | Total Lines: 1284
+    ================================================================================
 
     IMPORTS:
     - import csv
@@ -151,23 +138,23 @@ Modules - Summary
     - from rivtlib.unum.core import Unum
 
     CLASSES & METHODS:
-        Class: Cmd (1134 lines total)
-        └─ Method: __init__() -> 35 lines
+        Class: Cmd (1261 lines total)
+        └─ Method: __init__() -> 28 lines
         └─ Method: cmdx() -> 13 lines
         └─ Method: vdefine() -> 56 lines
         └─ Method: vassign() -> 113 lines
-        └─ Method: vfunc() -> 114 lines
-        └─ Method: vcompare() -> 122 lines
-        └─ Method: TEXT() -> 48 lines
-        └─ Method: RUNFILE() -> 47 lines
-        └─ Method: IMAGE() -> 54 lines
-        └─ Method: IMAGE2() -> 77 lines
-        └─ Method: TABLE() -> 80 lines
-        └─ Method: VALTABLE() -> 94 lines
-        └─ Method: PYTHON() -> 75 lines
-        └─ Method: FUNCTION() -> 82 lines
+        └─ Method: vfunc() -> 115 lines
+        └─ Method: vcompare() -> 123 lines
         └─ Method: wrap_pad() -> 15 lines
         └─ Method: get_image_time() -> 57 lines
+        └─ Method: IMAGE() -> 62 lines
+        └─ Method: IMAGE2() -> 85 lines
+        └─ Method: TABLE() -> 85 lines
+        └─ Method: VALTABLE() -> 101 lines
+        └─ Method: VALDATA() -> 101 lines
+        └─ Method: PYTHON() -> 81 lines
+        └─ Method: FUNCTION() -> 83 lines
+        └─ Method: TEXT() -> 92 lines
 
     TOP-LEVEL FUNCTIONS:
     ================================================================================
@@ -205,9 +192,9 @@ Modules - Summary
 
     TOP-LEVEL FUNCTIONS:
     ================================================================================
-    
+
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvdoccfg.py   | Total Lines: 721
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvdoccfg.py   | Total Lines: 726
     ================================================================================
 
     IMPORTS:
@@ -221,14 +208,14 @@ Modules - Summary
 
     TOP-LEVEL FUNCTIONS:
     - copy_docs() -> 11 lines
-    - pdf_confpy() -> 144 lines
-    - pdf_yamlS() -> 420 lines
+    - pdf_confpy() -> 145 lines
+    - pdf_yamlS() -> 424 lines
     - html_templ() -> 41 lines
     - html_confpy() -> 81 lines
     ================================================================================
 
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvparse.py   | Total Lines: 409
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvparse.py   | Total Lines: 406
     ================================================================================
 
     IMPORTS:
@@ -246,8 +233,8 @@ Modules - Summary
     - from . import rvcmd, rvtag
 
     CLASSES & METHODS:
-        Class: Rs (387 lines total)
-        └─ Method: __init__() -> 150 lines
+        Class: Rs (384 lines total)
+        └─ Method: __init__() -> 147 lines
         └─ Method: prt_tabl() -> 22 lines
         └─ Method: remove_aster() -> 10 lines
         └─ Method: content() -> 198 lines
@@ -277,7 +264,7 @@ Modules - Summary
     ================================================================================
 
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvreport.py   | Total Lines: 517
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvreport.py   | Total Lines: 518
     ================================================================================
 
     IMPORTS:
@@ -285,6 +272,7 @@ Modules - Summary
     - import glob
     - import logging
     - import os
+    - import shutil
     - import subprocess
     - import sys
     - import textwrap
@@ -302,20 +290,34 @@ Modules - Summary
     - htmlx() -> 155 lines
     - txtx() -> 40 lines
     ================================================================================
-
+    
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvtag.py   | Total Lines: 478
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvshell.py   | Total Lines: 93
     ================================================================================
 
     IMPORTS:
-    - import ast
+    - import glob
+    - import os
+    - import shutil
+    - import subprocess
+    - import textwrap
+    - from pathlib import Path
+
+    CLASSES & METHODS:
+
+    TOP-LEVEL FUNCTIONS:
+    - run_shell() -> 85 lines
+    ================================================================================
+    
+    ================================================================================
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvtag.py   | Total Lines: 379
+    ================================================================================
+
+    IMPORTS:
     - import csv
-    - import io
-    - import sys
     - import textwrap
     - from pathlib import Path
     - import docutils.parsers.rst.tableparser
-    - import docutils.statemachine
     - import sympy as sp
     - import tabulate
     - from fastcore.utils import store_attr
@@ -323,29 +325,32 @@ Modules - Summary
     - from sympy.abc import _clash2
 
     CLASSES & METHODS:
-        Class: Tag (460 lines total)
+        Class: Tag (365 lines total)
         └─ Method: __init__() -> 23 lines
-        └─ Method: taglx() -> 157 lines
-        └─ Method: tagbx() -> 178 lines
-        └─ Method: build_transcript() -> 66 lines
+        └─ Method: taglx() -> 160 lines
+        └─ Method: tagbx() -> 147 lines
         └─ Method: parse_simple_rst_table() -> 24 lines
 
     TOP-LEVEL FUNCTIONS:
     ================================================================================
 
     ================================================================================
-    Module Name: C:\git\rivtlib-git\src\rivtlib\rvtext.py   | Total Lines: 87
+    Module Name: C:\git\rivtlib-git\src\rivtlib\rvtext.py   | Total Lines: 266
     ================================================================================
 
     IMPORTS:
+    - import ast
+    - import io
+    - import sys
     - import textwrap
+    - from pathlib import Path
+    - from docutils.core import publish_parts
 
     CLASSES & METHODS:
 
     TOP-LEVEL FUNCTIONS:
-    - typex() -> 14 lines
-    - pythonx() -> 2 lines
-    - endnotesx() -> 42 lines
+    - build_transcript() -> 67 lines
+    - format_text() -> 166 lines
     - mermaidx() -> 2 lines
     - dotx() -> 2 lines
     - latexx() -> 2 lines
