@@ -155,9 +155,9 @@ class Cmd:
         """
         # region
         self.enumI = int(self.lD["equI"])
-        self.enumI += 1
-        self.lD["equI"] = self.enumI
-        self.enumS = str(self.enumI)
+        self.lD["equI"] = self.enumI + 1
+        secnumS = str(self.lD["secnumI"])
+        self.enumS = secnumS + "." + str(self.enumI)
         lpL = aeqS.split("|")
         eqS = lpL[0]
         eqS = eqS.replace(" <=: ", " = ").strip()
@@ -273,7 +273,8 @@ class Cmd:
         self.enumI = int(self.lD["equI"])
         self.enumI += 1
         self.lD["equI"] = self.enumI
-        self.enumS = str(self.enumI)
+        snumS = str(self.lD["secnumI"])
+        self.enumS = snumS + "." + str(self.enumI)
         lpL = feqS.split("|")
         eqS = lpL[0]
         eqS = eqS.replace(" :=: ", " = ").strip()
@@ -391,7 +392,8 @@ class Cmd:
         self.enumI = int(self.lD["equI"])
         self.enumI += 1
         self.lD["equI"] = self.enumI
-        self.enumS = str(self.enumI)
+        snumS = str(self.lD["secnumI"])
+        self.enumS = snumS + "." + str(self.enumI)
 
         lpL = compS.split("|")
         eqS = lpL[0].strip()
@@ -586,8 +588,13 @@ class Cmd:
         scS = parL[1].strip()
         figS = parL[2].strip()
         timS = parL[3].strip()
-        insP = Path(self.fD["reptP"], "rvsrc", "image", self.fileS)
-        inspS = str(insP.as_posix())
+        if self.lD["reptflagS"] == "chapter":
+            insP = Path(self.fD["reptP"], "image", self.fileS)
+            inspS = str(insP.as_posix())
+        else:
+            self.lD["reptflagS"] == "doc"
+            insP = Path(self.fD["reptP"], "rvsrc", "image", self.fileS)
+            inspS = str(insP.as_posix())
         try:
             img1 = Image.open(inspS)
             _display(img1)
@@ -598,8 +605,9 @@ class Cmd:
         if figS == "num":
             numS = str(self.lD["figI"])
             self.lD["figI"] = int(numS) + 1
-            lablS = "**Fig. " + numS + "** - "
-            lablxS = "Fig. " + numS + " - "
+            snumS = str(self.lD["secnumI"])
+            lablS = "**Fig. " + snumS + "." + numS + "** - "
+            lablxS = "Fig. " + snumS + "." + numS + " - "
         else:
             lablS = ""
         lablS = lablS + capS + " "
@@ -642,8 +650,14 @@ class Cmd:
 
         file1S = self.file2L[0].strip()
         file2S = self.file2L[1].strip()
-        ins1P = Path(self.fD["reptP"], "rvsrc", "image", file1S)
-        ins2P = Path(self.fD["reptP"], "rvsrc", "image", file2S)
+        if self.lD["reptflagS"] == "chapter":
+            ins1P = Path(self.fD["reptP"], "image", file1S)
+            ins2P = Path(self.fD["reptP"], "image", file2S)
+        else:
+            self.lD["reptflagS"] == "doc"
+            ins1P = Path(self.fD["reptP"], "rvsrc", "image", file1S)
+            ins2P = Path(self.fD["reptP"], "rvsrc", "image", file2S)
+
         insp1S = str(ins1P.as_posix())
         insp2S = str(ins2P.as_posix())
 
@@ -669,15 +683,17 @@ class Cmd:
         if fig1S == "num":
             num1S = str(self.lD["figI"])
             self.lD["figI"] = int(num1S) + 1
-            labl1S = "**Fig. " + num1S + " -** " + cap1S + " "
-            labl1xS = "Fig. " + num1S + " - " + cap1S + " "
+            snumS = str(self.lD["secnumI"])
+            labl1S = "**Fig. " + snumS + "." + num1S + " -** " + cap1S + " "
+            labl1xS = "Fig. " + snumS + "." + num1S + " - " + cap1S + " "
         else:
             labl1S = ""
         if fig2S == "num":
             num2S = str(self.lD["figI"])
             self.lD["figI"] = int(num2S) + 1
-            labl2S = "**Fig. " + num2S + " -** " + cap2S + " "
-            labl2xS = "Fig. " + num2S + " - " + cap2S + " "
+            snumS = str(self.lD["secnumI"])
+            labl2S = "**Fig. " + snumS + "." + num2S + " -** " + cap2S + " "
+            labl2xS = "Fig. " + snumS + "." + num2S + " - " + cap2S + " "
         else:
             labl2S = ""
         bordS = " " * 10 + "-" * 40 + "\n"
@@ -731,15 +747,20 @@ class Cmd:
         if numS == "num":
             tnumI = int(self.lD["tableI"])
             self.lD["tableI"] = tnumI + 1
-            utlS = "\nTable " + str(tnumI) + ": " + titleS
-            rtlS = "\n**Table " + str(tnumI) + "**: " + titleS
+            snumS = str(self.lD["secnumI"])
+            utlS = "\nTable " + snumS + "." + str(tnumI) + ": " + titleS
+            rtlS = "\n**Table " + snumS + "." + str(tnumI) + "**: " + titleS
             xtlS = utlS + fiS  # file path text
         else:
             utlS = "\nTable : " + titleS
             rtlS = "\n**Table**: " + titleS
             xtlS = utlS + fiS  # file path - text
-        insP = Path(self.fD["reptP"], "rvsrc", "data", self.fileS)
-        inspS = str(insP.as_posix())
+        if self.lD["reptflagS"] == "chapter":
+            insP = Path(self.fD["reptP"], "data", self.fileS)
+            inspS = str(insP.as_posix())
+        else:
+            insP = Path(self.fD["reptP"], "rvsrc", "data", self.fileS)
+            inspS = str(insP.as_posix())
         extS = insP.suffix  # file extension
         readL = []
         if extS == ".csv":  # read csv file
@@ -800,13 +821,18 @@ class Cmd:
         """
         # region
         fuS = self.fileS
-        insP = Path(self.fD["reptP"], "rvsrc", "data", fuS)
-        inspS = str(insP.as_posix())
+        if self.lD["reptflagS"] == "chapter":
+            insP = Path(self.fD["reptP"], "data", self.fileS)
+            inspS = str(insP.as_posix())
+        else:
+            insP = Path(self.fD["reptP"], "rvsrc", "data", self.fileS)
+            inspS = str(insP.as_posix())
         parL = self.parS.split(",")
         titleS = parL[0].strip()
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
+        secnumS = str(self.lD["secnumI"])
+        fillS = secnumS + "." + str(tnumI)
         titleS = parL[0].strip() + " (" + fuS + ")\n"
         titlerS = parL[0].strip() + " (" + fuS + ")\n\n"
         if titleS[0:2] == "--":
@@ -899,13 +925,18 @@ class Cmd:
         """
         # region
         fuS = self.fileS
-        insP = Path(self.fD["reptP"], "_rvstor", "data", fuS)
-        inspS = str(insP.as_posix())
+        if self.lD["reptflagS"] == "chapter":
+            insP = Path(self.fD["reptP"], "data", self.fileS)
+            inspS = str(insP.as_posix())
+        else:
+            insP = Path(self.fD["reptP"], "_rvstor", "data", self.fileS)
+            inspS = str(insP.as_posix())
         parL = self.parS.split(",")
         titleS = parL[0].strip()
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
+        secnumS = str(self.lD["secnumI"])
+        fillS = secnumS + "." + str(tnumI)
         titleS = parL[0].strip() + " (" + fuS + ")\n"
         titlerS = parL[0].strip() + " (" + fuS + ")\n\n"
         if titleS[0:2] == "--":
@@ -999,12 +1030,17 @@ class Cmd:
         # region
         # print(f"{readL=}")
         fuS = self.fileS
-        fileP = Path(self.fD["reptP"], "rvsrc", "scripts", fuS)
-        inspS = str(fileP.as_posix())
+        if self.lD["reptflagS"] == "chapter":
+            insP = Path(self.fD["reptP"], "scripts", self.fileS)
+            inspS = str(insP.as_posix())
+        else:
+            insP = Path(self.fD["reptP"], "rvsrc", "scripts", self.fileS)
+            inspS = str(insP.as_posix())
         tnumI = int(self.lD["tableI"])
         self.lD["tableI"] = tnumI + 1
-        fillS = str(tnumI)
-        with open(fileP, "r") as f10:
+        sectnumS = str(self.lD["secnumI"])
+        fillS = sectnumS + "." + str(tnumI)
+        with open(inspS, "r") as f10:
             pyscriptS = f10.read()
         exec(pyscriptS, globals(), self.rivtD)
         tbL = []
@@ -1088,7 +1124,8 @@ class Cmd:
         self.enumI = int(self.lD["equI"])
         self.enumI += 1
         self.lD["equI"] = self.enumI
-        self.enumS = str(self.enumI)
+        secnumS = str(self.lD["secnumI"])
+        self.enumS = secnumS + "." + str(self.enumI)
         cmdS = f"{funcS}(**{varS})"
         newvarS = eval(cmdS, globals(), self.rivtD)
         eq1S = textwrap.indent(
@@ -1159,7 +1196,12 @@ class Cmd:
         | TEXT | rel. pth |  plain; rivt
         """
         # region
-        insP = Path(self.fD["srcP"], "data", self.fileS)
+        if self.lD["reptflagS"] == "chapter":
+            insP = Path(self.fD["reptP"], "data", self.fileS)
+            inspS = str(insP.as_posix())
+        else:
+            insP = Path(self.fD["reptP"], "rvsrc", "data", self.fileS)
+            inspS = str(insP.as_posix())
         with open(insP, "r") as fileO:
             fileS = fileO.read()
         typS = self.parS.strip()

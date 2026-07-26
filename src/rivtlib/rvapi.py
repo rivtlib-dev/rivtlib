@@ -45,6 +45,7 @@ import argparse
 import fnmatch
 import logging
 import os
+import string
 import sys
 import warnings
 from importlib.metadata import version
@@ -179,7 +180,7 @@ lD1 = {
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "toolprfx": rbaseS[0:6].replace("rv", "t"),
     "sectS": "",  # section title
-    "equI": 0,  # equation number
+    "equI": 1,  # equation number
     "tableI": 1,  # table number
     "figI": 1,  # figure number
     "pageI": 1,  # starting page number
@@ -192,18 +193,18 @@ lD1 = {
     "colorS": "white",  # topic background color
     "reptflagS": reptflagS,  # rivt-report, rivtbook or chapter
     "cntflgI": 0,  # counter flag - skips transition for first section
-    "privB": "True",  # do not write to public
-    "docB": "True",  # add to doc
-    "mergeB": "False",  # merge to prev section
-    "storeB": "False",  # write section to _rvstor
-    "autocfgB": "True",  # config format from metadata
+    "privB": "true",  # do not write to public
+    "docB": "true",  # add to doc
+    "mergeB": "false",  # merge to prev section
+    "storeB": "false",  # write section to _rvstor
+    "autocfgB": "true",  # config format from metadata
     "runtypeS": "",  # type for rv.T
 }
 # defaults for rivt file comment settings
 lD2 = {
     "widthI": 80,
-    "privateB": "True",
-    "notagB": "True",
+    "privateB": "true",
+    "notagB": "true",
 }
 lD = lD1 | lD2
 # settings from rivt file comment settings
@@ -236,6 +237,22 @@ drstS = """
       
 """
 
+# line tag list
+tagsL = [
+    "R",  # right justify
+    "C",  # center bold
+    "B",  # bold text
+    "M",  # math format
+    "L",  # LaTeX format
+    "V",  # var value
+    "T",  # table label
+    "U",  # url link
+    "S",  # section link
+    "D",  # download link
+    "G",  # glossary term
+    "#",  # footnote
+]
+
 
 def cmdhelp():
     """command line help"""
@@ -255,14 +272,14 @@ def doc_parse(rS, tyS, tagL, cmdL):
     """convert section string to doc string
     Args:
         rS (str): section string
-        tyS (str): section type (R,I,V,T,W,S)
+        tyS (str): section type (R,I,V,T,D)
         tagL (list): tag list
         cmdL (list): command list
     Calls:
         Rs (class), content (method)
     Returns:
         sutfS (str): utf output
-        srstS (str): rest output
+        srstS (str): rst output
         stxtS (str): text output
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
@@ -272,7 +289,7 @@ def doc_parse(rS, tyS, tagL, cmdL):
         return conC.sutfS, conC.stxtS, conC.srstS
     elif tyS == "I" or tyS == "V":
         sutfS, stxtS, srstS, fD, lD, rivtD = conC.content(tyS, tagL, cmdL)
-        if lD["docB"] == "True":
+        if lD["docB"] == "true":
             dutfS += sutfS
             drstS += srstS
             dtxtS += stxtS
@@ -282,24 +299,8 @@ def doc_parse(rS, tyS, tagL, cmdL):
     return dutfS, dtxtS, drstS
 
 
-tagsL = [
-    "R",  # right justify
-    "C",  # center bold
-    "B",  # bold text
-    "M",  # math format
-    "L",  # LaTeX format
-    "V",  # var value
-    "T",  # table label
-    "U",  # url link
-    "S",  # section link
-    "D",  # download link
-    "G",  # glossary term
-    "#",  # footnote
-]
-
-
 def R(rS):
-    """Run shell commands
+    """Run API - run shell commands
 
     Args:
         rS (str): rivt string
@@ -327,8 +328,7 @@ def R(rS):
 
 
 def I(rS):  # noqa: E743
-    """Insert API
-    Insert static files e.g. tables, images and text
+    """Insert API - Insert static files
 
     Args:
         rS (str): rivt string
@@ -352,7 +352,8 @@ def I(rS):  # noqa: E743
 
 
 def V(rS):
-    """Values API
+    """Values API - Evaluate functions and equations.
+
     Args:
         rS (str): rivt string
     """
@@ -393,19 +394,17 @@ def V(rS):
         " <=: ",  # assign value
         " :=: ",  # assign function value
     ]
-
     tagL = tagsL + tagbL
     dutfS, dtxtS, drstS = doc_parse(rS, "V", tagL, cmdL)
 
 
 def T(rS):
-    """Text API - reads and processes scripts
+    """Text API - read and process scripts
 
     Args:
         rS (str): rivt string
     """
     global dutfS, dtxtS, drstS, fD, lD, rivtD
-
     typeL = [
         "bold",  # bold text with indent
         "endnote",  # list of endnotes in order
@@ -420,6 +419,8 @@ def T(rS):
         "latex",  # requires texlive cli
         "mermaid",  # requires mermaid cli
         "dot",  # requires graphviz cli
+        "python",  # print python code block
+        "PYTHON",  # execute python code block
         "subpython",  # substitute into python code block
     ]
     tagL = []
@@ -427,9 +428,18 @@ def T(rS):
     hS = rS.split("\n", 1)[0]
     hL = hS.split("|")
     r1S = rS.split("\n", 1)[1]
+    sutfS, stxtS, srstS = doc_parse(rS, "T", tagL, cmdL)
+    # override section header typeS from rvparse
+    try:
+        fileS = hL[2].strip()
+        fileP = Path(srcP, "scripts", fileS)
+        with open(fileP, "r") as f1:
+            r2S = f1.read()
+    except Exception:
+        r2S = ""
     try:
         typeS = hL[3].strip()
-        if typeS in typeL:
+        if typeS.rstrip(string.digits) in typeL:
             lD["rvtypeS"] = typeS
         else:
             print(
@@ -438,32 +448,20 @@ def T(rS):
             typeS = "text"
     except Exception:
         typeS = "text"
-    try:
-        fileS = hL[2].strip()
-    except Exception:
-        fileS = ""
-    try:
-        fileP = Path(srcP, "scripts", fileS)
-        with open(fileP, "r") as f1:
-            r2S = f1.read()
-    except Exception:
-        r2S = ""
-    sutfS, stxtS, srstS = doc_parse(rS, "T", tagL, cmdL)
-    uS, tS, rS, lS = rvtext.format_text(typeS, r1S, r2S, fileS, lD, fD, rivtD)
+    uS, tS, rS, lS, rivtD = rvtext.format_text(
+        typeS, r1S, r2S, fileS, lD, fD, rivtD
+    )
     print(uS + "\n")
-
     sutfS += uS
     stxtS += tS
     srstS += rS
-
     dutfS += sutfS
     dtxtS += stxtS
     drstS += srstS
 
 
 def D(rS):
-    """Doc API
-    Publish doc files as .txt, .pdf, .html
+    """Doc API - Publish docs as txt, pdf, html
 
     Args:
         rS (str): rivt string
@@ -483,15 +481,11 @@ def S(rS):
     """
     shL = rS.split("\n")
     logging.info("section skipped at: " + shL[0])
-    print("\n[" + shL[0].strip() + "] : section skipped " + "\n")
+    print("\n\033[32m[" + shL[0].strip() + "] : section skipped \033[0m" + "\n")
 
 
 def X():
-    """Exit rivt file processing
-
-    Args:
-        rS (str): rivt string
-    """
+    """Exit rivt file"""
     logging.info("exit rivt file with rv.X()")
     print("\n\033[31m------------------------------------------------\033[0m")
     print("\n\033[31mrivtlib exited with rv.X()\033[0m")

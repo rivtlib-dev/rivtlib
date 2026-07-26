@@ -410,7 +410,7 @@ class Cmdp:
         insrstS = (
             ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + instocS
         )
-        if self.coverpageB.capitalize() == "True":
+        if self.coverpageB.capitalize() == "true":
             insrstS = (
                 ".. |s| unicode:: 0xA0 \n\n\n"
                 + imgS

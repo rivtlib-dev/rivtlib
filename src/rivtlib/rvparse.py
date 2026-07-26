@@ -64,84 +64,93 @@ class Rs:
         sectitleS = hL[0].strip()
         self.lD["docS"] = sectitleS
         # ----  parse header param settings
+        # reset each section
+        self.lD["equI"] = 1  # equation number
+        self.lD["tableI"] = 1  # table number
+        self.lD["figI"] = 1  # figure number
+        self.lD["mergeB"] = "false"
+        self.lD["docB"] = "true"
+        self.lD["storeB"] = "false"
+        paraS = ""
         if len(hL) > 1:
-            try:
-                paraS = hL[1].strip()
-                # set header parameters; shmpn
-                if "m" in paraS:
-                    self.lD["mergeB"] = "true"
-                if "h" in paraS:
-                    self.lD["docB"] = "false"
-                if "s" in paraS:
-                    self.lD["storeB"] = "true"
-                if "n" in paraS:
-                    newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
-                else:
-                    newpageS = ""
-                if "p" in paraS:
-                    currentB = lD["privateB"]
-                    currentB = "true" if currentB == "false" else "false"
-                    self.lD["privB"] = currentB
-                else:
-                    pass
-            except Exception:
-                paraS = ""
-            try:
-                fileP = hL[2].strip()
-            except Exception:
-                fileP = ""
-            try:
-                typeS = hL[3].strip()
-                self.lD["rvtypeS"] = typeS
-            except Exception:
-                typeS = ""
+            paraS = hL[1].strip()
+            # set header parameters; shmpn
+            if "m" in paraS:
+                self.lD["mergeB"] = "true"
+            else:
+                self.lD["mergeB"] = "false"
+            if "h" in paraS:
+                self.lD["docB"] = "false"
+            else:
+                self.lD["docB"] = "true"
+            if "s" in paraS:
+                self.lD["storeB"] = "true"
+            else:
+                self.lD["storeB"] = "false"
+            if "n" in paraS:
+                newpageS = "\n\n.. raw:: pdf\n\n   " + "PageBreak" + "\n\n"
+            else:
+                newpageS = ""
+            currentB = lD["privateB"]
+            if "p" in paraS:
+                currentB = "true" if currentB == "false" else "false"
+                self.lD["privB"] = currentB
+            else:
+                self.lD["privateB"] = currentB
+        try:
+            fileP = hL[2].strip()
+        except Exception:
+            fileP = ""
+        try:
+            typeS = hL[3].strip()
+            self.lD["rvtypeS"] = typeS
+        except Exception:
+            typeS = "rvt"
         # ----------------------------------------------   section header
         # add transition
         transS = ""
-        if self.lD["mergeB"] == "False":
+        secnumI = self.lD["secnumI"]
+        if self.lD["mergeB"] == "false":
+            self.lD["secnumI"] = secnumI + 1  # section number
+            secnumI = secnumI + 1
             if self.lD["cntflgI"] > 0:
                 transS = "\n\n-------------------------\n\n"
-        else:
-            transS = "\n"
+        elif self.lD["mergeB"] == "true":
+            self.lD["secnumI"] = secnumI
+            transS = ""
         self.lD["cntflgI"] += 1
         # add tag label
-        if self.lD["notagB"] == "False":
+        if self.lD["notagB"] == "false":
             addtgS = tyS.lower()
         else:
             addtgS = ""
-        # ------ suppress title
-        if hL[0].strip()[0:2] == "--":
-            lD["docS"] = hL[0].split("--")[1][1]
-            sutfS = "\n"
-            srstS = "\n"
-            stxtS = "\n"
         # ------ write title
+        slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for STDOUT
+        snS = "-" + str(secnumI)
+        sdivS = str(lD["sdivI"])
+        divS = str(lD["divS"])
+        snumS = f"{divS}.{sdivS}{snS}{addtgS}"
+        snumrS = f"**{divS}.{sdivS}{snS}{addtgS}**"
+        headS = snumS + " | " + sectitleS
+        head1S = snumrS + " | " + sectitleS
+        bordrS = lD["widthI"] * "-" + "\n"
+        bordr1S = lD["widthI"] * "=" + "]\n"
+        bordr2S = lD["widthI"] * "." + "]\n"
+        if secnumI == 1:
+            bordrS = bordr1S
         else:
-            slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for STDOUT
-            snumI = self.lD["secnumI"] + 1
-            self.lD["secnumI"] = snumI
-            snS = "-" + str(snumI)
-            sdivS = str(lD["sdivI"])
-            divS = str(lD["divS"])
-            snumS = f"{divS}.{sdivS}{snS}{addtgS}"
-            snumrS = f"**{divS}.{sdivS}{snS}{addtgS}**"
-            headS = snumS + " | " + sectitleS
-            head1S = snumrS + " | " + sectitleS
-            bordrS = lD["widthI"] * "-" + "\n"
-            bordr1S = lD["widthI"] * "=" + "\n"
-            if snumI == 1:
-                bordrS = bordr1S
+            bordrS = bordrS
         file_path = str(fD["rivtT"])  # insert interactive link in terminal
         for linenumI, lineS in enumerate(rivtL):
             if rsL[0] in lineS:
                 print(f"\n\033[32m[link] {file_path}:{linenumI + 1}\033[0m")
                 break
-        if self.lD["mergeB"] == "True":  # add transition and new page
+        if self.lD["mergeB"] == "true":  # skip header and transition
             srstS = "\n"
             stxtS = sutfS = "\n"
         else:
             sutfS = "\n" + headS + "\n" + bordrS
-            stxtS = "\n" + headS + "\n" + bordrS
+            stxtS = "\n" + bordr2S + "\n" + headS + "\n" + bordr1S
             srstS += slinkS + head1S + "\n" + bordrS
             srstS = transS + newpageS + srstS
         print(sutfS)  # STDOUT section header

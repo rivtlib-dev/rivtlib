@@ -27,7 +27,7 @@ logsP = Path(storeP, "logs")
 rptlogT = Path(storeP, "logs", "reportlog.txt")
 rvreadmeT = Path(bookP, "README.txt")
 timeS = datetime.now().strftime("%Y-%m-%d")
-txtpubP = Path(bookP, "_txtdocs")
+txtpubP = Path(bookP, "_published", "_txtdocs")
 
 modnameS = os.path.splitext(os.path.basename(__main__.__file__))[0]
 logging.basicConfig(
@@ -192,7 +192,7 @@ def txtx(txtfL):
         msgS (str): completion message
     """
     # region - txtx
-    rvrepT = Path(bookP, "_txtdocs", repD["repfile"])
+    rvrepT = Path(bookP, "_published", "_txtdocs", repD["repfile"])
     timeS = datetime.now().strftime("%Y-%m-%d - %I:%M%p")
     versionS = repD["version"]
     authorS = repD["authors"]
@@ -226,8 +226,8 @@ for dirS in bookfL:
     bkdivP = Path(bookP, dirS)
     pypathS = os.path.dirname(sys.executable)
     bookPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
-    pdfpubP = Path(bookP, "_pdfdocs")
-    txtpubP = Path(bookP, "_txtdocs")
+    pdfpubP = Path(bookP, "_published", "_pdfdocs")
+    txtpubP = Path(bookP, "_published", "_txtdocs")
     srcP = Path(bkdivP, "rvsrc")
     bookfS = glob.glob("rv???-*.py", root_dir=bkdivP)[0]
     frstT = Path(bkdivP, bookfS)
@@ -284,13 +284,13 @@ if get_typeS == "pdf":
         rsttabL = ["    " + tS for tS in rstfiL]
     rsttabL = "\n".join(rsttabL)
     print("\033[33m||||||||||||| write pdf rivtbook\033[0m")
-    pubT = Path(bookP, "_pdfdocs", repD["repfile"].strip())
+    pubT = Path(bookP, "_published", "_pdfdocs", repD["repfile"].strip())
     msgS = pdfx(rsttabL)
     print(f"\033[33m||||||||||||| pdf rivtbook: {msgS}\033[0m")
 elif get_typeS == "txt":
     print("\033[33m||||||||||||| write text rivtbook\033[0m")
-    pubT = Path(bookP, "_txtdocs", repD["repfile"].strip())
-    txt_folderP = Path(bookP, "_txtdocs")
+    pubT = Path(bookP, "_published", "_txtdocs", repD["repfile"].strip())
+    txt_folderP = Path(bookP, "_published", "_txtdocs")
     txtfL = glob.glob("rv???*.txt", root_dir=txt_folderP)
     txtfL.sort()
     msgS = txtx(txtfL)

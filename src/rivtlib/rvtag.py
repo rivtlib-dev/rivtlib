@@ -138,7 +138,8 @@ class Tag:
             self.enumI = int(self.lD["equI"])
             self.enumI += 1
             self.lD["equI"] = self.enumI
-            self.enumS = str(self.enumI)
+            secnumS = str(self.lD["secnumI"])
+            self.enumS = secnumS + "." + str(self.enumI)
             spS = lineL[0].strip()
             refS = lineL[1]
             try:
@@ -167,7 +168,8 @@ class Tag:
             self.enumI = int(self.lD["equI"])
             self.enumI += 1
             self.lD["equI"] = self.enumI
-            self.enumS = str(self.enumI)
+            secnumS = str(self.lD["secnumI"])
+            self.enumS = secnumS + "." + str(self.enumI)
             eS = "\nEq." + self.enumS + "\n"
             ebS = "\n**Eq." + self.enumS + "**\n\n"
             labellnS = eS + r"[LaTeX] " + lineS.strip()
@@ -188,8 +190,9 @@ class Tag:
 
             tnumI = int(self.lD["tableI"])
             self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
-            uS = tS = "\nTable " + str(tnumI) + ": " + lineS
+            secnumS = str(self.lD["secnumI"])
+            fillS = secnumS + "." + str(tnumI)
+            uS = tS = "\nTable " + fillS + ": " + lineS
             rS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
             lS = "\n**Table " + fillS + "**: " + lineS + "\n\n"
 
@@ -238,12 +241,13 @@ class Tag:
             tnumI = int(self.lD["tableI"])
             fileS = "t" + self.lD["docnumS"][2:] + str(tnumI) + ".csv"
             self.lD["tableI"] = tnumI + 1
-            fillS = str(tnumI)
+            secnumS = str(self.lD["secnumI"])
+            fillS = secnumS + "." + str(tnumI)
             titleS = blkL[0].strip() + " (stored: " + fileS + ")"
             spS = "\n|\n\n"
-            uS = tS = "Table " + str(tnumI) + ": " + titleS + "\n" + blkL[1]
-            rS = f"""{spS}**Table {str(tnumI)}**: {titleS} \n\n{blkL[1]}"""
-            lS = "**Table " + str(tnumI) + "**: " + titleS + "\n\n" + blkL[1]
+            uS = tS = "Table " + fillS + ": " + titleS + "\n" + blkL[1]
+            rS = f"""{spS}**Table {fillS}:** {titleS} \n\n{blkL[1]}"""
+            lS = "**Table " + fillS + "**: " + titleS + "\n\n" + blkL[1]
 
             hdatS, bdatS = self.parse_simple_rst_table(blkL[1])
             rstL = hdatS + bdatS

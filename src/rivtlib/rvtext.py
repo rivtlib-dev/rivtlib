@@ -9,7 +9,7 @@ from pathlib import Path
 from docutils.core import publish_parts
 
 
-def build_transcript(self, txtS):
+def build_transcript(txtS, rivtD):
     """
     Returns (transcript, source_lines)
 
@@ -59,7 +59,7 @@ def build_transcript(self, txtS):
         sys.stdout = buf
         try:
             exec(code_obj, globals_ns)
-            self.rivtD.update(globals_ns)
+            rivtD.update(globals_ns)
         finally:
             sys.stdout = real_stdout
 
@@ -75,7 +75,7 @@ def build_transcript(self, txtS):
 
     globals().update(globals_ns)
     result = "\n".join(transcript)
-    return result
+    return result, rivtD
 
 
 def format_text(texttypS, blkS, fcontS, fnaS, lD, fD, rivtD):
@@ -96,13 +96,13 @@ def format_text(texttypS, blkS, fcontS, fnaS, lD, fD, rivtD):
 
          document formatting
          -------------------
-         bold-n - bold text with indent
-         indent-n - format literal with indent
-         italic-n - italic text with indent
-         wrap-n - wrap with indent
+         boldn - bold text with indent
+         italicn - italic text with indent
+         indentn - format literal with indent
+         wrapn - wrap with indent
+         rstn - format restructured text
          html - insert in html
          note - note in box
-         rst - format restructured text
          text - format literal text block
          subtext -  substitute into literal text block
          subrst - substitute into restructured text block
@@ -119,7 +119,16 @@ def format_text(texttypS, blkS, fcontS, fnaS, lD, fD, rivtD):
     """
     txtS = blkS
 
-    if "bold" in texttypS.strip():
+    if "rst" in texttypS.strip():
+        """restructured text block"""
+        n = int(texttypS.split("rst")[1].strip())
+        txtS = textwrap.dedent(txtS)
+        uS = tS = textwrap.indent(txtS, " " * n)
+        riS = textwrap.indent(txtS, " " * n)
+        rS = "\n\n" + riS + "\n\n"
+        lS = ""
+
+    elif "bold" in texttypS.strip():
         """bold text block"""
         n = int(texttypS.split("bold")[1].strip())
         uS = tS = txtS
@@ -158,18 +167,17 @@ def format_text(texttypS, blkS, fcontS, fnaS, lD, fD, rivtD):
 
     elif texttypS == "note":
         """note text block"""
-        paraL = txtS.split("\n\n")
-        blkS = ""
-        for ln in paraL:
-            ln = ln.lstrip("\n")
-            ln = ln.replace("\n", " ")
-            blkS += textwrap.fill(ln, 80) + "\n\n"
-        uS = tS = blkS
+        txtS = textwrap.dedent(txtS)
+        utxtS = "Notes:\n" + txtS
+        uS = tS = textwrap.indent(utxtS, " " * 4)
+        riS = textwrap.indent(txtS, " " * 4)
+        rS = "\n\n" + riS + "\n\n"
+        lS = ""
         rS = (
             "\n"
             + "\n.. note::  "
             + "\n\n"
-            + textwrap.indent(blkS, prefix=n * " ")
+            + textwrap.indent(txtS, prefix="    ")
             + "\n"
         )
         lS = ""
@@ -188,27 +196,14 @@ def format_text(texttypS, blkS, fcontS, fnaS, lD, fD, rivtD):
         """format html block"""
         uS = tS = "\n" + txtS + "\n"
         partS = publish_parts(source=txtS, writer_name="html")
-        rS = lS = "\n" + partS["body"] + "\n\n"
-
-    elif texttypS == "python":  # python code
-        """ format python code block"""
-        uS = tS = txtS
-        rS = (
-            "\n"
-            + "\n.. code-block:: python"
-            + "\n\n"
-            + textwrap.indent(txtS, prefix="    ")
-            + "\n"
-        )
+        rS = "\n" + partS["body"] + "\n\n"
         lS = ""
 
-    elif texttypS == "PYTHON":  # execute python
-        """execute python code block
-
-        """
-        txtS = fcontS
-        build_transcript(txtS)
-        pytxtS = build_transcript(txtS)
+    elif texttypS == "PYTHON":
+        """execute python code block"""
+        # txtS = txtS[1:]
+        txtdS = textwrap.dedent(txtS)
+        pytxtS, rivtD = build_transcript(txtdS, rivtD)
         uS = tS = pytxtS
         lS = ""
         rS = (
@@ -234,7 +229,21 @@ def format_text(texttypS, blkS, fcontS, fnaS, lD, fD, rivtD):
         rS = blkS + "\n\n" + subrS + "\n\n"
         lS = ""
 
-    return uS, tS, rS, lS
+    elif texttypS == "python":  # python code
+        """ format python code block"""
+        uS = tS = txtS
+        rS = (
+            "\n"
+            + "\n.. code-block:: python"
+            + "\n\n"
+            + textwrap.indent(txtS, prefix="    ")
+            + "\n"
+        )
+        lS = ""
+    else:
+        pass
+
+    return uS, tS, rS, lS, rivtD
 
 
 def mermaidx():
