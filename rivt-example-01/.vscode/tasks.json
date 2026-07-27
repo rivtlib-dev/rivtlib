@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run rivt example (uses local rivtlib)",
+			"type": "shell",
+			"command": "bash -lc 'cd /workspaces/rivtlib/rivt-example-01/rivt-report && /workspaces/rivtlib/.venv/bin/python rv001-doc-example01.py'",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		}
+	]
+}
