@@ -3,10 +3,11 @@ rivtlib
 ========
 
 .. code-block:: diff
-    
-    + Notes:
+
+    + NOTES:
 
     + See the steps outlined below for running an example file in a rivt CodeSpace.
+
     - rivtlib is alpha software. Some features are not complete and the program has bugs.
 
 *rivt* is an open-source program for writing and assembling calculation
