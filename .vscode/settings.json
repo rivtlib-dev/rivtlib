@@ -1,4 +1,5 @@
 {
+    "python.defaultInterpreterPath": "c:\\Python313\\python.exe",
     "terminal.integrated.environmentChangesRelaunch": true,
     "window.title": "${dirty}${separator}${activeFolderShort}${separator}${activeEditorLong}",
     "workbench.colorTheme": "Dark Modern",
@@ -36,7 +37,6 @@
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
     },
-    "python.defaultInterpreterPath": "c:\\Python313\\python.exe",
     "python.terminal.executeInFileDir": true,
     "python.analysis.autoFormatStrings": true,
     "python.languageServer": "Pylance",
