@@ -1,0 +1,320 @@
+{
+    "API import ( api )": {
+        "prefix": "api",
+        "description": "import rivt api",
+        "scope": "python",
+        "body": [
+            "import rivtlib.rvapi as rv"
+        ]
+    },
+    "API  Runx ( rvr )": {
+        "prefix": "rvr",
+        "description": "API Run - short",
+        "scope": "python",
+        "body": [
+            "rv.R(\"\"\"${1:section-label} ",
+            "",
+            "    ${0:text}",
+            "    \"\"\")"
+        ]
+    },
+    "API Runx( rvrx )": {
+        "prefix": "rvrx",
+        "description": "API Run - full",
+        "scope": "python",
+        "body": [
+            "rv.R(\"\"\"${1:label} | ${2:shmpn} | ${3:file}",
+            "",
+            "    ${0:text}",
+            "    \"\"\")"
+        ]
+    },
+    "API Insert ( rvi )": {
+        "prefix": "rvi",
+        "description": "API Insert - short",
+        "scope": "python",
+        "body": [
+            "rv.I(\"\"\"${1:section-label} ",
+            "",
+            "    ${0:text}",
+            "    \"\"\")"
+        ]
+    },
+    "API Insertx ( rvix )": {
+        "prefix": "rvix",
+        "description": "API Insert - full",
+        "scope": "python",
+        "body": [
+            "rv.I(\"\"\"${1:label} | ${2:shmpn} | ${3:file}",
+            "",
+            "    ${0:text}",
+            "    \"\"\")"
+        ]
+    },
+    "API  Values ( rvv )": {
+        "prefix": "rvv",
+        "description": "Values API method",
+        "scope": "python",
+        "body": [
+            "rv.V(\"\"\"${1:section-label} ",
+            "",
+            "    ${0:text}",
+            "    \"\"\")"
+        ]
+    },
+    "API Valuesx ( rvvx )": {
+        "prefix": "rvvx",
+        "description": "Values API method",
+        "scope": "python",
+        "body": [
+            "rv.V(\"\"\"${1:label} | ${2:shmpn}  ${3:file}",
+            "",
+            "    ${0:text}",
+            "    ",
+            "    \"\"\")"
+        ]
+    },
+    "API Text ( rvt )": {
+        "prefix": "rvt",
+        "description": "Text API method",
+        "scope": "python",
+        "body": [
+            "rv.T(\"\"\"${1:label} | ${2:shmpn} | ${3|PYTHON,python,text,note,rst,boldn,italicn|} | ${4:file}",
+            "    ",
+            "    ${0:text} ",
+            "    \"\"\")"
+        ]
+    },
+    "API Doc ( rvd )": {
+        "prefix": "rvd",
+        "description": "Doc API method",
+        "scope": "python",
+        "body": [
+            "rv.D(\"\"\"${1:label} | ${2:shmpn} | ${3:file}",
+            "",
+            "    ${0:text}",
+            "    \"\"\")"
+        ]
+    },
+    "API exit (  rvx )": {
+        "prefix": "rvx",
+        "description": "exit rivt file ",
+        "scope": "python",
+        "body": [
+            "rv.X()"
+        ]
+    },
+    "compare ( =<>)": {
+        "prefix": "=<>",
+        "description": "assign value to function",
+        "scope": "python",
+        "body": [
+            "${1:var} ${2:comp} ${3:funct} | ${4:unit1}, ${5:truetxt}, ${6:falsetxt} | ${0:descrip}",
+            ""
+        ]
+    },
+    "function ( :=: )": {
+        "prefix": ":=:",
+        "description": "assign value to function",
+        "scope": "python",
+        "body": [
+            "${1:var} :=: ${2:funct} | ${3:unit1}, ${4:unit2}, ${5:dec} | ${0:descrip}"
+        ]
+    },
+    "assign ( <=: )": {
+        "prefix": "<=:",
+        "description": "assign value to expression",
+        "scope": "python",
+        "body": [
+            "${1:var} <=: ${2:expr} | ${3:unit1}, ${4:unit2}, ${5:dec} | ${0:descrip}"
+        ]
+    },
+    "define ( ==: )": {
+        "prefix": "==:",
+        "description": "define variables",
+        "scope": "python",
+        "body": [
+            "${1:var} ==: ${2:val} | ${3:unit1}, ${4:unit2}, ${5:dec} | ${0:descrip}"
+        ]
+    },
+    "cmd image ( |im )": {
+        "prefix": "|im",
+        "description": "insert image",
+        "scope": "python",
+        "body": [
+            "| IMAGE | ${1:file} | ${2:caption}, ${3:scale}, ${4|num,non|}, ${5|time,not|} ${0}"
+        ]
+    },
+    "cmd image2 ( |i2 )": {
+        "prefix": "|i2",
+        "description": "insert side by side images",
+        "scope": "python",
+        "body": [
+            "| IMAGE2 | ${1:file}, ${2:file} | ${3:caption}, ${4:caption}, ${5:scale}, ${6:scale}, ${7|num,non|}, ${8|num,non|}  ${0}"
+        ]
+    },
+    "cmd attachpdf(  |at  )": {
+        "prefix": "|at",
+        "description": "attach pdf file - D api",
+        "scope": "python",
+        "body": [
+            "| attachpdf | src/${1:path} | ${0:cover title} "
+        ]
+    },
+    "cmd publish ( |pu )": {
+        "prefix": "|pu",
+        "description": "command publish doc - API rv.D",
+        "scope": "python",
+        "body": [
+            "| PUBLISH | ${1:doc title} | ${0|pdf,html,txt,pdftex|}"
+        ]
+    },
+    "cmd table ( |ta )": {
+        "prefix": "|ta",
+        "description": "command table from file - API rv.I and rv.V",
+        "scope": "python",
+        "body": [
+            "| TABLE | ${1:file} | ${2:title}, ${3:max-col-width}, ${4|head,nohead|}, ${4|num,nonum|}, ${0:} "
+        ]
+    },
+    "cmd text ( |te )": {
+        "prefix": "|te",
+        "description": "command insert text from file API rv.I and rv.V",
+        "scope": "python",
+        "body": [
+            "| TEXT | ${1:file} | ${2|text, wrap, italic, bold|}"
+        ]
+    },
+    "tag bold center ( _ce )": {
+        "prefix": "_ce",
+        "description": "tag bold line and center",
+        "scope": "python",
+        "body": [
+            "_[C]"
+        ]
+    },
+    "tag bold ( _bo )": {
+        "prefix": "_bo",
+        "description": "tag bold line",
+        "scope": "python",
+        "body": [
+            "_[B]"
+        ]
+    },
+    "tag right ( _ri )": {
+        "prefix": "_ri",
+        "description": "tag right justify",
+        "scope": "python",
+        "body": [
+            "_[R]"
+        ]
+    },
+    "tag ascii math  ( _ma )": {
+        "prefix": "_ma",
+        "description": "tag ascii math equation",
+        "scope": "python",
+        "body": [
+            "_[M]"
+        ]
+    },
+    "tag latex eq ( _la }": {
+        "prefix": "_la",
+        "description": "tag latex equation",
+        "scope": "python",
+        "body": [
+            "_[L]"
+        ]
+    },
+    "tag table ( _ta  )": {
+        "prefix": "_ta",
+        "description": "tag table title and number",
+        "scope": "python",
+        "body": [
+            "_[T]"
+        ]
+    },
+    "tag footnote  ( _fo )": {
+        "prefix": "_fo",
+        "description": "tag footnote mark",
+        "scope": "python",
+        "body": [
+            "_[#]"
+        ]
+    },
+    "tag url ( _ur )": {
+        "prefix": "_ur",
+        "description": "tag url",
+        "scope": "python",
+        "body": [
+            "_[u] ${1: url label}, https://${0: url} |"
+        ]
+    },
+    "tag section  ( _se )": {
+        "prefix": "_se",
+        "description": "section link",
+        "scope": "python",
+        "body": [
+            "_[s] ${1: section label}, {1: section title} |"
+        ]
+    },
+    "tag line  ( --- )": {
+        "prefix": "---",
+        "description": "insert horizontal line",
+        "scope": "python",
+        "body": [
+            "---------------"
+        ]
+    },
+    "block table ( [ta )": {
+        "prefix": "[ta",
+        "description": "table block",
+        "scope": "python",
+        "body": [
+            "_[[TABLE]] ${1:title}",
+            "${0:text}",
+            "_[[END]]"
+        ]
+    },
+    "block args ( [ar )": {
+        "prefix": "[ar",
+        "description": "argument block",
+        "scope": "python",
+        "body": [
+            "_[[ARGS]] ${1:title}",
+            "${0:text}",
+            "_[[END]]"
+        ]
+    },
+    "endnotes ( [no  )": {
+        "prefix": "[no",
+        "description": "block tag endnotes",
+        "scope": "python",
+        "body": [
+            "_[[ENDNOTES]]",
+            "${0:text}",
+            "",
+            "_[[END]]"
+        ]
+    },
+    "write ( [wr )": {
+        "prefix": "[wr",
+        "description": "block tag write",
+        "scope": "python",
+        "body": [
+            "_[[WRITE]] ${1:file name}",
+            "${0:text}",
+            "",
+            "_[[END]]"
+        ]
+    },
+    "end (  [en )": {
+        "prefix": "[en",
+        "description": "block end",
+        "scope": "python",
+        "body": [
+            "_[[END]]",
+            "",
+            ""
+        ]
+    }
+}

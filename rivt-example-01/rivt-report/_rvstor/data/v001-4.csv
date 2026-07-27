@@ -1,0 +1,5 @@
+section_1 = 540.00 in3,in3,cm3,2,rectangle - S (sectprop.py)
+inertia_1 = 4860.0 in4,in4,cm4,1,rectangle - I (sectprop.py)
+m_1 = 120.52 ft-kip,ftkips,mkN,2,Mid-span UDL moment
+fb_1 = 2678.2 p_si,p_si,MPA,1,Bending stress
+delta_1 = 0.04 inch,inch,mm,2,mid-span deflection (sectprop.py)

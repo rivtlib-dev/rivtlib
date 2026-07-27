@@ -1,0 +1,4 @@
+section_1 = 540.00 in3,in3,cm3,2,function: rect. S  **[Eq 5]**
+inertia_1 = 4860.0 in4,in4,cm4,1,function: rect. I  **[Eq 6]**
+m_1 = 33.47 ftkip,ftkips,mkN,2,mid-span UDL moment  **[Eq 7]**
+fb_1 = 743.8 lb_in2,lb_in2,MPA,1,bending stress  **[Eq 8]**

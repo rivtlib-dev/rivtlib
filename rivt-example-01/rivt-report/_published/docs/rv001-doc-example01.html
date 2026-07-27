@@ -1,0 +1,737 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" sizes="16x16" href="_static/favicon-16x16.png" type="image/png">
+    <link rel="icon" sizes="32x32" href="_static/favicon-32x32.png" type="image/png">
+    <title>Example 1 - rivt Doc &#8212;  </title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f0030348" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=96ca68dc"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=1ae7504c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'rv001-doc-example01';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="_static/logo2.png" class="logo__image only-dark" alt=""/>
+    <img src="_static/logo2.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">rivt</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="example-1-rivt-doc">
+<h1><strong>Example 1 - rivt Doc</strong><a class="headerlink" href="#example-1-rivt-doc" title="Link to this heading">#</a></h1>
+<p id="summary-and-loads"><strong>0.1-1</strong> | Summary and Loads
+================================================================================]</p>
+<p>This rivt file example calculates the maximum stress and deflection in a
+simply supported, uniformly loaded beam using E-B theory  <a class="reference internal" href="#id4">[0.1.1]</a> . It also
+serves as an annotated example of a single rivt doc with multiple sections
+that is not part of a report.</p>
+<p>The example illustrates the use of some of the most common API functions,
+commands and tags. Further details are provided in the
+<a class="reference external" href="https://www.rivt.info" rel="noreferrer" target="_blank">rivt user manual</a> .</p>
+<p>The file may be formatted as a text, PDF or HTML doc by changing the type
+parameter in the Doc API | PUBLISH | command at the end of each
+rivt file (rv.D()). Published files are found in the
+_published folder.</p>
+<hr class="docutils" />
+<section id="load-combinations">
+<span id="id1"></span><h2><strong>0.1-2</strong> | Load Combinations<a class="headerlink" href="#load-combinations" title="Link to this heading">#</a></h2>
+<p>Dead and live loads effects are taken from ASCE 7-05  <a class="reference internal" href="#id5">[0.1.2]</a></p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Table 2.1:</strong> Load Effects (stored: t001-1.csv)</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Equation No.</p></th>
+<th class="head"><p>Load Combination</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>16-1</p></td>
+<td><p>1.4(D+F)</p></td>
+</tr>
+<tr class="row-odd"><td><p>16-2</p></td>
+<td><p>1.2(D+F+T) + 1.6(L+H) + 0.5(Lr or S or R)</p></td>
+</tr>
+<tr class="row-even"><td><p>16-3</p></td>
+<td><p>1.2(D+F+T) + 1.6(Lr or S or R) + (f1L or 0.8W)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+</section>
+<section id="loads-and-geometry">
+<span id="id2"></span><h2><strong>0.1-3</strong> | Loads and Geometry<a class="headerlink" href="#loads-and-geometry" title="Link to this heading">#</a></h2>
+<p>Successive value definitions are formatted as a table. Variable values are
+defined with the define operator. The line tag [T] labels and numbers the
+table.</p>
+<p><strong>Table 3.1</strong>: Define Unit Loads</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>variable</p></th>
+<th class="head"><p>value</p></th>
+<th class="head"><p>[value]</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>D_1</p></td>
+<td><p>3.80 p_sf</p></td>
+<td><p>0.18 kPA</p></td>
+<td><p>joists DL</p></td>
+</tr>
+<tr class="row-odd"><td><p>D_2</p></td>
+<td><p>2.10 p_sf</p></td>
+<td><p>0.10 kPA</p></td>
+<td><p>plywood DL</p></td>
+</tr>
+<tr class="row-even"><td><p>D_3</p></td>
+<td><p>10.00 p_sf</p></td>
+<td><p>0.48 kPA</p></td>
+<td><p>partitions DL</p></td>
+</tr>
+<tr class="row-odd"><td><p>D_4</p></td>
+<td><p>3.00 k_ft</p></td>
+<td><p>43.78 kN_m</p></td>
+<td><p>fixed machinery DL</p></td>
+</tr>
+<tr class="row-even"><td><p>L_1</p></td>
+<td><p>40.00 p_sf</p></td>
+<td><p>1.92 kPA</p></td>
+<td><p>ASCE7-O5 LL</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_1</p></td>
+<td><p>10.00 inch</p></td>
+<td><p>254.00 mm</p></td>
+<td><p>beam width</p></td>
+</tr>
+<tr class="row-even"><td><p>h_1</p></td>
+<td><p>18.00 inch</p></td>
+<td><p>457.20 mm</p></td>
+<td><p>beam depth</p></td>
+</tr>
+<tr class="row-odd"><td><p>E_1</p></td>
+<td><p>29000.00 k_si</p></td>
+<td><p>199947.96 MPA</p></td>
+<td><p>modulus of elasticity</p></td>
+</tr>
+<tr class="row-even"><td><p>Fb_1</p></td>
+<td><p>20000.00 p_si</p></td>
+<td><p>137.90 MPA</p></td>
+<td><p>allowable stress</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The VALTABLE command reads variable values from a file in the rvsrc/data
+folder. The description is the table title, followed by the max
+column width.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Table 3.2</strong>: Beam Geometry (beam1.csv)</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>variable</p></th>
+<th class="head"><p>value</p></th>
+<th class="head"><p>[value]</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>spc_1</p></td>
+<td><p>2.00 ft</p></td>
+<td><p>0.61 m</p></td>
+<td><p>beam spacing</p></td>
+</tr>
+<tr class="row-odd"><td><p>spn_1</p></td>
+<td><p>16.00 ft</p></td>
+<td><p>4.88 m</p></td>
+<td><p>beam span</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="_images/beam1.png"><img alt="_images/beam1.png" src="_images/beam1.png" style="width: 60%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Fig. 3.1</strong> - Beam Diagram</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p class="align-center"><strong>Uniform Distributed Loads</strong></p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 3.1:</strong>  Dead load [ASCE7-05 2.3.2]</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dl₁ = 1.2⋅(D₄ + spc₁⋅(D₁ + D₂ + D₃))
+
+dl₁ = 3.64 k_ft     [dl₁] = 53.09 kN_m   | Dead load [ASCE7-05 2.3.2]
+
+D₂          D₁         D₃             spc₁          D₄
+——————————  —————————  —————————————  ————————————  ——————————————————
+2.10 p_sf   3.80 p_sf  10.00 p_sf     2.00 ft       3.00 k_ft
+—————       —————      —————          —————         —————
+plywood DL  joists DL  partitions DL  beam spacing  fixed machinery DL
+——————————  —————————  —————————————  ————————————  ——————————————————
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 3.2:</strong>  Live load [ASCE7-05 2.3.2]</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ll₁ = 1.6⋅L₁⋅spc₁
+
+ll₁ = 0.13 k_ft     [ll₁] = 1.87 kN_m   | Live load [ASCE7-05 2.3.2]
+
+spc₁          L₁
+————————————  ———————————
+2.00 ft       40.00 p_sf
+—————         —————
+beam spacing  ASCE7-O5 LL
+————————————  ———————————
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 3.3:</strong>  Total load [ASCE7-05 2.3.2]</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ω₁ = dl₁ + ll₁
+
+ω₁ = 3.77 k_ft     [ω₁] = 54.96 kN_m   | Total load [ASCE7-05 2.3.2]
+
+ll₁                  dl₁
+———————————————————  ———————————————————
+128.00 ft·p_sf       3.64 k_ft
+—————                —————
+Live load [ASCE7-05  Dead load [ASCE7-05
+2.3.2]               2.3.2]
+———————————————————  ———————————————————
+</pre></div>
+</div>
+<hr class="docutils" />
+</section>
+<section id="beam-response">
+<span id="id3"></span><h2><strong>0.1-4</strong> | Beam Response<a class="headerlink" href="#beam-response" title="Link to this heading">#</a></h2>
+<p>The following lines import the beam geometry from an external file,
+calculate section properties from imported functions and calculate
+the maximum moment, bending stress and mid-span deflection.</p>
+<p><strong>Table 1</strong>: Beam functions (sectprop.py)</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Docstring</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>rectsect(b, d)</p></td>
+<td><p>section modulus of rectangle</p></td>
+</tr>
+<tr class="row-odd"><td><p>rectinertia(b, d)</p></td>
+<td><p>moment of inertia of rectangle</p></td>
+</tr>
+<tr class="row-even"><td><p>midspan_delta(ln, w, e, i)</p></td>
+<td><p>mid-span deflection of simply supported beam
+with UDL</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 4.2:</strong>  rectangle - S (sectprop.py)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>section₁ = rectsect(b₁, h₁)
+
+section₁ = 540.00 in3     [section₁] = 8849.01 cm3   | rectangle - S (sectprop.py)
+
+b₁          h₁
+——————————  ——————————
+10.00 inch  18.00 inch
+—————       —————
+beam width  beam depth
+——————————  ——————————
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 4.3:</strong>  rectangle - I (sectprop.py)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>inertia₁ = rectinertia(b₁, h₁)
+
+inertia₁ = 4860.0 in4     [inertia₁] = 202288.5 cm4   | rectangle - I (sectprop.py)
+
+b₁          h₁
+——————————  ——————————
+10.0 inch   18.0 inch
+—————       —————
+beam width  beam depth
+——————————  ——————————
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 46.0%" />
+<col style="width: 54.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><figure class="align-default" id="id7">
+<a class="reference internal image-reference" href="_images/ss-beam2.png"><img alt="_images/ss-beam2.png" src="_images/ss-beam2.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Fig. 4.1 -</strong> Moment diagram</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</td>
+<td><figure class="align-default" id="id8">
+<a class="reference internal image-reference" href="_images/ss-beam1.png"><img alt="_images/ss-beam1.png" src="_images/ss-beam1.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Fig. 4.2 -</strong> Deflection diagram</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Maximum bending stress formula</strong></p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq.4.4:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>     M₁
+σ₁ = ──
+     S₁
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 4.4:</strong>  Mid-span UDL moment</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>            2
+     ω₁⋅spn₁
+m₁ = ────────
+        8
+
+m₁ = 120.52 ft-kip     [m₁] = 163.40 mkN   | Mid-span UDL moment
+
+spn₁       ω₁
+—————————  ————————————————————
+16.00 ft   3.77 k_ft
+—————      —————
+beam span  Total load [ASCE7-05
+-          2.3.2]
+—————————  ————————————————————
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 4.5:</strong>  Bending stress</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>         m₁
+fb₁ = ────────
+      section₁
+
+fb₁ = 2678.2 p_si     [fb₁] = 18.5 MPA   | Bending stress
+
+m₁                   section₁
+———————————————————  —————————————
+120.5 ft2·k_ft       540.0 inch3
+—————                —————
+Mid-span UDL moment  rectangle - S
+-                    (sectprop.py)
+———————————————————  —————————————
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq.4.7:</strong> Stress ratio</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>▮ fb₁ &lt; Fb₁
+▮
+▮ [1] fb₁    [2] Fb₁     ratio [1]/[2]    check    reference
+▮ —————————  ——————————  ———————————————  ———————  ————————————
+▮ 2.68 k_si  20.00 k_si  0.13             OK       Stress ratio
+▮ —————————  ——————————  ———————————————  ———————  ————————————
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Eq. 4.8:</strong>  mid-span deflection (sectprop.py)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>δ₁ = midspan_δ(spn₁, ω₁, E₁, inertia₁)
+
+δ₁ = 0.04 inch     [δ₁] = 1.00 mm   | mid-span deflection (sectprop.py)
+
+ω₁                    E₁             spn₁       inertia₁
+————————————————————  —————————————  —————————  —————————————
+3.77 k_ft             29000.00 k_si  16.00 ft   4860.00 inch4
+—————                 —————          —————      —————
+Total load [ASCE7-05  modulus of     beam span  rectangle - I
+2.3.2]                elasticity     -          (sectprop.py)
+————————————————————  —————————————  —————————  —————————————
+</pre></div>
+</div>
+<hr class="docutils" />
+<dl class="simple" id="id4">
+<dt><strong>[0.1.1]</strong></dt><dd><p>“Euler–Bernoulli beam theory”, Wikipedia, Wikimedia Foundation. [Online].https://en.wikipedia.org/wiki/Euler_Bernoulli_beam_theory.[Accessed: Jun. 15, 2026].</p>
+</dd>
+</dl>
+<dl class="simple" id="id5">
+<dt><strong>[0.1.2]</strong></dt><dd><p>ASCE/SEI 7-05, Minimum Design Loads for Buildings and Other Structures,American Society of Civil Engineers, 2005.</p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-combinations"><strong>0.1-2</strong> | Load Combinations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loads-and-geometry"><strong>0.1-3</strong> | Loads and Geometry</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#beam-response"><strong>0.1-4</strong> | Beam Response</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+<!-- _templates/rv-author.html -->
+<div class="footer-item">
+    <p class="rvauthor">
+        R Holland
+    </p>
+</div></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+<!-- _templates/rv-title.html -->
+<div class="footer-item">
+    <p class="rvtitle">
+        Example 1 - rivt Doc  &nbsp;&nbsp;  v.1.0.0a17 
+    </p>
+</div></div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!-- _templates/rv-date.html -->
+<div class="footer-item">
+    <p class="rvdate">
+        2026-07-25
+    </p>
+</div></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

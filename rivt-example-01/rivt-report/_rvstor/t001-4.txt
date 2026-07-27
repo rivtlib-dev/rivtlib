@@ -1,0 +1,7 @@
+    "Euler–Bernoulli beam theory", Wikipedia, Wikimedia Foundation. [Online].
+    https://en.wikipedia.org/wiki/Euler_Bernoulli_beam_theory. 
+    [Accessed: Jun. 15, 2026].
+
+    ASCE/SEI 7-05, Minimum Design Loads for Buildings and Other Structures,
+    American Society of Civil Engineers, 2005.
+    

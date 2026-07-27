@@ -1,0 +1,90 @@
+
+[32m[link] c:\git\rivt-example-01-git\rivt-report\rv001-doc-example01.py:34[0m
+
+0.1-1 | Summary and Loads
+================================================================================
+
+ 
+This rivt file example calculates the maximum stress and deflection in a
+serves as an annotated example of a single rivt doc with multiple sections
+that is not part of a report.
+ 
+The example illustrates the use of some of the most common API functions,
+commands and tags. Further details are provided in the
+rivt user manual https://www.rivt.info .
+ 
+The file may be formatted as a text, PDF or HTML doc by changing the type
+parameter in the Doc API | PUBLISH | command at the end of each
+rivt file (rv.D()). Published files are found in the
+_published folder.
+ 
+
+[32m[link] c:\git\rivt-example-01-git\rivt-report\rv001-doc-example01.py:52[0m
+
+0.1-2 | Load Combinations
+--------------------------------------------------------------------------------
+
+ 
+ 
+ 
+Table 2.1: Load Effects (stored: t001-1.csv)
+============= ================================================
+Equation No.    Load Combination
+============= ================================================
+16-1           1.4(D+F)
+16-2           1.2(D+F+T) + 1.6(L+H) + 0.5(Lr or S or R)
+16-3           1.2(D+F+T) + 1.6(Lr or S or R) + (f1L or 0.8W)
+============= ================================================
+
+ 
+
+[32m[link] c:\git\rivt-example-01-git\rivt-report\rv001-doc-example01.py:71[0m
+
+0.1-3 | Loads and Geometry
+--------------------------------------------------------------------------------
+
+ 
+Successive value definitions are formatted as a table. Variable values are
+defined with the define operator. The line tag [T] labels and numbers the
+table.
+ 
+
+Table 1: Define Unit Loads
+==========  =============  =============  =====================
+variable    value          [value]        description
+==========  =============  =============  =====================
+D_1         3.80 p_sf      0.18 kPA       joists DL
+D_2         2.10 p_sf      0.10 kPA       plywood DL
+D_3         10.00 p_sf     0.48 kPA       partitions DL
+D_4         3.00 k_ft      43.78 kN_m     fixed machinery DL
+L_1         40.00 p_sf     1.92 kPA       ASCE7-O5 LL
+b_1         10.00 inch     254.00 mm      beam width
+h_1         18.00 inch     457.20 mm      beam depth
+E_1         29000.00 k_si  199947.96 MPA  modulus of elasticity
+Fb_1        20000.00 p_si  137.90 MPA     allowable stress
+==========  =============  =============  =====================
+ 
+
+The VALTABLE command reads variable values from a file in the rvsrc/data
+folder. The description is the table title, followed by the max
+column width.
+ 
+
+Table 3.2: Beam Geometry (beam1.csv)
+==========  ========  =========  =============
+variable    value     [value]    description
+==========  ========  =========  =============
+spc_1       2.00 ft   0.61 m     beam spacing
+spn_1       16.00 ft  4.88 m     beam span
+==========  ========  =========  =============
+
+
+ 
+<PIL.PngImagePlugin.PngImageFile image mode=RGBA size=860x334 at 0x1BED42CD010>
+          ----------------------------------------
+Fig. 3.1 - Beam Diagram [file: beam1.png  ]
+          ----------------------------------------
+
+ 
+                           Uniform Distributed Loads                            
+

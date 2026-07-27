@@ -1,0 +1,153 @@
+/* overrides */
+
+img.align-center {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: block;
+}
+
+
+html {
+    --pst-font-family-base: DejaVuSans, var(--pst-font-family-base-system);
+    --pst-font-family-heading: DejaVuSans, var(--pst-font-family-base-system);
+    --pst-font-family-monospace: DejaVuSansMono, var(--pst-font-family-monospace-system);
+    --pst-font-weight-heading: normal;
+    --pst-font-weight-base: normal;
+    --pst-font-size-base: 16px;
+    --pst-font-size-h1: 20px;
+    --pst-font-size-h2: 18px;
+    --pst-font-size-h3: 18px;
+    --pst-font-size-h4: 16px;
+    --pst-font-size-h5: 16px;
+    --pst-font-size-h6: 16px;
+    --pst-font-size-milli: 16px;
+}
+
+#api {
+    display: inline;
+    float: right;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.topic-title {
+    font-weight: normal;
+    font-size: 1em;
+}
+
+
+.toctree-l1>a {
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+.toctree-l2>a {
+    font-size: 1em;
+    font-weight: normal;
+}
+
+.toctree-l3>a {
+    font-size: 1em;
+    font-weight: normal;
+}
+
+.indented-section {
+    margin-left: 1em;
+}
+
+.bd-toc-item a {
+    font-size: 1.1em;
+}
+
+.bd-sidebar {
+    margin-top: 4em !important;
+}
+
+.bd-sidebar-secondary {
+    margin-top: 4em !important;
+    font-size: 1.1em !important;
+}
+
+.bd-sidebar-secondary .bd-toc-item {
+    font-size: 16px !important;
+}
+
+html[data-theme="light"] a {
+    color: hwb(200 13% 47%);
+}
+
+html[data-theme="dark"] a {
+    color: hwb(200 15% 27%);
+}
+
+a {
+    color: hwb(200 11% 41%);
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+a.visited {
+    color: hwb(200 15% 27%);
+    text-decoration: underline;
+    font-weight: 400;
+
+}
+
+.right-next {
+    color: hwb(200 15% 27%);
+    font-weight: 300;
+}
+
+.left-prev {
+    color: hwb(200 15% 27%);
+    font-weight: 300;
+}
+
+.center {
+    text-align: center;
+}
+
+
+.left {
+    text-align: left;
+}
+
+hr {
+    height: 3px;
+    background-color: hwb(200 15% 27%);
+    border: none;
+}
+
+.big-text {
+    font-size: 200%;
+}
+
+.rvdate {
+    font-size: 100%;
+    color: hwb(200 15% 27%);
+}
+
+.rvtitle {
+    font-size: 100%;
+    color: hwb(200 15% 27%);
+}
+
+.rvauthor {
+    font-size: 100%;
+    color: hwb(200 15% 27%);
+}
+
+.admonition {
+    border: none !important;
+}
+
+.admonition .admonition-title {
+    border: none !important;
+}

@@ -1,0 +1,12 @@
+D_1 = 3.8 * p_sf,p_sf,kPA,2,joists DL
+D_2 = 2.1 * p_sf,p_sf,kPA,2,plywood DL
+D_3 = 10.0 * p_sf,p_sf,kPA,2,partitions DL
+D_4 = 2 * 1.5 * k_ft,k_ft,kN_m,2,fixed machinery DL
+L_1 = 40 * p_sf,p_sf,kPA,2,ASCE7-O5 LL
+b_1 = 10 * inch,inch,mm,2,beam width
+h_1 = 18 * inch,inch,mm,2,beam depth
+E_1 = 29000 * k_si,k_si,MPA,2,modulus of elasticity
+Fb_1 = 20000 * p_si,p_si,MPA,2,allowable stress
+dl_1 = 3.64 k_ft,k_ft,kN_m,2,Dead load [ASCE7-05 2.3.2]
+ll_1 = 0.13 k_ft,k_ft,kN_m,2,Live load [ASCE7-05 2.3.2]
+omega_1 = 3.77 k_ft,k_ft,kN_m,2,Total load [ASCE7-05 2.3.2]

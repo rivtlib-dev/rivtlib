@@ -1,0 +1,8 @@
+12-08 11:02  rv101-standards   INFO     Doc start
+12-08 11:02  rv101-standards   INFO     rivt backup : C:\git\rivt-treehouse-structural-design-git\store\logs\rv101-standards.bak
+12-08 11:02  rv101-standards   INFO     SECTION 1 - type I
+12-08 11:02  rv101-standards   INFO     SECTION 2 - type I
+12-08 11:02  rv101-standards   INFO     tag : _[T]
+12-08 11:02  rv101-standards   INFO     command : IMG
+12-08 11:02  rv101-standards   INFO     SECTION 3 - type V
+12-08 11:02  rv101-standards   INFO     tag : _[T]

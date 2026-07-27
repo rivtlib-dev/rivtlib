@@ -1,0 +1,64 @@
+// rivt key bindings - copy to VSCode keybinding JSON file
+[
+    {
+        "key": "ctrl+alt+c",
+        "command": "runCommands",
+        "args": {
+            "commands": [
+                "editor.action.clipboardCopyAction", // Copies the current line
+                "editor.action.insertLineBefore", // Inserts a new line above
+                {
+                    "command": "editor.action.insertSnippet",
+                    "args": {
+                        "snippet": "# %% ${CLIPBOARD}" // The snippet to insert
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "key": "ctrl+alt+t",
+        "command": "workbench.action.terminal.clear"
+    },
+    {
+        "key": "shift+enter",
+        "command": "python.execInTerminal",
+        "when": "editorTextFocus && editorLangId == 'python'"
+    },
+    {
+        "key": "ctrl+alt+z",
+        "command": "workbench.action.reloadWindow"
+    },
+    {
+        "key": "ctrl+0",
+        "command": "-workbench.action.focusSideBar"
+    },
+    {
+        "key": "ctrl+1",
+        "command": "workbench.action.firstEditorInGroup"
+    },
+    {
+        "key": "ctrl+1",
+        "command": "-workbench.action.focusFirstEditorGroup"
+    },
+    {
+        "key": "ctrl+2",
+        "command": "workbench.action.nextEditorInGroup"
+    },
+    {
+        "key": "ctrl+3",
+        "command": "-workbench.action.focusThirdEditorGroup"
+    },
+    {
+        "key": "ctrl+3",
+        "command": "workbench.action.previousEditor"
+    },
+    {
+        "key": "ctrl+8",
+        "command": "workbench.explorer.fileView.focus"
+    },
+    {
+        "key": "ctrl+9",
+        "command": "workbench.scm.focus"
+    }
+]
