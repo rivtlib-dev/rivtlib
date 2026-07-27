@@ -720,13 +720,13 @@ class Cmd:
     :header-rows: 0
 
     * - .. figure:: {rst_img1S}
-            :width: 100%
+          :width: 100%
 
-            {labl1S}
-            - .. figure:: {rst_img2S}
-            :width: 100%
+          {labl1S}
+      - .. figure:: {rst_img2S}
+          :width: 100%
             
-            {labl2S}
+          {labl2S}
 
                      
 """
