@@ -1,5 +1,7 @@
 #! python3
-""" This is a rivt doc example used in the tutorial at https://www.rivt.info. 
+""" 
+This is a rivt doc example used in the rivt user manual tutorial at 
+https://www.rivt.info. 
 
 This example illustrates: 
 
