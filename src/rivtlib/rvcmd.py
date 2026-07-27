@@ -1,5 +1,6 @@
 # python #!
 import csv
+import os
 import sys
 import textwrap
 from datetime import datetime
@@ -15,7 +16,7 @@ from IPython.display import display as _display
 from PIL import Image
 from sympy.abc import _clash2
 
-from rivtlib.rvunits import *  # noqa: F403
+from rivtlib.rvunits import *
 from rivtlib.unum.core import Unum
 
 tabulate.PRESERVE_WHITESPACE = True
@@ -86,6 +87,17 @@ class Cmd:
         method()
 
         return self.mD
+
+    def _rst_rel_path(self, fileP):
+        """Return a portable path to use inside generated RST directives."""
+        srcP = Path(fileP)
+        rst_rootP = Path(self.fD.get("rstdocsP", self.fD["reptP"]))
+        try:
+            relS = os.path.relpath(srcP, rst_rootP)
+            return Path(relS).as_posix()
+        except ValueError:
+            # Fallback for mixed-drive local paths on Windows.
+            return srcP.as_posix()
 
     def vdefine(self, deqS):
         """define value ==:
@@ -538,7 +550,7 @@ class Cmd:
                     tag = date_tags[0]
                     if exif_dict is not None and exif_dict != {}:
                         # print(exif_dict)
-                        if tag in exif_dict and exif_dict[tag]:
+                        if exif_dict.get(tag):
                             # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
                             raw_date = str(exif_dict[tag]).strip()
                             try:
@@ -595,6 +607,7 @@ class Cmd:
             self.lD["reptflagS"] == "doc"
             insP = Path(self.fD["reptP"], "rvsrc", "image", self.fileS)
             inspS = str(insP.as_posix())
+        rst_imgS = self._rst_rel_path(insP)
         try:
             img1 = Image.open(inspS)
             _display(img1)
@@ -622,7 +635,7 @@ class Cmd:
         uS = bordS + lablxS + capS + f" [file: {self.fileS}{timeS} ]\n" + bordS
         tS = bordS + lablxS + capS + timeS + "\n" + bordS
         rS = f"""
-.. figure:: {inspS}
+.. figure:: {rst_imgS}
    :width: {scS}%
    :align: center
 
@@ -660,6 +673,8 @@ class Cmd:
 
         insp1S = str(ins1P.as_posix())
         insp2S = str(ins2P.as_posix())
+        rst_img1S = self._rst_rel_path(ins1P)
+        rst_img2S = self._rst_rel_path(ins2P)
 
         parL = self.parS.split(",")
         cap1S = parL[0].strip()
@@ -704,12 +719,11 @@ class Cmd:
     :widths: {scale1S} {scale2S}
     :header-rows: 0
 
-    * - .. figure:: {insp1S}
+    * - .. figure:: {rst_img1S}
             :width: 100%
 
             {labl1S}
-     
-      - .. figure:: {insp2S}
+            - .. figure:: {rst_img2S}
             :width: 100%
             
             {labl2S}
