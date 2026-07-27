@@ -1,0 +1,3 @@
+[submodule "examples/rivt-example-01"]
+	path = examples/rivt-example-01
+	url = https://github.com/rivt-info/rivt-example-01.git
