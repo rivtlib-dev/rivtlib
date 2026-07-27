@@ -150,7 +150,7 @@ rv.D("""Publish Doc
     _rivt-public folders as a README.txt file. READMEs are formatted and
     displayed on the first page of a GitHub repo.
     
-    | PUBLISH | Example 1 - rivt Doc | txt
+    | PUBLISH | Example 1 - rivt doc | pdf
     
     _[[METADATA]] 
     [doc]

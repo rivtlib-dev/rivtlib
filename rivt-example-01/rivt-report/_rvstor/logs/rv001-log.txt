@@ -1,33 +1,34 @@
-07-26 16:05  rv001-doc-example01   INFO     Doc start
-07-26 16:05  rv001-doc-example01   INFO     rivtlib version: 1.0.0a5
-07-26 16:05  rv001-doc-example01   INFO     rivt backup : c:\git\rivt-example-01-git\rivt-report\_rvstor\logs\rv001-doc-example01.bak
-07-26 16:05  rv001-doc-example01   INFO     Summary and Loads
-07-26 16:05  rv001-doc-example01   INFO     SECTION 0.1-1 - type I
-07-26 16:05  rv001-doc-example01   INFO     tag : _[U]
-07-26 16:05  rv001-doc-example01   INFO     Load Combinations 
-07-26 16:05  rv001-doc-example01   INFO     SECTION 0.1-2 - type I
-07-26 16:05  rv001-doc-example01   INFO     tag : _[[TABLE]]
-07-26 16:05  rv001-doc-example01   INFO     Loads and Geometry 
-07-26 16:05  rv001-doc-example01   INFO     SECTION 0.1-3 - type V
-07-26 16:05  rv001-doc-example01   INFO     tag : _[T]
-07-26 16:05  rv001-doc-example01   INFO     command : VALTABLE
-07-26 16:05  rv001-doc-example01   INFO     command : IMAGE
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'IHDR' 16 13
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'pHYs' 41 9
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'IDAT' 62 8192
-07-26 16:05  rv001-doc-example01   INFO     tag : _[C]
-07-26 16:05  rv001-doc-example01   INFO     Beam Response
-07-26 16:05  rv001-doc-example01   INFO     SECTION 0.1-4 - type V
-07-26 16:05  rv001-doc-example01   INFO     command : PYTHON
-07-26 16:05  rv001-doc-example01   INFO     command : IMAGE2
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'IHDR' 16 13
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'pHYs' 41 9
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'IDAT' 62 7479
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'IHDR' 16 13
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'pHYs' 41 9
-07-26 16:05  rv001-doc-example01   DEBUG    STREAM b'IDAT' 62 8192
-07-26 16:05  rv001-doc-example01   INFO     tag : _[B]
-07-26 16:05  rv001-doc-example01   INFO     tag : _[M]
-07-26 16:05  rv001-doc-example01   INFO     tag : _[[ENDNOTES]]
-07-26 16:05  rv001-doc-example01   INFO     SECTION : Publish Doc 
-07-26 16:05  rv001-doc-example01   INFO     block tag : METADATA]]
+07-27 17:14  rv001-doc-example01   INFO     Doc start
+07-27 17:14  rv001-doc-example01   INFO     rivtlib version: 1.0.0a17
+07-27 17:14  rv001-doc-example01   INFO     rivt backup : /workspaces/rivtlib/rivt-example-01/rivt-report/_rvstor/logs/rv001-doc-example01.bak
+07-27 17:14  rv001-doc-example01   INFO     Summary and Loads
+07-27 17:14  rv001-doc-example01   INFO     SECTION 0.1-1 - type I
+07-27 17:14  rv001-doc-example01   INFO     tag : _[U]
+07-27 17:14  rv001-doc-example01   INFO     Load Combinations 
+07-27 17:14  rv001-doc-example01   INFO     SECTION 0.1-2 - type I
+07-27 17:14  rv001-doc-example01   INFO     tag : _[[TABLE]]
+07-27 17:14  rv001-doc-example01   INFO     Loads and Geometry 
+07-27 17:14  rv001-doc-example01   INFO     SECTION 0.1-3 - type V
+07-27 17:14  rv001-doc-example01   INFO     tag : _[T]
+07-27 17:14  rv001-doc-example01   INFO     command : VALTABLE
+07-27 17:14  rv001-doc-example01   INFO     command : IMAGE
+07-27 17:14  rv001-doc-example01   DEBUG    Importing PngImagePlugin
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'IHDR' 16 13
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'pHYs' 41 9
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'IDAT' 62 8192
+07-27 17:14  rv001-doc-example01   INFO     tag : _[C]
+07-27 17:14  rv001-doc-example01   INFO     Beam Response
+07-27 17:14  rv001-doc-example01   INFO     SECTION 0.1-4 - type V
+07-27 17:14  rv001-doc-example01   INFO     command : PYTHON
+07-27 17:14  rv001-doc-example01   INFO     command : IMAGE2
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'IHDR' 16 13
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'pHYs' 41 9
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'IDAT' 62 7479
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'IHDR' 16 13
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'pHYs' 41 9
+07-27 17:14  rv001-doc-example01   DEBUG    STREAM b'IDAT' 62 8192
+07-27 17:14  rv001-doc-example01   INFO     tag : _[B]
+07-27 17:14  rv001-doc-example01   INFO     tag : _[M]
+07-27 17:14  rv001-doc-example01   INFO     tag : _[[ENDNOTES]]
+07-27 17:14  rv001-doc-example01   INFO     SECTION : Publish Doc 
+07-27 17:14  rv001-doc-example01   INFO     block tag : METADATA]]
