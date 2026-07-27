@@ -1,7 +1,7 @@
 {
     "name": "rivtlib-codespace",
     "image": "mcr.microsoft.com/devcontainers/python:3.14-bookworm",
-    "workspaceFolder": "/workspaces/rivtlib/examples/rivt-example-01",
+    "workspaceFolder": "/workspaces/rivtlib/rivt-example-01",
     "updateContentCommand": "bash /workspaces/rivtlib/.devcontainer/prepare-workspace.sh",
     "postCreateCommand": "bash /workspaces/rivtlib/.devcontainer/post-create.sh",
     "postAttachCommand": "bash /workspaces/rivtlib/.devcontainer/post-attach.sh",

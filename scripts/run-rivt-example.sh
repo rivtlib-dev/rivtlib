@@ -2,10 +2,10 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-EXAMPLE_DIR="${ROOT_DIR}/examples/rivt-example-01/rivt-report"
+EXAMPLE_DIR="${ROOT_DIR}/rivt-example-01/rivt-report"
 
 if [[ ! -d "${EXAMPLE_DIR}" ]]; then
-    echo "Missing example files. Run: git submodule update --init --recursive"
+    echo "Missing example files. Check that rivt-example-01 was copied into the repo root."
     exit 1
 fi
 

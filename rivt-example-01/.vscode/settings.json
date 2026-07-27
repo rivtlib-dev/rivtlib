@@ -30,7 +30,7 @@
     "notebook.markup.fontSize": 13,
     "notebook.output.fontSize": 13,
     "python.terminal.activateEnvironment": true,
-    "python.defaultInterpreterPath": "C:/Users/rhh2/Python314",
+    "python.defaultInterpreterPath": "/workspaces/rivtlib/.venv/bin/python",
     "editor.colorDecoratorsActivatedOn": "clickAndHover",
     "files.associations": {
         "*.py": "python"

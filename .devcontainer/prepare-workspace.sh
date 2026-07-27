@@ -4,15 +4,18 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 
-# Ensure the bundled example exists before VS Code opens the configured workspace folder.
-git submodule update --init --recursive
+# Ensure the copied example workspace is present before VS Code opens it.
+if [[ ! -d "${ROOT_DIR}/rivt-example-01" ]]; then
+    echo "Missing copied example workspace: rivt-example-01"
+    exit 1
+fi
 
 # Remove Claude Code from the example workspace recommendations.
 python - <<'PY'
 import json
 from pathlib import Path
 
-p = Path('/workspaces/rivtlib/examples/rivt-example-01/.vscode/extensions.json')
+p = Path('/workspaces/rivtlib/rivt-example-01/.vscode/extensions.json')
 if p.exists():
     data = json.loads(p.read_text(encoding='utf-8'))
     recs = data.get('recommendations', [])

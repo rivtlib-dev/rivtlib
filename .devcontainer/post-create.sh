@@ -14,7 +14,7 @@ python -m pip install -e .
 python -c "import rivtlib; print('Installed:', rivtlib.__file__)"
 
 # Add a one-click VS Code task in the example workspace.
-EXAMPLE_VSCODE_DIR="${ROOT_DIR}/examples/rivt-example-01/.vscode"
+EXAMPLE_VSCODE_DIR="${ROOT_DIR}/rivt-example-01/.vscode"
 mkdir -p "${EXAMPLE_VSCODE_DIR}"
 cat > "${EXAMPLE_VSCODE_DIR}/tasks.json" <<'EOF'
 {
