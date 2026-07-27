@@ -3,12 +3,11 @@ rivtlib
 ========
 
 .. _note:
-
-    ==> See the steps outlined below for running an example doc in rivt CodeSpace.
     
     **rivtlib is alpha software. Some features are not complete and the program has
     bugs.**
 
+    [ See the steps outlined below for running an example file in a rivt CodeSpace. ]
     
 *rivt* is an open-source program for writing and assembling calculation
 documents with a focus on reuse. The large ecosystem of engineering calculation
@@ -56,8 +55,8 @@ Quarto           yes          yes        no     no        no           no       
 .. [9] text, PDF and HTML documents from the same input file  
 
 
-Run rivt example in CodeSpaces
---------------------------------
+Run an example in a rivt CodeSpace
+---------------------------------------
 
 .. _note:
 
