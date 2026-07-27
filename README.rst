@@ -56,11 +56,13 @@ Quarto           yes          yes        no     no        no           no       
 .. [9] text, PDF and HTML documents from the same input file  
 
 
+Run rivt example in CodeSpaces
+--------------------------------
 
 .. _note:
 
     When you fork or clone the rivtlib repository, you also get a devcontainer
-    that installs rivt and opens an example rivt file in VSCode rivt environment. 
+    that will install rivt and open an example rivt file in VSCode rivt environment. 
     Here are the steps to run the example rivt file in CodeSpaces:
 
     1. Open the rivtlib repository 
