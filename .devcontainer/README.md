@@ -26,7 +26,7 @@ project first.
 After startup completes, run:
 
 ```bash
-bash scripts/run-rivt-example.sh
+bash -lc 'cd /workspaces/rivtlib/rivt-example-01/rivt-report && /workspaces/rivtlib/.venv/bin/python rv001-doc-example01.py'
 ```
 
 This executes `rivt-example-01/rivt-report/rv001-doc-example01.py`

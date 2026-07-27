@@ -23,7 +23,7 @@ cat > "${EXAMPLE_VSCODE_DIR}/tasks.json" <<'EOF'
 		{
 			"label": "Run rivt example (uses local rivtlib)",
 			"type": "shell",
-			"command": "bash /workspaces/rivtlib/scripts/run-rivt-example.sh",
+			"command": "bash -lc 'cd /workspaces/rivtlib/rivt-example-01/rivt-report && /workspaces/rivtlib/.venv/bin/python rv001-doc-example01.py'",
 			"group": {
 				"kind": "build",
 				"isDefault": true
