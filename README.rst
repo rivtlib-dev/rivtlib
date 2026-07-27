@@ -15,7 +15,7 @@ rivtlib
 
 *rivt* is an open-source program for writing and assembling calculation
 documents with a focus on reuse. The large ecosystem of engineering calculation
-tools often requires assembly of their output into a single project document.
+tools often requires organizing their output into a single project document.
 *rivt* is designed to write, assemble and link calculation documents into a
 live, editable and testable format prior to publishing to a text, PDF or HTML
 static format. 
