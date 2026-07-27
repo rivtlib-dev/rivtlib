@@ -4,20 +4,23 @@ rivtlib
 
 .. _note:
 
-    rivtlib is alpha software. Some features are not complete and the program has
+    #. rivtlib is alpha software. Some features are not complete and the program has
     bugs.
 
-    See steps below for running an example doc in CodeSpace.
+    #. See the steps below for running an example doc in CodeSpace.
 
 *rivt* is an open-source program for writing and assembling calculation
-documents with a focus on reuse. Many engineering calculation software tools are
-available but few or none allow live documents to be assembled and connected to
-essentially all of the existing tools. Also, *rivt's* straightforward markup
-language facilitates conversion of any PDF or text to a live calculation
-document that can then be modified or extended. Python knowledge is not required
-but *rivt* capabilities are increased when Python scientific and engineering
-libraries and scripts are used. For further details refer to the `rivt user manual
-<https://rivt.info>`__.
+documents with a focus on reuse. The large ecosystem of engineering calculation
+tools often requires assembly of their output into a single project document.
+*rivt* is designed to write, assemble and link calculation documents into a
+live, editable and testable format prior to publishing to a text, PDF or HTML
+static format. 
+
+The *rivt markup* language also facilitates conversion of any PDF or text
+document into a live calculation document that can then be modified or extended.
+Python knowledge is not required to use *rivt* but its capabilities are
+increased when Python scientific and engineering libraries and scripts are used.
+For further details refer to the `rivt user manual <https://rivt.info>`__.
 
 The primary use case for *rivt* is producing clear, live calculation
 documents that can be easily shared, reused and maintained. The table below 
@@ -53,13 +56,11 @@ Quarto           yes          yes        no     no        no           no       
 
 
 
+.. _note:
 
+    Steps for running an example rivt file in CodeSpace:
 
-
-
-
-
-
+    
 
 
 Modules - Summary
