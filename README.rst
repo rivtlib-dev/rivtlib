@@ -6,10 +6,10 @@ rivtlib
 
     + NOTES:
 
-    + See the steps outlined below for running an example file in a rivt CodeSpace.
+    + See the steps outlined below for running the example file in a rivt CodeSpace.
     
     + GitHub Codespaces is a free service for public repositories. You can also 
-      run rivt in a local VSCode environment (see https://rivt.info for details).
+    +  run rivt in a local VSCode environment (see https://rivt.info for details).
 
     - rivtlib is alpha software. Some features are not complete and the program has bugs.
 
@@ -62,6 +62,10 @@ Quarto           yes          yes        no     no        no           no       
 Run a rivt file in a rivt CodeSpace
 ---------------------------------------
 
+    Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib
+    If you are reading this readme file, you may be already there. 
+    You will need to set up a free GitHub account to fork the repository.
+
 .. code-block:: diff
 
     + When you fork or clone the rivtlib repository, you also get a devcontainer that 
@@ -69,36 +73,40 @@ Run a rivt file in a rivt CodeSpace
     
     Here are the steps to run the example rivt file in CodeSpaces:
 
-    + 1. Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib
-    +    If you are reading this readme file, you are already there. 
-    +    You will need to set up a free GitHub account to fork the repository.
-
-    + 2. Find the Fork button in the upper right corner of the page and click it. 
+    + 1. Find the Fork button in the upper right corner of the page and click it. 
     +    This will create a copy of the repository in your own GitHub account.
 
-    + 3. Go to the forked repository in your GitHub account and click the green Code button.
+    + 2. Go to the forked repository in your GitHub account and click the green Code button.
 
-    +4. In the Code menu, click the "Open with Codespaces" tab and then click the "New codespace" button.
+    + 3. In the Code menu, click the "Open with Codespaces" tab and then click the "New codespace" button.
 
-    +5. Wait for the Codespace to be created and the VSCode environment to open.
+    + 4. Wait for the Codespace to be created and the VSCode environment to open.
 
-    +6. The first time you do this it will take a few minutes to set up the environment. 
-    +   rivt is built with about 2 million lines of open-source code and it
-    +   takes a few minutes to install all the dependencies.
+    + 5. The first time you do this it will take a few minutes to set up the environment. 
+    +    rivt is built with about 2 million lines of open-source code and it
+    +    takes a few minutes to install all dependencies. This is only done once.
+    +    When you start rivt CodeSpaces in the future, it will only take a few seconds to open.
     
-    +7. Eventually you will see some progress messages in the terminal. You will
-    +   also be prompted to give permission to install some VSCode extensions. Granting
-    +   permission and trust once will install all of them. 
+    + 6. Eventually you will see some progress messages in the terminal. You will
+    +    also be prompted to give permission to install some VSCode extensions.
+    +    Granting permission and trust once will install all of them. You do this one time. 
+    +    You can rearrange the panels to your liking. Moving the terminal to the right
+    +    side with full vertical height is preferred for rivt. 
     
-    +8. Once the environment is set up, you can open the example file rivt-example-01.py
-    +   from the explorer bar and run it by clicking the triangle ▶ in the top right
-    +   status bar. 
+    + 7. Once the environment is set up you can open the example file rivt-example-01.py
+    +    from the explorer pane on the left. You may have to click the pages icon. 
+    +    Run the file by clicking the triangle ▶ in the top right status bar. 
+    +    The running output text will be displayed in the terminal and the 
+    +    txt, pdf or html files will be written to their respective output folders,
+    +    depending on the | PUBLISH | command settings. 
         
-    -9. It is best to set the doc type to "txt" in the | PUBLISH | command in the rv.D
-    -   method at the end of the file to check that everything is working for the 
-    -   first few runs. The first  run may take a minute as everything compiles for 
-    -   the first time. Subsequent runs take a couple of seconds. 
-    -   See https://rivt.info for details on creating, editing and running rivt files.
+    - 8. It is best to set the doc type to "txt" in the | PUBLISH | command in the rv.D
+    -    method at the end of the example file to check that everything is working for the 
+    -    first few runs. The first run may take a minute or two as everything compiles for 
+    -    the first time. Subsequent runs take a couple of seconds. 
+
+
+See https://rivt.info for details on creating, editing and running rivt files.
 
 
 Modules - Summary
