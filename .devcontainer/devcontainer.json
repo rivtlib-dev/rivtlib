@@ -1,23 +1,28 @@
 {
     "name": "rivtlib-codespace",
     "image": "mcr.microsoft.com/devcontainers/base:bookworm",
-    "workspaceFolder": "/workspaces/rivtlib/examples/rivt-example-01",
+    "workspaceFolder": "/workspaces/rivtlib",
     "features": {
         "ghcr.io/devcontainers/features/python:1": {
             "version": "3.14"
         }
     },
+    "updateContentCommand": "bash /workspaces/rivtlib/.devcontainer/prepare-workspace.sh",
     "postCreateCommand": "bash /workspaces/rivtlib/.devcontainer/post-create.sh",
     "postAttachCommand": "bash /workspaces/rivtlib/.devcontainer/post-attach.sh",
+    "waitFor": "updateContentCommand",
     "customizations": {
+        "codespaces": {
+            "openFiles": [
+                "examples/rivt-example-01/rivt-report/rv001-doc-example01.py"
+            ]
+        },
         "vscode": {
             "settings": {
+                "python.defaultInterpreterPath": "/workspaces/rivtlib/.venv/bin/python",
                 "python.analysis.typeCheckingMode": "basic",
-                "python.defaultInterpreterPath": "/workspaces/rivtlib/.venv/bin/python"
-            },
-            "openFiles": [
-                "rivt-report/rv001-doc-example01.py"
-            ]
+                "python.terminal.activateEnvironment": true
+            }
         }
     }
 }
