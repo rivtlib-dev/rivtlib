@@ -3,6 +3,7 @@ rivtlib
 ========
 
 .. code-block:: diff
+    
     + Notes:
 
     + See the steps outlined below for running an example file in a rivt CodeSpace.
