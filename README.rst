@@ -2,8 +2,12 @@
 rivtlib
 ========
 
-**rivtlib is alpha software. Some features are not complete and the program has
-bugs.**
+.. _note:
+
+    rivtlib is alpha software. Some features are not complete and the program has
+    bugs.
+
+    See steps below for running an example doc in CodeSpace.
 
 *rivt* is an open-source program for writing and assembling calculation
 documents with a focus on reuse. Many engineering calculation software tools are
@@ -46,6 +50,16 @@ Quarto           yes          yes        no     no        no           no       
 .. [7] Cross-platform
 .. [8] Collaboration support
 .. [9] text, PDF and HTML documents from the same input file  
+
+
+
+
+
+
+
+
+
+
 
 
 Modules - Summary

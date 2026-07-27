@@ -134,12 +134,13 @@ class Rs:
         headS = snumS + " | " + sectitleS
         head1S = snumrS + " | " + sectitleS
         bordrS = lD["widthI"] * "-" + "\n"
+        bordrdS = lD["widthI"] * "=" + "\n"
         bordr1S = lD["widthI"] * "=" + "]\n"
         bordr2S = lD["widthI"] * "." + "]\n"
         if secnumI == 1:
-            bordrS = bordr1S
+            bordrS = bordrdS
         else:
-            bordrS = bordrS
+            pass
         file_path = str(fD["rivtT"])  # insert interactive link in terminal
         for linenumI, lineS in enumerate(rivtL):
             if rsL[0] in lineS:
