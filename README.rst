@@ -46,10 +46,10 @@ Quarto           yes          yes        no     no        no           no       
 
 
 .. [1] Report generation
-.. [2] Native version control
+.. [2] Native git version control
 .. [3] Plain text input and output files
 .. [4] Syntax control of private/public sections
-.. [5] Dual units
+.. [5] Calculation with dual units
 .. [6] Forward and backward compatibility
 .. [7] Cross-platform
 .. [8] Collaboration support
@@ -59,13 +59,13 @@ Quarto           yes          yes        no     no        no           no       
 Run a rivt file in a rivt CodeSpace
 ---------------------------------------
 
-.. _note:
+.. code-block:: diff
 
-    When you fork or clone the rivtlib repository, you also get a devcontainer
-    that will install rivt and open an example rivt file in a VSCode rivt
-    environment. Here are the steps to run the example rivt file in CodeSpaces:
+    + When you fork or clone the rivtlib repository, you also get a devcontainer that will install rivt and open an example rivt file in a VSCode rivt environment. 
+    
+    Here are the steps to run the example rivt file in CodeSpaces:
 
-    1. Open the rivtlib repository 
+    + 1. Open the rivtlib repository 
 
 
 
