@@ -7,9 +7,10 @@
             "version": "3.14"
         }
     },
+    "updateContentCommand": "bash /workspaces/rivtlib/.devcontainer/prepare-workspace.sh",
     "postCreateCommand": "bash /workspaces/rivtlib/.devcontainer/post-create.sh",
     "postAttachCommand": "bash /workspaces/rivtlib/.devcontainer/post-attach.sh",
-    "waitFor": "postCreateCommand",
+    "waitFor": "updateContentCommand",
     "customizations": {
         "codespaces": {
             "openFiles": [
