@@ -4,11 +4,12 @@ rivtlib
 
 .. _note:
 
-    #. rivtlib is alpha software. Some features are not complete and the program has
-    bugs.
+    ==> See the steps outlined below for running an example doc in rivt CodeSpace.
+    
+    **rivtlib is alpha software. Some features are not complete and the program has
+    bugs.**
 
-    #. See the steps below for running an example doc in CodeSpace.
-
+    
 *rivt* is an open-source program for writing and assembling calculation
 documents with a focus on reuse. The large ecosystem of engineering calculation
 tools often requires assembly of their output into a single project document.
@@ -58,9 +59,13 @@ Quarto           yes          yes        no     no        no           no       
 
 .. _note:
 
-    Steps for running an example rivt file in CodeSpace:
+    When you fork or clone the rivtlib repository, you also get a devcontainer
+    that installs rivt and opens an example rivt file in VSCode rivt environment. 
+    Here are the steps to run the example rivt file in CodeSpaces:
 
-    
+    1. Open the rivtlib repository 
+
+
 
 
 Modules - Summary
