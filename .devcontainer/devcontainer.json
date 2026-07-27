@@ -19,6 +19,7 @@
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/workspaces/rivtlib/.venv/bin/python",
+                "python.venvPath": "/workspaces/rivtlib",
                 "python.analysis.typeCheckingMode": "basic",
                 "python.terminal.activateEnvironment": true
             }
