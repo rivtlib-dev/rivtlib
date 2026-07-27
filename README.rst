@@ -65,8 +65,8 @@ Run a rivt file in a rivt CodeSpace
     Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib.
     If you are reading this readme file you may be already there. 
 
-    You will need to set up and log into your free GitHub account to fork the 
-    repository at https://github.com.
+    You will need to set up and log into your free GitHub account at 
+    at https://github.com. to fork the repository and run the rivt CodeSpace example.
 
 .. code-block:: diff
 
