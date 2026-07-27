@@ -1,7 +1,7 @@
 {
     "name": "rivtlib-codespace",
     "image": "mcr.microsoft.com/devcontainers/base:bookworm",
-    "workspaceFolder": "/workspaces/rivtlib/examples/rivt-example-01",
+    "workspaceFolder": "/workspaces/rivtlib",
     "features": {
         "ghcr.io/devcontainers/features/python:1": {
             "version": "3.14"
@@ -14,7 +14,7 @@
     "customizations": {
         "codespaces": {
             "openFiles": [
-                "rivt-report/rv001-doc-example01.py"
+                "examples/rivt-example-01/rivt-report/rv001-doc-example01.py"
             ]
         },
         "vscode": {
