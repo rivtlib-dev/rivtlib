@@ -5,73 +5,20 @@ rivtlib
 bugs.**
 
 *rivt* is an open-source program for writing and assembling calculation
-documents with a focus on reuse [1]_. Many engineering calculation software
-tools are available but few or none allow live documents to be
-assembled from essentially all of the existing tools. Also, *rivt's*
-straightforward markup language facilitates conversion of any PDF or text to a
-live calculation document. Python knowledge is not required but *rivt*
-capabilities can be extended using Python scientific and engineering libraries
-and scripts.
+documents with a focus on reuse. Many engineering calculation software tools are
+available but few or none allow live documents to be assembled and connected to
+essentially all of the existing tools. Also, *rivt's* straightforward markup
+language facilitates conversion of any PDF or text to a live calculation
+document that can then be modified or extended. Python knowledge is not required
+but *rivt* capabilities are increased when Python scientific and engineering
+libraries and scripts are used. For further details refer to the `rivt user manual
+<https://rivt.info>`__.
 
-For further details refer to the `rivt user manual <https://rivt.info>`__.
 
-Fork + Clone With Example
--------------------------
-
-This repository includes the example project as a git submodule at
-``examples/rivt-example-01``.
-
-Clone both in one step:
-
-::
-
-    git clone --recurse-submodules https://github.com/<your-user>/rivtlib.git
-
-If you already cloned without submodules:
-
-::
-
-    git submodule update --init --recursive
-
-To run the example against this local ``rivtlib`` install in Codespaces:
-
-::
-
-    bash scripts/run-rivt-example.sh
-
-Release To PyPI (Wheel-Only)
-----------------------------
-
-Use the release helper script to build, validate and optionally upload
-wheel artifacts with Twine.
-
-Build + check only:
-
-::
-
-    bash scripts/release-wheel.sh --clean
-
-Upload to TestPyPI (recommended first):
-
-::
-
-    TWINE_USERNAME=__token__ TWINE_PASSWORD=<token> \
-    bash scripts/release-wheel.sh --clean --upload --testpypi
-
-Upload to PyPI:
-
-::
-
-    TWINE_USERNAME=__token__ TWINE_PASSWORD=<token> \
-    bash scripts/release-wheel.sh --upload --pypi
-
-The script uploads wheel files only (``dist/rivtlib-*.whl``).
-
-The primary use case for *rivt* is producing clear, informative live calculation
-documents that can be easily shared, reused and maintained. 
-
-The table below compares limitations in current software programs that *rivt* is
-designed complement or replace. 
+The primary use case for *rivt* is producing clear, live calculation
+documents that can be easily shared, reused and maintained. The table below 
+compares limitations in current software programs that *rivt* is
+designed to complement or replace.
 
 
 **Software Comparison (commercial programs in italics)**
