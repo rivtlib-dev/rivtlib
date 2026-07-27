@@ -73,7 +73,7 @@ https://github.com . to fork the repository and run the rivt CodeSpace example.
     + When you fork or clone the rivtlib repository, you also get a devcontainer that 
     + installs rivt and opens an example rivt file in a VSCode rivt environment. 
     
-    Here are the steps to run the example rivt file in CodeSpaces:
+    Here are the steps to run the example rivt file in your CodeSpaces:
 
     + 1. Find the Fork button in the upper right corner of the page and click it. 
     +    This will create a copy of the repository in your own GitHub account.
@@ -96,11 +96,10 @@ https://github.com . to fork the repository and run the rivt CodeSpace example.
     +    side with full vertical height is preferred for rivt. 
     
     + 7. Once the environment is set up you can open the example file rivt-example-01.py
-    +    from the explorer pane on the left. You may have to click the pages icon. 
+    +    from the explorer pane on the left. You may have to click the pages icon to open it. 
     +    Run the file by clicking the triangle ▶ in the top right status bar. 
-    +    The running output text will be displayed in the terminal and the 
-    +    txt, pdf or html files will be written to their respective output folders,
-    +    depending on the | PUBLISH | command settings. 
+    +    The output text will be displayed in the terminal and the txt, pdf or html
+    +    files will be written to their respective output folders, depending on | PUBLISH | settings. 
         
     - 8. It is best to set the doc type to "txt" in the | PUBLISH | command in the rv.D
     -    method at the end of the example file to check that everything is working for the 
@@ -111,8 +110,8 @@ https://github.com . to fork the repository and run the rivt CodeSpace example.
 See https://rivt.info for details on creating, editing and running rivt files.
 
 
-Modules - Summary
--------------------
+rivt Modules - Summary
+-----------------------
 
 ::
 
