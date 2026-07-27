@@ -7,6 +7,21 @@ cd "${ROOT_DIR}"
 # Pull bundled example content when cloned as a submodule pointer.
 git submodule update --init --recursive
 
+# Remove Claude Code from recommendation prompts in the example workspace.
+python - <<'PY'
+import json
+from pathlib import Path
+
+p = Path('/workspaces/rivtlib/examples/rivt-example-01/.vscode/extensions.json')
+if p.exists():
+	data = json.loads(p.read_text(encoding='utf-8'))
+	recs = data.get('recommendations', [])
+	data['recommendations'] = [
+		ext for ext in recs if ext != 'anthropic.claude-code'
+	]
+	p.write_text(json.dumps(data, indent=4) + '\n', encoding='utf-8')
+PY
+
 # Build a repo-local environment so Codespaces uses pyproject.toml from this checkout.
 python -m venv .venv
 source .venv/bin/activate

@@ -39,6 +39,34 @@ To run the example against this local ``rivtlib`` install in Codespaces:
 
     bash scripts/run-rivt-example.sh
 
+Release To PyPI (Wheel-Only)
+----------------------------
+
+Use the release helper script to build, validate and optionally upload
+wheel artifacts with Twine.
+
+Build + check only:
+
+::
+
+    bash scripts/release-wheel.sh --clean
+
+Upload to TestPyPI (recommended first):
+
+::
+
+    TWINE_USERNAME=__token__ TWINE_PASSWORD=<token> \
+    bash scripts/release-wheel.sh --clean --upload --testpypi
+
+Upload to PyPI:
+
+::
+
+    TWINE_USERNAME=__token__ TWINE_PASSWORD=<token> \
+    bash scripts/release-wheel.sh --upload --pypi
+
+The script uploads wheel files only (``dist/rivtlib-*.whl``).
+
 The primary use case for *rivt* is producing clear, informative live calculation
 documents that can be easily shared, reused and maintained. 
 

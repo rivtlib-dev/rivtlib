@@ -8,17 +8,22 @@
         }
     },
     "postCreateCommand": "bash /workspaces/rivtlib/.devcontainer/post-create.sh",
-    "postAttachCommand": "python -c \"import rivtlib; print('rivtlib loaded from local source in Codespaces')\"",
+    "postAttachCommand": "bash /workspaces/rivtlib/.devcontainer/post-attach.sh",
     "waitFor": "postCreateCommand",
     "customizations": {
+        "codespaces": {
+            "openFiles": [
+                "rivt-report/rv001-doc-example01.py"
+            ]
+        },
         "vscode": {
             "settings": {
                 "python.defaultInterpreterPath": "/workspaces/rivtlib/.venv/bin/python",
                 "python.analysis.typeCheckingMode": "basic",
-                "python.terminal.activateEnvironment": true
+                "python.terminal.activateEnvironment": true,
+                "extensions.ignoreRecommendations": true
             },
             "extensions": [
-                "anthropic.claude-code",
                 "github.vscode-pull-request-github",
                 "ms-python.python",
                 "ms-python.vscode-pylance",
