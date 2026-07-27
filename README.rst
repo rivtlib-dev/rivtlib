@@ -62,9 +62,11 @@ Quarto           yes          yes        no     no        no           no       
 Run a rivt file in a rivt CodeSpace
 ---------------------------------------
 
-    Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib
-    If you are reading this readme file, you may be already there. 
-    You will need to set up a free GitHub account to fork the repository.
+    Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib.
+    If you are reading this readme file you may be already there. 
+
+    You will need to set up and log into your free GitHub account to fork the 
+    repository at https://github.com.
 
 .. code-block:: diff
 
