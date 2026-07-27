@@ -14,7 +14,6 @@ but *rivt* capabilities are increased when Python scientific and engineering
 libraries and scripts are used. For further details refer to the `rivt user manual
 <https://rivt.info>`__.
 
-
 The primary use case for *rivt* is producing clear, live calculation
 documents that can be easily shared, reused and maintained. The table below 
 compares limitations in current software programs that *rivt* is
@@ -24,7 +23,7 @@ designed to complement or replace.
 **Software Comparison (commercial programs in italics)**
 
 ============= ============ ========= ======== ========== =========== ========== ========= ============= ===========
-Program       Reprt [1]_   Ver [2]_  Txt [3]_  Priv [4]_  Unts [5]_  Comp [6]_  C-P [7]_   Coll [8]_     Pub [9]_
+Program       Reprt [1]_   Ver [2]_  Txt [3]_  Priv [4]_ Units [5]_  Comp [6]_  C-P [7]_   Coll [8]_     Pub [9]_
 ============= ============ ========= ======== ========== =========== ========== ========= ============= ===========
 *Matlab*         no           no         no     no        no           no         no        no            yes
 *Mathcad*        no           no         no     no        no           no         no        no            no
