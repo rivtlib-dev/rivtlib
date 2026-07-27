@@ -66,8 +66,10 @@ Run a rivt file in a rivt CodeSpace
     
     Here are the steps to run the example rivt file in CodeSpaces:
 
-    + 1. Open the rivtlib repository 
+    + 1. Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib
 
+    + 2. Find the Fork button in the upper right corner of the page and click it. 
+    +    This will create a copy of the repository in your own GitHub account.
 
 
 
