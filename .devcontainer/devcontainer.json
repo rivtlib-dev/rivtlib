@@ -1,19 +1,62 @@
 {
     "name": "rivtlib-codespace",
-    "image": "mcr.microsoft.com/devcontainers/python:1-3.14-bookworm",
-    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+    "workspaceFolder": "/workspaces/rivtlib/examples/rivt-example-01",
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.14"
+        }
+    },
+    "postCreateCommand": "bash /workspaces/rivtlib/.devcontainer/post-create.sh",
     "postAttachCommand": "python -c \"import rivtlib; print('rivtlib loaded from local source in Codespaces')\"",
     "waitFor": "postCreateCommand",
     "customizations": {
         "vscode": {
             "settings": {
-                "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+                "python.defaultInterpreterPath": "/workspaces/rivtlib/.venv/bin/python",
                 "python.analysis.typeCheckingMode": "basic",
                 "python.terminal.activateEnvironment": true
             },
             "extensions": [
+                "anthropic.claude-code",
+                "github.vscode-pull-request-github",
                 "ms-python.python",
                 "ms-python.vscode-pylance",
+                "ms-python.debugpy",
+                "ms-python.vscode-python-envs",
+                "streetsidesoftware.code-spell-checker",
+                "shadowbq.context-commander",
+                "henryclayton.context-menu-toggle-comments",
+                "streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries",
+                "randomfractalsinc.vscode-data-preview",
+                "janisdd.vscode-edit-csv",
+                "howardzuo.vscode-favorites",
+                "metrosoft-application.file-explorer-expand-recursively",
+                "file-icons.file-icons",
+                "tombonnike.vscode-status-bar-format-toggle",
+                "janbn.git-last-commit-message",
+                "github.vscode-github-actions",
+                "github.codespaces",
+                "github.remotehub",
+                "kisstkondoros.vscode-gutter-preview",
+                "vscode-infra.image-viewer",
+                "jsynowiec.vscode-insertdatestring",
+                "hoangkimlai.ipython",
+                "sandcastle.vscode-open",
+                "fr43nk.seito-openfile",
+                "mathematic.vscode-pdf",
+                "alefragnani.project-manager",
+                "troelsdamgaard.reflow-paragraph",
+                "ms-vscode.remote-explorer",
+                "ms-vscode.remote-repositories",
+                "tht13.rst-vscode",
+                "hoovercj.vscode-settings-cycler",
+                "jerrygoyal.shortcut-menu-bar",
+                "zjffun.snippetsmanager",
+                "qwtel.sqlite-viewer",
+                "wayou.vscode-todo-highlight",
+                "jkearins.action-buttons-ext",
+                "donjayamanne.githistory",
                 "charliermarsh.ruff"
             ]
         }

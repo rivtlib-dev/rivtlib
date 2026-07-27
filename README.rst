@@ -15,6 +15,30 @@ and scripts.
 
 For further details refer to the `rivt user manual <https://rivt.info>`__.
 
+Fork + Clone With Example
+-------------------------
+
+This repository includes the example project as a git submodule at
+``examples/rivt-example-01``.
+
+Clone both in one step:
+
+::
+
+    git clone --recurse-submodules https://github.com/<your-user>/rivtlib.git
+
+If you already cloned without submodules:
+
+::
+
+    git submodule update --init --recursive
+
+To run the example against this local ``rivtlib`` install in Codespaces:
+
+::
+
+    bash scripts/run-rivt-example.sh
+
 The primary use case for *rivt* is producing clear, informative live calculation
 documents that can be easily shared, reused and maintained. 
 
