@@ -61,7 +61,8 @@ Run a rivt file in a rivt CodeSpace
 
 .. code-block:: diff
 
-    + When you fork or clone the rivtlib repository, you also get a devcontainer that will install rivt and open an example rivt file in a VSCode rivt environment. 
+    + When you fork or clone the rivtlib repository, you also get a devcontainer that 
+    + will install rivt and open an example rivt file in a VSCode rivt environment. 
     
     Here are the steps to run the example rivt file in CodeSpaces:
 
