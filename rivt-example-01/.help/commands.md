@@ -37,8 +37,8 @@ Parent paths for commands
 
 [1] relative file paths in commands generally begin with rvsrc/ 
 [2] authored values are read from rvsrc/subdirectories
-[3] values written by rivt may be read from rv_stor/vals  
-[4] sections stored by rivt may be read from rv_stor/sect  
+[3] values written by rivt may be read from _rvstor/vals  
+[4] sections stored by rivt may be read from _rvstor/sect  
 [5] docs are written to subdirectories of _published
 
 

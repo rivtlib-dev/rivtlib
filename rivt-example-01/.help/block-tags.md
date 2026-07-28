@@ -115,7 +115,7 @@ Doc Types     text, PDF, HTML
 _[[PYTHON]] label
         
 Runs a Python script. Results are typically written to the default folder
-rv_stor through an alias and then imported as needed using the TEXT 
+_rvstor through an alias and then imported as needed using the TEXT 
 or IMAGE command.
 
     Syntax:    
@@ -130,7 +130,7 @@ or IMAGE command.
         str1 = ""
         for i in range(10):
             str1+="  " + str(i)
-        with open("rv_stor/numbers.txt", "w") as f1:
+        with open("_rvstor/numbers.txt", "w") as f1:
             f1.write(str1)    
         _[[END]]
 

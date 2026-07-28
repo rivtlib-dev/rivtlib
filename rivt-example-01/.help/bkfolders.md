@@ -25,7 +25,7 @@ rivtbook Folders
             ├── rv101-filename1.pdf             
             ├── rv102-filename1.pdf             
             ├── rv201-filename3.pdf
-        └── [_rv_stor]/                    rivt-generated source files
+        └── [_rvstor]/                    rivt-generated source files
             ├── [logs]/                          log files
                 ├── rv101-log.txt
                 └── rv102-log.txt

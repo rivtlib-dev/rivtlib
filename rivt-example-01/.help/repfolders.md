@@ -35,7 +35,7 @@ report Folders
                     └── opensees.sh                        
                 ├── fig1.png
                 └── fig2.jpg                  
-            ├── [rv_stor]/                    rivt-generated source files
+            ├── [_rvstor]/                    rivt-generated source files
                 ├── [logs]/                          log files
                     ├── rv101-log.txt
                     └── rv102-log.txt

@@ -106,7 +106,7 @@ class Cmd:
 
             Collects successive rows until hitting a blank line
 
-            Table is written to rv_stor (see rvparse module)
+            Table is written to _rvstor (see rvparse module)
 
         Returns:
             self.mD, tbL

@@ -1,6 +1,6 @@
 [project]
 name = "rivtlib"
-version = "1.0.0a17"
+version = "1.0.0a19"
 description = "write - share - reuse calculation documents"
 authors = [{ name = "rivt support", email = "support@rivt.info" }]
 requires-python = ">=3.14"
