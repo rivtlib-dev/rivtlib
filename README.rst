@@ -18,7 +18,7 @@ rivtlib
 documents with a focus on reuse. The large ecosystem of engineering calculation
 tools often requires organizing their output into a single project document.
 *rivt* is designed to write, assemble and link calculation documents and code 
-into a live, editable and organized format prior to publishing to a text, PDF or HTML
+into a live, editable and organized format prior to publishing a text, PDF or HTML
 static format. 
 
 The *rivt markup* language also facilitates conversion of any PDF or text
