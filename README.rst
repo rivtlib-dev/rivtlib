@@ -5,7 +5,7 @@ rivtlib
 
     + NOTES:
 
-    + See the steps outlined below for running the example file in a rivt CodeSpace.
+    + Run the example file in a rivt CodeSpace by following the steps outlined in Section 1.
 
     + You will need to set up and log into your free GitHub account at https://github.com
     + before you fork the repository and run the rivt CodeSpace example.    
@@ -59,7 +59,7 @@ Quarto           yes          yes        no     no        no           no       
 .. [9] text, PDF and HTML documents from the same input file  
 
 
-Run a rivt file in a rivt CodeSpace
+1. Run a rivt file in a rivt CodeSpace
 ---------------------------------------
 
 Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib .
@@ -110,7 +110,7 @@ https://github.com before you fork the repository and run the rivt CodeSpace exa
 See https://rivt.info for details on creating, editing and running rivt files.
 
 
-rivt Modules - Summary
+2. rivt Modules - Summary
 -----------------------
 
 ::
