@@ -6,9 +6,11 @@ rivtlib
     + NOTES:
 
     + See the steps outlined below for running the example file in a rivt CodeSpace.
-    
-    + GitHub Codespaces is a free service for public repositories. You can also 
-    +  run rivt in a local VSCode environment (see https://rivt.info for details).
+
+    + You will need to set up and log into your free GitHub account at https://github.com
+    + before you fork the repository and run the rivt CodeSpace example.    
+    + GitHub Codespaces is a free service for public repositories like rivt. You can also 
+    + run rivt in a local VSCode environment (see https://rivt.info for details).
 
     - rivtlib is alpha software. Some features are not complete and the program has bugs.
 
@@ -20,15 +22,14 @@ into a live, editable and organized format prior to publishing to a text, PDF or
 static format. 
 
 The *rivt markup* language also facilitates conversion of any PDF or text
-document into a live calculation document that can then be modified or extended.
-Python knowledge is not required to use *rivt* but its capabilities are
-increased when Python scientific and engineering libraries and scripts are used.
+document into a live calculation format that can then be modified, extended
+and replublished. Python knowledge is not required to use *rivt* but Python
+scientific and engineering libraries increase its capabilities.
 For further details refer to the `rivt user manual <https://rivt.info>`__.
 
-The primary use case for *rivt* is producing organized, live calculation
-documents that can be easily shared, reused and maintained. The table below 
-compares limitations in current software programs that *rivt* is
-designed to complement or replace.
+The primary use case for *rivt* is producing organized engineering documents that can be
+shared, reused and maintained as live calculations. The table below compares limitations in 
+current software programs that *rivt* is designed to address.
 
 
 **Software Comparison (commercial programs in italics)**
@@ -65,7 +66,7 @@ Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib .
 If you are reading this README file in GitHub you may already be there.
 
 You will need to set up and log into your free GitHub account at 
-https://github.com . before you fork the repository and run the rivt CodeSpace example.
+https://github.com before you fork the repository and run the rivt CodeSpace example.
 
 .. code-block:: diff
 
