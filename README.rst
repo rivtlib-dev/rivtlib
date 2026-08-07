@@ -60,7 +60,7 @@ Quarto           yes          yes        no     no        no           no       
 .. [9] text, PDF and HTML documents from the same input file  
 
 
-1. Run a rivt file in a rivt CodeSpace
+[1] Run a rivt file in a rivt CodeSpace
 ---------------------------------------
 
 Set up or log into your free GitHub account at https://github.com. and return to this repository 
