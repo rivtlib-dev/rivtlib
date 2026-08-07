@@ -108,7 +108,7 @@ at https://github.com/rivtlib-dev/rivtlib.
 See https://rivt.info for details on creating, editing and running rivt files.
 
 
-2. rivt Modules - Summary
+[2] rivt Modules - Summary
 -----------------------
 
 ::
