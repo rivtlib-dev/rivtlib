@@ -496,7 +496,6 @@
         "stds",
         "yapf"
     ],
-    "python-envs.defaultEnvManager": "ms-python.python:system",
     "python.analysis.autoImportCompletions": false,
     "window.zoomLevel": 1,
     "favorites.resources": [
