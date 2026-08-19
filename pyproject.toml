@@ -1,7 +1,7 @@
 [project]
 name = "rivtlib"
-version = "1.0.0a19"
-description = "write - share - reuse calculation documents"
+version = "1.0.0a20"
+description = "write - share - reuse calculation files"
 authors = [{ name = "rivt support", email = "support@rivt.info" }]
 requires-python = ">=3.14"
 
@@ -39,7 +39,6 @@ dependencies = [
     "pyside6>=6.8.0.2",
     "pyzo>=4.20.0",
     "github-clone>=1.2.0",
-    "rivtlib",
 ]
 
 readme = "README.rst"
