@@ -5,30 +5,32 @@ rivtlib
 
     + NOTES:
 
-    + See the steps outlined below for running the example file in a rivt CodeSpace.
-    
-    + GitHub Codespaces is a free service for public repositories. You can also 
-    +  run rivt in a local VSCode environment (see https://rivt.info for details).
+    + Run the example file in a rivt CodeSpace by following the steps outlined in Section 1.
+
+    + You will need to set up and log into your free GitHub account at https://github.com
+    + before you fork the repository and run the rivt CodeSpace example.    
+    + GitHub Codespaces is a free service for public repositories like rivt. You can also 
+    + run rivt in a local VSCode environment (see https://rivt.info for details).
 
     - rivtlib is alpha software. Some features are not complete and the program has bugs.
 
 *rivt* is an open-source program for writing and assembling calculation
 documents with a focus on reuse. The large ecosystem of engineering calculation
-tools often requires organizing their output into a single project document.
-*rivt* is designed to write, assemble and link calculation documents and code 
-into a live, editable and organized format prior to publishing to a text, PDF or HTML
-static format. 
+tools often requires organizing their output into a single, systematic project document.
 
-The *rivt markup* language also facilitates conversion of any PDF or text
-document into a live calculation document that can then be modified or extended.
-Python knowledge is not required to use *rivt* but its capabilities are
-increased when Python scientific and engineering libraries and scripts are used.
+*rivt* is designed to write, assemble and link calculation documents and code
+into live, editable and organized *rivt files*  prior to publishing text, PDF or
+HTML *docs* or *reports*. *rivt markup* facilitates writing and converting any PDF or 
+text document to a live calculation document that can then be modified or 
+extended. Python knowledge is not required to use *rivt* but Python scientific 
+and engineering libraries increase its capabilities.
 For further details refer to the `rivt user manual <https://rivt.info>`__.
 
-The primary use case for *rivt* is producing organized, live calculation
-documents that can be easily shared, reused and maintained. The table below 
-compares limitations in current software programs that *rivt* is
-designed to complement or replace.
+The primary purpose of *rivt* is providing a stable *rivt file* format that
+can be shared, edited, and maintained as a live calculation file, and that 
+produces text, PDF and HTML engineering reports as output.  The table below 
+compares limitations in current software programs that *rivt* is designed 
+to address.
 
 
 **Software Comparison (commercial programs in italics)**
@@ -58,14 +60,11 @@ Quarto           yes          yes        no     no        no           no       
 .. [9] text, PDF and HTML documents from the same input file  
 
 
-Run a rivt file in a rivt CodeSpace
+[1] Run a rivt file in a rivt CodeSpace
 ---------------------------------------
 
-Open the rivtlib repository at https://github.com/rivtlib-dev/rivtlib .
-If you are reading this README file in GitHub you may already be there.
-
-You will need to set up and log into your free GitHub account at 
-https://github.com . before you fork the repository and run the rivt CodeSpace example.
+Set up or log into your free GitHub account at https://github.com. and return to this repository 
+at https://github.com/rivtlib-dev/rivtlib.
 
 .. code-block:: diff
 
@@ -109,7 +108,7 @@ https://github.com . before you fork the repository and run the rivt CodeSpace e
 See https://rivt.info for details on creating, editing and running rivt files.
 
 
-rivt Modules - Summary
+[2] rivt Modules - Summary
 -----------------------
 
 ::
