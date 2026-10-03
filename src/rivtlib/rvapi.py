@@ -60,7 +60,7 @@ reptP = Path(os.getcwd())
 # print(f"Current working directory: {reptP}")
 try:
     rivtN = os.path.basename(__main__.__file__)
-except Exception:
+except AttributeError:
     rivtN = os.path.basename(__main__.__name__)
 
 if fnmatch.fnmatch(rivtN, "rv[A-Z0-9][0-9][0-9]-*.py"):
@@ -133,13 +133,14 @@ logging.basicConfig(
 )
 package_version = version("rivtlib")
 verS = f"rivtlib version: {package_version}"
-logging.info("Doc start")
-logging.info(verS)
+logger = logging.getLogger(__name__)
+logger.info("Doc start")
+logger.info(verS)
 with open(rivtT, "r") as f2:
     rivtS = f2.read()
 with open(bakT, "w") as f3:
     f3.write(rivtS)
-logging.info(f"""rivt backup : {bakT}""")
+logger.info(f"""rivt backup : {bakT}""")
 # region - folder and label dictionaries
 vdescD = {}
 rivtD = {}
@@ -174,9 +175,9 @@ lD1 = {
     "repkeepS": repkeepS,  # default keep rst files
     "doctypeS": "txt",  # default doc
     "docnumS": rbaseS[0:6],  # doc number
+    "divS": rbaseS[2],  # div character
     "sdivI": int(rbaseS[3:5]),  # subdiv number
     "secnumI": 0,  # section number
-    "divS": rbaseS[2],  # div character
     "valprfx": rbaseS[0:6].replace("rv", "v"),
     "toolprfx": rbaseS[0:6].replace("rv", "t"),
     "sectS": "",  # section title
@@ -284,7 +285,7 @@ def doc_parse(rS, tyS, tagL, cmdL):
     """
     global dutfS, drstS, dtxtS, fD, lD, rivtD
     rsL = rS.split("\n")
-    conC = rvparse.Rs(tyS, rsL, fD, lD, rivtD, rivtL, vdescD)
+    conC = rvparse.Rst(tyS, rsL, fD, lD, rivtD, rivtL, vdescD)
     if tyS == "R" or tyS == "T":
         return conC.sutfS, conC.stxtS, conC.srstS
     elif tyS == "I" or tyS == "V":
@@ -293,8 +294,6 @@ def doc_parse(rS, tyS, tagL, cmdL):
             dutfS += sutfS
             drstS += srstS
             dtxtS += stxtS
-    else:
-        pass
 
     return dutfS, dtxtS, drstS
 
@@ -318,7 +317,7 @@ def R(rS):
     tagL = tagbL
     sutfS, stxtS, srstS = doc_parse(rS, "R", tagL, cmdL)
     r1S = rS.split("\n", 1)[1]
-    uS, tS, rS, lS = rvshell.run_shell(r1S, lD, fD, rivtD)
+    uS, tS, rS = rvshell.run_shell(r1S, lD, fD, rivtD)
     sutfS += uS
     stxtS += tS
     srstS += rS
@@ -327,7 +326,7 @@ def R(rS):
     drstS += srstS
 
 
-def I(rS):  # noqa: E743
+def I(rS):
     """Insert API - Insert static files
 
     Args:
@@ -429,13 +428,15 @@ def T(rS):
     hL = hS.split("|")
     r1S = rS.split("\n", 1)[1]
     sutfS, stxtS, srstS = doc_parse(rS, "T", tagL, cmdL)
+    fileS = ""
+    r2S = ""
     # override section header typeS from rvparse
     try:
         fileS = hL[2].strip()
         fileP = Path(srcP, "scripts", fileS)
-        with open(fileP, "r") as f1:
+        with open(fileP, "r", encoding="utf-8") as f1:
             r2S = f1.read()
-    except Exception:
+    except IndexError, OSError, TypeError, ValueError:
         r2S = ""
     try:
         typeS = hL[3].strip()
@@ -446,7 +447,7 @@ def T(rS):
                 f"\033[31m{typeS} is not a valid type for rv.T() - type reset to 'text'\033[0m"
             )
             typeS = "text"
-    except Exception:
+    except IndexError, TypeError, ValueError:
         typeS = "text"
     uS, tS, rS, lS, rivtD = rvtext.format_text(
         typeS, r1S, r2S, fileS, lD, fD, rivtD
@@ -480,13 +481,13 @@ def S(rS):
         rS (str): rivt string
     """
     shL = rS.split("\n")
-    logging.info("section skipped at: " + shL[0])
+    logger.info("section skipped at: " + shL[0])
     print("\n\033[32m[" + shL[0].strip() + "] : section skipped \033[0m" + "\n")
 
 
 def X():
     """Exit rivt file"""
-    logging.info("exit rivt file with rv.X()")
+    logger.info("exit rivt file with rv.X()")
     print("\n\033[31m------------------------------------------------\033[0m")
     print("\n\033[31mrivtlib exited with rv.X()\033[0m")
     print("\n\033[31m------------------------------------------------\033[0m")

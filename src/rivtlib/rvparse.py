@@ -19,7 +19,7 @@ import __main__
 from . import rvcmd, rvtag
 
 
-class Rs:
+class Rst:
     """convert rivt string to formatted text and reST strings"""
 
     def __init__(self, tyS, rsL, fD, lD, rivtD, rivtL, vdescD):
@@ -48,8 +48,8 @@ class Rs:
             filename=errlogT,
             filemode="a",
         )
-        self.logging = logging
-        logging.info(rsL[0])  # log header
+        self.logger = logging.getLogger(__name__)
+        self.logger.info(rsL[0])  # log header
         stxtS = ""  # text doc
         sutfS = ""  # utf doc
         srstS = ""  # rest doc
@@ -98,13 +98,9 @@ class Rs:
             else:
                 self.lD["privateB"] = currentB
         try:
-            fileP = hL[2].strip()
-        except Exception:
-            fileP = ""
-        try:
             typeS = hL[3].strip()
             self.lD["rvtypeS"] = typeS
-        except Exception:
+        except IndexError:
             typeS = "rvt"
         # ----------------------------------------------   section header
         # add transition
@@ -124,8 +120,13 @@ class Rs:
             addtgS = tyS.lower()
         else:
             addtgS = ""
-        # ------ write title
-        slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for STDOUT
+        # ------ write title and links
+        snS = str(secnumI)
+        divS = str(lD["divS"])
+        sdivS = str(lD["sdivI"])
+        self.seclinkS = f"[{divS}.{sdivS}.{snS}]"
+        slinkS = f"\n\n.. _{self.seclinkS}:\n\n"  # section link for reST
+        # slinkS = f"\n\n.. _{sectitleS}:\n\n"  # section link for reST
         snS = "-" + str(secnumI)
         sdivS = str(lD["sdivI"])
         divS = str(lD["divS"])
@@ -139,8 +140,6 @@ class Rs:
         bordr2S = lD["widthI"] * "." + "]\n"
         if secnumI == 1:
             bordrS = bordrdS
-        else:
-            pass
         file_path = str(fD["rivtT"])  # insert interactive link in terminal
         for linenumI, lineS in enumerate(rivtL):
             if rsL[0] in lineS:
@@ -158,7 +157,7 @@ class Rs:
         self.sutfS = sutfS  # utf doc
         self.stxtS = stxtS  # text doc
         self.srstS = srstS  # rst2pdf doc
-        self.logging.info("SECTION " + snumS + " - type " + tyS)
+        self.logger.info("SECTION " + snumS + " - type " + tyS)
         # preprocess  section
         self.spL = []
         for slS in rsL[1:]:
@@ -338,7 +337,7 @@ class Rs:
                     tagS = lineL[0]
                     if tagS in tagL:
                         # print(f"{tagS=}")
-                        self.logging.info(f"tag : _[[{tagS}]]")
+                        self.logger.info(f"tag : _[[{tagS}]]")
                         blockS = ""
                         blockB = True
                         blockS += lineS + "\n"
@@ -347,13 +346,11 @@ class Rs:
                     s1L = slS.split("_[")
                     s2L = s1L[1].split("]")
                     lineL = [s1L[0]] + s2L[1:]
-                    if "_[#]" in slS:
+                    if "_[#]" in slS:  # endnote link
                         cI = lD["noteI"] + 1
                         lD["noteI"] = cI
-                        ftnoteS = (
-                            lD["divS"] + "." + str(lD["sdivI"]) + "." + str(cI)
-                        )
-                        lineS = f"""{s1L[0]} `[{ftnoteS}]`_ {s2L[1:][0]}"""
+                        ftnoteS = self.seclinkS + "-" + str(cI)
+                        lineS = f"""{s1L[0]} `{ftnoteS}`_\\ {s2L[1:][0]}"""
                         linexS = f"""{s1L[0]}[{ftnoteS}]{s2L[1:][0]}"""
                         sutfS += linexS + "\n"
                         srstS += lineS + "\n"
@@ -362,7 +359,7 @@ class Rs:
                     tagS = s2L[0]
                     if tagS in tagL:  # check tag list
                         # print(f"{tagS=}")
-                        self.logging.info(f"tag : _[{tagS}]")
+                        self.logger.info(f"tag : _[{tagS}]")
                         tC = rvtag.Tag(fD, lD, rivtD, rivL, lineL)
                         if tagS[0] != "[":  # line tag
                             mD, lD = tC.taglx(tagS)
@@ -374,7 +371,7 @@ class Rs:
             if slS.strip()[0:1] == "|":  # ---------------------- commands
                 parL = slS.strip()[1:].split("|")
                 cmdS = parL[0].strip()
-                self.logging.info(f"command : {cmdS}")
+                self.logger.info(f"command : {cmdS}")
                 # print(cmdS, pthS, parS)
                 if cmdS in cmdL:  # verify scope
                     cmC = rvcmd.Cmd(

@@ -3,7 +3,7 @@
     "terminal.integrated.environmentChangesRelaunch": true,
     "window.title": "${dirty}${separator}${activeFolderShort}${separator}${activeEditorLong}",
     "workbench.colorTheme": "Dark Modern",
-    "workbench.iconTheme": "vscode-icons",
+    "workbench.iconTheme": "vs-seti",
     "workbench.editor.empty.hint": "hidden",
     "workbench.sideBar.location": "left",
     "workbench.startupEditor": "none",

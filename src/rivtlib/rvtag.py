@@ -6,7 +6,7 @@ import docutils.parsers.rst.tableparser
 import sympy as sp
 import tabulate
 from fastcore.utils import store_attr
-from numpy import *  # noqa: F403
+from numpy import *
 from sympy.abc import _clash2
 
 tabulate.PRESERVE_WHITESPACE = True
@@ -66,7 +66,7 @@ class Tag:
          all      ## text                                non-printing comment
 
          Args:
-             tagS (str):  last two characers of tag symbol
+             tagS (str):  tag symbol
          Returns:
              uS, r2S, rS, fD, lD, rivD, rivL
         """
@@ -114,7 +114,7 @@ class Tag:
             lS = ".. _" + lineL[0] + ": " + lineL[1]
 
         elif cmdS == "lU":
-            """format url link"""
+            """url link"""
             # print(lineL)
             txt1 = lineL[0]
             txt2 = lineL[1].split("|")[0].strip()
@@ -142,12 +142,10 @@ class Tag:
             self.enumS = secnumS + "." + str(self.enumI)
             spS = lineL[0].strip()
             refS = lineL[1]
-            try:
-                spL = spS.split("=")
+            if "=" in spS:
+                spL = spS.split("=", maxsplit=1)
                 sp1S = spL[0]
-            except Exception:
-                sp1S = spS
-            spS = "Eq(" + sp1S + ",(" + spL[1] + "))"
+                spS = "Eq(" + sp1S + ",(" + spL[1] + "))"
             eq1S = sp.pretty(sp.sympify(spS, _clash2, evaluate=False))
             # text
             eqxS = textwrap.indent(eq1S, chr(9474) + "     ")
@@ -208,12 +206,14 @@ class Tag:
     def tagbx(self, tagS):
         """formats a block
 
-         API         Syntax                               Description (output types)
-        --------- -------------------------------------- -------------------------------------
-        R          _[[SHELL]] type, *wait;nowait*          command script (all)
-        I          _[[WRITE]] optional label               write to file (all)
-        D          _[[METADATA]] label                     meta and layout data (all)
-        all        _[[END]]                                end block (all)
+         API         Syntax                    Description (output types)
+        --------- ------------------------ -------------------------------------
+        V           _[[ARGS]]               argument dictionary for function
+        I,V         _[[TABLE]]              format inline rst and write to csv
+        I,V         _[[ENDNOTES]]           list footnote references in order
+        I,V         _[[TEXT]]               insert text from fileand format
+        I,V         _[[WRITE]]              write text block to rvsrc/data
+        all         _[[END]]                end block indicator
 
         Args:
             tagS (str): characters of tag symbol with leading "_[" stripped
@@ -287,21 +287,20 @@ class Tag:
             # endregion
 
         elif cmdS == "bENDN":
+            """endnote block"""
             r1L = (self.strL).split("\n")
             r2L = []
             for ln in r1L:
                 ln = ln.strip()
                 if len(ln) == 0:
                     ln = "\n\n"
-                else:
-                    pass
                 r2L.append(ln)
             r2S = "".join(r2L)
             groups = r2S.split("\n\n")
             result = [group.replace("\n", " ") for group in groups]
             wI = self.lD["widthI"]
             fnI = 0
-            erS = "\n" + "-" * 20 + "\n"
+            erS = "\n" + "-" * 30 + "\n"
             euS = "\n" + "-" * 80 + "\n\n"
             uS = euS
             rS = erS
@@ -320,9 +319,8 @@ class Tag:
                 euS = f"[{ftnoteS}] {lS}\n\n"
                 euS = textwrap.fill(euS, width=wI) + "\n\n"
                 lS = textwrap.indent(lS, " " * 4)
-                erS = (
-                    "\n\n" + f".. _[{ftnoteS}]:\n\n**[{ftnoteS}]** \n{lS}\n\n\n"
-                )
+                erS = "\n\n" + f".. _[{ftnoteS}]-{fnI}:"
+                erS = erS + f"\n\n `[{ftnoteS}]`_\\-{fnI} \n{lS}\n\n\n"
                 uS += euS
                 rS += erS
             tS = uS
@@ -335,14 +333,19 @@ class Tag:
             try:
                 strS = "\n".join(blkL)
                 subS = eval(f"f'''{strS}'''", globals(), self.rivtD)
-            except Exception:
+            except (
+                SyntaxError,
+                NameError,
+                KeyError,
+                AttributeError,
+                TypeError,
+                ValueError,
+            ):
                 subS = strS
             writeP = Path(self.lD["reptP"], "scripts", parS)
             with open(writeP, "w") as f2:
                 f2.write(subS)
             print(f"File written to: {writeP}")
-        else:
-            pass
 
         mD = {
             "uS": uS,
@@ -364,7 +367,7 @@ class Tag:
 
         # Parse into a tuple: (column_widths, header_rows, body_rows)
         # The header and body rows are lists of cells (each cell is a list of lines)
-        col_widths, headers, body = parser.parse(lines)
+        _col_widths, headers, body = parser.parse(lines)
 
         # helper to clean up cell content
         def clean(cell):
