@@ -548,7 +548,7 @@ class Cmd:
                         "DateTime",
                     ]
                     tag = date_tags[0]
-                    if exif_dict is not None and exif_dict != {}:
+                    if exif_dict is not None and exif_dict != {}:  # ruff: ignore[collapsible-if]
                         # print(exif_dict)
                         if exif_dict.get(tag):
                             # EXIF dates are typically formatted as 'YYYY:MM:DD HH:MM:SS'
@@ -559,8 +559,6 @@ class Cmd:
                                 )
                             except ValueError:
                                 return "no time"
-                    else:
-                        pass
             # Check secondary PNG textual chunks or metadata if getexif fails
             if hasattr(img, "info") and img.info != {}:
                 # PNG files often save timestamp info under 'date:create' or 'Creation Time'
@@ -584,7 +582,7 @@ class Cmd:
             else:
                 return "no time"
 
-        except Exception as e:
+        except Exception as e:  # ruff: ignore[blind-except]
             print(f"cmd: Could not read metadata for {file_path}: {e}")
             return "no time"
 
@@ -604,14 +602,14 @@ class Cmd:
             insP = Path(self.fD["reptP"], "image", self.fileS)
             inspS = str(insP.as_posix())
         else:
-            self.lD["reptflagS"] == "doc"
+            self.lD["reptflagS"] = "doc"
             insP = Path(self.fD["reptP"], "rvsrc", "image", self.fileS)
             inspS = str(insP.as_posix())
         rst_imgS = self._rst_rel_path(insP)
         try:
             img1 = Image.open(inspS)
             _display(img1)
-        except Exception:
+        except Exception:  # ruff: ignore[blind-except, try-except-pass]
             pass
         if capS == "--":
             capS = ""
@@ -789,8 +787,6 @@ class Cmd:
         elif extS == "xlsx":  # read xls file
             pDF1 = pd.read_excel(self.pthS, header=None)
             readL = pDF1.values.tolist()
-        else:
-            pass
         if parL[2].strip() == "head":
             flgS = "firstrow"
         else:
@@ -1186,8 +1182,6 @@ class Cmd:
                 + newvarS
                 + "\n\n"
             )
-        else:
-            pass
         uS = tS = eqtS
         rS = "\n" + eqrS + "\n\n"
         lS = ""

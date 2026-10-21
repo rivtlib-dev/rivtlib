@@ -12,11 +12,15 @@ API functions:
     rv.T(rS) - (Tools) External programs and shell scripts
     rv.D(rS) - (Docs) Publish formatted doc file
     rv.S(rS) - (Skip) Skip processing of section
-    rv.X(rS) - (Exit) Exit processing of rivt file
-where the argument rS is a triple quoted rivt string (utf-8)
+    rv.X(rS) - (Exit) Exit file processing
+where the argument rS is a triple quoted rivt string with header and content
+substrings(utf-8)
 
-Comment settings:
-    # rc public=True; False  (default is False)
+Comment settings (default):
+    # rv pub_folder = true, false; create _rvpublic folder in project root (false)
+    # rv toggle_pub = true, false; toggles default section setting from private to public (false)
+    # rv set_width = 80; character width of text output (80)
+    # rv no_tag = true; false ; the API type symbol is added to the section header (false)
 
 Globals:
     utfS (str): utf doc string
@@ -26,7 +30,7 @@ Globals:
     fD (dict): fDer and file paths
     rivtD (dict): calculated values
 
-Typing: Last letter of var name indicates type:
+Type Hints: Last letter of var name indicates type:
     A => array
     B => boolean
     C => class instance
@@ -73,11 +77,11 @@ else:
     sys.exit()
 args = ""
 parser = argparse.ArgumentParser(description="Example script")
-parser.add_argument("-t", "--ptype", default="---", help="file type")
-parser.add_argument("-k", "--keep", default="false", help="keep rst")
+parser.add_argument("-t", "--typepub", default="---", help="publication type")
+parser.add_argument("-k", "--keeprst", default="false", help="keep rst files")
 args = parser.parse_args()
-reptypeS = args.ptype
-repkeepS = args.keep
+reptypeS = args.typepub
+repkeepS = args.keeprst
 # Basic paths
 pypathS = os.path.dirname(sys.executable)
 reptPkgP = os.path.join(pypathS, "Lib", "site-packages", "rivt")
@@ -86,11 +90,29 @@ bakN = rbaseS + ".bak"
 reptpubN = rivtN.replace("rv", "rv-")
 docnumS = rbaseS[0:6]
 srcP = Path(reptP, "rvsrc")
-publicP = Path(reptP, "_rivt-public")  # not used with rivtbooks
-# Set paths and flags for report, book, or chapter
+publicP = Path(reptP, "_rvpublic")  # not used with rivtbooks
+# Set paths and flags for report or chapter
 # print("--------------", reptP.name)
-if reptP.name == "rivt-report":
+if reptP.name[0:9] == "rvhandbk-":
+    repttitle = reptP.name[9:]
+    reptflagS = "chapter"
+    pubdocP = Path(reptP.parent, "_published")
+    rstdocsP = Path(reptP.parent, "_rstdocs")
+    storeP = Path(reptP.parent, "_rvstor")
+    txtdocsP = Path(pubdocP, "_txtdocs")
+    pdfpubP = Path(pubdocP, "_pdfdocs")
+    logsP = Path(storeP, "logs")
+    errlogN = docnumS + "log.txt"
+    errlogT = Path(logsP, errlogN)
+    bakT = Path(logsP, bakN)
+    rivtT = Path(reptP, rivtN)
+    rvreadmeT = Path(reptP.parent, "README.txt")
+    docreadmeT = Path(reptP.parent, "_rvstor", docnumS + "readme.txt")
+    pubreadmeT = " "
+elif reptP.name[0:9] == "rvreport-":
+    repttitle = reptP.name[9:]
     reptflagS = "doc"
+    publicP = Path(reptP, "_rvpublic-" + repttitle)
     pubdocP = Path(reptP, "_published")
     storeP = Path(reptP, "_rvstor")
     rstdocsP = Path(reptP, "_rstdocs")
@@ -107,22 +129,10 @@ if reptP.name == "rivt-report":
     docreadmeT = Path(reptP, "_published", "readme", docnumS + "readme.txt")
     pubreadmeT = Path(publicP, "README.txt")
 else:
-    reptflagS = "chapter"
-    pubdocP = Path(reptP.parent, "_published")
-    rstdocsP = Path(reptP.parent, "_rstdocs")
-    storeP = Path(reptP.parent, "_rvstor")
-    txtdocsP = Path(pubdocP, "_txtdocs")
-    pdfpubP = Path(pubdocP, "_pdfdocs")
-    logsP = Path(storeP, "logs")
-    errlogN = docnumS + "log.txt"
-    errlogT = Path(logsP, errlogN)
-    bakT = Path(logsP, bakN)
-    rivtT = Path(reptP, rivtN)
-    rvreadmeT = Path(reptP.parent, "README.txt")
-    docreadmeT = Path(reptP.parent, "_rvstor", docnumS + "readme.txt")
-    pubreadmeT = " "
+    raise ValueError(f"Unknown report folder type: {reptP.name}")
+
+print("-----------------------", reptflagS)
 # logs and backups
-# print("-----------------------", reptflagS)
 warnings.filterwarnings("ignore")
 logging.basicConfig(
     level=logging.DEBUG,

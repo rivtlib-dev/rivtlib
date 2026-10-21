@@ -42,8 +42,6 @@ def analyze_source(file_path):
         funct_len = funct_len + funcs_len
     if funct_len == "0":
         print(f" ({funct_len} lines total)")
-    else:
-        pass
 
     for node in tree.body:
         if isinstance(node, ast.FunctionDef):

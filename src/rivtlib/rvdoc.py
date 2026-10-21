@@ -62,6 +62,7 @@ class Cmdp:
         self.coverlogo = " "
         self.logosize = " "
         self.runlogo = " "
+        self.runlogosize = " "
         self.runlabelS = " "
         self.pdfpageS = " "
         self.projrefS = " "
@@ -101,17 +102,11 @@ class Cmdp:
             f4.write(self.sL[0] + "\n")
         self.logging.info("SECTION : " + self.sL[0])
         # copy images
-        if lD["reptflagS"] == "doc":
-            src_P = str(Path(fD["reptP"], "img", "*.*"))
+        if lD["reptflagS"] == "doc" or lD["reptflagS"] == "chapter":
+            src_P = str(Path(fD["reptP"], "rvsrc", "image", "*.*"))
             destP = str(Path(fD["rstdocsP"], "_static"))
             for fileP in glob.glob(src_P):
                 shutil.copy(fileP, destP)
-        elif lD["reptflagS"] == "chapter":
-            src_P = str(Path(fD["reptP"], "img", "*.*"))
-            destP = str(Path(fD["rstdocsP"], "_static"))
-            for fileP in glob.glob(src_P):
-                shutil.copy(fileP, destP)
-
         # clean rst files
         if lD["repkeepS"].strip() == "true":
             pass
@@ -161,6 +156,8 @@ class Cmdp:
                         typeS = self.lD["reptypeS"]
                     else:
                         typeS = str(pL[2].strip())
+                    if typeS == "text":
+                        typeS = "txt"
                     if typeS not in ["txt", "html", "pdf", "none"]:
                         print("Doc type must be: txt, html or pdf \n")
                     doctypeS = typeS + ("x")
@@ -187,7 +184,7 @@ class Cmdp:
                         continue
                 elif blockB and ("_[[END]]" in pS):  # block terminate
                     if tagS == "METADATA":
-                        obj = getattr(Cmdp, "metadatax")
+                        obj = Cmdp.metadatax
                         obj(self)
                         self.blockS = """"""
                         continue
@@ -235,6 +232,7 @@ class Cmdp:
         self.coverpageB = self.configL["layout"]["coverpage"]
         self.logosize = self.configL["layout"]["coverlogo_size"]
         self.runlogo = self.configL["layout"]["runninglogo"]
+        self.runlogosize = self.configL["layout"]["runninglogo_size"]
         self.runlabelS = self.configL["layout"]["runninglabel"]
         self.pdfpageS = self.configL["layout"]["pdf_pagesize"]
         self.projrefS = self.configL["layout"]["project_ref"]
@@ -271,7 +269,7 @@ class Cmdp:
         parts = Path(rvdocT).parts[-4:-1]  # Take last 3 segments
         short_p = ".../" + "/".join(parts)
 
-        pdfcmdS = f"python -m sphinx -a -E -b pdf -D root_doc={self.fD['rbaseS']} {str(self.fD['rstdocsP'])} {self.fD['pdfpubP']} \n"
+        pdfcmdS = f"python -m sphinx -a -E -b pdf -D root_doc={self.fD['rbaseS']} {self.fD['rstdocsP']!s} {self.fD['pdfpubP']} \n"
         try:
             result = subprocess.run(pdfcmdS, shell=True, check=True)
         except subprocess.CalledProcessError as e:
@@ -292,8 +290,9 @@ class Cmdp:
         foot2blkS = f"""**{self.runlabelS}**"""
         imgS = f"""
 .. |blklogo| image:: ./_static/{self.runlogo}
-   :height: 100px
-   :alt: logo
+   :width: {self.runlogosize}px
+   :align: bottom
+   :alt: running logo
 
 
     """
@@ -315,7 +314,7 @@ class Cmdp:
     .. list-table::
         :class: footer-box
         :align: left
-        :widths: 84 22 16
+        :widths: 50 30 20
         
         * - {foot1blkS}        
           - {foot2blkS}        
@@ -348,6 +347,7 @@ class Cmdp:
 .. image:: _static/{self.coverlogo}
    :width: {self.logosize}%
    :align: center
+   :alt: cover logo
 
 |
 |
@@ -410,7 +410,7 @@ class Cmdp:
         insrstS = (
             ".. |s| unicode:: 0xA0 \n\n\n" + imgS + headS + footS + instocS
         )
-        if self.coverpageB.capitalize() == "true":
+        if self.coverpageB.strip() == "true":
             insrstS = (
                 ".. |s| unicode:: 0xA0 \n\n\n"
                 + imgS
@@ -419,9 +419,8 @@ class Cmdp:
                 + coverpgS
                 + instocS
             )
-        else:
-            pass
 
+            print("\n\033[32mCover page added --------------- | \033[0m")
         return insrstS
 
     def htmlx(self):
